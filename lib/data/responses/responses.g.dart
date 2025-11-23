@@ -29,13 +29,9 @@ Map<String, dynamic> _$MessageResponseToJson(MessageResponse instance) =>
     <String, dynamic>{'status': instance.status, 'message': instance.message};
 
 LoginResponse _$LoginResponseFromJson(Map<String, dynamic> json) =>
-    LoginResponse((json['data'] as num?)?.toInt())
+    LoginResponse()
       ..status = json['status'] as String?
       ..message = json['message'] as String?;
 
 Map<String, dynamic> _$LoginResponseToJson(LoginResponse instance) =>
-    <String, dynamic>{
-      'status': instance.status,
-      'message': instance.message,
-      'data': instance.data,
-    };
+    <String, dynamic>{'status': instance.status, 'message': instance.message};

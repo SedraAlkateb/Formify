@@ -36,9 +36,7 @@ class MessageResponse extends BaseResponse {
 
 @JsonSerializable()
 class LoginResponse extends BaseResponse {
-  @JsonKey(name: "data")
-  int? data;
-  LoginResponse(this.data);
+  LoginResponse();
   // from json
   factory LoginResponse.fromJson(Map<String, dynamic> json) =>
       _$LoginResponseFromJson(json);
