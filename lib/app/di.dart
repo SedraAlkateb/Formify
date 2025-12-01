@@ -7,6 +7,7 @@ import 'package:formify/data/network/dio_factory.dart';
 import 'package:formify/data/network/network_info.dart';
 import 'package:formify/data/repository/repository.dart';
 import 'package:formify/domain/repostitory/repository.dart';
+import 'package:formify/presentation/onboarding/bloc/onboarding_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -30,11 +31,10 @@ Future<void> initAppModule() async {
   instance.registerLazySingleton<Repository>(
       () => RepositoryImp(instance(), instance()));
 }
-//
-// Future<void> initLoginModule() async {
-//   if (!GetIt.I.isRegistered<AuthBloc>()) {
-//     instance.registerFactory<LoginUsecase>(() => LoginUsecase(instance()));
-//
-//     instance.registerFactory<AuthBloc>(() => AuthBloc(instance()));
-//   }
-// }
+
+Future<void> initOnBoardingModule() async {
+  if (!GetIt.I.isRegistered<OnboardingBloc>()) {
+    instance.registerFactory<OnboardingBloc>(() => OnboardingBloc());
+
+  }
+}

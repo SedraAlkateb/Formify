@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 import 'package:formify/app/constants.dart';
-import 'package:formify/app/user_info.dart';
 import 'package:formify/data/network/error_handler.dart';
 import 'package:flutter/foundation.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
@@ -72,13 +71,11 @@ class MyApiInterceptor extends Interceptor {
        // UserInfo.token;
     String lang ="en";
 
-    if (authToken != null) {
-      options.headers['Authorization'] ="Bearer ${authToken}" ;
-      options.headers['lang'] =lang;
+    options.headers['Authorization'] ="Bearer ${authToken}" ;
+    options.headers['lang'] =lang;
 
-      print(authToken);
-    }
-    return handler.next(options);
+    print(authToken);
+      return handler.next(options);
   }
   @override
   void onError(DioError err, ErrorInterceptorHandler handler) async {

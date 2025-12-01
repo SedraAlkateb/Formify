@@ -9,7 +9,7 @@ class BaseResponse {
   String? message;
 }
 
-//////////ForMessage
+//////////FormMessage
 @JsonSerializable()
 class Message1Response extends BaseResponse {
   Message1Response();
@@ -36,6 +36,7 @@ class MessageResponse extends BaseResponse {
 
 @JsonSerializable()
 class LoginResponse extends BaseResponse {
+  LoginResponse();
   // from json
   factory LoginResponse.fromJson(Map<String, dynamic> json) =>
       _$LoginResponseFromJson(json);
