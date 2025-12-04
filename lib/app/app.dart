@@ -40,10 +40,11 @@ class _MyAppState extends State<MyApp> {
             //   useMaterial3: true,
             // ),
             // themeMode: ThemeMode.system,
-            locale: const Locale('ar'),
+            locale: const Locale('en'),
             supportedLocales: const [
-              Locale('ar'),
               Locale('en'),
+              Locale('ar'),
+
             ],
             localizationsDelegates: const [
               GlobalMaterialLocalizations.delegate,
@@ -51,7 +52,7 @@ class _MyAppState extends State<MyApp> {
               GlobalCupertinoLocalizations.delegate,
             ],
             localeResolutionCallback: (locale, supportedLocales) {
-              return const Locale('ar');
+              return const Locale('en');
             },
             // ----------- 🔥 THEMES WITH DYNAMIC COLOR -------------
             theme: getApplicationTheme(lightDynamic, isLight: true),
@@ -60,7 +61,7 @@ class _MyAppState extends State<MyApp> {
             // -------------------------------------------------------
 
             onGenerateRoute: RouteGenerator.getRoute,
-            initialRoute: Routes.login,
+            initialRoute: Routes.onboarding,
           );
         },
       ),

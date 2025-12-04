@@ -1,4 +1,3 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:formify/app/app_preferences.dart';
 import 'package:formify/data/data_source/remote_data_source.dart';
@@ -21,7 +20,7 @@ Future<void> initAppModule() async {
   //network info instance
 
   instance.registerLazySingleton<NetworkInfo>(
-      () => NetworkInfoImpl(Connectivity()));
+      () => NetworkInfoImpl());
   instance.registerLazySingleton<DioFactory>(() => DioFactory());
   Dio dio = await instance<DioFactory>().getDio();
   instance.registerLazySingleton<AppServiceClient>(() => AppServiceClient(dio));

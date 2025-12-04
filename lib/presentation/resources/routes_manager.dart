@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:formify/app/di.dart';
+import 'package:formify/presentation/onboarding/pages/onboarding_page.dart';
 import 'package:formify/presentation/resources/strings_manager.dart';
 class Routes {
-  static const String login = "/login";
+  static const String onboarding = "/onboarding";
 
 }
 
 class RouteGenerator {
   static Route<dynamic> getRoute(RouteSettings settings) {
      switch (settings.name) {
-       case Routes.login:
-     // initLoginModule();
-        //
-        // return MaterialPageRoute(builder: (_) => MyLogin());
+       case Routes.onboarding:
+      initOnBoardingModule();
+         return MaterialPageRoute(builder: (_) => OnBoardingPage());
       default:
         return unDefinedRoute();
     }
