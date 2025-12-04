@@ -1,9 +1,0 @@
-diff a/lib/data/responses/responses.dart b/lib/data/responses/responses.dart	(rejected hunks)
-@@ -36,6 +36,7 @@
- 
- @JsonSerializable()
- class LoginResponse extends BaseResponse {
-+  LoginResponse();
-   // from json
-   factory LoginResponse.fromJson(Map<String, dynamic> json) =>
-       _$LoginResponseFromJson(json);

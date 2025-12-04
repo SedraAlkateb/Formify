@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:formify/app/di.dart';
+import 'package:formify/presentation/onboarding/bloc/onboarding_bloc.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/resources/them_manager.dart';
 import 'package:dynamic_color/dynamic_color.dart';
@@ -22,16 +24,27 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        // BlocProvider(create: (_) => instance<AuthBloc>()),
+        BlocProvider(create: (_) => instance<OnboardingBloc>()),
       ],
 
       child: DynamicColorBuilder(
         builder: (lightDynamic, darkDynamic) {
           return MaterialApp(
-            locale: const Locale('ar'),
+            debugShowCheckedModeBanner: false,
+            // theme: ThemeData(
+            //   colorScheme: lightDynamic ?? const ColorScheme.light(),
+            //   useMaterial3: true,
+            // ),
+            // darkTheme: ThemeData(
+            //   colorScheme: darkDynamic ?? const ColorScheme.dark(),
+            //   useMaterial3: true,
+            // ),
+            // themeMode: ThemeMode.system,
+            locale: const Locale('en'),
             supportedLocales: const [
-              Locale('ar'),
               Locale('en'),
+              Locale('ar'),
+
             ],
             localizationsDelegates: const [
               GlobalMaterialLocalizations.delegate,
@@ -39,11 +52,8 @@ class _MyAppState extends State<MyApp> {
               GlobalCupertinoLocalizations.delegate,
             ],
             localeResolutionCallback: (locale, supportedLocales) {
-              return const Locale('ar');
+              return const Locale('en');
             },
-
-            debugShowCheckedModeBanner: false,
-
             // ----------- 🔥 THEMES WITH DYNAMIC COLOR -------------
             theme: getApplicationTheme(lightDynamic, isLight: true),
             darkTheme: getApplicationTheme(darkDynamic, isLight: false),
@@ -51,7 +61,7 @@ class _MyAppState extends State<MyApp> {
             // -------------------------------------------------------
 
             onGenerateRoute: RouteGenerator.getRoute,
-            initialRoute: Routes.login,
+            initialRoute: Routes.onboarding,
           );
         },
       ),
