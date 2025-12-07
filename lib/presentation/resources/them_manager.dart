@@ -40,7 +40,7 @@ ThemeData getApplicationTheme(ColorScheme? dynamicScheme, {bool isLight = true})
     // ================= AppBar =================
     appBarTheme: AppBarTheme(
       backgroundColor: ColorManager.white,
-      elevation: 4,
+    //  elevation: 4,
       iconTheme: IconThemeData(color: colorScheme.primary),
       titleTextStyle: getBoldStyle(
         fontSize: FontSize.s20,

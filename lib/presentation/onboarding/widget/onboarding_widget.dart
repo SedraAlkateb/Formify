@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:formify/presentation/unit/text_animation.dart';
 import 'package:lottie/lottie.dart';
 

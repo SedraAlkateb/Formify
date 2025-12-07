@@ -9,83 +9,78 @@ class CustomGridPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: StaggeredGrid.count(
-
-          crossAxisCount: 2,
-          crossAxisSpacing: 15,
-          mainAxisSpacing: 15,
-          children: [
-            StaggeredGridTile.count(
-              crossAxisCellCount: 1,
-              mainAxisCellCount: 1,
-              child: AnimatedGridItem(
-                text: "get all conference",
-                big: false,
-                onTap: () {
-                  print("Big clicked");
-                },
-              ),
+    return Padding(
+      padding: const EdgeInsets.all(15.0),
+      child: StaggeredGrid.count(
+        crossAxisCount: 2,
+        crossAxisSpacing: 15,
+        mainAxisSpacing: 15,
+        children: [
+          StaggeredGridTile.count(
+            crossAxisCellCount: 1,
+            mainAxisCellCount: 1,
+            child: AnimatedGridItem(
+              text: "get all conference",
+              onTap: () {
+                print("Big clicked");
+              },
             ),
+          ),
 
-            StaggeredGridTile.count(
-              crossAxisCellCount: 1,
-              mainAxisCellCount: 1.6, // أكبر من الباقي
-              child: AnimatedGridItem(
-                text: "create Survey dynamic",
-                big: true,
-                onTap: () {
-                  print("Big clicked");
-                },
-              ),
+          StaggeredGridTile.count(
+            crossAxisCellCount: 1,
+            mainAxisCellCount: 1.6, // أكبر من الباقي
+            child: AnimatedGridItem(
+              text: "create Survey dynamic",
+              onTap: () {
+                print("Big clicked");
+              },
+              type: "Survey",
+              image: HomeImageAssets.survey,
             ),
+          ),
 
-            StaggeredGridTile.count(
-              crossAxisCellCount: 1,
-              mainAxisCellCount: 1.6,
-              child: AnimatedGridItem(
-                text: "create conference dynamic",
-                big: true,
-                onTap: () {
-                  print("Big clicked");
-                },
-              ),
-            )
-            ,
-            StaggeredGridTile.count(
-              crossAxisCellCount: 1,
-              mainAxisCellCount: 1,
-              child: AnimatedGridItem(
-                text: "get all Survey",
-                big: false,
-                onTap: () {
-                  print("Big clicked");
-                },
-              ),
+          StaggeredGridTile.count(
+            crossAxisCellCount: 1,
+            mainAxisCellCount: 1.6,
+            child: AnimatedGridItem(
+              text: "create conference dynamic",
+              onTap: () {
+                print("Big clicked");
+              },
+              image: HomeImageAssets.conference,
+              type: "conference",
             ),
+          ),
+          StaggeredGridTile.count(
+            crossAxisCellCount: 1,
+            mainAxisCellCount: 1,
+            child: AnimatedGridItem(
+              text: "get all Survey",
+              onTap: () {
+                print("Big clicked");
+              },
+            ),
+          ),
 
-            // مربع كبير للجهة المقابلة
-
-          ],
-        ),
+          // مربع كبير للجهة المقابلة
+        ],
       ),
     );
   }
-
 }
 
 class AnimatedGridItem extends StatefulWidget {
   final String text;
-  final bool big;
   final VoidCallback onTap;
-
+  final String? image;
+  final String ?type;
   const AnimatedGridItem({
     super.key,
     required this.text,
-    required this.big,
     required this.onTap,
+     this.type,
+    this.image,
   });
 
   @override
@@ -113,41 +108,59 @@ class _AnimatedGridItemState extends State<AnimatedGridItem> {
         duration: const Duration(milliseconds: 140),
         curve: Curves.easeOut,
         child: Container(
+          padding: EdgeInsets.only(left: 16,right: 16,top: 16),
+          alignment: Alignment.bottomCenter,
           decoration: BoxDecoration(
-            color: widget.big
-                ? ColorManager.primary.withOpacity(0.55)
-                : ColorManager.secondary.withOpacity(0.55),
+            color: widget.image != null
+                ? ColorManager.primary.withOpacity(0.2)
+                : ColorManager.white.withOpacity(0.8),
             borderRadius: BorderRadius.circular(18),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.08),
-                blurRadius: 8,
+                blurRadius: 5,
                 offset: const Offset(0, 3),
-              )
+              ),
             ],
           ),
 
-          child: Padding(
-            padding: const EdgeInsets.all(8),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  widget.text,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold
+          child:  Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+             Column(
+               mainAxisAlignment: MainAxisAlignment.start,
+               crossAxisAlignment: CrossAxisAlignment.center,
+               children: [
+                 Text(
+                   widget.text,
+                   style: const TextStyle(
+                     color: ColorManager.primary,
+                     fontSize: 18,
+                     fontWeight: FontWeight.bold,
+                   ),
+                 ),
+                 widget.type==null?
+                 Text(
+                   "num of ${widget.type} : 30",
+                   style: const TextStyle(
+                     color: ColorManager.accent,
+                     fontSize: 14,
+                     fontWeight: FontWeight.w500,
+                   ),
+                 ):SizedBox(),
+               ],
+             ),
+              if (widget.image != null)
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: SvgPicture.asset(
+                      widget.image ?? "",
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
-                // فقط الكبيرة تعرض SVG
-                if (widget.big)
-                  Expanded(
-                    child: SvgPicture.asset(HomeImageAssets.survey),
-                  ),
-
-              ],
-            ),
+            ],
           ),
         ),
       ),

@@ -6,7 +6,7 @@ const String imagePathOnboarding = "${imagePath}/onboarding";
 const String imagePathHome = "${imagePath}/home";
 
 class HomeImageAssets {
-  static const String domina = "$imagePathHome/conference.svg";
+  static const String conference = "$imagePathHome/conference.svg";
   static const String survey = "$imagePathHome/survey.svg";
 }
 class JsonAssets {
