@@ -3,6 +3,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:formify/presentation/resources/assets_manager.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
+import 'package:formify/presentation/resources/routes_manager.dart';
 
 class CustomGridPage extends StatelessWidget {
   const CustomGridPage({super.key});
@@ -33,7 +34,7 @@ class CustomGridPage extends StatelessWidget {
             child: AnimatedGridItem(
               text: "create Survey dynamic",
               onTap: () {
-                print("Big clicked");
+               Navigator.pushNamed(context, Routes.createSurvey);
               },
               type: "Survey",
               image: HomeImageAssets.survey,

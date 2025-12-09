@@ -6,66 +6,49 @@ import 'package:formify/presentation/onboarding/bloc/onboarding_bloc.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/resources/them_manager.dart';
 import 'package:dynamic_color/dynamic_color.dart';
+import 'package:formify/presentation/resources/theme_bloc/theme_bloc.dart';
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => instance<OnboardingBloc>()),
+        BlocProvider(create: (_) => instance<ThemeBloc>()),
       ],
-
       child: DynamicColorBuilder(
         builder: (lightDynamic, darkDynamic) {
-          return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            // theme: ThemeData(
-            //   colorScheme: lightDynamic ?? const ColorScheme.light(),
-            //   useMaterial3: true,
-            // ),
-            // darkTheme: ThemeData(
-            //   colorScheme: darkDynamic ?? const ColorScheme.dark(),
-            //   useMaterial3: true,
-            // ),
-            // themeMode: ThemeMode.system,
-            locale: const Locale('en'),
-            supportedLocales: const [
-              Locale('en'),
-              Locale('ar'),
-
-            ],
-            localizationsDelegates: const [
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            localeResolutionCallback: (locale, supportedLocales) {
-              return const Locale('en');
+          return BlocBuilder<ThemeBloc, ThemeState>(
+            builder: (context, state) {
+              return MaterialApp(
+                debugShowCheckedModeBanner: false,
+                theme: getApplicationTheme(
+                  dynamicScheme: lightDynamic,
+                  isLight: true,
+                  seedColor: BlocProvider.of<ThemeBloc>(context).seedColor,
+                ),
+                darkTheme: getApplicationTheme(
+                  dynamicScheme: darkDynamic,
+                  isLight: false,
+                  seedColor: BlocProvider.of<ThemeBloc>(context).seedColor,
+                ),
+                themeMode: ThemeMode.system,
+                locale: const Locale('en'),
+                supportedLocales: const [Locale('en'), Locale('ar')],
+                localizationsDelegates: const [
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                onGenerateRoute: RouteGenerator.getRoute,
+                initialRoute: Routes.onboarding,
+              );
             },
-            // ----------- 🔥 THEMES WITH DYNAMIC COLOR -------------
-            theme: getApplicationTheme(lightDynamic, isLight: true),
-            darkTheme: getApplicationTheme(darkDynamic, isLight: false),
-            themeMode: ThemeMode.system,
-            // -------------------------------------------------------
-
-            onGenerateRoute: RouteGenerator.getRoute,
-            initialRoute: Routes.onboarding,
           );
         },
       ),
     );
   }
 }
-

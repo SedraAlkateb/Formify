@@ -6,16 +6,15 @@ class CreateConferencePage extends StatefulWidget {
   const CreateConferencePage({super.key});
 
   @override
-  State<CreateConferencePage> createState() => _HomePageState();
+  State<CreateConferencePage> createState() => _CreateConferencePageState();
 }
 
-class _HomePageState extends State<CreateConferencePage> {
+class _CreateConferencePageState extends State<CreateConferencePage> {
   final _formKey = GlobalKey<FormBuilderState>();
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dynamic FormBuilder Example'),

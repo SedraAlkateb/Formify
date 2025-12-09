@@ -5,136 +5,114 @@ import 'font_manager.dart';
 import 'style_manage.dart';
 import 'values_manager.dart';
 
-ThemeData getApplicationTheme(ColorScheme? dynamicScheme, {bool isLight = true}) {
-  late final ColorScheme colorScheme;
+ThemeData getApplicationTheme({
+  Color? seedColor,
+  required bool isLight,
+  ColorScheme? dynamicScheme,
+}) {
+  // ===========================
+  // COLOR SCHEME (Dynamic or Seed)
+  // ===========================
+  final ColorScheme colorScheme = (dynamicScheme != null)
+      ? dynamicScheme.harmonized().copyWith(
+    brightness: isLight ? Brightness.light : Brightness.dark,
+  )
+      : ColorScheme.fromSeed(
+    seedColor: seedColor ?? ColorManager.primary,
+    brightness: isLight ? Brightness.light : Brightness.dark,
+  );
 
-  // ============================
-  //       DYNAMIC COLOR (Material You)
-  // ============================
-  if (dynamicScheme != null) {
-    colorScheme = dynamicScheme
-        .harmonized() // ينسّق scheme النظام ليتناسب مع لون تطبيقك
-        .copyWith(
-      brightness: isLight ? Brightness.light : Brightness.dark,
-    );
-  }
-
-  // ============================
-  //           FALLBACK
-  // ============================
-  else {
-    colorScheme = ColorScheme.fromSeed(
-      seedColor: ColorManager.primary,
-      brightness: isLight ? Brightness.light : Brightness.dark,
-    );
-  }
-
-  // ============================
-  //        THEME DATA
-  // ============================
+  // ===========================
+  // FULL THEME
+  // ===========================
   return ThemeData(
     useMaterial3: true,
     colorScheme: colorScheme,
     fontFamily: FontConstants.fontFamily1,
 
-    // ================= AppBar =================
+    // ================= APP BAR =================
     appBarTheme: AppBarTheme(
-      backgroundColor: ColorManager.white,
-    //  elevation: 4,
-      iconTheme: IconThemeData(color: colorScheme.primary),
+      backgroundColor: colorScheme.primary,
+      elevation: 0,
+      iconTheme: IconThemeData(color: colorScheme.onPrimary),
       titleTextStyle: getBoldStyle(
         fontSize: FontSize.s20,
-        color: colorScheme.primary,
+        color: colorScheme.onPrimary,
       ),
     ),
 
-    // ============= Tabs ===================
+    // ================= TAB BAR =================
     tabBarTheme: TabBarThemeData(
       labelColor: colorScheme.onPrimary,
-      unselectedLabelColor: colorScheme.primary,
+      unselectedLabelColor: colorScheme.primary.withOpacity(0.6),
       indicatorColor: colorScheme.secondary,
     ),
 
-    // ============= Buttons =================
+    // ================= BUTTONS =================
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
         padding: const EdgeInsets.symmetric(
-          horizontal: AppPadding.p20,
-          vertical: AppPadding.p10,
-        ),
+            horizontal: AppPadding.p20, vertical: AppPadding.p12),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppSize.s14),
         ),
       ),
     ),
 
-    // ============= Cards ====================
+    // ================= CARDS ===================
     cardTheme: CardThemeData(
       color: colorScheme.surface,
+      shadowColor: Colors.black12,
       elevation: 3,
-      shadowColor: Colors.black.withOpacity(0.2),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSize.s18),
       ),
     ),
 
-    // ============= Text Theme ===============
+    // ================= TEXT STYLES ==============
     textTheme: TextTheme(
-      titleLarge:
-      getBoldStyle(color: colorScheme.onBackground, fontSize: FontSize.s25),
+      titleLarge: getBoldStyle(
+          color: colorScheme.onBackground, fontSize: FontSize.s25),
       titleMedium: getSemiBoldStyle(
           color: colorScheme.onBackground, fontSize: FontSize.s18),
-
-      bodyLarge: getRegularStyle(
-          color: colorScheme.onBackground, fontSize: FontSize.s18),
-      bodyMedium: getRegularStyle(
-          color: colorScheme.onBackground, fontSize: FontSize.s14),
-
-      labelLarge: getMediumStyle(
-          color: colorScheme.onPrimary, fontSize: FontSize.s16),
+      bodyLarge:
+      getRegularStyle(color: colorScheme.onBackground, fontSize: FontSize.s18),
+      bodyMedium:
+      getRegularStyle(color: colorScheme.onBackground, fontSize: FontSize.s14),
+      labelLarge:
+      getMediumStyle(color: colorScheme.onPrimary, fontSize: FontSize.s16),
     ),
 
-    // ============= Inputs ====================
+    // ================= INPUTS ==================
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor:
-      isLight ? ColorManager.fieldBackground : ColorManager.darkFieldBackground,
+      fillColor: isLight
+          ? ColorManager.fieldBackground
+          : ColorManager.darkFieldBackground,
       contentPadding: const EdgeInsets.all(AppPadding.p12),
-
-      labelStyle: getMediumStyle(
-          color: colorScheme.primary, fontSize: FontSize.s18),
-
+      labelStyle: getMediumStyle(color: colorScheme.primary),
       hintStyle: getRegularStyle(
           color: isLight
               ? ColorManager.textHint
-              : ColorManager.darkTextSecondary,
-          fontSize: FontSize.s16),
-
+              : ColorManager.darkTextSecondary),
       enabledBorder: OutlineInputBorder(
         borderSide: BorderSide(
-          color: isLight ? ColorManager.border : ColorManager.darkBorder,
-          width: AppSize.s1_5,
-        ),
+            color: isLight ? ColorManager.border : ColorManager.darkBorder,
+            width: 1.5),
         borderRadius: BorderRadius.circular(AppSize.s12),
       ),
-
       focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(
-          color: colorScheme.primary,
-          width: AppSize.s2,
-        ),
+        borderSide: BorderSide(color: colorScheme.primary, width: 2),
         borderRadius: BorderRadius.circular(AppSize.s12),
       ),
-
       errorBorder: OutlineInputBorder(
         borderSide: BorderSide(color: ColorManager.error),
         borderRadius: BorderRadius.circular(AppSize.s12),
       ),
     ),
 
-    // ============= Cursor ====================
     textSelectionTheme: TextSelectionThemeData(
       cursorColor: colorScheme.primary,
     ),
