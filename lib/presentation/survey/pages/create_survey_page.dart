@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
+import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/resources/theme_bloc/theme_bloc.dart';
 
 class CreateSurveyPage extends StatefulWidget {
@@ -17,7 +18,7 @@ class _HomePageState extends State<CreateSurveyPage> {
     final colors = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: ColorManager.background,
+      backgroundColor: colors.background,
       appBar: AppBar(
         title: const Text('Dynamic FormBuilder Example'),
         backgroundColor: colors.primary,
@@ -146,27 +147,12 @@ class _HomePageState extends State<CreateSurveyPage> {
                 ),
               ],
             ),
-            TextButton(
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(ColorManager.primary), // لون الخلفية
-                padding: MaterialStateProperty.all(const EdgeInsets.symmetric(vertical: 14, horizontal: 28)), // حجم الزر
-                shape: MaterialStateProperty.all(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12), // تدوير الحواف
-                  ),
-                ),
-              ),
+            ElevatedButton(
               onPressed: () {
-              },
-              child: const Text(
-                "Next",
-                style: TextStyle(
-                  color: Colors.white,  // لون النص
-                  fontSize: 16,         // حجم الخط
-                  fontWeight: FontWeight.bold, // سماكة الخط
-                ),
-              ),
-            )
+                Navigator.pushNamed(context, Routes.createQuesSurvey);
+                    },
+              child: const Text('Next'),
+            ),
 
           ],
         ),
@@ -174,6 +160,7 @@ class _HomePageState extends State<CreateSurveyPage> {
     );
   }
 }
+
 
 // 🔹 نفس الويجت السابق (مع توحيد التصميم)
 Widget buildColorOption(Color color, BuildContext context) {

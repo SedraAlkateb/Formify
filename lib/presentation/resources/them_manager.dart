@@ -11,26 +11,34 @@ ThemeData getApplicationTheme({
   ColorScheme? dynamicScheme,
 }) {
   // ===========================
-  // COLOR SCHEME (Dynamic or Seed)
+  // COLOR SCHEME (Seed أولاً، ثم Dynamic)
   // ===========================
-  final ColorScheme colorScheme = (dynamicScheme != null)
-      ? dynamicScheme.harmonized().copyWith(
-    brightness: isLight ? Brightness.light : Brightness.dark,
-  )
-      : ColorScheme.fromSeed(
-    seedColor: seedColor ?? ColorManager.primary,
-    brightness: isLight ? Brightness.light : Brightness.dark,
-  );
+  late final ColorScheme colorScheme;
 
-  // ===========================
-  // FULL THEME
-  // ===========================
+  if (seedColor != null) {
+    // إذا عندي seedColor من الـ BLoC -> استخدمه وأتجاهل dynamicScheme
+    colorScheme = ColorScheme.fromSeed(
+      seedColor: seedColor,
+      brightness: isLight ? Brightness.light : Brightness.dark,
+    );
+  } else if (dynamicScheme != null) {
+    // إذا ما في seedColor لكن في dynamicScheme -> استخدمه
+    colorScheme = dynamicScheme.harmonized().copyWith(
+      brightness: isLight ? Brightness.light : Brightness.dark,
+    );
+  } else {
+    // لا seedColor ولا dynamicScheme -> استخدم اللون الافتراضي
+    colorScheme = ColorScheme.fromSeed(
+      seedColor: ColorManager.primary,
+      brightness: isLight ? Brightness.light : Brightness.dark,
+    );
+  }
+
   return ThemeData(
     useMaterial3: true,
     colorScheme: colorScheme,
     fontFamily: FontConstants.fontFamily1,
 
-    // ================= APP BAR =================
     appBarTheme: AppBarTheme(
       backgroundColor: colorScheme.primary,
       elevation: 0,
@@ -41,27 +49,26 @@ ThemeData getApplicationTheme({
       ),
     ),
 
-    // ================= TAB BAR =================
     tabBarTheme: TabBarThemeData(
       labelColor: colorScheme.onPrimary,
       unselectedLabelColor: colorScheme.primary.withOpacity(0.6),
       indicatorColor: colorScheme.secondary,
     ),
 
-    // ================= BUTTONS =================
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
         padding: const EdgeInsets.symmetric(
-            horizontal: AppPadding.p20, vertical: AppPadding.p12),
+          horizontal: AppPadding.p20,
+          vertical: AppPadding.p12,
+        ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppSize.s14),
         ),
       ),
     ),
 
-    // ================= CARDS ===================
     cardTheme: CardThemeData(
       color: colorScheme.surface,
       shadowColor: Colors.black12,
@@ -71,21 +78,29 @@ ThemeData getApplicationTheme({
       ),
     ),
 
-    // ================= TEXT STYLES ==============
     textTheme: TextTheme(
       titleLarge: getBoldStyle(
-          color: colorScheme.onBackground, fontSize: FontSize.s25),
+        color: colorScheme.onBackground,
+        fontSize: FontSize.s25,
+      ),
       titleMedium: getSemiBoldStyle(
-          color: colorScheme.onBackground, fontSize: FontSize.s18),
-      bodyLarge:
-      getRegularStyle(color: colorScheme.onBackground, fontSize: FontSize.s18),
-      bodyMedium:
-      getRegularStyle(color: colorScheme.onBackground, fontSize: FontSize.s14),
-      labelLarge:
-      getMediumStyle(color: colorScheme.onPrimary, fontSize: FontSize.s16),
+        color: colorScheme.onBackground,
+        fontSize: FontSize.s18,
+      ),
+      bodyLarge: getRegularStyle(
+        color: colorScheme.onBackground,
+        fontSize: FontSize.s18,
+      ),
+      bodyMedium: getRegularStyle(
+        color: colorScheme.onBackground,
+        fontSize: FontSize.s14,
+      ),
+      labelLarge: getMediumStyle(
+        color: colorScheme.onPrimary,
+        fontSize: FontSize.s16,
+      ),
     ),
 
-    // ================= INPUTS ==================
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: isLight
@@ -94,13 +109,15 @@ ThemeData getApplicationTheme({
       contentPadding: const EdgeInsets.all(AppPadding.p12),
       labelStyle: getMediumStyle(color: colorScheme.primary),
       hintStyle: getRegularStyle(
-          color: isLight
-              ? ColorManager.textHint
-              : ColorManager.darkTextSecondary),
+        color: isLight
+            ? ColorManager.textHint
+            : ColorManager.darkTextSecondary,
+      ),
       enabledBorder: OutlineInputBorder(
         borderSide: BorderSide(
-            color: isLight ? ColorManager.border : ColorManager.darkBorder,
-            width: 1.5),
+          color: isLight ? ColorManager.border : ColorManager.darkBorder,
+          width: 1.5,
+        ),
         borderRadius: BorderRadius.circular(AppSize.s12),
       ),
       focusedBorder: OutlineInputBorder(
