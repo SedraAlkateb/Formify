@@ -8,6 +8,7 @@ import 'package:formify/data/repository/repository.dart';
 import 'package:formify/domain/repostitory/repository.dart';
 import 'package:formify/presentation/onboarding/bloc/onboarding_bloc.dart';
 import 'package:formify/presentation/resources/theme_bloc/theme_bloc.dart';
+import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -37,6 +38,12 @@ Future<void> initAppModule() async {
 Future<void> initOnBoardingModule() async {
   if (!GetIt.I.isRegistered<OnboardingBloc>()) {
     instance.registerFactory<OnboardingBloc>(() => OnboardingBloc());
+
+  }
+}
+Future<void> initSurveyModule() async {
+  if (!GetIt.I.isRegistered<SurveyBloc>()) {
+    instance.registerFactory<SurveyBloc>(() => SurveyBloc());
 
   }
 }

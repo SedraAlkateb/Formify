@@ -129,6 +129,17 @@ ThemeData getApplicationTheme({
         borderRadius: BorderRadius.circular(AppSize.s12),
       ),
     ),
+    dropdownMenuTheme: DropdownMenuThemeData(
+
+      textStyle: TextStyle(color: ColorManager.black)
+    ),
+
+    // dropdownButtonTheme: DropdownButtonThemeData(
+    //   textStyle: TextStyle(
+    //     color: isLight ? ColorManager.black : Colors.white,
+    //     fontSize: FontSize.s14,
+    //   ),
+    // ),
 
     textSelectionTheme: TextSelectionThemeData(
       cursorColor: colorScheme.primary,

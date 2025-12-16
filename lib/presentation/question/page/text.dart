@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:formify/domain/models/models.dart';
+import 'package:formify/presentation/resources/routes_manager.dart';
+import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 
 Widget TextWidget(String name,bool valid){
 
@@ -65,12 +69,14 @@ class _TextQuestionPageState extends State<TextQuestionPage> {
 
     return Scaffold(
       backgroundColor: colorScheme.background,
+
       appBar: AppBar(
         title: const Text("Text Question"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: FormBuilder(
+
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -249,14 +255,13 @@ class _TextQuestionPageState extends State<TextQuestionPage> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    // هنا منطق المتابعة (حاليا بس print)
-                    final data = {
-                      "name": _questionText,
-                      "valid": _isRequired,
-                    };
-                    Navigator.pop(context, data);
+                    BlocProvider.of<SurveyBloc>(context).add(CreateQuesSurveyEvent(
+                      QuestionModel(title: _questionText, order: 0, isRequired: _isRequired,
+                          answers: [])
 
-                    debugPrint("Saved question: $data");
+                    ));
+                    Navigator.pushNamed(context, Routes.viewSurvey);
+
                   },
                   child: const Text("Next"),
                 ),

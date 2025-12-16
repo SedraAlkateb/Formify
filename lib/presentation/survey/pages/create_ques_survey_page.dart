@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
+import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
+import 'package:formify/presentation/survey/widget/text_view.dart';
 
 class CreateQuesSurveyPage extends StatelessWidget {
   CreateQuesSurveyPage({super.key});
 
   final List<Map<String, dynamic>> questionTypes = [
     {
-      "title": "Text Field",
+      "title": "Text",
       "icon": Icons.text_fields,
       "navigator": Routes.textQuestion,
+     // "widget":textView(index)
     },
     {
       "title": "Dropdown",
       "icon": Icons.arrow_drop_down_circle,
-      "navigator": Routes.textQuestion,
+      "navigator": Routes.dropDownQuestion,
     },
     {"title": "Multiple Choice", "icon": Icons.check_circle_outline},
     {"title": "Checkbox", "icon": Icons.check_box_outlined},
@@ -97,15 +101,15 @@ class CreateQuesSurveyPage extends StatelessWidget {
                 separatorBuilder: (_, __) => const SizedBox(height: 8),
                 itemBuilder: (context, index) {
                   final item = questionTypes[index];
-
                   return InkWell(
                     onTap: () {
                       final item = questionTypes[index];
+                      BlocProvider.of<SurveyBloc>(context).add(CreateEmptyQuesNameSurveyEvent(item['title']));
+
                       final String routeName = item["navigator"] as String;
                       Navigator.pushNamed(
                         context,
-                        Routes.textQuestion,
-                        // لو حابب تبعت بيانات:
+                        routeName,
                         arguments: {
                           "name": "title",
                           "valid": true,

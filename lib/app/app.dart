@@ -7,6 +7,7 @@ import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/resources/them_manager.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:formify/presentation/resources/theme_bloc/theme_bloc.dart';
+import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -17,6 +18,7 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (_) => instance<OnboardingBloc>()),
         BlocProvider(create: (_) => instance<ThemeBloc>()),
+        BlocProvider(create: (_) => instance<SurveyBloc>()),
       ],
       child: DynamicColorBuilder(
         builder: (lightDynamic, darkDynamic) {
