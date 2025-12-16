@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
-import 'package:formify/presentation/survey/widget/text_view.dart';
 
 class CreateQuesSurveyPage extends StatelessWidget {
   CreateQuesSurveyPage({super.key});
