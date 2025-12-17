@@ -2,20 +2,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-class SurveyPage extends StatefulWidget {
-  const SurveyPage({super.key});
+class CreateConferencePage extends StatefulWidget {
+  const CreateConferencePage({super.key});
 
   @override
-  State<SurveyPage> createState() => _HomePageState();
+  State<CreateConferencePage> createState() => _CreateConferencePageState();
 }
 
-class _HomePageState extends State<SurveyPage> {
+class _CreateConferencePageState extends State<CreateConferencePage> {
   final _formKey = GlobalKey<FormBuilderState>();
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dynamic FormBuilder Example'),
