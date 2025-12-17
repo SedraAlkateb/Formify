@@ -1,3 +1,5 @@
+import 'package:formify/domain/models/model_q.dart';
+
 class LoginModel {
   int cityId;
   int repId;
@@ -20,14 +22,14 @@ class SurveyModel {
   String title;
   String description;
   String color;
-  String type;
+
   List<QuestionModel> questions;
 
   SurveyModel({
     required this.title,
     required this.description,
     required this.color,
-    required this.type,
+
     required this.questions,
   });
 
@@ -37,7 +39,7 @@ class SurveyModel {
       title: "",
       description: "",
       color: "",
-      type: "",
+
       questions: [],     // أصبحت قائمة أسئلة وليس سؤال واحد
     );
   }
@@ -47,12 +49,14 @@ class QuestionModel {
   String title;
   int order;
   bool isRequired;
+  QuestionType type;
   List<String> answers;
 
   QuestionModel({
     required this.title,
     required this.order,
     required this.isRequired,
+    required this.type,
     required this.answers,
   });
 
@@ -62,6 +66,7 @@ class QuestionModel {
       title: "",
       order: 1,
       isRequired: false,
+      type: QuestionType.text,
       answers: [],
     );
   }

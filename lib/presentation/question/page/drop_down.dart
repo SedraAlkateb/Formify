@@ -3,18 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
+import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 
-class DropDownQuestionPage extends StatefulWidget {
-  const DropDownQuestionPage({super.key});
-
-  @override
-  State<DropDownQuestionPage> createState() => _DropDownQuestionPageState();
-}
-
-class _DropDownQuestionPageState extends State<DropDownQuestionPage> {
+class DropDownQuestionPage extends StatelessWidget {
+   DropDownQuestionPage({super.key});
   final _formKey = GlobalKey<FormBuilderState>();
-  final TextEditingController _optionCtrl = TextEditingController();
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -268,9 +262,9 @@ class _DropDownQuestionPageState extends State<DropDownQuestionPage> {
                             );
                             return;
                           }
-
                           final values = _formKey.currentState!.value;
-                          debugPrint("Form values: $values");
+                          Navigator.pushNamed(context, Routes.viewSurvey);
+
                         },
                         child: const Text("Next"),
                       ),

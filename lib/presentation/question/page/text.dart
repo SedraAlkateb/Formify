@@ -1,51 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:formify/domain/models/model_q.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 
-Widget TextWidget(String name,bool valid){
-
-  return FormBuilderTextField(
-    name: 'title',
-    decoration: InputDecoration(
-      labelText: "Title",
-      hintText: "Enter survey title",
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-    ),
-
-    // ========== VALIDATION ==========
-
-    validator:
-    valid==true?
-    FormBuilderValidators.compose([
-      FormBuilderValidators.required(errorText: "This field is required"),
-      // FormBuilderValidators.minLength(3,
-      //     errorText: "Title must be at least 3 characters"),
-      // FormBuilderValidators.maxLength(50,
-      //     errorText: "Title cannot exceed 50 characters"),
-    ]):null,
-
-    // ===== OPTIONAL =======
-   // keyboardType: TextInputType.text,
-   // textInputAction: TextInputAction.next,
-  );
-
-}
-
 class TextQuestionPage extends StatefulWidget {
-  // final String name;        // اسم الحقل في الفورم (id)
-  // final bool  valid;  // القيمة الابتدائية لـ Required
-
-  const TextQuestionPage({
-    super.key,
-    // required this.name,
-    // this.valid = true,
-  });
+  const TextQuestionPage({super.key});
 
   @override
   State<TextQuestionPage> createState() => _TextQuestionPageState();
@@ -54,15 +16,6 @@ class TextQuestionPage extends StatefulWidget {
 class _TextQuestionPageState extends State<TextQuestionPage> {
   final _formKey = GlobalKey<FormBuilderState>();
 
-  String _questionText = "";
-  bool _isRequired = true;
-
-  @override
-  void initState() {
-    super.initState();
-  //  _isRequired = widget.valid;
-  }
-
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -70,13 +23,17 @@ class _TextQuestionPageState extends State<TextQuestionPage> {
     return Scaffold(
       backgroundColor: colorScheme.background,
 
-      appBar: AppBar(
-        title: const Text("Text Question"),
-      ),
+      appBar: AppBar(title: const Text("Text Question")),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: FormBuilder(
+        child: BlocBuilder<SurveyBloc, SurveyState>(
 
+          builder: (context, state) {
+            SurveyModel surveyModel=BlocProvider.of<SurveyBloc>(context).surveyModel;
+            if(state is ViewSurveyState ){
+              surveyModel=state.surveyModel;
+            }
+    return FormBuilder(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,13 +44,15 @@ class _TextQuestionPageState extends State<TextQuestionPage> {
                 decoration: BoxDecoration(
                   color: colorScheme.surface,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: colorScheme.outline.withOpacity(0.3)),
+                  border: Border.all(
+                    color: colorScheme.outline.withOpacity(0.3),
+                  ),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black12.withOpacity(0.06),
                       blurRadius: 6,
                       offset: const Offset(0, 3),
-                    )
+                    ),
                   ],
                 ),
                 child: Column(
@@ -118,13 +77,12 @@ class _TextQuestionPageState extends State<TextQuestionPage> {
                         ),
                       ),
                       onChanged: (val) {
-                        setState(() {
-                          _questionText = val ?? "";
-                        });
+                        context.read<SurveyBloc>().add(
+                          CreateQuesNameSurveyEvent(val.toString()),
+                        );
                       },
                       validator: (value) {
-                        if (
-                            value == null || value.trim().isEmpty) {
+                        if (value == null || value.trim().isEmpty) {
                           return "Question cannot be empty";
                         }
                         return null;
@@ -145,12 +103,12 @@ class _TextQuestionPageState extends State<TextQuestionPage> {
                           ),
                         ),
                         Switch(
-                          value: _isRequired,
+                          value: BlocProvider.of<SurveyBloc>(context).surveyModel.questions.last.isRequired,
                           activeColor: colorScheme.primary,
                           onChanged: (val) {
-                            setState(() {
-                              _isRequired = val;
-                            });
+                            context.read<SurveyBloc>().add(
+                              CreateQuesIsRequiredSurveyEvent(val),
+                            );
                           },
                         ),
                       ],
@@ -178,7 +136,9 @@ class _TextQuestionPageState extends State<TextQuestionPage> {
                 decoration: BoxDecoration(
                   color: colorScheme.surface,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: colorScheme.outline.withOpacity(0.4)),
+                  border: Border.all(
+                    color: colorScheme.outline.withOpacity(0.4),
+                  ),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -188,16 +148,16 @@ class _TextQuestionPageState extends State<TextQuestionPage> {
                       children: [
                         Flexible(
                           child: Text(
-                            _questionText.isEmpty
+                            surveyModel.questions.last.title.isEmpty
                                 ? "Question label will appear here"
-                                : _questionText,
+                                :  surveyModel.questions.last.title,
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                               color: colorScheme.onSurface,
                             ),
                           ),
                         ),
-                        if (_isRequired) ...[
+                        if ( surveyModel.questions.last.isRequired) ...[
                           const SizedBox(width: 4),
                           Text(
                             "*",
@@ -220,7 +180,7 @@ class _TextQuestionPageState extends State<TextQuestionPage> {
                         ),
                       ),
                       validator: (value) {
-                        if (_isRequired &&
+                        if ( surveyModel.questions.last.isRequired &&
                             (value == null || value.trim().isEmpty)) {
                           return "Answer cannot be empty";
                         }
@@ -230,12 +190,15 @@ class _TextQuestionPageState extends State<TextQuestionPage> {
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () {
-                        final isValid = _formKey.currentState?.saveAndValidate() ?? false;
+                        final isValid =
+                            _formKey.currentState?.saveAndValidate() ?? false;
                         if (!isValid) {
                           // إذا Required والنص فاضي أو أي خطأ -> رسالة
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text("Please fix validation errors before continuing."),
+                              content: Text(
+                                "Please fix validation errors before continuing.",
+                              ),
                             ),
                           );
                           return;
@@ -243,7 +206,6 @@ class _TextQuestionPageState extends State<TextQuestionPage> {
                       },
                       child: const Text("Test"),
                     ),
-
                   ],
                 ),
               ),
@@ -255,20 +217,17 @@ class _TextQuestionPageState extends State<TextQuestionPage> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    BlocProvider.of<SurveyBloc>(context).add(CreateQuesSurveyEvent(
-                      QuestionModel(title: _questionText, order: 0, isRequired: _isRequired,
-                          answers: [])
 
-                    ));
                     Navigator.pushNamed(context, Routes.viewSurvey);
-
                   },
                   child: const Text("Next"),
                 ),
               ),
             ],
           ),
-        ),
+        );
+  },
+),
       ),
     );
   }

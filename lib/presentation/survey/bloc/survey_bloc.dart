@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:formify/domain/models/model_q.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:meta/meta.dart';
 
@@ -18,20 +19,15 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
         event.questionModel.order = surveyModel.questions.length + 2;
         surveyModel.questions.add(event.questionModel);
         emit(ViewSurveyState(surveyModel));
-      } else if (event is CreateQuesNameSurveyEvent) {
-        surveyModel.questions.add(
-          QuestionModel(
-            title: event.questionName,
-            order: surveyModel.questions.length + 2,
-            isRequired: true,
-            answers: [],
-          ),
-        );
-        emit(ViewSurveyState(surveyModel));
-      } else if (event is CreateQuesNameSurveyEvent) {
+      }  else if (event is CreateQuesNameSurveyEvent) {
         surveyModel.questions.last.title=event.questionName;
         emit(ViewSurveyState(surveyModel));
-      } else if (event is CreateEmptyAnswerSurveyEvent) {
+      }
+      else if (event is CreateQuesIsRequiredSurveyEvent) {
+        surveyModel.questions.last.isRequired=event.isRequired;
+        emit(ViewSurveyState(surveyModel));
+      }
+      else if (event is CreateEmptyAnswerSurveyEvent) {
         surveyModel.questions.last.answers.add("");
         emit(ViewSurveyState(surveyModel));
       }else if (event is CreateEmptyQuesNameSurveyEvent) {
@@ -41,6 +37,7 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
             order: surveyModel.questions.length + 2,
             isRequired: true,
             answers: [],
+            type: event.type
           ),
         );
         emit(ViewSurveyState(surveyModel));

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:formify/domain/models/models.dart';
+import 'package:formify/presentation/question/page/view_Question.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
@@ -141,7 +142,6 @@ class _ViewSurveyState extends State<ViewSurvey> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // العنوان + رقم السؤال في دائرة
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -171,28 +171,10 @@ class _ViewSurveyState extends State<ViewSurvey> {
                               ),
                             ],
                           ),
-
+                          QuestionPreviewBuilder(question: q),
                           const SizedBox(height: 10),
 
-                          // حقل الإجابة باستخدام FormBuilderTextField
-                          FormBuilderTextField(
-                            name: "q_${index + 1}",
-                            decoration: InputDecoration(
-                              hintText: "Answer...",
-                              isDense: true,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 10,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            // إن أردت جعلها Required أضف Validator هنا
-                            validator: FormBuilderValidators.required(
-                              errorText: "This question is required",
-                            ),
-                          ),
+
                         ],
                       ),
                     );

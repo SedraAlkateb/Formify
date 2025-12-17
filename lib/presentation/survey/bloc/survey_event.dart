@@ -31,7 +31,7 @@ class CreateQuesNameSurveyEvent extends SurveyEvent {
   List<Object?> get props => [questionName];
 }
 class CreateEmptyQuesNameSurveyEvent extends SurveyEvent {
-final String type;
+final QuestionType type;
   CreateEmptyQuesNameSurveyEvent(this.type);
 
   @override
@@ -64,4 +64,12 @@ class CreateAnswerSurveyEvent extends SurveyEvent {
 
   @override
   List<Object?> get props => [index,value];
+}
+class CreateQuesIsRequiredSurveyEvent extends SurveyEvent {
+  final bool isRequired;
+
+  CreateQuesIsRequiredSurveyEvent(this.isRequired);
+
+  @override
+  List<Object?> get props => [isRequired];
 }
