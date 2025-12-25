@@ -47,7 +47,7 @@ class CustomGridPage extends StatelessWidget {
             child: AnimatedGridItem(
               text: "create conference dynamic",
               onTap: () {
-                print("Big clicked");
+                Navigator.pushNamed(context, Routes.createConference);
               },
               image: HomeImageAssets.conference,
               type: "conference",

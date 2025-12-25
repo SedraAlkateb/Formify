@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:formify/presentation/home/pages/home_page.dart';
 import 'package:formify/presentation/unit/text_animation.dart';
 import 'package:lottie/lottie.dart';
 
@@ -23,12 +24,50 @@ class buildPageLottie extends StatelessWidget {
           SizedBox(height: 40,),
           Align(
           alignment: Alignment.topRight,
-          child: Text(
-            "Skip",
-            style: TextStyle(
-              fontSize: 20,
-              color: Colors.black,
-              fontWeight: FontWeight.w400,
+          child: InkWell(
+            onTap: (){
+              Navigator.pushReplacement(
+                context,
+                PageRouteBuilder(
+                  transitionDuration: Duration(milliseconds: 400),
+                  pageBuilder:
+                      (context, animation, secondaryAnimation) {
+                    return HomePage();
+                  }, // غيريها حسب الصفحة المطلوبة
+                  transitionsBuilder:
+                      (
+                      context,
+                      animation,
+                      secondaryAnimation,
+                      child,
+                      ) {
+                    const begin = Offset(
+                      1.0,
+                      0.0,
+                    ); // من اليمين لليسار
+                    const end = Offset.zero;
+                    const curve = Curves.easeInOut;
+
+                    final tween = Tween(
+                      begin: begin,
+                      end: end,
+                    ).chain(CurveTween(curve: curve));
+
+                    return SlideTransition(
+                      position: animation.drive(tween),
+                      child: child,
+                    );
+                  },
+                ),
+              );
+            },
+            child: Text(
+              "Skip",
+              style: TextStyle(
+                fontSize: 20,
+                color: Colors.black,
+                fontWeight: FontWeight.w400,
+              ),
             ),
           ),
         ),

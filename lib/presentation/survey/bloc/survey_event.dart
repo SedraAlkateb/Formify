@@ -3,7 +3,6 @@ part of 'survey_bloc.dart';
 @immutable
 sealed class SurveyEvent extends Equatable {}
 
-/// تغيير اللون الأساسي للتطبيق
 class CreateSurveyEvent extends SurveyEvent {
   final String color;
   final String title;
@@ -12,16 +11,18 @@ class CreateSurveyEvent extends SurveyEvent {
   CreateSurveyEvent(this.color, this.title, this.description);
 
   @override
-  List<Object?> get props => [color,title,description];
+  List<Object?> get props => [color, title, description];
 }
-class CreateQuesSurveyEvent extends SurveyEvent {
-final QuestionModel questionModel;
 
-CreateQuesSurveyEvent(this.questionModel);
+class CreateQuesSurveyEvent extends SurveyEvent {
+  final QuestionModel questionModel;
+
+  CreateQuesSurveyEvent(this.questionModel);
 
   @override
   List<Object?> get props => [questionModel];
 }
+
 class CreateQuesNameSurveyEvent extends SurveyEvent {
   final String questionName;
 
@@ -30,13 +31,15 @@ class CreateQuesNameSurveyEvent extends SurveyEvent {
   @override
   List<Object?> get props => [questionName];
 }
+
 class CreateEmptyQuesNameSurveyEvent extends SurveyEvent {
-final QuestionType type;
+  final QuestionType type;
   CreateEmptyQuesNameSurveyEvent(this.type);
 
   @override
   List<Object?> get props => [type];
 }
+
 class CreateEmptyAnswerSurveyEvent extends SurveyEvent {
   CreateEmptyAnswerSurveyEvent();
 
@@ -50,6 +53,7 @@ class RemoveLastAnswerEvent extends SurveyEvent {
   @override
   List<Object?> get props => [];
 }
+
 class RemoveAnswerAtEvent extends SurveyEvent {
   final int index;
   RemoveAnswerAtEvent(this.index);
@@ -57,14 +61,16 @@ class RemoveAnswerAtEvent extends SurveyEvent {
   @override
   List<Object?> get props => [index];
 }
+
 class CreateAnswerSurveyEvent extends SurveyEvent {
- final int index;
- final String value;
-  CreateAnswerSurveyEvent(this.index,this.value);
+  final int index;
+  final String value;
+  CreateAnswerSurveyEvent(this.index, this.value);
 
   @override
-  List<Object?> get props => [index,value];
+  List<Object?> get props => [index, value];
 }
+
 class CreateQuesIsRequiredSurveyEvent extends SurveyEvent {
   final bool isRequired;
 
@@ -72,4 +78,18 @@ class CreateQuesIsRequiredSurveyEvent extends SurveyEvent {
 
   @override
   List<Object?> get props => [isRequired];
+}
+class CreateSurveyWithQuestionEvent extends SurveyEvent {
+
+  CreateSurveyWithQuestionEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+class CreateBoolAnswerSurveyEvent extends SurveyEvent {
+
+  CreateBoolAnswerSurveyEvent();
+
+  @override
+  List<Object?> get props => [];
 }

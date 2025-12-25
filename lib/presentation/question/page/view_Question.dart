@@ -3,18 +3,26 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/models/model_q.dart';
-
+import 'package:form_builder_extra_fields/form_builder_extra_fields.dart';
 class QuestionPreviewBuilder extends StatelessWidget {
   final QuestionModel question;
 
   const QuestionPreviewBuilder({super.key, required this.question});
 
-  @override
+  double _toDouble(String? v, {double fallback = 0}) {
+    if (v == null) return fallback;
+    return double.tryParse(v) ?? fallback;
+  }
+
+  int _toInt(String? v, {int fallback = 0}) {
+    if (v == null) return fallback;
+    return int.tryParse(v) ?? fallback;
+  }
+
   @override
   Widget build(BuildContext context) {
     switch (question.type) {
-
-    /// ================= TEXT =================
+      /// ================= TEXT =================
       case QuestionType.text:
         return FormBuilderTextField(
           name: "q_${question.order}",
@@ -24,12 +32,83 @@ class QuestionPreviewBuilder extends StatelessWidget {
           ),
           validator: question.isRequired == true
               ? FormBuilderValidators.required(
-            errorText: "This question is required",
-          )
+                  errorText: "This question is required",
+                )
               : null,
         );
 
-    /// ================= DROPDOWN =================
+      /// ================= EMAIL =================
+      case QuestionType.email:
+        return FormBuilderTextField(
+          name: "q_${question.order}",
+          keyboardType: TextInputType.emailAddress,
+          decoration: InputDecoration(
+            hintText: "example@mail.com",
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+          validator: FormBuilderValidators.compose([
+            if (question.isRequired == true)
+              FormBuilderValidators.required(
+                errorText: "This question is required",
+              ),
+            FormBuilderValidators.email(errorText: "Invalid email"),
+          ]),
+        );
+
+      /// ================= PASSWORD =================
+      case QuestionType.password:
+        return FormBuilderTextField(
+          name: "q_${question.order}",
+          obscureText: true,
+          decoration: InputDecoration(
+            hintText: "Password",
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+          validator: question.isRequired == true
+              ? FormBuilderValidators.required(
+                  errorText: "This question is required",
+                )
+              : null,
+        );
+
+      /// ================= PHONE =================
+      case QuestionType.phone:
+        return FormBuilderTextField(
+          name: "q_${question.order}",
+          keyboardType: TextInputType.phone,
+          decoration: InputDecoration(
+            hintText: "Phone number",
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+          validator: FormBuilderValidators.compose([
+            if (question.isRequired == true)
+              FormBuilderValidators.required(
+                errorText: "This question is required",
+              ),
+            FormBuilderValidators.numeric(errorText: "Numbers only"),
+            FormBuilderValidators.minLength(7, errorText: "Too short"),
+          ]),
+        );
+
+      /// ================= NUMBER =================
+      case QuestionType.number:
+        return FormBuilderTextField(
+          name: "q_${question.order}",
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            hintText: "0",
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+          validator: FormBuilderValidators.compose([
+            if (question.isRequired == true)
+              FormBuilderValidators.required(
+                errorText: "This question is required",
+              ),
+            FormBuilderValidators.numeric(errorText: "Invalid number"),
+          ]),
+        );
+
+      /// ================= DROPDOWN =================
       case QuestionType.dropdown:
         return FormBuilderDropdown<String>(
           name: "q_${question.order}",
@@ -40,9 +119,32 @@ class QuestionPreviewBuilder extends StatelessWidget {
           items: question.answers
               .map((a) => DropdownMenuItem(value: a, child: Text(a)))
               .toList(),
+          validator: question.isRequired == true
+              ? FormBuilderValidators.required(
+                  errorText: "This question is required",
+                )
+              : null,
         );
 
-    /// ================= MULTIPLE CHOICE (RADIO) =================
+      case QuestionType.searchableList:
+        return FormBuilderDropdown<String>(
+          name: "q_${question.order}",
+          decoration: InputDecoration(
+            hintText: "Search & select",
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+          items: question.answers
+              .map((a) => DropdownMenuItem(value: a, child: Text(a)))
+              .toList(),
+          isExpanded: true,
+          validator: question.isRequired == true
+              ? FormBuilderValidators.required(
+                  errorText: "This question is required",
+                )
+              : null,
+        );
+
+      /// ================= MULTIPLE CHOICE (RADIO) =================
       case QuestionType.multipleChoice:
         return FormBuilderRadioGroup<String>(
           name: "q_${question.order}",
@@ -54,7 +156,7 @@ class QuestionPreviewBuilder extends StatelessWidget {
               : null,
         );
 
-    /// ================= CHECKBOX =================
+      /// ================= CHECKBOX =================
       case QuestionType.checkbox:
         return FormBuilderCheckboxGroup<String>(
           name: "q_${question.order}",
@@ -62,115 +164,293 @@ class QuestionPreviewBuilder extends StatelessWidget {
               .map((a) => FormBuilderFieldOption(value: a))
               .toList(),
           validator: question.isRequired == true
-              ? FormBuilderValidators.minLength(1,
-              errorText: "Select at least one option")
+              ? FormBuilderValidators.minLength(
+                  1,
+                  errorText: "Select at least one option",
+                )
               : null,
         );
 
-    /// ================= SWITCH =================
+      /// ================= CHIPS =================
+      /// - اختيار واحد افتراضيًا
+      /// - إذا تريد متعدد: حط question.allowMultiple=true عندك أو اعتمد على نوع آخر
+      case QuestionType.chips:
+        return FormBuilderChoiceChips<String>(
+          name: "q_${question.order}",
+          spacing: 8,
+          runSpacing: 8,
+          //      multiple: true,
+          options: question.answers
+              .map(
+                (a) => FormBuilderChipOption<String>(value: a, child: Text(a)),
+              )
+              .toList(),
+          validator: question.isRequired == true
+              ? (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Select at least one option";
+                  }
+                  return null;
+                }
+              : null,
+        );
+
+      /// ================= AUTOCOMPLETE =================
+      /// (يعتمد على form_builder_extra_fields غالبًا)
+      /// هنا نسخة Preview بسيطة بـ TypeAheadField غير متاحة ضمن form_builder الأساسي،
+      /// لذلك نستخدم TextField + قائمة اقتراحات بسيطة عبر Autocomplete (Flutter).
+      case QuestionType.autocomplete:
+        return FormBuilderField<String>(
+          name: "q_${question.order}",
+          validator: question.isRequired == true
+              ? FormBuilderValidators.required(
+                  errorText: "This question is required",
+                )
+              : null,
+          builder: (field) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Autocomplete<String>(
+                  optionsBuilder: (textEditingValue) {
+                    final q = textEditingValue.text.trim().toLowerCase();
+                    if (q.isEmpty) return const Iterable<String>.empty();
+                    return question.answers.where(
+                      (a) => a.toLowerCase().contains(q),
+                    );
+                  },
+                  onSelected: (val) => field.didChange(val),
+                  fieldViewBuilder: (context, controller, focusNode, onSubmit) {
+                    controller.text = field.value ?? controller.text;
+                    return TextField(
+                      controller: controller,
+                      focusNode: focusNode,
+                      decoration: InputDecoration(
+                        hintText: "Start typing...",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        errorText: field.errorText,
+                      ),
+                      onChanged: field.didChange,
+                    );
+                  },
+                ),
+              ],
+            );
+          },
+        );
+
+      /// ================= SWITCH =================
       case QuestionType.switchField:
         return FormBuilderSwitch(
           name: "q_${question.order}",
-          title: Text(question.title ?? "Enable"),
-          initialValue: false,
+          title: Text(question.title ),
+          initialValue:
+              (question.answers.isNotEmpty && question.answers[0] == "1"),
+          validator: (value) {
+            if (question.isRequired == true && value != true) {
+              return "This question is required";
+            }
+            return null;
+          },
         );
 
-    /// ================= DATE & TIME =================
-      case QuestionType.dateTime:
+      /// ================= DATE =================
+      case QuestionType.date:
         return FormBuilderDateTimePicker(
           name: "q_${question.order}",
-          decoration: const InputDecoration(labelText: "Select date"),
-          inputType: InputType.both,
+          inputType: InputType.date,
+          decoration: InputDecoration(
+            labelText: "Select date",
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          ),
           validator: question.isRequired == true
               ? FormBuilderValidators.required()
               : null,
         );
 
-    /// ================= SLIDER =================
+      /// ================= TIME =================
+      case QuestionType.time:
+        return FormBuilderDateTimePicker(
+          name: "q_${question.order}",
+          inputType: InputType.time,
+          decoration: InputDecoration(
+            labelText: "Select time",
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+          validator: question.isRequired == true
+              ? FormBuilderValidators.required()
+              : null,
+        );
+
+      /// ================= DATE & TIME =================
+      case QuestionType.dateTime:
+        return FormBuilderDateTimePicker(
+          name: "q_${question.order}",
+          inputType: InputType.both,
+          decoration: InputDecoration(
+            labelText: "Select date & time",
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+          validator: question.isRequired == true
+              ? FormBuilderValidators.required()
+              : null,
+        );
+
+      /// ================= SLIDER =================
+      /// answers: [min, max, initial?, divisions?]
       case QuestionType.slider:
-        return
-          SizedBox();
+        final min = _toDouble(
+          question.answers.isNotEmpty ? question.answers[0] : null,
+          fallback: 0,
+        );
+        final max = _toDouble(
+          question.answers.length > 1 ? question.answers[1] : null,
+          fallback: 100,
+        );
+        final initial = _toDouble(
+          question.answers.length > 2 ? question.answers[2] : null,
+          fallback: min,
+        );
+        final divisions = _toInt(
+          question.answers.length > 3 ? question.answers[3] : null,
+          fallback: 0,
+        );
 
-        //   FormBuilderSlider(
-        //   name: "q_${question.order}",
-        //   min: double.parse(question.answers[0]),
-        //   max: double.parse(question.answers[0]) ?? 100,
-        //   divisions: question.step != null
-        //       ? ((question.max! - question.min!) ~/ question.step!)
-        //       : null,
-        //   initialValue: question.min ?? 0,
-        // );
+        return FormBuilderSlider(
+          name: "q_${question.order}",
+          min: min,
+          max: max,
+          initialValue: initial.clamp(min, max),
+          divisions: divisions > 0 ? divisions : null,
+          validator: question.isRequired == true
+              ? FormBuilderValidators.required(
+                  errorText: "This question is required",
+                )
+              : null,
+        );
 
-    /// ================= RANGE SLIDER =================
+      /// ================= RANGE SLIDER =================
+      /// answers: [min, max, start?, end?]
       case QuestionType.rangeSlider:
+        final min = _toDouble(
+          question.answers.isNotEmpty ? question.answers[0] : null,
+          fallback: 0,
+        );
+        final max = _toDouble(
+          question.answers.length > 1 ? question.answers[1] : null,
+          fallback: 100,
+        );
+        final start = _toDouble(
+          question.answers.length > 2 ? question.answers[2] : null,
+          fallback: min,
+        );
+        final end = _toDouble(
+          question.answers.length > 3 ? question.answers[3] : null,
+          fallback: max,
+        );
+
         return FormBuilderRangeSlider(
           name: "q_${question.order}",
-          min: double.parse(question.answers[0]),
-          max: double.parse(question.answers[1]),
-          initialValue: RangeValues(
-            double.parse(question.answers[0]),
-            double.parse(question.answers[1]),
+          min: min,
+          max: max,
+          initialValue: RangeValues(start.clamp(min, max), end.clamp(min, max)),
+          validator: question.isRequired == true
+              ? (value) {
+                  if (value == null) return "This question is required";
+                  return null;
+                }
+              : null,
+        );
+
+      case QuestionType.rating:
+        return FormBuilderRatingBar(
+          name: "q_${question.order}",
+          initialValue: 0,
+          maxRating: _toDouble(
+            question.answers.isNotEmpty ? question.answers[0] : null,
+            fallback: 5,
+          ),
+          allowHalfRating: true,
+          validator: question.isRequired == true
+              ? (value) {
+                  if (value == null || value == 0) {
+                    return "This question is required";
+                  }
+                  return null;
+                }
+              : null,
+        );
+
+      /// ================= STEPPER NUMBER =================
+      /// answers: [min, max, step, initial?]
+      case QuestionType.stepperNumber:
+        final min = _toDouble(
+          question.answers.isNotEmpty ? question.answers[0] : null,
+          fallback: 0,
+        );
+        final max = _toDouble(
+          question.answers.length > 1 ? question.answers[1] : null,
+          fallback: 100,
+        );
+        final step = _toDouble(
+          question.answers.length > 2 ? question.answers[2] : null,
+          fallback: 1,
+        );
+        final initial = _toDouble(
+          question.answers.length > 3 ? question.answers[3] : null,
+          fallback: min,
+        );
+
+        return FormBuilderTouchSpin(
+          name: "q_${question.order}",
+          min: min,
+          max: max,
+          step: step,
+          initialValue: initial.clamp(min, max),
+          validator: question.isRequired == true
+              ? FormBuilderValidators.required()
+              : null,
+        );
+
+      /// ================= SECTION HEADER =================
+      case QuestionType.sectionHeader:
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          child: Text(
+            (question.title.isNotEmpty) ? question.title : "Section",
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
           ),
         );
 
-    /// ================= FILE UPLOAD =================
-      case QuestionType.fileUpload:
-       return SizedBox();
-    //FormBuilde(
-        //   name: "q_${question.order}",
-        //   decoration: const InputDecoration(labelText: "Upload file"),
-        //   maxFiles: 1,
-        // );
-
-    /// ================= SIGNATURE =================
-      case QuestionType.signature:
-        return SizedBox();
-        //
-        //   FormBuilderSignaturePad(
-        //   name: "q_${question.order}",
-        //   decoration: const InputDecoration(labelText: "Signature"),
-        //   backgroundColor: Colors.grey.shade200,
-        // );
-
-    /// ================= COLOR PICKER =================
-      case QuestionType.colorPicker:
-        return SizedBox();
-
-        //   FormBuilderColorPicker(
-        //   name: "q_${question.order}",
-        //   decoration: const InputDecoration(labelText: "Pick a color"),
-        // );
-
-    /// ================= SEARCHABLE LIST =================
-      case QuestionType.searchableList:
-        return FormBuilderDropdown<String>(
-          name: "q_${question.order}",
-          decoration: const InputDecoration(labelText: "Search & select"),
-          items: question.answers
-              .map((a) => DropdownMenuItem(value: a, child: Text(a)))
-              .toList(),
-          isExpanded: true,
+      /// ================= HTML CONTENT =================
+      /// عرض نص فقط (Preview). إذا تحتاج HTML حقيقي استخدم flutter_widget_from_html.
+      case QuestionType.htmlContent:
+        return Text(
+          (question.title.isNotEmpty ) ? question.title : "",
+          style: const TextStyle(height: 1.4),
         );
 
-    /// ================= STEPPER NUMBER =================
-      case QuestionType.stepperNumber:
-        return SizedBox();
+      /// ================= HIDDEN =================
+      /// قيمة مخفية: استخدم FormBuilderField بدون UI أو SizedBox.shrink()
+      case QuestionType.hidden:
+        return FormBuilderField<String>(
+          name: "q_${question.order}",
+          initialValue: question.answers.isNotEmpty
+              ? question.answers.first
+              : "",
+          builder: (field) => const SizedBox.shrink(),
+        );
 
-        //   FormBuilderTouchSpin(
-        //   name: "q_${question.order}",
-        //   min: question.min?.toDouble() ?? 0,
-        //   max: question.max?.toDouble() ?? 100,
-        //   step: question.step?.toDouble() ?? 1,
-        // );
-
-    /// ================= MULTI PAGE STEPPER =================
+      /// ================= MULTI PAGE STEPPER =================
       case QuestionType.multiPageStepper:
         return const Text(
           "Multi-page stepper handled at form level",
           style: TextStyle(color: Colors.grey),
         );
 
-    /// ================= GENERIC =================
+      /// ================= GENERIC =================
       case QuestionType.generic:
         return const SizedBox.shrink();
     }

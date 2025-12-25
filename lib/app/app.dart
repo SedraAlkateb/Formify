@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:formify/app/di.dart';
+import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 import 'package:formify/presentation/onboarding/bloc/onboarding_bloc.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/resources/them_manager.dart';
@@ -14,10 +15,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => instance<OnboardingBloc>()),
         BlocProvider(create: (_) => instance<ThemeBloc>()),
+        BlocProvider(create: (_) => instance<ConferenceBloc>()),
         BlocProvider(create: (_) => instance<SurveyBloc>()),
       ],
       child: DynamicColorBuilder(

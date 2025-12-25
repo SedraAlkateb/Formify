@@ -6,32 +6,6 @@ import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 class CreateQuesSurveyPage extends StatelessWidget {
   const CreateQuesSurveyPage({super.key});
 
-  // final List<Map<String, dynamic>> questionTypes = [
-  //   {
-  //     "title": "Text",
-  //     "icon": Icons.text_fields,
-  //     "navigator": Routes.textQuestion,
-  //    // "widget":textView(index)
-  //   },
-  //   {
-  //     "title": "Dropdown",
-  //     "icon": Icons.arrow_drop_down_circle,
-  //     "navigator": Routes.dropDownQuestion,
-  //   },
-  //   {"title": "Multiple Choice", "icon": Icons.check_circle_outline},
-  //   {"title": "Checkbox", "icon": Icons.check_box_outlined},
-  //   {"title": "Switch", "icon": Icons.toggle_on_outlined},
-  //   {"title": "Date & Time", "icon": Icons.date_range},
-  //   {"title": "Slider", "icon": Icons.linear_scale},
-  //   {"title": "Range Slider", "icon": Icons.track_changes_rounded},
-  //   {"title": "File Upload", "icon": Icons.upload_file},
-  //   {"title": "Signature", "icon": Icons.edit_document},
-  //   {"title": "Color Picker", "icon": Icons.color_lens_outlined},
-  //   {"title": "Searchable List", "icon": Icons.search},
-  //   {"title": "Stepper Number Field", "icon": Icons.exposure_plus_1},
-  //   {"title": "Multi-Page Form (Stepper)", "icon": Icons.view_week_rounded},
-  //   {"title": "Generic Field", "icon": Icons.edit_note_rounded},
-  // ];
 
   @override
   Widget build(BuildContext context) {
