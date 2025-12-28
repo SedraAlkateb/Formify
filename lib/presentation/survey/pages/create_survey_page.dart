@@ -1,25 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/resources/theme_bloc/theme_bloc.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
+import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
-class CreateSurveyPage extends StatefulWidget {
-  const CreateSurveyPage({super.key});
-  @override
-  State<CreateSurveyPage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<CreateSurveyPage> {
-
+class CreateSurveyPage extends StatelessWidget {
+   CreateSurveyPage({super.key});
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final TextEditingController titleController = TextEditingController();
-    final TextEditingController descriptionController = TextEditingController();
+    titleController.text=BlocProvider.of<SurveyBloc>(context).surveyModel.title;
+    descriptionController.text=BlocProvider.of<SurveyBloc>(context).surveyModel.description;
 
+    final colors = Theme.of(context).colorScheme;
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
@@ -59,6 +55,7 @@ class _HomePageState extends State<CreateSurveyPage> {
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
+                        onChanged:(value) => BlocProvider.of<SurveyBloc>(context).surveyModel.title= value,
                         controller: titleController,
                         decoration: InputDecoration(
                           hintText: "entre survey title",
@@ -69,11 +66,12 @@ class _HomePageState extends State<CreateSurveyPage> {
                       ),
                       const SizedBox(height: 20),
                       const Text(
-                        "Survey Title", // 🔹 عنوان فوق الحقل
+                        "Survey Description", // 🔹 عنوان فوق الحقل
                         style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
                       TextFormField(
+                        onChanged:(value) => BlocProvider.of<SurveyBloc>(context).surveyModel.description= value,
                         controller: descriptionController,
                         maxLines: 4,
                         decoration: InputDecoration(
@@ -152,26 +150,29 @@ class _HomePageState extends State<CreateSurveyPage> {
                 ),
               ],
             ),
-            ElevatedButton(
+            BlocListener<SurveyBloc, SurveyState>(
+  listener: (context, state) {
+  if(state is CreateSurveyLoadingState){
+    loading(context);
+  }else if(state is CreateSurveyErrorState){
+    error(context,state.failure.massage,state.failure.code);
+  }else if(state is CreateSurveyState){
+    Navigator.pushReplacementNamed(
+      context,
+      Routes.createQuesSurvey,
+    );
+  }
+  },
+  child: ElevatedButton(
               onPressed: () {
                 final selectedColor = BlocProvider.of<ThemeBloc>(context).seedColor;
-
-                final Map<String, dynamic> surveyData = {
-                  "survey_title": titleController.text,
-                  "survey_description": descriptionController.text,
-                  "theme_color": "#${selectedColor.value.toRadixString(16).padLeft(8, '0')}"
-                };
-                BlocProvider.of<SurveyBloc>(context).add(CreateSurveyEvent(selectedColor.toString(), titleController.text,
+                BlocProvider.of<SurveyBloc>(context).add(CreateSurveyEvent(selectedColor.toString()
+                  , titleController.text,
                   descriptionController.text,));
-                Navigator.pushNamed(
-                  context,
-                  Routes.createQuesSurvey,
-                  arguments: surveyData,
-                );
-                Navigator.pushNamed(context, Routes.createQuesSurvey);
-                    },
+                               },
               child: const Text('Next'),
             ),
+),
 
           ],
         ),
@@ -179,7 +180,6 @@ class _HomePageState extends State<CreateSurveyPage> {
     );
   }
 }
-
 
 // 🔹 نفس الويجت السابق (مع توحيد التصميم)
 Widget buildColorOption(Color color, BuildContext context) {

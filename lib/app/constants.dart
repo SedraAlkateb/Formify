@@ -1,6 +1,6 @@
 class Constants {
-  static const baseUrl = "https://heaven-web.net/domina/AppAdmin/api";
-  static const imageUrl = "https://heaven-web.net/domina/AppAdmin/";
+  static const baseUrl = "https://dominapharm.com/domina-survey/";
+  static const imageUrl = "https://dominapharm.com/domina-survey/";
   static const String empty = "";
   static const String token = "SEND TOKEN HERE";
   static  int type = 0;

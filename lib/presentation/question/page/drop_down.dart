@@ -2,19 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:formify/domain/models/models.dart';
+import 'package:formify/presentation/question/widgets/add_answer_widget.dart';
+import 'package:formify/presentation/question/widgets/question_widget.dart';
+import 'package:formify/presentation/question/widgets/view_answer_widget.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
+import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 
-class DropDownQuestionPage extends StatefulWidget {
-  const DropDownQuestionPage({super.key});
-
-  @override
-  State<DropDownQuestionPage> createState() => _DropDownQuestionPageState();
-}
-
-class _DropDownQuestionPageState extends State<DropDownQuestionPage> {
+class DropDownQuestionPage extends StatelessWidget {
+   DropDownQuestionPage({super.key});
   final _formKey = GlobalKey<FormBuilderState>();
-  final TextEditingController _optionCtrl = TextEditingController();
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -56,69 +53,9 @@ class _DropDownQuestionPageState extends State<DropDownQuestionPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            children: [
-                              Icon(Icons.tune, color: colorScheme.primary),
-                              const SizedBox(width: 8),
-                              const Text(
-                                "Control Panel",
-                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 14),
+                          questionWidget(context),
 
-                          const Text("Question Text", style: TextStyle(fontWeight: FontWeight.w600)),
-                          const SizedBox(height: 6),
-
-                          FormBuilderTextField(
-                            name: 'question_text',
-                            decoration: InputDecoration(
-                              hintText: "Enter question...",
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            onChanged: (val) {
-                              context.read<SurveyBloc>().add(
-                                CreateQuesNameSurveyEvent(val.toString()),
-                              );
-                            },
-                            validator: (v) {
-                              if (v == null || v.trim().isEmpty) {
-                                return "Question cannot be empty";
-                              }
-                              return null;
-                            },
-                          ),
-
-                          const SizedBox(height: 14),
-
-                          Row(
-                            children: [
-                              Expanded(
-                                child: ElevatedButton.icon(
-                                  onPressed: () {
-                                    final ok = _formKey.currentState?.saveAndValidate() ?? false;
-                                    if (!ok) return;
-                                    context.read<SurveyBloc>().add(CreateEmptyAnswerSurveyEvent());
-                                  },
-                                  icon: const Icon(Icons.add),
-                                  label: const Text("Add Answer"),
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-
-                              // زر تنظيف (لازم تعمل له Event بالبلوك لو ما موجود)
-                              OutlinedButton.icon(
-                                onPressed: () {
-                                  context.read<SurveyBloc>().add(RemoveLastAnswerEvent());
-                                },
-                                icon: const Icon(Icons.clear_all),
-                                label: const Text("Clear"),
-                              ),
-                            ],
-                          ),
+                         addAnswerWidget(context)
                         ],
                       ),
                     ),
@@ -126,75 +63,7 @@ class _DropDownQuestionPageState extends State<DropDownQuestionPage> {
                     const SizedBox(height: 14),
 
                     // ================= قسم الإجابات =================
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: colorScheme.surface,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: colorScheme.outline.withOpacity(0.25)),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(Icons.list_alt, color: colorScheme.primary),
-                              const SizedBox(width: 8),
-                              const Text(
-                                "Answers",
-                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                              ),
-                            ],
-                          ),
-
-                          const SizedBox(height: 10),
-
-                          if (surveyModel.questions.isEmpty ||
-                              surveyModel.questions.last.answers.isEmpty)
-                            const Text("No answers yet. Tap 'Add Answer' to add one.")
-                          else
-                            ListView.separated(
-                              itemCount: surveyModel.questions.last.answers.length,
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              separatorBuilder: (_, __) => const SizedBox(height: 10),
-                              itemBuilder: (context, index) {
-                                // عندك answers عندك String، بس انت ما عم تستخدمه داخل TextField.
-                                // الأفضل تربطه بالعرض (initialValue) باستخدام FormBuilderTextField بدل TextField
-                                final String item = surveyModel.questions.last.answers[index];
-
-                                return Row(
-                                  children: [
-                                    Expanded(
-                                      child: FormBuilderTextField(
-                                        name: "answer_$index",
-                                        initialValue: item,
-                                        decoration: InputDecoration(
-                                          labelText: "Answer ${index + 1}",
-                                          border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(12),
-                                          ),
-                                        ),
-                                        onChanged: (val) {
-                                           context.read<SurveyBloc>().add(CreateAnswerSurveyEvent(index, val ?? ""));
-                                        },
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    IconButton(
-                                      icon: const Icon(Icons.delete_outline),
-                                      onPressed: () {
-                                        context.read<SurveyBloc>().add(RemoveAnswerAtEvent(index));
-                                      },
-                                    ),
-                                  ],
-                                );
-                              },
-                            ),
-                        ],
-                      ),
-                    ),
+                 viewAnswerWidget(context, surveyModel),
 
                     const SizedBox(height: 14),
 
@@ -268,9 +137,9 @@ class _DropDownQuestionPageState extends State<DropDownQuestionPage> {
                             );
                             return;
                           }
-
                           final values = _formKey.currentState!.value;
-                          debugPrint("Form values: $values");
+                          Navigator.pushNamed(context, Routes.viewSurvey);
+
                         },
                         child: const Text("Next"),
                       ),

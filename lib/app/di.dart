@@ -6,6 +6,12 @@ import 'package:formify/data/network/dio_factory.dart';
 import 'package:formify/data/network/network_info.dart';
 import 'package:formify/data/repository/repository.dart';
 import 'package:formify/domain/repostitory/repository.dart';
+import 'package:formify/domain/usecase/create_conference_usecase.dart';
+import 'package:formify/domain/usecase/create_survey_question_usecase.dart';
+import 'package:formify/domain/usecase/create_survey_usecase.dart';
+import 'package:formify/domain/usecase/get_all_conference_usecase.dart';
+import 'package:formify/domain/usecase/get_all_survey_usecase.dart';
+import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 import 'package:formify/presentation/onboarding/bloc/onboarding_bloc.dart';
 import 'package:formify/presentation/resources/theme_bloc/theme_bloc.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
@@ -31,7 +37,7 @@ Future<void> initAppModule() async {
   //repository
   instance.registerLazySingleton<Repository>(
       () => RepositoryImp(instance(), instance()));
-  instance.registerFactory<ThemeBloc>(
+  instance.registerLazySingleton<ThemeBloc>(
           () => ThemeBloc());
 }
 
@@ -41,9 +47,27 @@ Future<void> initOnBoardingModule() async {
 
   }
 }
+Future<void> initConferenceModule() async {
+  if (!GetIt.I.isRegistered<ConferenceBloc>()) {
+    instance.registerFactory<CreateConferenceUsecase>(() => CreateConferenceUsecase(instance()));
+    instance.registerFactory<GetAllConferenceUsecase>(() =>
+        GetAllConferenceUsecase(instance()));
+    instance.registerFactory<GetAllSurveyUsecase>(() =>
+        GetAllSurveyUsecase(instance()));
+    instance.registerFactory<ConferenceBloc>(() => ConferenceBloc(instance(),instance(),instance()));
+
+  }
+}
 Future<void> initSurveyModule() async {
+  if (!GetIt.I.isRegistered<GetAllSurveyUsecase>()) {
+    instance.registerFactory<GetAllSurveyUsecase>(() =>
+        GetAllSurveyUsecase(instance()));
+  }
   if (!GetIt.I.isRegistered<SurveyBloc>()) {
-    instance.registerFactory<SurveyBloc>(() => SurveyBloc());
+    instance.registerFactory<CreateSurveyUsecase>(() => CreateSurveyUsecase(instance()));
+    instance.registerFactory<CreateSurveyQuestionUsecase>(() => CreateSurveyQuestionUsecase(instance()));
+
+    instance.registerFactory<SurveyBloc>(() => SurveyBloc(instance(),instance(),instance()));
 
   }
 }

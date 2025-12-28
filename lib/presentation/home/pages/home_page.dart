@@ -1,24 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:formify/presentation/home/widget/conference_ended_widget.dart';
 import 'package:formify/presentation/home/widget/grid_icon.dart';
 import 'package:formify/presentation/home/widget/isMorning.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  final _formKey = GlobalKey<FormBuilderState>();
-
-  @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-
     return Scaffold(
       backgroundColor: ColorManager.background,
       body: SingleChildScrollView(
