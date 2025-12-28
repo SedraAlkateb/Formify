@@ -11,5 +11,5 @@ abstract class Repository {
  Future<Either<Failure, List<MainSurveyModel>>> getAllSurvey();
   Future<Either<Failure,int>> createConference(ConferenceModel conference);
 // Future<Either<Failure, LoginModel>> getSurveyWithQuestionById(int id);
-  Future<Either<Failure,List<GetAllConferenceModel>>> getAllConference(bool isActive);
+  Future<Either<Failure,List<GetAllConferenceModel>>> getAllConference(int isActive);
 }

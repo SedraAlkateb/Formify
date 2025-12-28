@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -10,9 +11,9 @@ import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 
-class CreateConferencePage extends StatelessWidget {
-   CreateConferencePage({super.key});
-
+class ViewConferencePage extends StatelessWidget {
+  ViewConferencePage({super.key,required this.index});
+  final int index;
   final _formKey = GlobalKey<FormBuilderState>();
 
   @override
@@ -22,7 +23,7 @@ class CreateConferencePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
-        title: const Text('Create Conference'),
+        title: const Text('View Conference'),
         backgroundColor: colors.primary,
       ),
       body: SingleChildScrollView(
@@ -60,6 +61,7 @@ class CreateConferencePage extends StatelessWidget {
                         const SizedBox(height: 8),
                         FormBuilderTextField(
                           name: 'name',
+                          initialValue:BlocProvider.of<ConferenceBloc>(context).allActiveConference[index].name,
                           decoration: InputDecoration(
                             hintText: 'enter conference name',
                             border: OutlineInputBorder(
@@ -81,6 +83,7 @@ class CreateConferencePage extends StatelessWidget {
                         FormBuilderTextField(
                           name: 'description',
                           maxLines: 4,
+                          initialValue:BlocProvider.of<ConferenceBloc>(context).allActiveConference[index].description,
                           decoration: InputDecoration(
                             hintText: 'enter conference description',
                             border: OutlineInputBorder(
@@ -101,6 +104,7 @@ class CreateConferencePage extends StatelessWidget {
                         const SizedBox(height: 8),
                         FormBuilderTextField(
                           name: 'address',
+                          initialValue:BlocProvider.of<ConferenceBloc>(context).allActiveConference[index].address,
                           decoration: InputDecoration(
                             hintText: 'enter conference address',
                             border: OutlineInputBorder(
@@ -144,6 +148,11 @@ class CreateConferencePage extends StatelessWidget {
                             Expanded(
                               child: FormBuilderDateTimePicker(
                                 name: 'start_date',
+
+                                initialValue: DateTime.parse(
+                                  BlocProvider.of<ConferenceBloc>(context)
+                                      .allActiveConference[index].startDate,
+                                ),
                                 inputType: InputType.date,
                                 decoration: InputDecoration(
                                   labelText: 'Start date',
@@ -160,6 +169,10 @@ class CreateConferencePage extends StatelessWidget {
                             Expanded(
                               child: FormBuilderDateTimePicker(
                                 name: 'end_date',
+                                initialValue:  DateTime.parse(
+                                  BlocProvider.of<ConferenceBloc>(context)
+                                      .allActiveConference[index].endDate,
+                                ),
                                 inputType: InputType.date,
                                 decoration: InputDecoration(
                                   labelText: 'End date',
@@ -187,7 +200,7 @@ class CreateConferencePage extends StatelessWidget {
                         const SizedBox(height: 12),
                         FormBuilderSwitch(
                           name: 'is_active',
-                          initialValue: true,
+                          initialValue:  BlocProvider.of<ConferenceBloc>(context).allActiveConference[index].isActive,
                           title: const Text(
                             'Is Active',
                             style: TextStyle(
@@ -211,7 +224,7 @@ class CreateConferencePage extends StatelessWidget {
                 } else if (state is CreateConferenceState) {
                   BlocProvider.of<ConferenceBloc>(context)
                       .add(GetAllSurveyEvent());
-                 Navigator.pushReplacementNamed(context, Routes.conferenceSurveyById);
+                  Navigator.pushReplacementNamed(context, Routes.conferenceSurveyById);
                 }
               },
               child: SizedBox(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:formify/app/di.dart';
 import 'package:formify/presentation/home/pages/home_page.dart';
 import 'package:formify/presentation/onboarding/bloc/onboarding_bloc.dart';
 import 'package:formify/presentation/onboarding/widget/onboarding_widget.dart';
@@ -76,6 +77,7 @@ class OnBoardingPage extends StatelessWidget {
                         : "التالي",
                     onPressed: () {
                       if (BlocProvider.of<OnboardingBloc>(context).isLastPage) {
+                      initConferenceModule();
                         Navigator.pushReplacement(
                           context,
                           PageRouteBuilder(

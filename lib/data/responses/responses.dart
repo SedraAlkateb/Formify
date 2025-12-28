@@ -249,8 +249,9 @@ class GetAllConferenceResponse {
   @JsonKey(name: "is_active")
   bool? is_active;
 
-  GetAllConferenceResponse(this.id, this.title, this.description, this.color);
-  // from json
+
+  GetAllConferenceResponse(this.id, this.name, this.description, this.address,
+      this.start_date, this.end_date, this.is_active); // from json
   factory GetAllConferenceResponse.fromJson(Map<String, dynamic> json) =>
       _$GetAllConferenceResponseFromJson(json);
   // to json

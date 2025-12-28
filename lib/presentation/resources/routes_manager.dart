@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:formify/app/di.dart';
+import 'package:formify/presentation/conference/pages/all_conference.dart';
 import 'package:formify/presentation/conference/pages/conference_survey_by_id.dart';
 import 'package:formify/presentation/conference/pages/create_conference_page.dart';
 import 'package:formify/presentation/conference/pages/ds.dart';
@@ -26,6 +27,7 @@ class Routes {
   static const String checkboxQuestion = "/checkboxQuestion";
   static const String switchQuestion = "/switchQuestion";
   static const String  conferenceSurveyById = "/ conferenceSurveyById";
+  static const String getAllConference = "/getAllConference";
 
   static const String viewSurvey = "/viewSurvey";
   static const String dropDownQuestion = "/dropDownQuestion";
@@ -39,6 +41,7 @@ class RouteGenerator {
         initOnBoardingModule();
         return MaterialPageRoute(builder: (_) => OnBoardingPage());
       case Routes.home:
+        initConferenceModule();
         return MaterialPageRoute(builder: (_) => HomePage());
       case Routes.createConference:
         initConferenceModule();
@@ -63,6 +66,9 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => CheckboxPage());
       case Routes.conferenceSurveyById:
         return MaterialPageRoute(builder: (_) => ConferenceSurveyById());
+      case Routes.getAllConference:
+        initConferenceModule();
+        return MaterialPageRoute(builder: (_) => AllConferencePage());
       case Routes.switchQuestion:
 
         return MaterialPageRoute(builder: (_) => SwitchQuestionPage());

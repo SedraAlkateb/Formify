@@ -23,7 +23,7 @@ class CustomGridPage extends StatelessWidget {
             child: AnimatedGridItem(
               text: "get all conference",
               onTap: () {
-                print("Big clicked");
+                Navigator.pushNamed(context, Routes.getAllConference);
               },
             ),
           ),

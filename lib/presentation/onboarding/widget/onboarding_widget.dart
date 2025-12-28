@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:formify/app/di.dart';
 import 'package:formify/presentation/home/pages/home_page.dart';
 import 'package:formify/presentation/unit/text_animation.dart';
 import 'package:lottie/lottie.dart';
@@ -18,62 +19,54 @@ class buildPageLottie extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24,vertical: 24),
-      child: Column(
-        children: [
-          SizedBox(height: 40,),
-          Align(
-          alignment: Alignment.topRight,
-          child: InkWell(
-            onTap: (){
-              Navigator.pushReplacement(
-                context,
-                PageRouteBuilder(
-                  transitionDuration: Duration(milliseconds: 400),
-                  pageBuilder:
-                      (context, animation, secondaryAnimation) {
-                    return HomePage();
-                  }, // غيريها حسب الصفحة المطلوبة
-                  transitionsBuilder:
-                      (
-                      context,
-                      animation,
-                      secondaryAnimation,
-                      child,
-                      ) {
-                    const begin = Offset(
-                      1.0,
-                      0.0,
-                    ); // من اليمين لليسار
-                    const end = Offset.zero;
-                    const curve = Curves.easeInOut;
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(height: 40),
+            Align(
+              alignment: Alignment.topRight,
+              child: InkWell(
+                onTap: () {
+                  initConferenceModule();
+                  Navigator.pushReplacement(
+                    context,
+                    PageRouteBuilder(
+                      transitionDuration: Duration(milliseconds: 400),
+                      pageBuilder: (context, animation, secondaryAnimation) {
+                        return HomePage();
+                      }, // غيريها حسب الصفحة المطلوبة
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                            const begin = Offset(1.0, 0.0); // من اليمين لليسار
+                            const end = Offset.zero;
+                            const curve = Curves.easeInOut;
 
-                    final tween = Tween(
-                      begin: begin,
-                      end: end,
-                    ).chain(CurveTween(curve: curve));
+                            final tween = Tween(
+                              begin: begin,
+                              end: end,
+                            ).chain(CurveTween(curve: curve));
 
-                    return SlideTransition(
-                      position: animation.drive(tween),
-                      child: child,
-                    );
-                  },
+                            return SlideTransition(
+                              position: animation.drive(tween),
+                              child: child,
+                            );
+                          },
+                    ),
+                  );
+                },
+                child: Text(
+                  "Skip",
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
-              );
-            },
-            child: Text(
-              "Skip",
-              style: TextStyle(
-                fontSize: 20,
-                color: Colors.black,
-                fontWeight: FontWeight.w400,
               ),
             ),
-          ),
-        ),
 
-          Expanded(
-            child: Column(
+            Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -82,12 +75,11 @@ class buildPageLottie extends StatelessWidget {
                   text: title,
                   fontSize: 20,
                   color: Colors.black,
-                 // fontWeight: FontWeight.w400,
+                  // fontWeight: FontWeight.w400,
                   delay: Duration(milliseconds: 200), // أول نص
                 ),
                 SizedBox(height: 10),
                 SmoothBottomText(
-
                   text: subtitle,
                   fontSize: 20,
                   color: Colors.black,
@@ -99,17 +91,14 @@ class buildPageLottie extends StatelessWidget {
                   fit: BoxFit.fill,
                   delegates: LottieDelegates(
                     values: [
-                      ValueDelegate.color(
-                         ['ADBE**',],
-                        value: Colors.black,
-                      ),
+                      ValueDelegate.color(['ADBE**'], value: Colors.black),
                     ],
                   ),
                 ),
               ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

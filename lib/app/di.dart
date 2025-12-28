@@ -9,6 +9,7 @@ import 'package:formify/domain/repostitory/repository.dart';
 import 'package:formify/domain/usecase/create_conference_usecase.dart';
 import 'package:formify/domain/usecase/create_survey_question_usecase.dart';
 import 'package:formify/domain/usecase/create_survey_usecase.dart';
+import 'package:formify/domain/usecase/get_all_conference_usecase.dart';
 import 'package:formify/domain/usecase/get_all_survey_usecase.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 import 'package:formify/presentation/onboarding/bloc/onboarding_bloc.dart';
@@ -47,14 +48,13 @@ Future<void> initOnBoardingModule() async {
   }
 }
 Future<void> initConferenceModule() async {
-  if (!GetIt.I.isRegistered<GetAllSurveyUsecase>()) {
+  if (!GetIt.I.isRegistered<ConferenceBloc>()) {
+    instance.registerFactory<CreateConferenceUsecase>(() => CreateConferenceUsecase(instance()));
+    instance.registerFactory<GetAllConferenceUsecase>(() =>
+        GetAllConferenceUsecase(instance()));
     instance.registerFactory<GetAllSurveyUsecase>(() =>
         GetAllSurveyUsecase(instance()));
-  }
-  if (!GetIt.I.isRegistered<CreateConferenceUsecase>()) {
-    instance.registerFactory<CreateConferenceUsecase>(() => CreateConferenceUsecase(instance()));
-
-    instance.registerFactory<ConferenceBloc>(() => ConferenceBloc(instance(),instance()));
+    instance.registerFactory<ConferenceBloc>(() => ConferenceBloc(instance(),instance(),instance()));
 
   }
 }

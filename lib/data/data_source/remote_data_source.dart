@@ -18,7 +18,7 @@ abstract class RemoteDataSource {
   Future<CreateConferenceBaseResponse> createConference(
     ConferenceModel conference,
   );
-  Future<GetAllConferenceBaseResponse> getAllConference(bool isActive,);
+  Future<GetAllConferenceBaseResponse> getAllConference(int isActive,);
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -62,7 +62,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<GetAllConferenceBaseResponse> getAllConference(bool isActive)async {
+  Future<GetAllConferenceBaseResponse> getAllConference(int isActive)async {
     return await _appServiceClient.getAllConference(isActive);
   }
 }

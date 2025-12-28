@@ -32,6 +32,14 @@ abstract class AppServiceClient {
       );
   @POST("conference-crud/get_all_conference.php")
   Future<GetAllConferenceBaseResponse> getAllConference(
-      @Part(name: "is_active") bool isActive,
+      @Part(name: "is_active") int isActive,
+      );
+  @POST("conference-crud/get_conference_by_id.php")
+  Future<GetAllConferenceBaseResponse> getConferenceById(
+      @Part(name: "id") int id,
+      );
+  @POST("conference-crud/delete_conference.php")
+  Future<Message1Response> deleteConference(
+      @Part(name: "id") int id,
       );
 }

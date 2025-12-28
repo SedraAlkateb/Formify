@@ -120,7 +120,7 @@ class RepositoryImp implements Repository {
   }
 
   @override
-  Future<Either<Failure, List<GetAllConferenceModel>>> getAllConference(bool isActive)
+  Future<Either<Failure, List<GetAllConferenceModel>>> getAllConference(int isActive)
   async {
     try {
       if (await _networkInfo.isConnected) {

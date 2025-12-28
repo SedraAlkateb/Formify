@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 
 class ConferenceEndedWidget extends StatelessWidget {
@@ -35,7 +37,7 @@ class ConferenceEndedWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "عصبية و امراض ${index + 1}",
+                  " ${BlocProvider.of<ConferenceBloc>(context).allNotActiveConference[index].name} ${index + 1}",
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -44,14 +46,14 @@ class ConferenceEndedWidget extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  "Started at: 12-11-2025",
+                  "Started at: ${BlocProvider.of<ConferenceBloc>(context).allNotActiveConference[index].startDate}",
                   style: TextStyle(
                     fontSize: 13,
                     color: Colors.grey.shade700,
                   ),
                 ),
                 Text(
-                  "Ended at: 12-11-2025",
+                  "Ended at:  ${BlocProvider.of<ConferenceBloc>(context).allNotActiveConference[index].endDate}",
                   style: TextStyle(
                     fontSize: 13,
                     color: Colors.grey.shade700,
