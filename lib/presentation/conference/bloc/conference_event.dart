@@ -1,7 +1,8 @@
 part of 'conference_bloc.dart';
 
 @immutable
-sealed class ConferenceEvent extends Equatable{}
+sealed class ConferenceEvent extends Equatable {}
+
 class CreateConferenceEvent extends ConferenceEvent {
   final ConferenceModel payload;
   CreateConferenceEvent(this.payload);
@@ -9,26 +10,46 @@ class CreateConferenceEvent extends ConferenceEvent {
   @override
   List<Object?> get props => [payload];
 }
+
 class GetAllSurveyEvent extends ConferenceEvent {
-
   @override
   List<Object?> get props => [];
 }
+
 class LinkSurveyConferenceEvent extends ConferenceEvent {
-final int surveyId;
-final int index;
-LinkSurveyConferenceEvent(this.surveyId,this.index);
+  final int surveyId;
+  final int index;
+  final List<IsActiveMainSurveyModel> surveys;
+  LinkSurveyConferenceEvent(this.surveyId, this.index, this.surveys);
   @override
-  List<Object?> get props => [surveyId];
+  List<Object?> get props => [surveyId, surveys];
 }
-class GetAllActiveConferenceEvent extends ConferenceEvent {
 
-GetAllActiveConferenceEvent();
+class GetAllActiveConferenceEvent extends ConferenceEvent {
+  GetAllActiveConferenceEvent();
   @override
   List<Object?> get props => [];
 }
+
+class GetConferenceByIdEvent extends ConferenceEvent {
+  final GetAllConferenceModel conferenceModel;
+
+  GetConferenceByIdEvent(this.conferenceModel);
+
+  @override
+  List<Object?> get props => [conferenceModel];
+}
+
 class GetAllNotActiveConferenceEvent extends ConferenceEvent {
   GetAllNotActiveConferenceEvent();
   @override
   List<Object?> get props => [];
+}
+
+class DeleteConferenceEvent extends ConferenceEvent {
+  final int id;
+  final int index;
+  DeleteConferenceEvent(this.id, this.index);
+  @override
+  List<Object?> get props => [id];
 }

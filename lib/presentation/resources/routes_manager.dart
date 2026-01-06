@@ -3,7 +3,7 @@ import 'package:formify/app/di.dart';
 import 'package:formify/presentation/conference/pages/all_conference.dart';
 import 'package:formify/presentation/conference/pages/conference_survey_by_id.dart';
 import 'package:formify/presentation/conference/pages/create_conference_page.dart';
-import 'package:formify/presentation/conference/pages/ds.dart';
+import 'package:formify/presentation/conference/pages/view_conference_page.dart';
 import 'package:formify/presentation/home/pages/home_page.dart';
 import 'package:formify/presentation/onboarding/pages/onboarding_page.dart';
 import 'package:formify/presentation/question/page/checkbox.dart';
@@ -28,6 +28,7 @@ class Routes {
   static const String switchQuestion = "/switchQuestion";
   static const String  conferenceSurveyById = "/ conferenceSurveyById";
   static const String getAllConference = "/getAllConference";
+  static const String viewConference = "/viewConference";
 
   static const String viewSurvey = "/viewSurvey";
   static const String dropDownQuestion = "/dropDownQuestion";
@@ -53,6 +54,8 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => CreateQuesSurveyPage());
       case Routes.viewSurvey:
         return MaterialPageRoute(builder: (_) => ViewSurvey());
+      case Routes.viewConference:
+        return MaterialPageRoute(builder: (_) => ViewConferencePage());
 
       case Routes.dropDownQuestion:
         // final args = settings.arguments as Map<String, dynamic>;

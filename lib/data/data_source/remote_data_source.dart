@@ -22,6 +22,8 @@ abstract class RemoteDataSource {
   Future<Message1Response> linkSurveyConference(
     SurveyConference surveyConference,
   );
+  Future<Message1Response> deleteConference(int id);
+  Future<GetConferenceByIdBaseResponse> getConferenceById(int id);
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -78,5 +80,15 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       surveyConference.conference_id,
       surveyConference.survey_order,
     );
+  }
+
+  @override
+  Future<Message1Response> deleteConference(int id) async {
+    return await _appServiceClient.deleteConference(id);
+  }
+
+  @override
+  Future<GetConferenceByIdBaseResponse> getConferenceById(int id)  async {
+    return await _appServiceClient.getConferenceById(id);
   }
 }

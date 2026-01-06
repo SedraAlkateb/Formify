@@ -9,6 +9,7 @@ import 'package:formify/domain/repostitory/repository.dart';
 import 'package:formify/domain/usecase/create_conference_usecase.dart';
 import 'package:formify/domain/usecase/create_survey_question_usecase.dart';
 import 'package:formify/domain/usecase/create_survey_usecase.dart';
+import 'package:formify/domain/usecase/delete_conference_usecase.dart';
 import 'package:formify/domain/usecase/get_all_conference_usecase.dart';
 import 'package:formify/domain/usecase/get_all_survey_usecase.dart';
 import 'package:formify/domain/usecase/link_survey_conference_usecase.dart';
@@ -55,9 +56,11 @@ Future<void> initConferenceModule() async {
         GetAllConferenceUsecase(instance()));
     instance.registerFactory<LinkSurveyConferenceUsecase>(() =>
         LinkSurveyConferenceUsecase(instance()));
+    instance.registerFactory<DeleteConferenceUsecase>(() =>
+        DeleteConferenceUsecase(instance()));
     instance.registerFactory<GetAllSurveyUsecase>(() =>
         GetAllSurveyUsecase(instance()));
-    instance.registerFactory<ConferenceBloc>(() => ConferenceBloc(instance(),instance(),instance(),instance()));
+    instance.registerFactory<ConferenceBloc>(() => ConferenceBloc(instance(),instance(),instance(),instance(),instance()));
   }
 }
 Future<void> initSurveyModule() async {

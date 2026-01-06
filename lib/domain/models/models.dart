@@ -118,6 +118,16 @@ class MainSurveyModel {
   MainSurveyModel(this.id, this.title, this.description, this.color);
 
 }
+class IsActiveMainSurveyModel {
+  int id;
+  String title;
+  String description;
+  String color;
+  bool isActive;
+  IsActiveMainSurveyModel(this.id, this.title, this.description, this.color,this.isActive);
+
+}
+
 class ConferenceModel {
   String name;
   String description;

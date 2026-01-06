@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/domain/models/models.dart';
+import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
+import 'package:formify/presentation/resources/routes_manager.dart';
 
 class ConferenceEndedWidget extends StatelessWidget {
   const ConferenceEndedWidget({super.key,required this.index,required this.allConference});
@@ -63,10 +66,11 @@ class ConferenceEndedWidget extends StatelessWidget {
             ),
           ),
 
-          Icon(
-            Icons.arrow_forward_ios,
-            size: 18,
-            color: ColorManager.secondary,
+          IconButton(
+            onPressed: () => BlocProvider.of<ConferenceBloc>(context).add(DeleteConferenceEvent(allConference[index].id, index)),
+       icon: Icon(Icons.delete,
+         color: ColorManager.secondary,),
+
           ),
         ],
       ),

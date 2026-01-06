@@ -274,3 +274,20 @@ Map<String, dynamic> _$GetAllConferenceBaseResponseToJson(
   'message': instance.message,
   'data': instance.data,
 };
+
+GetConferenceByIdBaseResponse _$GetConferenceByIdBaseResponseFromJson(
+  Map<String, dynamic> json,
+) =>
+    GetConferenceByIdBaseResponse(
+        GetAllConferenceResponse.fromJson(json['data'] as Map<String, dynamic>),
+      )
+      ..status = json['status'] as String?
+      ..message = json['message'] as String?;
+
+Map<String, dynamic> _$GetConferenceByIdBaseResponseToJson(
+  GetConferenceByIdBaseResponse instance,
+) => <String, dynamic>{
+  'status': instance.status,
+  'message': instance.message,
+  'data': instance.data,
+};

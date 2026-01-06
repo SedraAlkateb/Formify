@@ -201,13 +201,13 @@ class _AppServiceClient implements AppServiceClient {
   }
 
   @override
-  Future<GetAllConferenceBaseResponse> getConferenceById(int id) async {
+  Future<GetConferenceByIdBaseResponse> getConferenceById(int id) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = FormData();
     _data.fields.add(MapEntry('id', id.toString()));
-    final _options = _setStreamType<GetAllConferenceBaseResponse>(
+    final _options = _setStreamType<GetConferenceByIdBaseResponse>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
@@ -218,9 +218,9 @@ class _AppServiceClient implements AppServiceClient {
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late GetAllConferenceBaseResponse _value;
+    late GetConferenceByIdBaseResponse _value;
     try {
-      _value = GetAllConferenceBaseResponse.fromJson(_result.data!);
+      _value = GetConferenceByIdBaseResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
