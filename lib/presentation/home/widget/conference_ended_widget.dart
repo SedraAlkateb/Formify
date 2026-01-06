@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
+import 'package:formify/presentation/resources/routes_manager.dart';
 
 class ConferenceEndedWidget extends StatelessWidget {
-  const ConferenceEndedWidget({super.key,required this.index});
+  const ConferenceEndedWidget({super.key,required this.index,required this.allConference});
   final int index;
+  final List<GetAllConferenceModel> allConference;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -37,7 +40,7 @@ class ConferenceEndedWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  " ${BlocProvider.of<ConferenceBloc>(context).allNotActiveConference[index].name} ${index + 1}",
+                  " ${allConference[index].name} ${index + 1}",
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -46,14 +49,14 @@ class ConferenceEndedWidget extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  "Started at: ${BlocProvider.of<ConferenceBloc>(context).allNotActiveConference[index].startDate}",
+                  "Started at: ${allConference[index].startDate}",
                   style: TextStyle(
                     fontSize: 13,
                     color: Colors.grey.shade700,
                   ),
                 ),
                 Text(
-                  "Ended at:  ${BlocProvider.of<ConferenceBloc>(context).allNotActiveConference[index].endDate}",
+                  "Ended at:  ${allConference[index].endDate}",
                   style: TextStyle(
                     fontSize: 13,
                     color: Colors.grey.shade700,
@@ -63,10 +66,11 @@ class ConferenceEndedWidget extends StatelessWidget {
             ),
           ),
 
-          Icon(
-            Icons.arrow_forward_ios,
-            size: 18,
-            color: ColorManager.secondary,
+          IconButton(
+            onPressed: () => BlocProvider.of<ConferenceBloc>(context).add(DeleteConferenceEvent(allConference[index].id, index)),
+       icon: Icon(Icons.delete,
+         color: ColorManager.secondary,),
+
           ),
         ],
       ),

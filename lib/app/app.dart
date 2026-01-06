@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
         BlocProvider<ConferenceBloc>(
           create: (context) {
             final bloc = instance<ConferenceBloc>();
-            bloc.add(GetAllActiveConferenceEvent());
+            bloc.add(GetAllNotActiveConferenceEvent());
             return bloc;
           },
         ),

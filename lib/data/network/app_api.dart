@@ -25,7 +25,7 @@ abstract class AppServiceClient {
   @GET("survey-crud/get_surveyWithQuestion_by_id.php")
   Future<GetSurveyWithQuestionAndAnswerBaseResponse> getSurveyWithQuestionById(
     @Part(name: "id") int id,
-  );
+  );///TODo
   @POST("conference-crud/create_conference.php")
   Future<CreateConferenceBaseResponse> createConference(
       @Body() ConferenceModel conference
@@ -35,11 +35,19 @@ abstract class AppServiceClient {
       @Part(name: "is_active") int isActive,
       );
   @POST("conference-crud/get_conference_by_id.php")
-  Future<GetAllConferenceBaseResponse> getConferenceById(
+  Future<GetConferenceByIdBaseResponse> getConferenceById(
       @Part(name: "id") int id,
       );
   @POST("conference-crud/delete_conference.php")
   Future<Message1Response> deleteConference(
       @Part(name: "id") int id,
       );
+  @POST("survey-conference/link_survey_conference.php")
+  Future<Message1Response> linkSurveyConference(
+      @Part(name: "survey_id") int survey_id,
+      @Part(name: "conference_id") int conference_id,
+      @Part(name: "survey_order") int survey_order,
+      );
+  /////////////update_survey
+/////////update_conference
 }

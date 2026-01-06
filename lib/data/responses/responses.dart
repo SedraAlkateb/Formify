@@ -270,3 +270,16 @@ class GetAllConferenceBaseResponse extends BaseResponse {
   // to json
   Map<String, dynamic> toJson() => _$GetAllConferenceBaseResponseToJson(this);
 }
+
+@JsonSerializable()
+class GetConferenceByIdBaseResponse extends BaseResponse {
+  @JsonKey(name: "data")
+ GetAllConferenceResponse data;
+  GetConferenceByIdBaseResponse(this.data);
+  // from json
+  factory GetConferenceByIdBaseResponse.fromJson(Map<String, dynamic> json) =>
+      _$GetConferenceByIdBaseResponseFromJson(json);
+
+  // to json
+  Map<String, dynamic> toJson() => _$GetConferenceByIdBaseResponseToJson(this);
+}

@@ -45,6 +45,41 @@ extension GetConferenceMapper on GetAllConferenceResponse? {
     );
   }
 }
+extension GetConferenceByIdMapper on GetConferenceByIdBaseResponse ?{
+  GetAllConferenceModel toDomain() {
+    return GetAllConferenceModel(
+      this?.data.id ?? Constants.zero,
+      this?.data.name ?? Constants.empty,
+      this?.data.description ?? Constants.empty,
+      this?.data.address ?? Constants.empty,
+      this?.data.start_date ?? Constants.empty,
+      this?.data.end_date ?? Constants.empty,
+      this?.data.is_active ??false,
+    );
+  }
+}
+
+
+extension IsActiveSurveyMapper on MainSurveyModel {
+  IsActiveMainSurveyModel toDomain() {
+    return IsActiveMainSurveyModel(
+      id ,
+     title ,
+      description,
+     color ,
+      false,
+    );
+  }
+}
+extension AllIsActiveMapper on List<MainSurveyModel> {
+  List<IsActiveMainSurveyModel> toDomain() {
+    List<IsActiveMainSurveyModel> allIsActiveSurvey = (map((response) => response.toDomain()))
+        .cast<IsActiveMainSurveyModel>()
+        .toList();
+    return allIsActiveSurvey;
+  }
+}
+
 extension GetAllConferenceMapper on GetAllConferenceBaseResponse? {
   List<GetAllConferenceModel> toDomain() {
     List<GetAllConferenceModel> allConference = (this?.data.map((response) => response.toDomain()) ??

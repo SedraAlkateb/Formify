@@ -1,247 +1,142 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
-import 'package:formify/presentation/conference/widget/survey_widget.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
-class ConferenceSurveyById1 extends StatelessWidget {
-  const ConferenceSurveyById1({super.key});
+class ConferenceSurveyById extends StatelessWidget {
+  const ConferenceSurveyById({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F7FB),
+      backgroundColor: const Color(0xFFF7F8FA),
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
         foregroundColor: Colors.black87,
-        title:  Text(
-          "ربط الاستبيانات بالمؤتمر",
-          style: TextStyle(fontWeight: FontWeight.w800,color: ColorManager.black),
+        title: const Text(
+          "ربط الاستبيانات",
+          style: TextStyle(
+            fontWeight: FontWeight.w800,
+            color: ColorManager.black,
+          ),
         ),
+        actions: [
+          IconButton(
+            tooltip: "تحديث",
+
+            onPressed: () => BlocProvider.of<ConferenceBloc>(
+              context,
+            ).add(GetAllSurveyEvent()),
+            icon: Icon(Icons.refresh_rounded, color: ColorManager.black),
+          ),
+        ],
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            // Header (شرح واضح + زر إضافة)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 10),
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      ColorManager.primary.withOpacity(0.12),
-                      Colors.white,
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: ColorManager.border),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 12,
-                      offset: const Offset(0, 5),
-                    )
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: ColorManager.primary.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: const Icon(
-                        Icons.link_rounded,
-                        color: ColorManager.primary,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "اختر الاستبيانات المرتبطة",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                          SizedBox(height: 3),
-                          Text(
-                            "فعّل السويتش بجانب الاستبيان لربطه مع هذا المؤتمر.",
-                            style: TextStyle(
-                              fontSize: 12.8,
-                              color: Colors.black54,
-                              height: 1.25,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    ElevatedButton.icon(
-                      onPressed: null, // ضع التنقل لإضافة Survey جديد
-                      icon: Icon(Icons.add),
-                      label: Text("إضافة"),
-                      style: ButtonStyle(
-                        backgroundColor:
-                        WidgetStatePropertyAll(ColorManager.primary),
-                        foregroundColor:
-                        WidgetStatePropertyAll(Colors.white),
-                        padding: WidgetStatePropertyAll(
-                          EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                        ),
-                        shape: WidgetStatePropertyAll(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(14)),
-                          ),
-                        ),
-                        elevation: WidgetStatePropertyAll(0),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+        child: BlocBuilder<ConferenceBloc, ConferenceState>(
+          builder: (context, state) {
+            if (state is GetAllSurveyLoadingState) {
+              return loadingFullScreen(context);
+            }
 
-            // Counter / Hint line
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                children: [
-                  Container(
-                    padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: ColorManager.border),
-                    ),
-                    child: const Row(
-                      children: [
-                        Icon(Icons.info_outline,
-                            size: 16, color: Colors.black54),
-                        SizedBox(width: 6),
-                        Text(
-                          "اسحب للأسفل للتحديث",
-                          style: TextStyle(fontSize: 12.5, color: Colors.black54),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 10),
-
-            // List
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: ColorManager.border),
-                ),
-                child: BlocBuilder<ConferenceBloc, ConferenceState>(
-                  builder: (context, state) {
-                    if (state is GetAllSurveyLoadingState) {
-                      return loadingFullScreen(context);
-                    }
-
-                    if (state is GetAllSurveyErrorState) {
-                      return errorFullScreen(
-                        context,
-                        func: () => BlocProvider.of<ConferenceBloc>(context)
-                            .add(GetAllSurveyEvent()),
-                      );
-                    }
-
-                    if (state is GetAllSurveyState) {
-                      final surveys = state.allSurvey;
-
-                      if (surveys.isEmpty) {
-                        return _EmptySurveys(
-                          onAdd: () {
-                            // ضع التنقل لإضافة Survey جديد
-                          },
-                        );
-                      }
-
-                      return RefreshIndicator(
-                        onRefresh: () async {
-                          BlocProvider.of<ConferenceBloc>(context)
-                              .add(GetAllSurveyEvent());
+            if (state is GetAllSurveyErrorState) {
+              return errorFullScreen(
+                context,
+                func: () => BlocProvider.of<ConferenceBloc>(
+                  context,
+                ).add(GetAllSurveyEvent()),
+              );
+            }
+            if (state is GetAllSurveyState) {
+              final surveys = state.allSurvey;
+              return CustomScrollView(
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+                      child: _HeaderCard(
+                        onAdd: () {
+                          // TODO: Navigator to create survey
                         },
-                        child: ListView.separated(
-                          padding: const EdgeInsets.all(12),
-                          itemCount: surveys.length,
-                          separatorBuilder: (_, __) => const SizedBox(height: 10),
-                          itemBuilder: (_, i) {
-                            final s = surveys[i];
+                      ),
+                    ),
+                  ),
 
-                            // ملاحظة: بدّك حقّل يحدد إذا هذا الاستبيان مربوط بالمؤتمر
-                            // مثال: s.isSelected أو s.isLinked
-                            final bool isSelected =
-                            ( false); // عدّل حسب موديلك
-
-                            return _SurveySelectTile(
-                              child: SurveyItemWidget(surveyModel: s),
-                              value: isSelected,
-                              onChanged: (v) {
-                                // هنا استدعاء Event للربط/إلغاء الربط
-                                // BlocProvider.of<ConferenceBloc>(context).add(
-                                //   ToggleSurveyForConferenceEvent(surveyId: s.id, value: v),
-                                // );
-                              },
-                            );
+                  if (surveys.isEmpty)
+                    SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: _EmptyState(
+                          onAdd: () {
+                            // TODO: Navigator to create survey
                           },
                         ),
-                      );
-                    }
+                      ),
+                    )
+                  else
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 90),
+                      sliver: SliverList.separated(
+                        itemCount: surveys.length,
+                        separatorBuilder: (_, __) => const SizedBox(height: 10),
+                        itemBuilder: (_, i) {
+                          final s = surveys[i];
+                          final bool isSelected =s.isActive;
 
-                    return const SizedBox.shrink();
-                  },
-                ),
-              ),
-            ),
-          ],
+
+                          return _SurveyTile(
+                            title: s.title,
+                            subtitle: (s.description ).trim(),
+                            leadingColor: _parseColorSafe(s.color),
+                            value: isSelected,
+                            onChanged: (v) {
+                              print("object");
+
+                              BlocProvider.of<ConferenceBloc>(context).add(
+                                LinkSurveyConferenceEvent( s.id,i,surveys),
+                              );
+                            },
+                            onTap: () {
+                              // optional: preview survey
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                ],
+              );
+            }
+
+            return const SizedBox.shrink();
+          },
         ),
       ),
 
-      // زر إضافة واضح بأسفل الشاشة
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-          child: SizedBox(
-            height: 52,
-            child: ElevatedButton.icon(
-              onPressed: () {
-                // ضع التنقل لإضافة Survey جديد
-              },
-              icon: const Icon(Icons.add),
-              label: const Text(
-                "إضافة استبيان جديد",
-                style: TextStyle(fontWeight: FontWeight.w800),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: ColorManager.primary,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                elevation: 0,
+      // زر إضافة واضح وأنيق
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: SizedBox(
+          width: double.infinity,
+          height: 52,
+          child: ElevatedButton.icon(
+            onPressed: () {
+              // TODO: Navigator to create survey
+            },
+            icon: const Icon(Icons.add_rounded),
+            label: const Text(
+              "إضافة استبيان جديد",
+              style: TextStyle(fontWeight: FontWeight.w800),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: ColorManager.primary,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
               ),
             ),
           ),
@@ -251,46 +146,65 @@ class ConferenceSurveyById1 extends StatelessWidget {
   }
 }
 
-class _SurveySelectTile extends StatelessWidget {
-  const _SurveySelectTile({
-    required this.child,
-    required this.value,
-    required this.onChanged,
-  });
-
-  final Widget child;
-  final bool value;
-  final ValueChanged<bool> onChanged;
+class _HeaderCard extends StatelessWidget {
+  const _HeaderCard({required this.onAdd});
+  final VoidCallback onAdd;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: const Color(0xFFFBFBFD),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: ColorManager.border),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Row(
         children: [
-          Expanded(child: child),
-          const SizedBox(width: 10),
-          Column(
-            children: [
-              Switch.adaptive(
-                value: value,
-                onChanged: onChanged,
-                activeColor: ColorManager.primary,
-              ),
-              Text(
-                value ? "مربوط" : "غير مربوط",
-                style: TextStyle(
-                  fontSize: 11.5,
-                  color: value ? ColorManager.primary : Colors.black45,
-                  fontWeight: FontWeight.w700,
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: ColorManager.primary.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: const Icon(Icons.link_rounded, color: ColorManager.primary),
+          ),
+          const SizedBox(width: 12),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "اختر الاستبيانات",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
                 ),
+                SizedBox(height: 4),
+                Text(
+                  "فعّل السويتش لربط الاستبيان مع المؤتمر.",
+                  style: TextStyle(fontSize: 12.8, color: Colors.black54),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 10),
+          InkWell(
+            onTap: null, // استبدلها بـ onAdd إذا بدك زر صغير هنا
+            borderRadius: BorderRadius.circular(14),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              decoration: BoxDecoration(
+                color: ColorManager.primary.withOpacity(0.10),
+                borderRadius: BorderRadius.circular(14),
               ),
-            ],
+              child: const Icon(Icons.add_rounded, color: ColorManager.primary),
+            ),
           ),
         ],
       ),
@@ -298,71 +212,210 @@ class _SurveySelectTile extends StatelessWidget {
   }
 }
 
-class _EmptySurveys extends StatelessWidget {
-  const _EmptySurveys({required this.onAdd});
-  final VoidCallback onAdd;
+class _SurveyTile extends StatelessWidget {
+  const _SurveyTile({
+    required this.title,
+    required this.subtitle,
+    required this.leadingColor,
+    required this.value,
+    required this.onChanged,
+    this.onTap,
+  });
+
+  final String title;
+  final String subtitle;
+  final Color leadingColor;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(22),
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
         child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(18),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: ColorManager.border),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 12,
-                offset: const Offset(0, 5),
-              )
-            ],
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: const Color(0xFFE9ECF1)),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+          child: Row(
             children: [
-              Icon(Icons.inbox_outlined,
-                  size: 44, color: ColorManager.primary.withOpacity(0.9)),
-              const SizedBox(height: 10),
-              const Text(
-                "لا يوجد استبيانات بعد",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                "قم بإضافة استبيان جديد ثم ارجعه للمؤتمر عبر السويتش.",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 12.8,
-                  color: Colors.grey.shade700,
-                  height: 1.35,
+              // leading
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: leadingColor.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(14),
                 ),
+                child: Icon(Icons.fact_check_rounded, color: leadingColor),
               ),
-              const SizedBox(height: 14),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: onAdd,
-                  icon: const Icon(Icons.add),
-                  label: const Text("إضافة استبيان"),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: ColorManager.primary,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
+              const SizedBox(width: 12),
+
+              // text
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title.isEmpty ? "بدون عنوان" : title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 15.5,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
-                    elevation: 0,
-                  ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle.isEmpty ? "بدون وصف" : subtitle,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 12.8,
+                        color: Colors.black54,
+                        height: 1.25,
+                      ),
+                    ),
+                  ],
                 ),
+              ),
+
+              const SizedBox(width: 10),
+
+              // switch + label
+              Column(
+                children: [
+                  Switch.adaptive(
+                    value: value,
+                    onChanged: onChanged,
+                    activeColor: ColorManager.primary,
+                  ),
+                  Text(
+                    value ? "مربوط" : "غير مربوط",
+                    style: TextStyle(
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w700,
+                      color: value ? ColorManager.primary : Colors.black38,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
         ),
       ),
     );
+  }
+}
+
+class _EmptyState extends StatelessWidget {
+  const _EmptyState({required this.onAdd});
+  final VoidCallback onAdd;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 54,
+            height: 54,
+            decoration: BoxDecoration(
+              color: ColorManager.primary.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: const Icon(Icons.inbox_rounded, color: ColorManager.primary),
+          ),
+          const SizedBox(height: 10),
+          const Text(
+            "لا يوجد استبيانات",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+          ),
+          const SizedBox(height: 6),
+          const Text(
+            "أضف استبيان جديد ثم اربطه مع المؤتمر بالسويتش.",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 12.8,
+              color: Colors.black54,
+              height: 1.3,
+            ),
+          ),
+          const SizedBox(height: 14),
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: ElevatedButton.icon(
+              onPressed: onAdd,
+              icon: const Icon(Icons.add_rounded),
+              label: const Text(
+                "إضافة استبيان",
+                style: TextStyle(fontWeight: FontWeight.w800),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: ColorManager.primary,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// إذا عندك لون كنص (مثل "red") أو hex عدّل هون حسب داتاك
+Color _parseColorSafe(dynamic color) {
+  if (color == null) return ColorManager.primary;
+
+  final c = color.toString().toLowerCase().trim();
+
+  // hex مثل #ff0000 أو ff0000
+  if (c.startsWith('#') || RegExp(r'^[0-9a-f]{6,8}$').hasMatch(c)) {
+    final hex = c.replaceAll('#', '');
+    final normalized = hex.length == 6 ? 'FF$hex' : hex;
+    return Color(int.parse(normalized, radix: 16));
+  }
+
+  switch (c) {
+    case 'red':
+      return Colors.red;
+    case 'blue':
+      return Colors.blue;
+    case 'green':
+      return Colors.green;
+    case 'orange':
+      return Colors.orange;
+    case 'purple':
+      return Colors.purple;
+    case 'teal':
+      return Colors.teal;
+    case 'indigo':
+      return Colors.indigo;
+    default:
+      return ColorManager.primary;
   }
 }

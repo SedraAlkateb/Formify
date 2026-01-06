@@ -8,7 +8,7 @@ class SurveyItemWidget extends StatelessWidget {
     required this.surveyModel
   });
 
-  final MainSurveyModel surveyModel;
+  final IsActiveMainSurveyModel surveyModel;
 
 
   Color _parseColor(String color) {

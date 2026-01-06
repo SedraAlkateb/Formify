@@ -5,19 +5,19 @@ import 'package:formify/presentation/home/widget/conference_ended_widget.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
-class AllConferencePage extends StatefulWidget {
-  const AllConferencePage({super.key});
+class AllActiveConferencePage extends StatefulWidget {
+  const AllActiveConferencePage({super.key});
 
   @override
-  State<AllConferencePage> createState() => _AllConferencePageState();
+  State<AllActiveConferencePage> createState() => _AllActiveConferencePageState();
 }
 
-class _AllConferencePageState extends State<AllConferencePage> {
+class _AllActiveConferencePageState extends State<AllActiveConferencePage> {
   @override
   void initState() {
     BlocProvider.of<ConferenceBloc>(
       context,
-    ).add(GetAllNotActiveConferenceEvent());
+    ).add(GetAllActiveConferenceEvent());
     super.initState();
   }
 
@@ -30,14 +30,11 @@ class _AllConferencePageState extends State<AllConferencePage> {
           style: TextStyle(fontWeight: FontWeight.w600, fontSize: 30),
         ),
       ),
-      body: BlocConsumer<ConferenceBloc, ConferenceState>(
-        listener: (context, state) {
+      body: BlocBuilder<ConferenceBloc, ConferenceState>(
+        builder: (context, state) {
           if (state is GetConferenceByIdState) {
             Navigator.pushNamed(context, Routes.viewConference);
           }
-          },
-        builder: (context, state) {
-
           if (state is GetAllConferenceLoadingState) {
             return loadingFullScreen(context);
           } else if (state is GetAllConferenceErrorState) {
@@ -48,20 +45,21 @@ class _AllConferencePageState extends State<AllConferencePage> {
               shrinkWrap: true,
               itemCount: BlocProvider.of<ConferenceBloc>(
                 context,
-              ).allNotActiveConference.length,
+              ).allActiveConference.length,
               separatorBuilder: (context, index) => const SizedBox(height: 10),
               itemBuilder: (context, index) {
+
                 return InkWell(
                   onTap: () => BlocProvider.of<ConferenceBloc>(
                     context,
                   ).add(GetConferenceByIdEvent(BlocProvider.of<ConferenceBloc>(
                     context,
-                  ).allNotActiveConference[index])),
+                  ).allActiveConference[index])),
                   child: ConferenceEndedWidget(
                     index: index,
                     allConference: BlocProvider.of<ConferenceBloc>(
                       context,
-                    ).allNotActiveConference,
+                    ).allActiveConference,
                   ),
                 );
               },

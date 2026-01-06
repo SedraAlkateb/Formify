@@ -1,254 +1,83 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:formify/domain/models/models.dart';
-
-// عدّل الاستيرادات حسب مشروعك
-import 'package:formify/presentation/resources/color_manager.dart';
-import 'package:formify/presentation/resources/routes_manager.dart';
-import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
+import 'package:formify/presentation/resources/color_manager.dart';
 
 class ViewConferencePage extends StatelessWidget {
-  ViewConferencePage({super.key,required this.index});
-  final int index;
-  final _formKey = GlobalKey<FormBuilderState>();
+  const ViewConferencePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-
     return Scaffold(
-      backgroundColor: colors.background,
       appBar: AppBar(
-        title: const Text('View Conference'),
-        backgroundColor: colors.primary,
+        title: const Text(
+          "Conference Details",
+          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 30),
+        ),
+        backgroundColor: ColorManager.primary,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            FormBuilder(
-              key: _formKey,
+      body: BlocBuilder<ConferenceBloc, ConferenceState>(
+        builder: (context, state) {
+          if (state is GetConferenceByIdState) {
+            final conference = state.conferenceModel;
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    margin: const EdgeInsets.symmetric(vertical: 12),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: ColorManager.border),
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(25),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 8,
-                          offset: Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Conference Name",
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 8),
-                        FormBuilderTextField(
-                          name: 'name',
-                          initialValue:BlocProvider.of<ConferenceBloc>(context).allActiveConference[index].name,
-                          decoration: InputDecoration(
-                            hintText: 'enter conference name',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                          ),
-                          validator: FormBuilderValidators.compose([
-                            FormBuilderValidators.required(),
-                            FormBuilderValidators.minLength(3),
-                          ]),
-                        ),
-                        const SizedBox(height: 20),
-                        const Text(
-                          "Description",
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 8),
-                        FormBuilderTextField(
-                          name: 'description',
-                          maxLines: 4,
-                          initialValue:BlocProvider.of<ConferenceBloc>(context).allActiveConference[index].description,
-                          decoration: InputDecoration(
-                            hintText: 'enter conference description',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                          ),
-                          validator: FormBuilderValidators.compose([
-                            FormBuilderValidators.required(),
-                            FormBuilderValidators.minLength(5),
-                          ]),
-                        ),
-                        const SizedBox(height: 20),
-                        const Text(
-                          "Address",
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 8),
-                        FormBuilderTextField(
-                          name: 'address',
-                          initialValue:BlocProvider.of<ConferenceBloc>(context).allActiveConference[index].address,
-                          decoration: InputDecoration(
-                            hintText: 'enter conference address',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                          ),
-                          validator: FormBuilderValidators.required(),
-                        ),
-                      ],
-                    ),
+                  // Conference Name Section
+                  _buildSection(
+                    title: "Conference Name",
+                    content: conference.name,
                   ),
 
-                  // تواريخ + الحالة
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    margin: const EdgeInsets.symmetric(vertical: 12),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: ColorManager.border),
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(25),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 8,
-                          offset: Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Dates",
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: FormBuilderDateTimePicker(
-                                name: 'start_date',
-
-                                initialValue: DateTime.parse(
-                                  BlocProvider.of<ConferenceBloc>(context)
-                                      .allActiveConference[index].startDate,
-                                ),
-                                inputType: InputType.date,
-                                decoration: InputDecoration(
-                                  labelText: 'Start date',
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                  suffixIcon:
-                                  const Icon(Icons.calendar_month),
-                                ),
-                                validator: FormBuilderValidators.required(),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: FormBuilderDateTimePicker(
-                                name: 'end_date',
-                                initialValue:  DateTime.parse(
-                                  BlocProvider.of<ConferenceBloc>(context)
-                                      .allActiveConference[index].endDate,
-                                ),
-                                inputType: InputType.date,
-                                decoration: InputDecoration(
-                                  labelText: 'End date',
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                  ),
-                                  suffixIcon:
-                                  const Icon(Icons.calendar_month),
-                                ),
-                                validator: (val) {
-                                  final start = _formKey
-                                      .currentState
-                                      ?.fields['start_date']
-                                      ?.value as DateTime?;
-                                  if (val == null) return 'Required';
-                                  if (start != null && val.isBefore(start)) {
-                                    return 'End date must be after start date';
-                                  }
-                                  return null;
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        FormBuilderSwitch(
-                          name: 'is_active',
-                          initialValue:  BlocProvider.of<ConferenceBloc>(context).allActiveConference[index].isActive,
-                          title: const Text(
-                            'Is Active',
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ],
-                    ),
+                  // Description Section
+                  _buildSection(
+                    title: "Description",
+                    content: conference.description,
                   ),
+
+                  // Address Section
+                  _buildSection(
+                    title: "Address",
+                    content: conference.address,
+                  ),
+
+                  // Dates Section
+                  _buildDatesSection(conference),
+
+                  // Is Active Section
+                  _buildIsActiveSection(conference),
                 ],
               ),
+            );
+          } else {
+            return const Center(child: CircularProgressIndicator()); // Show loading while fetching data
+          }
+        },
+      ),
+    );
+  }
+
+  // Reusable method to build a section with title and content
+  Widget _buildSection({required String title, required String content}) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 12),
+      elevation: 5,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-
-            // ===== BLoC submit =====
-            BlocListener<ConferenceBloc, ConferenceState>(
-              listener: (context, state) {
-                if (state is CreateConferenceLoadingState) {
-                  loading(context);
-                } else if (state is CreateConferenceErrorState) {
-                  error(context, state.failure.massage, state.failure.code);
-                } else if (state is CreateConferenceState) {
-                  BlocProvider.of<ConferenceBloc>(context)
-                      .add(GetAllSurveyEvent());
-                  Navigator.pushReplacementNamed(context, Routes.conferenceSurveyById);
-                }
-              },
-              child: SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    final ok = _formKey.currentState?.saveAndValidate() ?? false;
-                    if (!ok) return;
-
-                    final v = _formKey.currentState!.value;
-                    final payload = {
-                      "name": v["name"],
-                      "description": v["description"],
-                      "address": v["address"],
-                      "start_date": _toYmd(v["start_date"] as DateTime),
-                      "end_date": _toYmd(v["end_date"] as DateTime),
-                      "is_active": (v["is_active"] == true) ? 1 : 0,
-                    };
-                    BlocProvider.of<ConferenceBloc>(context)
-                        .add(CreateConferenceEvent(ConferenceModel.fromMap(payload)));
-                  },
-                  child: const Text('Create'),
-                ),
-              ),
+            const SizedBox(height: 8),
+            Text(
+              content,
+              style: const TextStyle(fontSize: 16, color: Colors.black54),
             ),
           ],
         ),
@@ -256,10 +85,58 @@ class ViewConferencePage extends StatelessWidget {
     );
   }
 
-  String _toYmd(DateTime d) {
-    final y = d.year.toString().padLeft(4, '0');
-    final m = d.month.toString().padLeft(2, '0');
-    final day = d.day.toString().padLeft(2, '0');
-    return "$y-$m-$day";
+  // Method to build the Dates Section
+  Widget _buildDatesSection(conference) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 12),
+      elevation: 5,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Conference Dates",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              "Start Date: ${conference.startDate}",
+              style: const TextStyle(fontSize: 16, color: Colors.black54),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              "End Date: ${conference.endDate}",
+              style: const TextStyle(fontSize: 16, color: Colors.black54),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Method to build the Is Active Section
+  Widget _buildIsActiveSection(conference) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 12),
+      elevation: 5,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            const Text(
+              'Is Active: ',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              conference.isActive ? 'Yes' : 'No',
+              style: TextStyle(fontSize: 16, color: conference.isActive ? Colors.green : Colors.red),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

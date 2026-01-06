@@ -18,7 +18,12 @@ abstract class RemoteDataSource {
   Future<CreateConferenceBaseResponse> createConference(
     ConferenceModel conference,
   );
-  Future<GetAllConferenceBaseResponse> getAllConference(int isActive,);
+  Future<GetAllConferenceBaseResponse> getAllConference(int isActive);
+  Future<Message1Response> linkSurveyConference(
+    SurveyConference surveyConference,
+  );
+  Future<Message1Response> deleteConference(int id);
+  Future<GetConferenceByIdBaseResponse> getConferenceById(int id);
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -62,7 +67,28 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<GetAllConferenceBaseResponse> getAllConference(int isActive)async {
+  Future<GetAllConferenceBaseResponse> getAllConference(int isActive) async {
     return await _appServiceClient.getAllConference(isActive);
+  }
+
+  @override
+  Future<Message1Response> linkSurveyConference(
+    SurveyConference surveyConference,
+  ) async {
+    return await _appServiceClient.linkSurveyConference(
+      surveyConference.survey_id,
+      surveyConference.conference_id,
+      surveyConference.survey_order,
+    );
+  }
+
+  @override
+  Future<Message1Response> deleteConference(int id) async {
+    return await _appServiceClient.deleteConference(id);
+  }
+
+  @override
+  Future<GetConferenceByIdBaseResponse> getConferenceById(int id)  async {
+    return await _appServiceClient.getConferenceById(id);
   }
 }
