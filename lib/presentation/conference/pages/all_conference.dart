@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 import 'package:formify/presentation/home/widget/conference_ended_widget.dart';
+import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
 class AllConferencePage extends StatefulWidget {
   const AllConferencePage({super.key});
@@ -23,19 +24,33 @@ class _AllConferencePageState extends State<AllConferencePage> {
         "Ended Conference",
         style: TextStyle(fontWeight: FontWeight.w600, fontSize: 30),
       ),),
-      body:   Padding(
-        padding: const EdgeInsets.all(16),
-        child: ListView.separated(
-          physics: AlwaysScrollableScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: 30,
-          separatorBuilder: (context, index) =>
-          const SizedBox(height: 10),
-          itemBuilder: (context, index) {
-            return ConferenceEndedWidget(index: index);
-          },
-        ),
+      body:
+      BlocBuilder<ConferenceBloc, ConferenceState>(
+        builder: (context, state) {
+          if(state is GetAllConferenceLoadingState){
+            return loadingFullScreen(context);
+          }else if (state is GetAllConferenceErrorState){
+            return errorFullScreen(context);
+
+          }else if(state is GetAllConferenceState){
+            return ListView.separated(
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: BlocProvider.of<ConferenceBloc>(context).allActiveConference.length,
+              separatorBuilder: (context, index) =>
+              const SizedBox(height: 10),
+              itemBuilder: (context, index) {
+                return ConferenceEndedWidget(index: index,allConference:  BlocProvider.of<ConferenceBloc>(context).allActiveConference,);
+              },
+            );
+          }else if(state is GetAllEmptyConferenceState){
+            return emptyFullScreen(context);
+          }else
+            return SizedBox();
+        },
       ),
+
+
     );
   }
 }

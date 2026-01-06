@@ -42,4 +42,11 @@ abstract class AppServiceClient {
   Future<Message1Response> deleteConference(
       @Part(name: "id") int id,
       );
+  @POST("survey-conference/link_survey_conference.php")
+  Future<Message1Response> linkSurveyConference(
+      @Part(name: "survey_id") int survey_id,
+      @Part(name: "conference_id") int conference_id,
+      @Part(name: "survey_order") int survey_order,
+      );
+
 }

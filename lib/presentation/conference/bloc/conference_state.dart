@@ -38,12 +38,29 @@ final class GetAllSurveyLoadingState extends ConferenceState {
   @override
   List<Object?> get props => [];
 }
+final class LinkSurveyConferenceState extends ConferenceState {
+  List<Object?> get props => [];
+}
+final class LinkSurveyConferenceErrorState extends ConferenceState {
+  final Failure failure;
+  LinkSurveyConferenceErrorState({required this.failure});
+  @override
+  List<Object?> get props =>[failure];
+}
+final class LinkSurveyConferenceLoadingState extends ConferenceState {
+  @override
+  List<Object?> get props => [];
+}
 
 ///////////////////////////////////////////////
 final class GetAllConferenceState extends ConferenceState {
   final List<GetAllConferenceModel> allConference;
   GetAllConferenceState(this.allConference);
   List<Object?> get props => [allConference];
+}
+final class GetAllEmptyConferenceState extends ConferenceState {
+
+  List<Object?> get props => [];
 }
 final class GetAllConferenceErrorState extends ConferenceState {
   final Failure failure;

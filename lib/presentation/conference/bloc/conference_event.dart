@@ -14,6 +14,13 @@ class GetAllSurveyEvent extends ConferenceEvent {
   @override
   List<Object?> get props => [];
 }
+class LinkSurveyConferenceEvent extends ConferenceEvent {
+final int surveyId;
+final int index;
+LinkSurveyConferenceEvent(this.surveyId,this.index);
+  @override
+  List<Object?> get props => [surveyId];
+}
 class GetAllActiveConferenceEvent extends ConferenceEvent {
 
 GetAllActiveConferenceEvent();

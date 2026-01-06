@@ -18,7 +18,10 @@ abstract class RemoteDataSource {
   Future<CreateConferenceBaseResponse> createConference(
     ConferenceModel conference,
   );
-  Future<GetAllConferenceBaseResponse> getAllConference(int isActive,);
+  Future<GetAllConferenceBaseResponse> getAllConference(int isActive);
+  Future<Message1Response> linkSurveyConference(
+    SurveyConference surveyConference,
+  );
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -62,7 +65,18 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<GetAllConferenceBaseResponse> getAllConference(int isActive)async {
+  Future<GetAllConferenceBaseResponse> getAllConference(int isActive) async {
     return await _appServiceClient.getAllConference(isActive);
+  }
+
+  @override
+  Future<Message1Response> linkSurveyConference(
+    SurveyConference surveyConference,
+  ) async {
+    return await _appServiceClient.linkSurveyConference(
+      surveyConference.survey_id,
+      surveyConference.conference_id,
+      surveyConference.survey_order,
+    );
   }
 }

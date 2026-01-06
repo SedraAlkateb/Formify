@@ -200,10 +200,10 @@ class ConferenceSurveyById1 extends StatelessWidget {
                               child: SurveyItemWidget(surveyModel: s),
                               value: isSelected,
                               onChanged: (v) {
-                                // هنا استدعاء Event للربط/إلغاء الربط
-                                // BlocProvider.of<ConferenceBloc>(context).add(
-                                //   ToggleSurveyForConferenceEvent(surveyId: s.id, value: v),
-                                // );
+
+                                BlocProvider.of<ConferenceBloc>(context).add(
+                                  LinkSurveyConferenceEvent( s.id,i),
+                                );
                               },
                             );
                           },
