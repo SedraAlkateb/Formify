@@ -2,10 +2,14 @@ import 'package:dio/dio.dart';
 import 'package:formify/app/app_preferences.dart';
 import 'package:formify/data/data_source/remote_data_source.dart';
 import 'package:formify/data/network/app_api.dart';
+import 'package:formify/data/network/app_sql_api.dart';
 import 'package:formify/data/network/dio_factory.dart';
 import 'package:formify/data/network/network_info.dart';
+import 'package:formify/data/network/sqlite_factory.dart';
 import 'package:formify/data/repository/repository.dart';
+import 'package:formify/data/repository/repositroy_sql.dart';
 import 'package:formify/domain/repostitory/repository.dart';
+import 'package:formify/domain/repostitory/repository_sql.dart';
 import 'package:formify/domain/usecase/create_conference_usecase.dart';
 import 'package:formify/domain/usecase/create_survey_question_usecase.dart';
 import 'package:formify/domain/usecase/create_survey_usecase.dart';
@@ -30,19 +34,24 @@ Future<void> initAppModule() async {
   //network info instance
 
   instance.registerLazySingleton<NetworkInfo>(
-      () => NetworkInfoImpl());
+          () => NetworkInfoImpl());
   instance.registerLazySingleton<DioFactory>(() => DioFactory());
   Dio dio = await instance<DioFactory>().getDio();
   instance.registerLazySingleton<AppServiceClient>(() => AppServiceClient(dio));
   instance.registerLazySingleton<RemoteDataSource>(
-      () => RemoteDataSourceImpl(instance<AppServiceClient>()));
+          () => RemoteDataSourceImpl(instance<AppServiceClient>()));
+  DatabaseHelper databaseHelper = DatabaseHelper();
+  instance.registerLazySingleton<AppSqlApi>(() => AppSqlApi(databaseHelper));
+  await instance<AppSqlApi>().initializeDatabase();
+
+  instance.registerLazySingleton<RepositorySql>(
+          () => RepositroySqlImp(instance()));
   //repository
   instance.registerLazySingleton<Repository>(
-      () => RepositoryImp(instance(), instance()));
+          () => RepositoryImp(instance(), instance()));
   instance.registerLazySingleton<ThemeBloc>(
           () => ThemeBloc());
 }
-
 Future<void> initOnBoardingModule() async {
   if (!GetIt.I.isRegistered<OnboardingBloc>()) {
     instance.registerFactory<OnboardingBloc>(() => OnboardingBloc());

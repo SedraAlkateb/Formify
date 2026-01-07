@@ -47,6 +47,23 @@ abstract class AppServiceClient {
       @Part(name: "survey_id") int survey_id,
       @Part(name: "conference_id") int conference_id,
       @Part(name: "survey_order") int survey_order,
+      @Part(name: "is_active") bool is_active,
+      );
+  @POST("survey-conference/get_allSurvey_and_activeSurvey.php")
+  Future<GetAllSurveyWithActiveBaseResponse> getAllSurveyAndActiveSurvey(
+      @Part(name: "conference_id") int conference_id,
+      );
+  @POST("users-crud/create_user_with_conferenceId.php")
+  Future<CreateUserResponse> createUserWithConferenceId(
+      @Part(name: "fullname") String fullname,
+      @Part(name: "email") String email,
+      @Part(name: "phone") String phone,
+      @Part(name: "address") String address,
+      @Part(name: "conference_id") int conference_id,
+      );
+  @POST("users-crud/add_users_answers.php")
+  Future<CreateConferenceBaseResponse> add_users_answers(
+      @Body() UseAnswerModel userAnswerModel
       );
   /////////////update_survey
 /////////update_conference

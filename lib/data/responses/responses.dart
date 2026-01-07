@@ -33,6 +33,18 @@ class MessageResponse extends BaseResponse {
   Map<String, dynamic> toJson() => _$MessageResponseToJson(this);
 }
 
+@JsonSerializable()
+class CreateUserResponse extends BaseResponse {
+  @JsonKey(name: "user_id")
+  int? user_id;
+  CreateUserResponse(this.user_id);
+  // from json
+  factory CreateUserResponse.fromJson(Map<String, dynamic> json) =>
+      _$CreateUserResponseFromJson(json);
+  // to json
+  Map<String, dynamic> toJson() => _$CreateUserResponseToJson(this);
+}
+
 ///////////////////////////CREATESERVEY
 @JsonSerializable()
 class CreateSurveyResponse {
@@ -76,6 +88,7 @@ class CreateSurveyQuestionsBaseResponse extends BaseResponse {
   Map<String, dynamic> toJson() =>
       _$CreateSurveyQuestionsBaseResponseToJson(this);
 }
+
 @JsonSerializable()
 class CreateSurveyQuestionsResponse {
   @JsonKey(name: "survey_id")
@@ -138,8 +151,13 @@ class GetSurveyWithQuestionAndAnswerResponse {
   @JsonKey(name: "questions")
   List<GetQuestionAndAnswerResponse>? questions;
 
-  GetSurveyWithQuestionAndAnswerResponse(this.id, this.title, this.description,
-      this.color, this.questions); // from json
+  GetSurveyWithQuestionAndAnswerResponse(
+    this.id,
+    this.title,
+    this.description,
+    this.color,
+    this.questions,
+  ); // from json
   factory GetSurveyWithQuestionAndAnswerResponse.fromJson(
     Map<String, dynamic> json,
   ) => _$GetSurveyWithQuestionAndAnswerResponseFromJson(json);
@@ -179,7 +197,6 @@ class GetQuestionAndAnswerResponse {
 
 @JsonSerializable()
 class GetAnswerResponse {
-
   @JsonKey(name: "id")
   int? id;
   @JsonKey(name: "title")
@@ -219,6 +236,7 @@ class CreateConferenceBaseResponse extends BaseResponse {
   // to json
   Map<String, dynamic> toJson() => _$CreateConferenceBaseResponseToJson(this);
 }
+
 @JsonSerializable()
 class CreateConferenceResponse {
   @JsonKey(name: "id")
@@ -249,9 +267,15 @@ class GetAllConferenceResponse {
   @JsonKey(name: "is_active")
   bool? is_active;
 
-
-  GetAllConferenceResponse(this.id, this.name, this.description, this.address,
-      this.start_date, this.end_date, this.is_active); // from json
+  GetAllConferenceResponse(
+    this.id,
+    this.name,
+    this.description,
+    this.address,
+    this.start_date,
+    this.end_date,
+    this.is_active,
+  ); // from json
   factory GetAllConferenceResponse.fromJson(Map<String, dynamic> json) =>
       _$GetAllConferenceResponseFromJson(json);
   // to json
@@ -274,7 +298,7 @@ class GetAllConferenceBaseResponse extends BaseResponse {
 @JsonSerializable()
 class GetConferenceByIdBaseResponse extends BaseResponse {
   @JsonKey(name: "data")
- GetAllConferenceResponse data;
+  GetAllConferenceResponse data;
   GetConferenceByIdBaseResponse(this.data);
   // from json
   factory GetConferenceByIdBaseResponse.fromJson(Map<String, dynamic> json) =>
@@ -282,4 +306,48 @@ class GetConferenceByIdBaseResponse extends BaseResponse {
 
   // to json
   Map<String, dynamic> toJson() => _$GetConferenceByIdBaseResponseToJson(this);
+}
+
+///////////////////////GETALLSURVEYWITHACTIVE////////////////
+/////////////////////GETALLSURVEY
+@JsonSerializable()
+class GetSurveyWithActiveResponse {
+  @JsonKey(name: "id")
+  int? id;
+  @JsonKey(name: "title")
+  String? title;
+  @JsonKey(name: "description")
+  String? description;
+  @JsonKey(name: "color")
+  String? color;
+  @JsonKey(name: "isActive")
+  bool? isActive;
+
+  GetSurveyWithActiveResponse(
+    this.id,
+    this.title,
+    this.description,
+    this.color,
+    this.isActive,
+  );
+  // from json
+  factory GetSurveyWithActiveResponse.fromJson(Map<String, dynamic> json) =>
+      _$GetSurveyWithActiveResponseFromJson(json);
+  // to json
+  Map<String, dynamic> toJson() => _$GetSurveyWithActiveResponseToJson(this);
+}
+
+@JsonSerializable()
+class GetAllSurveyWithActiveBaseResponse extends BaseResponse {
+  @JsonKey(name: "data")
+  List<GetSurveyWithActiveResponse> data;
+  GetAllSurveyWithActiveBaseResponse(this.data);
+  // from json
+  factory GetAllSurveyWithActiveBaseResponse.fromJson(
+    Map<String, dynamic> json,
+  ) => _$GetAllSurveyWithActiveBaseResponseFromJson(json);
+
+  // to json
+  Map<String, dynamic> toJson() =>
+      _$GetAllSurveyWithActiveBaseResponseToJson(this);
 }

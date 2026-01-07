@@ -223,4 +223,30 @@ class RepositoryImp implements Repository {
       return Left(failure);
     }
   }
+
+  @override
+  Future<Either<Failure, int>> createUserWithConferenceId(UserInputModel userInputModel)   async {
+    try {
+      if (await _networkInfo.isConnected) {
+        final response = await _remoteDataSource.createUserWithConferenceId(userInputModel);
+
+        if (response.status == "200" ||
+            response.status == ApiInternalStatus.SUCCESS) {
+          return Right(response.user_id??0);
+        } else {
+          Failure failure = Failure(ApiInternalStatus.FAILURE,
+              response.message ?? ResponseMassage.DEFAULT);
+          return Left(failure);
+
+          // return Left(Failure(ApiInternalStatus.FAILURE,
+          //     response.message ?? ResponseMassage.DEFAULT));
+        }
+      } else {
+        return Left(DataSource.NO_INTERNET_CONNECTION.getFailure());
+      }
+    } catch (error) {
+      Failure failure = ErrorHandler.handle(error).failure;
+      return Left(failure);
+    }
+  }
 }

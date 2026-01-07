@@ -12,9 +12,8 @@ class ViewConferencePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text(
           "Conference Details",
-          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 30),
         ),
-        backgroundColor: ColorManager.primary,
+
       ),
       body: BlocBuilder<ConferenceBloc, ConferenceState>(
         builder: (context, state) {
@@ -25,117 +24,144 @@ class ViewConferencePage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Conference Name Section
-                  _buildSection(
-                    title: "Conference Name",
-                    content: conference.name,
+                  // Conference header section (Card with Conference Info)
+                  Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 5,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Title and Icon
+                          Row(
+                            children: [
+                              Icon(Icons.event, color: Colors.purple, size: 30),
+                              const SizedBox(width: 10),
+                              Text(
+                                conference.name,
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.purple),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          // Conference Description
+                          Text(
+                              conference.description,
+                            style: TextStyle(fontSize: 16, color: Colors.black87),
+                          ),
+                          const SizedBox(height: 20),
+                          // Date and location section
+
+                        ],
+                      ),
+                    ),
                   ),
-
-                  // Description Section
-                  _buildSection(
-                    title: "Description",
-                    content: conference.description,
+                  const SizedBox(height: 20),
+                  ConferenceDetailsCard(),
+                  // Surveys Section Header
+                  Text(
+                    "Surveys",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
                   ),
+                  const SizedBox(height: 10),
 
-                  // Address Section
-                  _buildSection(
-                    title: "Address",
-                    content: conference.address,
+                  // List of Surveys (ListView)
+                  ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: 6, // Number of surveys
+                    itemBuilder: (context, index) {
+                      return Card(
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 5,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.check_circle_outline,
+                                color: Colors.green,
+                              ),
+                              const SizedBox(width: 10),
+                              Text(
+                                "Survey ${index + 1}: Feedback on Conference",
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
                   ),
-
-                  // Dates Section
-                  _buildDatesSection(conference),
-
-                  // Is Active Section
-                  _buildIsActiveSection(conference),
                 ],
               ),
             );
           } else {
-            return const Center(child: CircularProgressIndicator()); // Show loading while fetching data
+            return const Center(child: CircularProgressIndicator());
           }
         },
       ),
     );
   }
+}
 
-  // Reusable method to build a section with title and content
-  Widget _buildSection({required String title, required String content}) {
+class ConferenceDetailsCard extends StatelessWidget {
+  const ConferenceDetailsCard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 12),
       elevation: 5,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              content,
-              style: const TextStyle(fontSize: 16, color: Colors.black54),
-            ),
-          ],
-        ),
+      shadowColor: ColorManager.fieldBackground,
+      color: ColorManager.primary.withOpacity(0.2),
+      shape: RoundedRectangleBorder(
+        side: BorderSide(color: ColorManager.fieldBackground,width: 2),
+        borderRadius: BorderRadius.circular(12),
+
       ),
-    );
-  }
-
-  // Method to build the Dates Section
-  Widget _buildDatesSection(conference) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 12),
-      elevation: 5,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "Conference Dates",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Date Section
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Icon(Icons.calendar_today, color: Colors.blue, size: 30),
+                const SizedBox(width: 8),
+                Text(
+                  "Mar 15 - Mar 18",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+              ],
             ),
-            const SizedBox(height: 12),
-            Text(
-              "Start Date: ${conference.startDate}",
-              style: const TextStyle(fontSize: 16, color: Colors.black54),
+          ),
+           Container(
+               color: ColorManager.fieldBackground,
+              height: 5),
+          // Location Section
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Icon(Icons.location_on, color: Colors.orange, size: 30),
+                const SizedBox(width: 8),
+                Text(
+                  "Riyadh International Convention & Exhibition Center, Riyadh, Saudi Arabia",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-            Text(
-              "End Date: ${conference.endDate}",
-              style: const TextStyle(fontSize: 16, color: Colors.black54),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // Method to build the Is Active Section
-  Widget _buildIsActiveSection(conference) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 12),
-      elevation: 5,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            const Text(
-              'Is Active: ',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              conference.isActive ? 'Yes' : 'No',
-              style: TextStyle(fontSize: 16, color: conference.isActive ? Colors.green : Colors.red),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

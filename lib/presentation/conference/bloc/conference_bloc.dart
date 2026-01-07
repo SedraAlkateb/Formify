@@ -58,7 +58,7 @@ class ConferenceBloc extends Bloc<ConferenceEvent, ConferenceState> {
       if (event is LinkSurveyConferenceEvent) {
         emit(LinkSurveyConferenceLoadingState());
         (await linkSurveyConferenceUsecase.execute(
-          SurveyConference(event.surveyId, conferenceId, 1),
+          SurveyConference(event.surveyId, conferenceId, 1, !event.surveys[event.index].isActive),
         )).fold(
           (failure) {
             emit(LinkSurveyConferenceErrorState(failure: failure));
@@ -73,17 +73,17 @@ class ConferenceBloc extends Bloc<ConferenceEvent, ConferenceState> {
 
       /////////////// Active in AllConferencePage = 0 Not Active in home = 1
       if (event is GetAllActiveConferenceEvent) {
-        emit(GetAllConferenceLoadingState());
+        emit(GetAllActiveConferenceLoadingState());
         (await getAllConferenceUsecase.execute(1)).fold(
           (failure) {
-            emit(GetAllConferenceErrorState(failure: failure));
+            emit(GetAllActiveConferenceErrorState(failure: failure));
           },
           (data) async {
             allActiveConference = data;
             if (allActiveConference.isEmpty) {
-              emit(GetAllEmptyConferenceState());
+              emit(GetAllActiveEmptyConferenceState());
             }
-            emit(GetAllConferenceState(data));
+            emit(GetAllActiveConferenceState(data));
           },
         );
       }if(event is GetConferenceByIdEvent){

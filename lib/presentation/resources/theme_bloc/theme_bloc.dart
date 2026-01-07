@@ -8,6 +8,7 @@ part 'theme_state.dart';
 
 class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
   Color seedColor=Colors.black26;
+  String colorName = "0x42000000";
   ThemeBloc() : super(ThemeInitial()) {
 
     on<ThemeEvent>((event, emit) {
@@ -15,6 +16,7 @@ class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
 
       if(event is ChangeThemeColorEvent){
         seedColor=event.newColor;
+        colorName=event.colorName;
         print("objectss");
         emit(ThemeChangedState(event.newColor)); // تحديث اللون
       }

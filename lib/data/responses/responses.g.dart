@@ -28,6 +28,18 @@ MessageResponse _$MessageResponseFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$MessageResponseToJson(MessageResponse instance) =>
     <String, dynamic>{'status': instance.status, 'message': instance.message};
 
+CreateUserResponse _$CreateUserResponseFromJson(Map<String, dynamic> json) =>
+    CreateUserResponse((json['user_id'] as num?)?.toInt())
+      ..status = json['status'] as String?
+      ..message = json['message'] as String?;
+
+Map<String, dynamic> _$CreateUserResponseToJson(CreateUserResponse instance) =>
+    <String, dynamic>{
+      'status': instance.status,
+      'message': instance.message,
+      'user_id': instance.user_id,
+    };
+
 CreateSurveyResponse _$CreateSurveyResponseFromJson(
   Map<String, dynamic> json,
 ) => CreateSurveyResponse(
@@ -286,6 +298,49 @@ GetConferenceByIdBaseResponse _$GetConferenceByIdBaseResponseFromJson(
 
 Map<String, dynamic> _$GetConferenceByIdBaseResponseToJson(
   GetConferenceByIdBaseResponse instance,
+) => <String, dynamic>{
+  'status': instance.status,
+  'message': instance.message,
+  'data': instance.data,
+};
+
+GetSurveyWithActiveResponse _$GetSurveyWithActiveResponseFromJson(
+  Map<String, dynamic> json,
+) => GetSurveyWithActiveResponse(
+  (json['id'] as num?)?.toInt(),
+  json['title'] as String?,
+  json['description'] as String?,
+  json['color'] as String?,
+  json['isActive'] as bool?,
+);
+
+Map<String, dynamic> _$GetSurveyWithActiveResponseToJson(
+  GetSurveyWithActiveResponse instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'title': instance.title,
+  'description': instance.description,
+  'color': instance.color,
+  'isActive': instance.isActive,
+};
+
+GetAllSurveyWithActiveBaseResponse _$GetAllSurveyWithActiveBaseResponseFromJson(
+  Map<String, dynamic> json,
+) =>
+    GetAllSurveyWithActiveBaseResponse(
+        (json['data'] as List<dynamic>)
+            .map(
+              (e) => GetSurveyWithActiveResponse.fromJson(
+                e as Map<String, dynamic>,
+              ),
+            )
+            .toList(),
+      )
+      ..status = json['status'] as String?
+      ..message = json['message'] as String?;
+
+Map<String, dynamic> _$GetAllSurveyWithActiveBaseResponseToJson(
+  GetAllSurveyWithActiveBaseResponse instance,
 ) => <String, dynamic>{
   'status': instance.status,
   'message': instance.message,

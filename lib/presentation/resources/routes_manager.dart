@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:formify/app/di.dart';
+import 'package:formify/presentation/conference/pages/all_active_conference.dart';
 import 'package:formify/presentation/conference/pages/all_conference.dart';
 import 'package:formify/presentation/conference/pages/conference_survey_by_id.dart';
 import 'package:formify/presentation/conference/pages/create_conference_page.dart';
@@ -28,6 +29,8 @@ class Routes {
   static const String switchQuestion = "/switchQuestion";
   static const String  conferenceSurveyById = "/ conferenceSurveyById";
   static const String getAllConference = "/getAllConference";
+  static const String getAllActiveConference = "/getAllActiveConference";
+
   static const String viewConference = "/viewConference";
 
   static const String viewSurvey = "/viewSurvey";
@@ -72,6 +75,8 @@ class RouteGenerator {
       case Routes.getAllConference:
         initConferenceModule();
         return MaterialPageRoute(builder: (_) => AllConferencePage());
+      case Routes.getAllActiveConference:
+        return MaterialPageRoute(builder: (_) => AllActiveConferencePage());
       case Routes.switchQuestion:
 
         return MaterialPageRoute(builder: (_) => SwitchQuestionPage());

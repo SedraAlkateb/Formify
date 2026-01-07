@@ -15,5 +15,6 @@ abstract class Repository {
   Future<Either<Failure,Null>> linkSurveyConference(SurveyConference surveyConference);
   Future<Either<Failure,Null>>deleteConference(int id);
   Future<Either<Failure,GetAllConferenceModel>> getConferenceById(int id);
+  Future<Either<Failure,int>>createUserWithConferenceId(  UserInputModel userInputModel,);
 
 }
