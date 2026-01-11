@@ -115,34 +115,31 @@ class CreateSurveyPage extends StatelessWidget {
                         spacing: 12,
                         runSpacing: 12,
                         children: [
-                          /// 🔥 مجموعة ألوان أساسية
-                          buildColorOption(Colors.blue,context),
-                          buildColorOption(Colors.red,context),
-                          buildColorOption(Colors.green,context),
-                          buildColorOption(Colors.orange,context),
-                          buildColorOption(Colors.purple,context),
-                          buildColorOption(Colors.teal,context),
-                          buildColorOption(Colors.indigo,context),
+                          /// 🔥 مجموعة ألوان أساسية (Primary Colors and Their Shades)
+                          buildColorOption(Colors.blue, context, "0xFF2196F3"),   // Blue
+                          buildColorOption(Color(0xFF0288D1), context, "0xFF0288D1"), // Royal Blue
+                          buildColorOption(Color(0xFF1976D2), context, "0xFF1976D2"), // Blue
+                          buildColorOption(Color(0xFF00C8FF), context, "0xFF00C8FF"), // Sky Blue
+                          buildColorOption(Color(0xFFB5EAEA), context, "0xFFB5EAEA"), // Aqua Pastel
+                          buildColorOption(Colors.purple, context, "0xFF9C27B0"), // Purple
+                          buildColorOption(Color(0xFF6A4C93), context, "0xFF6A4C93"), // Lavender
+                          buildColorOption(Color(0xFF3949AB), context, "0xFF3949AB"), // Blue Indigo
+                          buildColorOption(Color(0xFF512DA8), context, "0xFF512DA8"), // Indigo Purple
+                          buildColorOption(Colors.red, context, "0xFFF44336"),    // Red
+                          buildColorOption(Colors.orange, context, "0xFFFF9800"), // Orange
+                          buildColorOption(Colors.yellow, context, "0xFFFFEB3B"), // Yellow
+                          buildColorOption(Color(0xFFFFE6A7), context, "0xFFFFE6A7"), // Light Orange
+                          buildColorOption(Color(0xFFFFF8E1), context, "0xFFFFF8E1"), // Light Yellow
+                          buildColorOption(Color(0xFFFAF3F0), context, "0xFFFAF3F0"), // Light Peach
+                          buildColorOption(Colors.green, context, "0xFF4CAF50"),  // Green
+                          buildColorOption(Color(0xFF1B998B), context, "0xFF1B998B"), // Greenish Teal
+                          buildColorOption(Color(0xFFD9E4DD), context, "0xFFD9E4DD"), // Grey Pastel
+                          buildColorOption(Color(0xFFF1F8E9), context, "0xFFF1F8E9"), // Light Green
+                          buildColorOption(Color(0xFFE4C1F9), context, "0xFFE4C1F9"), // Purple Pastel
+                          buildColorOption(Color(0xFFFFC1CC), context, "0xFFFFC1CC"), // Pink Pastel
+                          buildColorOption(Colors.brown, context, "0xFF795548"),   // Brown
+                          buildColorOption(Colors.grey, context, "0xFF9E9E9E"),    // Grey
 
-                          /// 🌈 Pastel Colors
-                          buildColorOption(Color(0xFFFFC1CC),context), // Pink Pastel
-                          buildColorOption(Color(0xFFB5EAEA),context), // Aqua Pastel
-                          buildColorOption(Color(0xFFFFE6A7),context), // Light Orange
-                          buildColorOption(Color(0xFFD9E4DD),context), // Grey Pastel
-                          buildColorOption(Color(0xFFE4C1F9),context), // Purple Pastel
-
-                          /// 🚀 Modern Flat Colors
-                          buildColorOption(Color(0xFF0A97B0),context),
-                          buildColorOption(Color(0xFF0099CC),context),
-                          buildColorOption(Color(0xFF0061A8),context),
-                          buildColorOption(Color(0xFF1B998B),context),
-                          buildColorOption(Color(0xFF2D3047),context),
-
-                          /// Dark Mode Friendly
-                          buildColorOption(Color(0xFF232D3F),context),
-                          buildColorOption(Color(0xFF0F0F0F),context),
-                          buildColorOption(Color(0xFF1E1E2E),context),
-                          buildColorOption(Color(0xFF2A2A2A),context),
                         ],
                       ),
                     ],
@@ -165,7 +162,7 @@ class CreateSurveyPage extends StatelessWidget {
   },
   child: ElevatedButton(
               onPressed: () {
-                final selectedColor = BlocProvider.of<ThemeBloc>(context).seedColor;
+                final selectedColor = BlocProvider.of<ThemeBloc>(context).colorName;
                 BlocProvider.of<SurveyBloc>(context).add(CreateSurveyEvent(selectedColor.toString()
                   , titleController.text,
                   descriptionController.text,));
@@ -182,10 +179,10 @@ class CreateSurveyPage extends StatelessWidget {
 }
 
 // 🔹 نفس الويجت السابق (مع توحيد التصميم)
-Widget buildColorOption(Color color, BuildContext context) {
+Widget buildColorOption(Color color, BuildContext context,String colorName) {
   return GestureDetector(
     onTap:  (){
-      BlocProvider.of<ThemeBloc>(context).add(ChangeThemeColorEvent(color));
+      BlocProvider.of<ThemeBloc>(context).add(ChangeThemeColorEvent(color,colorName));
     },
     child: Container(
       width: 45,

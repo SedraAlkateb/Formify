@@ -52,7 +52,7 @@ final class LinkSurveyConferenceLoadingState extends ConferenceState {
   List<Object?> get props => [];
 }
 
-///////////////////////////////////////////////
+///////////////////////////AllConference////////////////////
 final class GetAllConferenceState extends ConferenceState {
   final List<GetAllConferenceModel> allConference;
   GetAllConferenceState(this.allConference);
@@ -72,6 +72,26 @@ final class GetAllConferenceLoadingState extends ConferenceState {
   @override
   List<Object?> get props => [];
 }
+///////////////////////////AllActiveConference////////////////////
+final class GetAllActiveConferenceState extends ConferenceState {
+  final List<GetAllConferenceModel> allActiveConference;
+  GetAllActiveConferenceState(this.allActiveConference);
+  List<Object?> get props => [allActiveConference];
+}
+final class GetAllActiveEmptyConferenceState extends ConferenceState {
+
+  List<Object?> get props => [];
+}
+final class GetAllActiveConferenceErrorState extends ConferenceState {
+  final Failure failure;
+  GetAllActiveConferenceErrorState({required this.failure});
+  @override
+  List<Object?> get props =>[failure];
+}
+final class GetAllActiveConferenceLoadingState extends ConferenceState {
+  @override
+  List<Object?> get props => [];
+}
 //////////////////////Delete
 final class DeleteConferenceState extends ConferenceState {
 
@@ -88,10 +108,20 @@ final class DeleteConferenceLoadingState extends ConferenceState {
   List<Object?> get props => [];
 }
 final class GetConferenceByIdState extends ConferenceState {
-  final GetAllConferenceModel conferenceModel;
+  final GetAllConferenceByIdModel conferenceModel;
 
   GetConferenceByIdState(this.conferenceModel);
 
   @override
   List<Object?> get props => [conferenceModel];
+}
+final class GetConferenceByIdErrorState extends ConferenceState {
+  final Failure failure;
+  GetConferenceByIdErrorState({required this.failure});
+  @override
+  List<Object?> get props =>[failure];
+}
+final class GetConferenceByIdLoadingState extends ConferenceState {
+  @override
+  List<Object?> get props => [];
 }

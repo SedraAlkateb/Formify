@@ -47,3 +47,22 @@ final class CreateSurveyWithQuestionLoadingState extends SurveyState {
   List<Object?> get props => [];
 }
 
+final class GetAllSurveyState extends SurveyState {
+ final List<MainSurveyModel> surveys;
+  GetAllSurveyState(this.surveys);
+  List<Object?> get props => [surveys];
+}
+final class GetAllSurveyErrorState extends SurveyState {
+  final Failure failure;
+  GetAllSurveyErrorState({required this.failure});
+  @override
+  List<Object?> get props =>[failure];
+}
+final class GetAllSurveyLoadingState extends SurveyState {
+  @override
+  List<Object?> get props => [];
+}
+final class GetAllEmptySurveyState extends SurveyState {
+  @override
+  List<Object?> get props => [];
+}

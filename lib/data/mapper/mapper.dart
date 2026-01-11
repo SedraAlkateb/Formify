@@ -1,5 +1,6 @@
 import 'package:formify/app/constants.dart';
 import 'package:formify/data/responses/responses.dart';
+import 'package:formify/domain/models/model_q.dart';
 import 'package:formify/domain/models/models.dart';
 
 
@@ -10,6 +11,53 @@ extension GetMainSurveyModelMapper on GetSurveyResponse? {
       this?.title ?? Constants.empty,
       this?.description ?? Constants.empty,
       this?.color ?? Constants.empty,
+    );
+  }
+}
+extension GetQuestionModelMapper on GetQuestionAndAnswerResponse? {
+  QuestionSurveyModel toDomain() {
+    return QuestionSurveyModel(id:  this?.id ?? Constants.zero,
+
+        title:  this?.question ?? Constants.empty,
+        order:   this?.question_order ?? Constants.zero,
+        isRequired:  this?.is_required ?? false,
+        type:  QuestionType.values.firstWhere(
+        (e) => e.toString().split('.').last == this?.type,
+    orElse: () => QuestionType.text,  // قيمة افتراضية
+    ),
+        ///TODO
+        answers: []);
+  }
+}
+extension ViewSurveyModelMapper on GetSurveyWithQuestionAndAnswerResponse? {
+  SurveyModel toDomain() {
+    return SurveyModel(
+      id: this?.id ?? Constants.zero,
+     title: this?.title ?? Constants.empty,
+    description:  this?.description ?? Constants.empty,
+ color:    this?.color ?? Constants.empty,
+  questions:[] //TODO
+    );
+  }
+}
+extension GetSurveyModelMapper on SurveyToConferenceModel? {
+  MainSurveyModel toDomain() {
+    return MainSurveyModel(
+      this?.id ?? Constants.zero,
+      this?.title ?? Constants.empty,
+      this?.description ?? Constants.empty,
+      this?.color ?? Constants.empty,
+    );
+  }
+}
+extension GetSurveyToConferenceMapper on GetSurveyToConferenceResponse? {
+  SurveyToConferenceModel toDomain() {
+    return SurveyToConferenceModel(
+      this?.id ?? Constants.zero,
+      this?.title ?? Constants.empty,
+      this?.description ?? Constants.empty,
+      this?.color ?? Constants.empty,
+      this?.survey_order ??Constants.zero
     );
   }
 }
@@ -46,8 +94,9 @@ extension GetConferenceMapper on GetAllConferenceResponse? {
   }
 }
 extension GetConferenceByIdMapper on GetConferenceByIdBaseResponse ?{
-  GetAllConferenceModel toDomain() {
-    return GetAllConferenceModel(
+  GetAllConferenceByIdModel toDomain() {
+
+    return GetAllConferenceByIdModel(
       this?.data.id ?? Constants.zero,
       this?.data.name ?? Constants.empty,
       this?.data.description ?? Constants.empty,
@@ -55,6 +104,8 @@ extension GetConferenceByIdMapper on GetConferenceByIdBaseResponse ?{
       this?.data.start_date ?? Constants.empty,
       this?.data.end_date ?? Constants.empty,
       this?.data.is_active ??false,
+        this!.data.surveys.toDomain()
+
     );
   }
 }
@@ -87,5 +138,14 @@ extension GetAllConferenceMapper on GetAllConferenceBaseResponse? {
         .cast<GetAllConferenceModel>()
         .toList();
     return allConference;
+  }
+}
+//List<SurveyToConferenceModel> surveys;
+extension GetAllSurveyToConferenceMapper on List<GetSurveyToConferenceResponse> {
+  List<SurveyToConferenceModel>  toDomain() {
+    List<SurveyToConferenceModel> allSurvey = (this.map((response) => response.toDomain()))
+        .cast<SurveyToConferenceModel>()
+        .toList();
+    return allSurvey;
   }
 }

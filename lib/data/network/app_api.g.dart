@@ -261,6 +261,7 @@ class _AppServiceClient implements AppServiceClient {
     int survey_id,
     int conference_id,
     int survey_order,
+    bool is_active,
   ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -269,6 +270,7 @@ class _AppServiceClient implements AppServiceClient {
     _data.fields.add(MapEntry('survey_id', survey_id.toString()));
     _data.fields.add(MapEntry('conference_id', conference_id.toString()));
     _data.fields.add(MapEntry('survey_order', survey_order.toString()));
+    _data.fields.add(MapEntry('is_active', is_active.toString()));
     final _options = _setStreamType<Message1Response>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
@@ -283,6 +285,104 @@ class _AppServiceClient implements AppServiceClient {
     late Message1Response _value;
     try {
       _value = Message1Response.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<GetAllSurveyWithActiveBaseResponse> getAllSurveyAndActiveSurvey(
+    int conference_id,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = FormData();
+    _data.fields.add(MapEntry('conference_id', conference_id.toString()));
+    final _options = _setStreamType<GetAllSurveyWithActiveBaseResponse>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            'survey-conference/get_allSurvey_and_activeSurvey.php',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late GetAllSurveyWithActiveBaseResponse _value;
+    try {
+      _value = GetAllSurveyWithActiveBaseResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<CreateUserResponse> createUserWithConferenceId(
+    String fullname,
+    String email,
+    String phone,
+    String address,
+    int conference_id,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = FormData();
+    _data.fields.add(MapEntry('fullname', fullname));
+    _data.fields.add(MapEntry('email', email));
+    _data.fields.add(MapEntry('phone', phone));
+    _data.fields.add(MapEntry('address', address));
+    _data.fields.add(MapEntry('conference_id', conference_id.toString()));
+    final _options = _setStreamType<CreateUserResponse>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            'users-crud/create_user_with_conferenceId.php',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late CreateUserResponse _value;
+    try {
+      _value = CreateUserResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<CreateConferenceBaseResponse> add_users_answers(
+    UseAnswerModel userAnswerModel,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(userAnswerModel.toJson());
+    final _options = _setStreamType<CreateConferenceBaseResponse>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            'users-crud/add_users_answers.php',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late CreateConferenceBaseResponse _value;
+    try {
+      _value = CreateConferenceBaseResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;

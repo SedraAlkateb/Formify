@@ -3,12 +3,13 @@ import 'package:equatable/equatable.dart';
 import 'package:formify/data/network/failure.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/repostitory/repository.dart';
-class GetConferenceByIdUsecase extends Equatable {
+class CreateUserWithConferenceId extends Equatable {
   final  Repository _repository;
-  const GetConferenceByIdUsecase(this._repository);
-  Future<Either<Failure,  GetAllConferenceByIdModel>> execute(int id) async{
-    return await _repository.getConferenceById(id);
+  const CreateUserWithConferenceId(this._repository);
+  Future<Either<Failure, int>> execute(UserInputModel userInputModel) async{
+    return await _repository.createUserWithConferenceId(userInputModel);
   }
+
   @override
   List<Object?> get props => [_repository];
 

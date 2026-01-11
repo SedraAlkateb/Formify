@@ -13,6 +13,12 @@ class CreateSurveyEvent extends SurveyEvent {
   @override
   List<Object?> get props => [color, title, description];
 }
+class GetAllSurveyEvent extends SurveyEvent {
+  GetAllSurveyEvent();
+
+  @override
+  List<Object?> get props => [];
+}
 
 class CreateQuesSurveyEvent extends SurveyEvent {
   final QuestionModel questionModel;

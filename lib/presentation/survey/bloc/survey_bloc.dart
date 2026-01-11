@@ -15,6 +15,7 @@ part 'survey_state.dart';
 
 class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
   CreateSurveyUsecase createSurveyUsecase;
+  
   CreateSurveyQuestionUsecase createSurveyQuestionUsecase;
   GetAllSurveyUsecase getAllSurveyUsecase;
   int id = 0;
@@ -38,7 +39,20 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
             emit(CreateSurveyState());
           },
         );
-      } else if (event is CreateQuesSurveyEvent) {
+      }
+      else  if (event is GetAllSurveyEvent) {
+        emit(GetAllSurveyLoadingState());
+        (await getAllSurveyUsecase.execute(
+        )).fold(
+              (failure) {
+            emit(GetAllSurveyErrorState(failure: failure));
+          },
+              (data) async {
+            emit(GetAllSurveyState(data));
+          },
+        );
+      }
+      else if (event is CreateQuesSurveyEvent) {
         event.questionModel.order = surveyModel.questions.length + 2;
         surveyModel.questions.add(event.questionModel);
         emit(ViewSurveyState(surveyModel));
