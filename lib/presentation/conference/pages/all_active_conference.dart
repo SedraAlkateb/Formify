@@ -33,7 +33,6 @@ class AllActiveConferencePage extends StatelessWidget {
             return errorFullScreen(context);
           } else if (state is GetAllActiveConferenceState) {
             return ListView.separated(
-              physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               itemCount: BlocProvider.of<ConferenceBloc>(
                 context,

@@ -6,7 +6,7 @@ class ColorManager {
   static const Color secondary = Color(0xFFD4AF37);
   static const Color accent = Color(0xFF607D8B);
 
-  static const Color background = Color(0xFFF9FAFB);
+  static const Color background = Color(0xFFF7F9FA);
   static const Color surface = Color(0xFFFFFFFF);
   static const Color fieldBackground = Color(0xFFF1F3F4);
 

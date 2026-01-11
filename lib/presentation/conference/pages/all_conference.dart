@@ -2,24 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 import 'package:formify/presentation/home/widget/conference_ended_widget.dart';
+import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
-class AllConferencePage extends StatefulWidget {
+class AllConferencePage extends StatelessWidget {
   const AllConferencePage({super.key});
-
-  @override
-  State<AllConferencePage> createState() => _AllConferencePageState();
-}
-
-class _AllConferencePageState extends State<AllConferencePage> {
-  @override
-  void initState() {
-    BlocProvider.of<ConferenceBloc>(
-      context,
-    ).add(GetAllNotActiveConferenceEvent());
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +19,12 @@ class _AllConferencePageState extends State<AllConferencePage> {
         ),
       ),
       body: BlocConsumer<ConferenceBloc, ConferenceState>(
+        buildWhen: (previous, current) =>
+        current is GetAllConferenceState ||
+            current is GetAllConferenceLoadingState||
+            current is GetAllConferenceErrorState
+        ||current is GetAllEmptyConferenceState
+        ,
         listener: (context, state) {
           if (state is GetConferenceByIdState) {
             Navigator.pushNamed(context, Routes.viewConference);
@@ -69,7 +63,11 @@ class _AllConferencePageState extends State<AllConferencePage> {
           } else if (state is GetAllEmptyConferenceState) {
             return emptyFullScreen(context);
           } else
-            return SizedBox();
+            return Container(
+              height: 100,
+              width: 100,
+              color: ColorManager.black,
+            );
         },
       ),
     );

@@ -62,7 +62,8 @@ class CustomGridPage extends StatelessWidget {
             child: AnimatedGridItem(
               text: "get all Survey",
               onTap: () {
-                print("Big clicked");
+                Navigator.pushNamed(context, Routes.getAllSurvey);
+
               },
             ),
           ),

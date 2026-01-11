@@ -281,6 +281,40 @@ class GetAllConferenceResponse {
   // to json
   Map<String, dynamic> toJson() => _$GetAllConferenceResponseToJson(this);
 }
+/////////////////////GETALLCONFERENCE
+@JsonSerializable()
+class GetAllConferenceByIdResponse {
+  @JsonKey(name: "id")
+  int? id;
+  @JsonKey(name: "name")
+  String? name;
+  @JsonKey(name: "description")
+  String? description;
+  @JsonKey(name: "address")
+  String? address;
+  @JsonKey(name: "start_date")
+  String? start_date;
+  @JsonKey(name: "end_date")
+  String? end_date;
+  @JsonKey(name: "is_active")
+  bool? is_active;
+  @JsonKey(name: "surveys")
+  List<GetSurveyToConferenceResponse> surveys;
+  GetAllConferenceByIdResponse(
+      this.id,
+      this.name,
+      this.description,
+      this.address,
+      this.start_date,
+      this.end_date,
+      this.is_active,
+      this.surveys,
+      ); // from json
+  factory GetAllConferenceByIdResponse.fromJson(Map<String, dynamic> json) =>
+      _$GetAllConferenceByIdResponseFromJson(json);
+  // to json
+  Map<String, dynamic> toJson() => _$GetAllConferenceByIdResponseToJson(this);
+}
 
 @JsonSerializable()
 class GetAllConferenceBaseResponse extends BaseResponse {
@@ -296,9 +330,36 @@ class GetAllConferenceBaseResponse extends BaseResponse {
 }
 
 @JsonSerializable()
+class GetSurveyToConferenceResponse {
+  @JsonKey(name: "id")
+  int? id;
+  @JsonKey(name: "title")
+  String? title;
+  @JsonKey(name: "description")
+  String? description;
+  @JsonKey(name: "color")
+  String? color;
+  @JsonKey(name: "survey_order")
+  int? survey_order;
+
+  GetSurveyToConferenceResponse(
+    this.id,
+    this.title,
+    this.description,
+    this.color,
+    this.survey_order,
+  );
+  // from json
+  factory GetSurveyToConferenceResponse.fromJson(Map<String, dynamic> json) =>
+      _$GetSurveyToConferenceResponseFromJson(json);
+  // to json
+  Map<String, dynamic> toJson() => _$GetSurveyToConferenceResponseToJson(this);
+}
+
+@JsonSerializable()
 class GetConferenceByIdBaseResponse extends BaseResponse {
   @JsonKey(name: "data")
-  GetAllConferenceResponse data;
+  GetAllConferenceByIdResponse data;
   GetConferenceByIdBaseResponse(this.data);
   // from json
   factory GetConferenceByIdBaseResponse.fromJson(Map<String, dynamic> json) =>

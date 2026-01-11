@@ -19,6 +19,7 @@ class LoginModel {
 }
 
 class SurveyModel {
+  int? id;
   String title;
   String description;
   String color;
@@ -26,6 +27,7 @@ class SurveyModel {
   List<QuestionModel> questions;
 
   SurveyModel({
+    this.id,
     required this.title,
     required this.description,
     required this.color,
@@ -189,6 +191,25 @@ class AnswerModel {
   }
 }
 
+class QuestionSurveyModel {
+  int id;
+  String title;
+  int order;
+  bool isRequired;
+  QuestionType type;
+  List<AnswerModel> answers;
+
+  QuestionSurveyModel({
+    required this.id,
+    required this.title,
+    required this.order,
+    required this.isRequired,
+    required this.type,
+    required this.answers,
+  });
+
+}
+
 class UseAnswerModel {
   int user_id;
   List<AnswerModel> answersModel;
@@ -325,4 +346,32 @@ class GetAllConferenceModel {
     this.endDate,
     this.isActive,
   );
+}
+class GetAllConferenceByIdModel {
+  int id;
+  String name;
+  String description;
+  String address;
+  String startDate;
+  String endDate;
+  bool isActive;
+  List<SurveyToConferenceModel> surveys;
+  GetAllConferenceByIdModel(
+      this.id,
+      this.name,
+      this.description,
+      this.address,
+      this.startDate,
+      this.endDate,
+      this.isActive,
+      this.surveys
+      );
+}
+class SurveyToConferenceModel {
+  int id;
+  String title;
+  String description;
+  String color;
+  int survey_order;
+  SurveyToConferenceModel(this.id, this.title, this.description, this.color,this.survey_order);
 }

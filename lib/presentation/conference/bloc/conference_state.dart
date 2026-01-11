@@ -108,10 +108,20 @@ final class DeleteConferenceLoadingState extends ConferenceState {
   List<Object?> get props => [];
 }
 final class GetConferenceByIdState extends ConferenceState {
-  final GetAllConferenceModel conferenceModel;
+  final GetAllConferenceByIdModel conferenceModel;
 
   GetConferenceByIdState(this.conferenceModel);
 
   @override
   List<Object?> get props => [conferenceModel];
+}
+final class GetConferenceByIdErrorState extends ConferenceState {
+  final Failure failure;
+  GetConferenceByIdErrorState({required this.failure});
+  @override
+  List<Object?> get props =>[failure];
+}
+final class GetConferenceByIdLoadingState extends ConferenceState {
+  @override
+  List<Object?> get props => [];
 }

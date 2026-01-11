@@ -265,6 +265,37 @@ Map<String, dynamic> _$GetAllConferenceResponseToJson(
   'is_active': instance.is_active,
 };
 
+GetAllConferenceByIdResponse _$GetAllConferenceByIdResponseFromJson(
+  Map<String, dynamic> json,
+) => GetAllConferenceByIdResponse(
+  (json['id'] as num?)?.toInt(),
+  json['name'] as String?,
+  json['description'] as String?,
+  json['address'] as String?,
+  json['start_date'] as String?,
+  json['end_date'] as String?,
+  json['is_active'] as bool?,
+  (json['surveys'] as List<dynamic>)
+      .map(
+        (e) =>
+            GetSurveyToConferenceResponse.fromJson(e as Map<String, dynamic>),
+      )
+      .toList(),
+);
+
+Map<String, dynamic> _$GetAllConferenceByIdResponseToJson(
+  GetAllConferenceByIdResponse instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'name': instance.name,
+  'description': instance.description,
+  'address': instance.address,
+  'start_date': instance.start_date,
+  'end_date': instance.end_date,
+  'is_active': instance.is_active,
+  'surveys': instance.surveys,
+};
+
 GetAllConferenceBaseResponse _$GetAllConferenceBaseResponseFromJson(
   Map<String, dynamic> json,
 ) =>
@@ -287,11 +318,33 @@ Map<String, dynamic> _$GetAllConferenceBaseResponseToJson(
   'data': instance.data,
 };
 
+GetSurveyToConferenceResponse _$GetSurveyToConferenceResponseFromJson(
+  Map<String, dynamic> json,
+) => GetSurveyToConferenceResponse(
+  (json['id'] as num?)?.toInt(),
+  json['title'] as String?,
+  json['description'] as String?,
+  json['color'] as String?,
+  (json['survey_order'] as num?)?.toInt(),
+);
+
+Map<String, dynamic> _$GetSurveyToConferenceResponseToJson(
+  GetSurveyToConferenceResponse instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'title': instance.title,
+  'description': instance.description,
+  'color': instance.color,
+  'survey_order': instance.survey_order,
+};
+
 GetConferenceByIdBaseResponse _$GetConferenceByIdBaseResponseFromJson(
   Map<String, dynamic> json,
 ) =>
     GetConferenceByIdBaseResponse(
-        GetAllConferenceResponse.fromJson(json['data'] as Map<String, dynamic>),
+        GetAllConferenceByIdResponse.fromJson(
+          json['data'] as Map<String, dynamic>,
+        ),
       )
       ..status = json['status'] as String?
       ..message = json['message'] as String?;

@@ -10,11 +10,11 @@ abstract class Repository {
   );
  Future<Either<Failure, List<MainSurveyModel>>> getAllSurvey();
   Future<Either<Failure,int>> createConference(ConferenceModel conference);
-// Future<Either<Failure, LoginModel>> getSurveyWithQuestionById(int id);
+ Future<Either<Failure, SurveyModel>> getSurveyWithQuestionById(int id);
   Future<Either<Failure,List<GetAllConferenceModel>>> getAllConference(int isActive);
   Future<Either<Failure,Null>> linkSurveyConference(SurveyConference surveyConference);
   Future<Either<Failure,Null>>deleteConference(int id);
-  Future<Either<Failure,GetAllConferenceModel>> getConferenceById(int id);
+  Future<Either<Failure,GetAllConferenceByIdModel>> getConferenceById(int id);
   Future<Either<Failure,int>>createUserWithConferenceId(  UserInputModel userInputModel,);
 
 }
