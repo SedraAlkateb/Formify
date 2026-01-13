@@ -47,13 +47,15 @@ class SurveyModel {
 }
 
 class QuestionModel {
+  int? id;
   String title;
   int order;
   bool isRequired;
   QuestionType type;
-  List<String> answers;
+  List<AnswerModel> answers;
 
   QuestionModel({
+    this.id,
     required this.title,
     required this.order,
     required this.isRequired,
@@ -74,6 +76,7 @@ class QuestionModel {
 
   Map<String, dynamic> toMap() {
     return {
+      'id':id,
       'title': title,
       'order': order,
       'isRequired': isRequired,
@@ -84,6 +87,7 @@ class QuestionModel {
 
   factory QuestionModel.fromMap(Map<String, dynamic> map) {
     return QuestionModel(
+      id: map['id'],
       title: map['title'],
       order: map['order'],
       isRequired: map['isRequired'],
@@ -177,7 +181,7 @@ class ConferenceModel {
 }
 
 class AnswerModel {
-  int answer_id;
+  int? answer_id;
   String content;
 
   AnswerModel(this.answer_id, this.content);
@@ -189,25 +193,6 @@ class AnswerModel {
   factory AnswerModel.fromMap(Map<String, dynamic> map) {
     return AnswerModel(map['answer_id'], map['content']);
   }
-}
-
-class QuestionSurveyModel {
-  int id;
-  String title;
-  int order;
-  bool isRequired;
-  QuestionType type;
-  List<AnswerModel> answers;
-
-  QuestionSurveyModel({
-    required this.id,
-    required this.title,
-    required this.order,
-    required this.isRequired,
-    required this.type,
-    required this.answers,
-  });
-
 }
 
 class UseAnswerModel {
@@ -374,4 +359,43 @@ class SurveyToConferenceModel {
   String color;
   int survey_order;
   SurveyToConferenceModel(this.id, this.title, this.description, this.color,this.survey_order);
+}
+class GetAsyncModel{
+  GetAllConferenceModel conferenceModel;
+  List<MainSurveyModel> surveys;
+  List<AsyncQuestionModel> questions;
+  List<GetAsyncAnswerModel> answers;
+  List<SurveyConferenceAsyncModel> surveyConference;
+
+  GetAsyncModel(this.conferenceModel, this.surveys, this.questions, this.answers,
+      this.surveyConference);
+
+}
+class AsyncQuestionModel {
+  int? id;
+  String title;
+  int order;
+  bool isRequired;
+  QuestionType type;
+
+  AsyncQuestionModel(this.id, this.title, this.order, this.isRequired, this.type);
+
+}
+class GetAsyncAnswerModel{
+  int id;
+  int questionId;
+  String title;
+
+  GetAsyncAnswerModel(this.id, this.questionId, this.title);
+
+}
+class SurveyConferenceAsyncModel {
+  int id;
+  int survey_order;
+  int survey_id;
+  int conference_id;
+
+  SurveyConferenceAsyncModel(this.id, this.survey_order, this.survey_id,
+      this.conference_id);
+
 }

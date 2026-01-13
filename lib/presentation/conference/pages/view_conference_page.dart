@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:formify/app/di.dart';
 import 'package:formify/data/mapper/mapper.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
+import 'package:formify/presentation/resources/routes_manager.dart';
+import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 import 'package:formify/presentation/survey/widget/list_survey_widget.dart';
-
+///////////
 class ViewConferencePage extends StatelessWidget {
   const ViewConferencePage({super.key});
 
@@ -206,7 +209,13 @@ class ViewConferencePage extends StatelessWidget {
                     itemCount: conference.surveys.length, // Number of surveys
                     itemBuilder: (context, index) {
 
-                      return surveyListWidget( conference.surveys[index].toDomain());
+                      return InkWell(
+                          onTap: () {
+                            initSurveyModule();
+                            BlocProvider.of<SurveyBloc>(context).add(ViewSurveyByIdEvent( conference.surveys[index].id));
+                            Navigator.pushNamed(context, Routes.viewSurvey);
+                          },
+                          child: surveyListWidget( conference.surveys[index].toDomain()));
                     },
                   ),
                 ],

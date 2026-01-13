@@ -111,28 +111,30 @@ class _AppServiceClient implements AppServiceClient {
   }
 
   @override
-  Future<GetSurveyWithQuestionAndAnswerBaseResponse> getSurveyWithQuestionById(
-    int id,
-  ) async {
+  Future<GetSurveyWithQuestionAndAnswerByIdBaseResponse>
+  getSurveyWithQuestionById(int id) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = FormData();
     _data.fields.add(MapEntry('id', id.toString()));
-    final _options = _setStreamType<GetSurveyWithQuestionAndAnswerBaseResponse>(
-      Options(method: 'GET', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            'survey-crud/get_surveyWithQuestion_by_id.php',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
+    final _options =
+        _setStreamType<GetSurveyWithQuestionAndAnswerByIdBaseResponse>(
+          Options(method: 'POST', headers: _headers, extra: _extra)
+              .compose(
+                _dio.options,
+                'survey-crud/get_surveyWithQuestion_by_id.php',
+                queryParameters: queryParameters,
+                data: _data,
+              )
+              .copyWith(
+                baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl),
+              ),
+        );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late GetSurveyWithQuestionAndAnswerBaseResponse _value;
+    late GetSurveyWithQuestionAndAnswerByIdBaseResponse _value;
     try {
-      _value = GetSurveyWithQuestionAndAnswerBaseResponse.fromJson(
+      _value = GetSurveyWithQuestionAndAnswerByIdBaseResponse.fromJson(
         _result.data!,
       );
     } on Object catch (e, s) {
@@ -383,6 +385,36 @@ class _AppServiceClient implements AppServiceClient {
     late CreateConferenceBaseResponse _value;
     try {
       _value = CreateConferenceBaseResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<GetAllAsyncByConferenceIdBaseResponse> getAllInformationConference(
+    int conference_id,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = FormData();
+    _data.fields.add(MapEntry('conference_id', conference_id.toString()));
+    final _options = _setStreamType<GetAllAsyncByConferenceIdBaseResponse>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            'synchronize/get_allInformation_confernce.php',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late GetAllAsyncByConferenceIdBaseResponse _value;
+    try {
+      _value = GetAllAsyncByConferenceIdBaseResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;

@@ -43,7 +43,7 @@ Widget viewAnswerWidget(BuildContext context,SurveyModel surveyModel ){
             itemBuilder: (context, index) {
               // عندك answers عندك String، بس انت ما عم تستخدمه داخل TextField.
               // الأفضل تربطه بالعرض (initialValue) باستخدام FormBuilderTextField بدل TextField
-              final String item = surveyModel.questions.last.answers[index];
+              final String item = surveyModel.questions.last.answers[index].content;
 
               return Row(
                 children: [

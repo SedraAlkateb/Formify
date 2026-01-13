@@ -8,6 +8,7 @@ import 'package:formify/domain/models/request.dart';
 import 'package:formify/domain/usecase/create_survey_question_usecase.dart';
 import 'package:formify/domain/usecase/create_survey_usecase.dart';
 import 'package:formify/domain/usecase/get_all_survey_usecase.dart';
+import 'package:formify/domain/usecase/get_survey_question_id_usecase.dart';
 import 'package:meta/meta.dart';
 
 part 'survey_event.dart';
@@ -15,12 +16,12 @@ part 'survey_state.dart';
 
 class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
   CreateSurveyUsecase createSurveyUsecase;
-  
+  GetSurveyQuestionIdUsecase getSurveyQuestionIdUsecase;
   CreateSurveyQuestionUsecase createSurveyQuestionUsecase;
   GetAllSurveyUsecase getAllSurveyUsecase;
   int id = 0;
   SurveyModel surveyModel = SurveyModel.create();
-  SurveyBloc(this.createSurveyUsecase, this.createSurveyQuestionUsecase,this.getAllSurveyUsecase)
+  SurveyBloc(this.createSurveyUsecase, this.createSurveyQuestionUsecase,this.getAllSurveyUsecase,this.getSurveyQuestionIdUsecase)
     : super(SurveyInitial()) {
     on<SurveyEvent>((event, emit) async {
       if (event is CreateSurveyEvent) {
@@ -63,10 +64,10 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
         surveyModel.questions.last.isRequired = event.isRequired;
         emit(ViewSurveyState(surveyModel));
       } else if (event is CreateEmptyAnswerSurveyEvent) {
-        surveyModel.questions.last.answers.add("");
+        surveyModel.questions.last.answers.add(AnswerModel( 0,""));
         emit(ViewSurveyState(surveyModel));
       } else if (event is CreateBoolAnswerSurveyEvent) {
-        surveyModel.questions.last.answers.add("0");
+        surveyModel.questions.last.answers.add(AnswerModel( 0,""));
         emit(ViewSurveyState(surveyModel));
       } else if (event is CreateEmptyQuesNameSurveyEvent) {
         surveyModel.questions.add(
@@ -86,7 +87,7 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
         surveyModel.questions.last.answers.removeAt(event.index);
         emit(ViewSurveyState(surveyModel));
       } else if (event is CreateAnswerSurveyEvent) {
-        surveyModel.questions.last.answers[event.index] = event.value;
+        surveyModel.questions.last.answers[event.index] = AnswerModel(0, event.value);
         emit(ViewSurveyState(surveyModel));
       } else if (event is CreateSurveyWithQuestionEvent) {
         emit(CreateSurveyWithQuestionLoadingState());
@@ -100,6 +101,21 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
           (data) async {
             //updateRecipes(data);
             emit(CreateSurveyWithQuestionState());
+          },
+        );
+      }else if (event is ViewSurveyByIdEvent) {
+        emit(ViewSurveyLoadingState());
+
+        (await getSurveyQuestionIdUsecase.execute(
+         event.id
+        )).fold(
+              (failure) {
+            emit(ViewSurveyErrorState(failure: failure));
+          },
+              (data) async {
+                surveyModel=data;
+                id=data.id??0;
+            emit(ViewSurveyState(data));
           },
         );
       }

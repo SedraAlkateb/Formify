@@ -115,8 +115,8 @@ class DropDownQuestionPage extends StatelessWidget {
                               items: (surveyModel.questions.last.answers)
                                   .map(
                                     (a) => DropdownMenuItem<String>(
-                                  value: a,
-                                  child: Text(a,style: TextStyle(color: ColorManager.black),),
+                                  value: a.content,
+                                  child: Text(a.content,style: TextStyle(color: ColorManager.black),),
                                 ),
                               )
                                   .toList(),

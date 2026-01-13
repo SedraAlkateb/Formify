@@ -92,6 +92,13 @@ class CreateSurveyWithQuestionEvent extends SurveyEvent {
   @override
   List<Object?> get props => [];
 }
+class ViewSurveyByIdEvent extends SurveyEvent {
+final int id;
+  ViewSurveyByIdEvent(this.id);
+
+  @override
+  List<Object?> get props => [id];
+}
 class CreateBoolAnswerSurveyEvent extends SurveyEvent {
 
   CreateBoolAnswerSurveyEvent();

@@ -230,6 +230,11 @@ class ViewSurvey extends StatelessWidget {
                   ],
                 );
               }
+              else if(state is ViewSurveyErrorState){
+                return errorFullScreen(context);
+              }else if(state is ViewSurveyLoadingState){
+                return loadingFullScreen(context);
+              }
               return SizedBox();
             },
           ),

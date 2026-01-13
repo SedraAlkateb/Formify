@@ -5,5 +5,4 @@ class RepositroySqlImp extends RepositorySql {
   final AppSqlApi _databaseHelper;
 
   RepositroySqlImp(this._databaseHelper);
-
 }

@@ -108,9 +108,9 @@ class CheckboxPage extends StatelessWidget {
                               options: surveyModel.questions.last.answers
                                   .map(
                                     (a) => FormBuilderFieldOption(
-                                  value: a,
+                                  value: a.content,
                                   child: Text(
-                                    a,
+                                    a.content,
                                     style: TextStyle(color: ColorManager.black),
                                   ),
                                 ),

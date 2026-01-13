@@ -7,7 +7,16 @@ final class SurveyInitial extends SurveyState {
   @override
   List<Object?> get props => [];
 }
-
+final class ViewSurveyErrorState extends SurveyState {
+  final Failure failure;
+ ViewSurveyErrorState({required this.failure});
+  @override
+  List<Object?> get props =>[failure];
+}
+final class ViewSurveyLoadingState extends SurveyState {
+  @override
+  List<Object?> get props => [];
+}
 /// عند تغيير اللون
 class ViewSurveyState extends SurveyState {
   final SurveyModel surveyModel;
@@ -16,6 +25,9 @@ class ViewSurveyState extends SurveyState {
   @override
   List<Object?> get props => [surveyModel];
 }
+
+
+
 final class CreateSurveyState extends SurveyState {
   CreateSurveyState();
   List<Object?> get props => [];

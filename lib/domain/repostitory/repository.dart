@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:formify/data/network/failure.dart';
+import 'package:formify/data/responses/responses.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/models/request.dart';
 
@@ -16,5 +17,6 @@ abstract class Repository {
   Future<Either<Failure,Null>>deleteConference(int id);
   Future<Either<Failure,GetAllConferenceByIdModel>> getConferenceById(int id);
   Future<Either<Failure,int>>createUserWithConferenceId(  UserInputModel userInputModel,);
+  Future<Either<Failure,GetAsyncModel>> getAllInformationConference(int id);
 
 }
