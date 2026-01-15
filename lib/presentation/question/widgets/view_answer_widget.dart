@@ -4,10 +4,10 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 
-Widget viewAnswerWidget(BuildContext context,SurveyModel surveyModel ){
+Widget viewAnswerWidget(BuildContext context, SurveyModel surveyModel) {
   final colorScheme = Theme.of(context).colorScheme;
 
-  return    Container(
+  return Container(
     width: double.infinity,
     padding: const EdgeInsets.all(16),
     decoration: BoxDecoration(
@@ -43,7 +43,8 @@ Widget viewAnswerWidget(BuildContext context,SurveyModel surveyModel ){
             itemBuilder: (context, index) {
               // عندك answers عندك String، بس انت ما عم تستخدمه داخل TextField.
               // الأفضل تربطه بالعرض (initialValue) باستخدام FormBuilderTextField بدل TextField
-              final String item = surveyModel.questions.last.answers[index];
+              final String item =
+                  surveyModel.questions.last.answers[index].content;
 
               return Row(
                 children: [
@@ -58,7 +59,9 @@ Widget viewAnswerWidget(BuildContext context,SurveyModel surveyModel ){
                         ),
                       ),
                       onChanged: (val) {
-                        context.read<SurveyBloc>().add(CreateAnswerSurveyEvent(index, val ?? ""));
+                        context.read<SurveyBloc>().add(
+                          CreateAnswerSurveyEvent(index, val ?? ""),
+                        );
                       },
                     ),
                   ),
@@ -66,7 +69,9 @@ Widget viewAnswerWidget(BuildContext context,SurveyModel surveyModel ){
                   IconButton(
                     icon: const Icon(Icons.delete_outline),
                     onPressed: () {
-                      context.read<SurveyBloc>().add(RemoveAnswerAtEvent(index));
+                      context.read<SurveyBloc>().add(
+                        RemoveAnswerAtEvent(index),
+                      );
                     },
                   ),
                 ],

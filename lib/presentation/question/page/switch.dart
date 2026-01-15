@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:formify/domain/models/models.dart';
+import 'package:formify/presentation/question/widgets/next_widget.dart';
 import 'package:formify/presentation/question/widgets/question_widget.dart';
-import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 
 class SwitchQuestionPage extends StatelessWidget {
@@ -14,7 +14,7 @@ class SwitchQuestionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    return Scaffold(
+    return  Scaffold(
       backgroundColor: colorScheme.background,
 
       appBar: AppBar(title: const Text("Switch Question")),
@@ -112,16 +112,7 @@ class SwitchQuestionPage extends StatelessWidget {
 
                   const Spacer(),
 
-                  // ===================== زر Next =====================
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, Routes.viewSurvey);
-                      },
-                      child: const Text("Next"),
-                    ),
-                  ),
+                  nextWidget(context)
                 ],
               ),
             );

@@ -194,3 +194,9 @@ extension QuestionTypeX on QuestionType {
 
 }
 final List<QuestionType> questionTypes = QuestionType.values;
+QuestionType convertToQuestionType(String value){
+  return       QuestionType.values.firstWhere(
+        (e) => e.toString().split('.').last == value,
+    orElse: () => QuestionType.text,
+  );
+}

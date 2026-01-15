@@ -39,6 +39,8 @@ class ConferenceEndedWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   " ${allConference[index].name} ${index + 1}",
                   style: const TextStyle(
                     fontSize: 18,

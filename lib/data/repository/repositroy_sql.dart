@@ -1,4 +1,8 @@
+import 'package:dartz/dartz.dart';
 import 'package:formify/data/network/app_sql_api.dart';
+import 'package:formify/data/network/error_handler.dart';
+import 'package:formify/data/network/failure.dart';
+import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/repostitory/repository_sql.dart';
 
 class RepositroySqlImp extends RepositorySql {
@@ -6,4 +10,14 @@ class RepositroySqlImp extends RepositorySql {
 
   RepositroySqlImp(this._databaseHelper);
 
+  @override
+  Future<Either<Failure, String>> asyncData(GetAsyncModel asyncData)async {
+    try {
+      final response = await _databaseHelper.asyncData(asyncData);
+      return Right(response);
+    } catch (e) {
+      Failure failure = ErrorHandler.handle(e).failure;
+      return Left(failure);
+    }
+  }
 }

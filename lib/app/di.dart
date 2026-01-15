@@ -17,6 +17,7 @@ import 'package:formify/domain/usecase/delete_conference_usecase.dart';
 import 'package:formify/domain/usecase/get_all_conference_usecase.dart';
 import 'package:formify/domain/usecase/get_all_survey_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_by_id_usecase.dart';
+import 'package:formify/domain/usecase/get_survey_question_id_usecase.dart';
 import 'package:formify/domain/usecase/link_survey_conference_usecase.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 import 'package:formify/presentation/onboarding/bloc/onboarding_bloc.dart';
@@ -30,61 +31,90 @@ Future<void> initAppModule() async {
   final sharedPrefs = await SharedPreferences.getInstance();
   instance.registerLazySingleton<SharedPreferences>(() => sharedPrefs);
   //app prefs instance
-  instance
-      .registerLazySingleton<AppPreferences>(() => AppPreferences(instance()));
+  instance.registerLazySingleton<AppPreferences>(
+    () => AppPreferences(instance()),
+  );
   //network info instance
 
-  instance.registerLazySingleton<NetworkInfo>(
-          () => NetworkInfoImpl());
+  instance.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl());
   instance.registerLazySingleton<DioFactory>(() => DioFactory());
   Dio dio = await instance<DioFactory>().getDio();
   instance.registerLazySingleton<AppServiceClient>(() => AppServiceClient(dio));
   instance.registerLazySingleton<RemoteDataSource>(
-          () => RemoteDataSourceImpl(instance<AppServiceClient>()));
+    () => RemoteDataSourceImpl(instance<AppServiceClient>()),
+  );
   DatabaseHelper databaseHelper = DatabaseHelper();
   instance.registerLazySingleton<AppSqlApi>(() => AppSqlApi(databaseHelper));
   await instance<AppSqlApi>().initializeDatabase();
 
   instance.registerLazySingleton<RepositorySql>(
-          () => RepositroySqlImp(instance()));
+    () => RepositroySqlImp(instance()),
+  );
   //repository
   instance.registerLazySingleton<Repository>(
-          () => RepositoryImp(instance(), instance()));
-  instance.registerLazySingleton<ThemeBloc>(
-          () => ThemeBloc());
+    () => RepositoryImp(instance(), instance()),
+  );
+  instance.registerLazySingleton<ThemeBloc>(() => ThemeBloc());
 }
+
 Future<void> initOnBoardingModule() async {
   if (!GetIt.I.isRegistered<OnboardingBloc>()) {
     instance.registerFactory<OnboardingBloc>(() => OnboardingBloc());
-
   }
 }
+
 Future<void> initConferenceModule() async {
   if (!GetIt.I.isRegistered<ConferenceBloc>()) {
-    instance.registerFactory<CreateConferenceUsecase>(() => CreateConferenceUsecase(instance()));
-    instance.registerFactory<GetAllConferenceUsecase>(() =>
-        GetAllConferenceUsecase(instance()));
-    instance.registerFactory<LinkSurveyConferenceUsecase>(() =>
-        LinkSurveyConferenceUsecase(instance()));
-    instance.registerFactory<DeleteConferenceUsecase>(() =>
-        DeleteConferenceUsecase(instance()));
-    instance.registerFactory<GetAllSurveyUsecase>(() =>
-        GetAllSurveyUsecase(instance()));
-    instance.registerFactory<GetConferenceByIdUsecase>(() =>
-        GetConferenceByIdUsecase(instance()));
-    instance.registerFactory<ConferenceBloc>(() => ConferenceBloc(instance(),instance(),instance(),instance(),instance(),instance()));
+    instance.registerFactory<CreateConferenceUsecase>(
+      () => CreateConferenceUsecase(instance()),
+    );
+    instance.registerFactory<GetAllConferenceUsecase>(
+      () => GetAllConferenceUsecase(instance()),
+    );
+    instance.registerFactory<LinkSurveyConferenceUsecase>(
+      () => LinkSurveyConferenceUsecase(instance()),
+    );
+    instance.registerFactory<DeleteConferenceUsecase>(
+      () => DeleteConferenceUsecase(instance()),
+    );
+    instance.registerFactory<GetAllSurveyUsecase>(
+      () => GetAllSurveyUsecase(instance()),
+    );
+    instance.registerFactory<GetConferenceByIdUsecase>(
+      () => GetConferenceByIdUsecase(instance()),
+    );
+    instance.registerFactory<ConferenceBloc>(
+      () => ConferenceBloc(
+        instance(),
+        instance(),
+        instance(),
+        instance(),
+        instance(),
+        instance(),
+      ),
+    );
   }
 }
+
 Future<void> initSurveyModule() async {
   if (!GetIt.I.isRegistered<GetAllSurveyUsecase>()) {
-    instance.registerFactory<GetAllSurveyUsecase>(() =>
-        GetAllSurveyUsecase(instance()));
+    instance.registerFactory<GetAllSurveyUsecase>(
+      () => GetAllSurveyUsecase(instance()),
+    );
   }
   if (!GetIt.I.isRegistered<SurveyBloc>()) {
-    instance.registerFactory<CreateSurveyUsecase>(() => CreateSurveyUsecase(instance()));
-    instance.registerFactory<CreateSurveyQuestionUsecase>(() => CreateSurveyQuestionUsecase(instance()));
+    instance.registerFactory<CreateSurveyUsecase>(
+      () => CreateSurveyUsecase(instance()),
+    );
+    instance.registerFactory<CreateSurveyQuestionUsecase>(
+      () => CreateSurveyQuestionUsecase(instance()),
+    );
+    instance.registerFactory<GetSurveyQuestionIdUsecase>(
+      () => GetSurveyQuestionIdUsecase(instance()),
+    );
 
-    instance.registerFactory<SurveyBloc>(() => SurveyBloc(instance(),instance(),instance()));
-
+    instance.registerFactory<SurveyBloc>(
+      () => SurveyBloc(instance(), instance(), instance(), instance()),
+    );
   }
 }

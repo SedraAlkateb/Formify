@@ -76,7 +76,10 @@ class RouteGenerator {
         return _animatedRoute(CheckboxPage());
 
       case Routes.conferenceSurveyById:
-        return _animatedRoute(ConferenceSurveyById());
+        final conferenceId = settings.arguments as int;
+        return _animatedRoute(
+          ConferenceSurveyById(conferenceId: conferenceId),
+        );
 
       case Routes.getAllConference:
         initConferenceModule();

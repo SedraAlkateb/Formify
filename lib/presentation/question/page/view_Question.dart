@@ -4,6 +4,7 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/models/model_q.dart';
 import 'package:form_builder_extra_fields/form_builder_extra_fields.dart';
+
 class QuestionPreviewBuilder extends StatelessWidget {
   final QuestionModel question;
 
@@ -117,7 +118,7 @@ class QuestionPreviewBuilder extends StatelessWidget {
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           ),
           items: question.answers
-              .map((a) => DropdownMenuItem(value: a, child: Text(a)))
+              .map((a) => DropdownMenuItem(value: a.content, child: Text(a.content)))
               .toList(),
           validator: question.isRequired == true
               ? FormBuilderValidators.required(
@@ -134,7 +135,7 @@ class QuestionPreviewBuilder extends StatelessWidget {
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           ),
           items: question.answers
-              .map((a) => DropdownMenuItem(value: a, child: Text(a)))
+              .map((a) => DropdownMenuItem(value:  a.content, child: Text( a.content)))
               .toList(),
           isExpanded: true,
           validator: question.isRequired == true
@@ -149,7 +150,7 @@ class QuestionPreviewBuilder extends StatelessWidget {
         return FormBuilderRadioGroup<String>(
           name: "q_${question.order}",
           options: question.answers
-              .map((a) => FormBuilderFieldOption(value: a))
+              .map((a) => FormBuilderFieldOption(value:  a.content))
               .toList(),
           validator: question.isRequired == true
               ? FormBuilderValidators.required()
@@ -161,7 +162,7 @@ class QuestionPreviewBuilder extends StatelessWidget {
         return FormBuilderCheckboxGroup<String>(
           name: "q_${question.order}",
           options: question.answers
-              .map((a) => FormBuilderFieldOption(value: a))
+              .map((a) => FormBuilderFieldOption(value:  a.content))
               .toList(),
           validator: question.isRequired == true
               ? FormBuilderValidators.minLength(
@@ -182,7 +183,7 @@ class QuestionPreviewBuilder extends StatelessWidget {
           //      multiple: true,
           options: question.answers
               .map(
-                (a) => FormBuilderChipOption<String>(value: a, child: Text(a)),
+                (a) => FormBuilderChipOption<String>(value:  a.content, child: Text( a.content)),
               )
               .toList(),
           validator: question.isRequired == true
@@ -215,11 +216,15 @@ class QuestionPreviewBuilder extends StatelessWidget {
                   optionsBuilder: (textEditingValue) {
                     final q = textEditingValue.text.trim().toLowerCase();
                     if (q.isEmpty) return const Iterable<String>.empty();
-                    return question.answers.where(
-                      (a) => a.toLowerCase().contains(q),
-                    );
+
+                    // تصفية الإجابات والرجوع فقط إلى النصوص (content)
+                    Iterable<String> an = question.answers.where(
+                          (a) => a.content.toLowerCase().contains(q),
+                    ).map((a) => a.content);  // هنا نقوم بأخذ content فقط
+
+                    return an;  // إرجاع Iterable من النصوص فقط
                   },
-                  onSelected: (val) => field.didChange(val),
+                  onSelected: (val) => field.didChange(val),  // التعامل مع النص الذي تم اختياره
                   fieldViewBuilder: (context, controller, focusNode, onSubmit) {
                     controller.text = field.value ?? controller.text;
                     return TextField(
@@ -236,6 +241,7 @@ class QuestionPreviewBuilder extends StatelessWidget {
                     );
                   },
                 ),
+
               ],
             );
           },
@@ -245,7 +251,7 @@ class QuestionPreviewBuilder extends StatelessWidget {
       case QuestionType.switchField:
         return FormBuilderSwitch(
           name: "q_${question.order}",
-          title: Text(question.title ),
+          title: Text(question.title),
           initialValue:
               (question.answers.isNotEmpty && question.answers[0] == "1"),
           validator: (value) {
@@ -302,19 +308,19 @@ class QuestionPreviewBuilder extends StatelessWidget {
       /// answers: [min, max, initial?, divisions?]
       case QuestionType.slider:
         final min = _toDouble(
-          question.answers.isNotEmpty ? question.answers[0] : null,
+          question.answers.isNotEmpty ? question.answers[0].content : null,
           fallback: 0,
         );
         final max = _toDouble(
-          question.answers.length > 1 ? question.answers[1] : null,
+          question.answers.length > 1 ? question.answers[1].content : null,
           fallback: 100,
         );
         final initial = _toDouble(
-          question.answers.length > 2 ? question.answers[2] : null,
+          question.answers.length > 2 ? question.answers[2] .content: null,
           fallback: min,
         );
         final divisions = _toInt(
-          question.answers.length > 3 ? question.answers[3] : null,
+          question.answers.length > 3 ? question.answers[3].content : null,
           fallback: 0,
         );
 
@@ -335,19 +341,19 @@ class QuestionPreviewBuilder extends StatelessWidget {
       /// answers: [min, max, start?, end?]
       case QuestionType.rangeSlider:
         final min = _toDouble(
-          question.answers.isNotEmpty ? question.answers[0] : null,
+          question.answers.isNotEmpty ? question.answers[0] .content: null,
           fallback: 0,
         );
         final max = _toDouble(
-          question.answers.length > 1 ? question.answers[1] : null,
+          question.answers.length > 1 ? question.answers[1].content : null,
           fallback: 100,
         );
         final start = _toDouble(
-          question.answers.length > 2 ? question.answers[2] : null,
+          question.answers.length > 2 ? question.answers[2] .content: null,
           fallback: min,
         );
         final end = _toDouble(
-          question.answers.length > 3 ? question.answers[3] : null,
+          question.answers.length > 3 ? question.answers[3].content : null,
           fallback: max,
         );
 
@@ -369,7 +375,7 @@ class QuestionPreviewBuilder extends StatelessWidget {
           name: "q_${question.order}",
           initialValue: 0,
           maxRating: _toDouble(
-            question.answers.isNotEmpty ? question.answers[0] : null,
+            question.answers.isNotEmpty ? question.answers[0] .content: null,
             fallback: 5,
           ),
           allowHalfRating: true,
@@ -387,19 +393,19 @@ class QuestionPreviewBuilder extends StatelessWidget {
       /// answers: [min, max, step, initial?]
       case QuestionType.stepperNumber:
         final min = _toDouble(
-          question.answers.isNotEmpty ? question.answers[0] : null,
+          question.answers.isNotEmpty ? question.answers[0].content : null,
           fallback: 0,
         );
         final max = _toDouble(
-          question.answers.length > 1 ? question.answers[1] : null,
+          question.answers.length > 1 ? question.answers[1].content : null,
           fallback: 100,
         );
         final step = _toDouble(
-          question.answers.length > 2 ? question.answers[2] : null,
+          question.answers.length > 2 ? question.answers[2].content : null,
           fallback: 1,
         );
         final initial = _toDouble(
-          question.answers.length > 3 ? question.answers[3] : null,
+          question.answers.length > 3 ? question.answers[3].content : null,
           fallback: min,
         );
 
@@ -428,7 +434,7 @@ class QuestionPreviewBuilder extends StatelessWidget {
       /// عرض نص فقط (Preview). إذا تحتاج HTML حقيقي استخدم flutter_widget_from_html.
       case QuestionType.htmlContent:
         return Text(
-          (question.title.isNotEmpty ) ? question.title : "",
+          (question.title.isNotEmpty) ? question.title : "",
           style: const TextStyle(height: 1.4),
         );
 
@@ -438,7 +444,7 @@ class QuestionPreviewBuilder extends StatelessWidget {
         return FormBuilderField<String>(
           name: "q_${question.order}",
           initialValue: question.answers.isNotEmpty
-              ? question.answers.first
+              ? question.answers.first.content
               : "",
           builder: (field) => const SizedBox.shrink(),
         );

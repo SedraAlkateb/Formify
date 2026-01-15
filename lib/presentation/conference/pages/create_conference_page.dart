@@ -210,7 +210,7 @@ class CreateConferencePage extends StatelessWidget {
                   error(context, state.failure.massage, state.failure.code);
                 } else if (state is CreateConferenceState) {
                   BlocProvider.of<ConferenceBloc>(context)
-                      .add(GetAllSurveyEvent());
+                      .add(GetAllSurveyByConferenceEvent());
                  Navigator.pushReplacementNamed(context, Routes.conferenceSurveyById);
                 }
               },

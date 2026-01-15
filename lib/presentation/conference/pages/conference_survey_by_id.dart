@@ -5,8 +5,8 @@ import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
 class ConferenceSurveyById extends StatelessWidget {
-  const ConferenceSurveyById({super.key});
-
+  const ConferenceSurveyById({super.key,required this.conferenceId});
+final int conferenceId;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,7 +29,7 @@ class ConferenceSurveyById extends StatelessWidget {
 
             onPressed: () => BlocProvider.of<ConferenceBloc>(
               context,
-            ).add(GetAllSurveyEvent()),
+            ).add(GetAllSurveyByConferenceEvent()),
             icon: Icon(Icons.refresh_rounded, color: ColorManager.black),
           ),
         ],
@@ -46,7 +46,7 @@ class ConferenceSurveyById extends StatelessWidget {
                 context,
                 func: () => BlocProvider.of<ConferenceBloc>(
                   context,
-                ).add(GetAllSurveyEvent()),
+                ).add(GetAllSurveyByConferenceEvent()),
               );
             }
             if (state is GetAllSurveyState) {
@@ -85,8 +85,6 @@ class ConferenceSurveyById extends StatelessWidget {
                         itemBuilder: (_, i) {
                           final s = surveys[i];
                           final bool isSelected =s.isActive;
-
-
                           return _SurveyTile(
                             title: s.title,
                             subtitle: (s.description ).trim(),
@@ -94,9 +92,8 @@ class ConferenceSurveyById extends StatelessWidget {
                             value: isSelected,
                             onChanged: (v) {
                               print("object");
-
                               BlocProvider.of<ConferenceBloc>(context).add(
-                                LinkSurveyConferenceEvent( s.id,i,surveys),
+                                LinkSurveyConferenceEvent( s.id,i,surveys,conferenceId),
                               );
                             },
                             onTap: () {

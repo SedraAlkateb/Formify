@@ -3,10 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/question/widgets/add_answer_widget.dart';
+import 'package:formify/presentation/question/widgets/next_widget.dart';
 import 'package:formify/presentation/question/widgets/question_widget.dart';
 import 'package:formify/presentation/question/widgets/view_answer_widget.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
-import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 
 class MultipleChoicePage extends StatelessWidget {
@@ -16,7 +16,7 @@ class MultipleChoicePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Scaffold(
+    return  Scaffold(
       backgroundColor: colorScheme.background,
       appBar: AppBar(title: const Text("Multiple Choice Question")),
       body: Padding(
@@ -111,9 +111,9 @@ class MultipleChoicePage extends StatelessWidget {
                               options: surveyModel.questions.last.answers
                                   .map(
                                     (a) => FormBuilderFieldOption<String>(
-                                  value: a,
+                                  value: a.content,
                                   child: Text(
-                                    a,
+                                    a.content,
                                     style: TextStyle(color: ColorManager.black),
                                   ),
                                 ),
@@ -127,24 +127,7 @@ class MultipleChoicePage extends StatelessWidget {
                       ),
                     ],
                     const SizedBox(height: 20),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          final ok = _formKey.currentState?.saveAndValidate() ?? false;
-                          if (!ok) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Fix validation errors first.")),
-                            );
-                            return;
-                          }
-                          final values = _formKey.currentState!.value;
-                          Navigator.pushNamed(context, Routes.viewSurvey);
-
-                        },
-                        child: const Text("Next"),
-                      ),
-                    ),
+                    nextWidget(context)
                   ],
                 ),
               ),

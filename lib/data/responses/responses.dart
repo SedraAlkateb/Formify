@@ -167,6 +167,20 @@ class GetSurveyWithQuestionAndAnswerResponse {
 }
 
 @JsonSerializable()
+class GetSurveyWithQuestionAndAnswerByIdBaseResponse extends BaseResponse {
+  @JsonKey(name: "data")
+  GetSurveyWithQuestionAndAnswerResponse data;
+
+  GetSurveyWithQuestionAndAnswerByIdBaseResponse(this.data); // from json
+  factory GetSurveyWithQuestionAndAnswerByIdBaseResponse.fromJson(
+    Map<String, dynamic> json,
+  ) => _$GetSurveyWithQuestionAndAnswerByIdBaseResponseFromJson(json);
+  // to json
+  Map<String, dynamic> toJson() =>
+      _$GetSurveyWithQuestionAndAnswerByIdBaseResponseToJson(this);
+}
+
+@JsonSerializable()
 class GetQuestionAndAnswerResponse {
   @JsonKey(name: "id")
   int? id;
@@ -281,6 +295,7 @@ class GetAllConferenceResponse {
   // to json
   Map<String, dynamic> toJson() => _$GetAllConferenceResponseToJson(this);
 }
+
 /////////////////////GETALLCONFERENCE
 @JsonSerializable()
 class GetAllConferenceByIdResponse {
@@ -301,15 +316,15 @@ class GetAllConferenceByIdResponse {
   @JsonKey(name: "surveys")
   List<GetSurveyToConferenceResponse> surveys;
   GetAllConferenceByIdResponse(
-      this.id,
-      this.name,
-      this.description,
-      this.address,
-      this.start_date,
-      this.end_date,
-      this.is_active,
-      this.surveys,
-      ); // from json
+    this.id,
+    this.name,
+    this.description,
+    this.address,
+    this.start_date,
+    this.end_date,
+    this.is_active,
+    this.surveys,
+  ); // from json
   factory GetAllConferenceByIdResponse.fromJson(Map<String, dynamic> json) =>
       _$GetAllConferenceByIdResponseFromJson(json);
   // to json
@@ -411,4 +426,105 @@ class GetAllSurveyWithActiveBaseResponse extends BaseResponse {
   // to json
   Map<String, dynamic> toJson() =>
       _$GetAllSurveyWithActiveBaseResponseToJson(this);
+}
+
+@JsonSerializable()
+class GetAllAsyncByConferenceIdBaseResponse extends BaseResponse {
+  @JsonKey(name: "data")
+  GetAsyncConferenceResponse data;
+  GetAllAsyncByConferenceIdBaseResponse(this.data);
+  // from json
+  factory GetAllAsyncByConferenceIdBaseResponse.fromJson(
+    Map<String, dynamic> json,
+  ) => _$GetAllAsyncByConferenceIdBaseResponseFromJson(json);
+
+  // to json
+  Map<String, dynamic> toJson() =>
+      _$GetAllAsyncByConferenceIdBaseResponseToJson(this);
+}
+
+@JsonSerializable()
+class GetAsyncConferenceResponse {
+  @JsonKey(name: "conference")
+  GetAllConferenceResponse conference;
+  @JsonKey(name: "survey")
+  List<GetSurveyResponse> survey;
+  @JsonKey(name: "questions")
+  List<GetQuestionForAsyncResponse> questions;
+  @JsonKey(name: "answers")
+  List<GetAnswerForAsyncResponse> answers;
+  @JsonKey(name: "survey_conference")
+  List<SurveyConferenceForAsyncResponse> survey_conference;
+
+  GetAsyncConferenceResponse(this.conference, this.survey, this.questions,
+      this.answers, this.survey_conference); // from json
+  factory GetAsyncConferenceResponse.fromJson(Map<String, dynamic> json) =>
+      _$GetAsyncConferenceResponseFromJson(json);
+  // to json
+  Map<String, dynamic> toJson() => _$GetAsyncConferenceResponseToJson(this);
+}
+
+@JsonSerializable()
+class GetQuestionForAsyncResponse {
+  @JsonKey(name: "id")
+  int? id;
+  @JsonKey(name: "question")
+  String? question;
+  @JsonKey(name: "question_order")
+  int? question_order;
+  @JsonKey(name: "is_required")
+  bool? is_required;
+  @JsonKey(name: "type")
+  String? type;
+  @JsonKey(name: "survey_id")
+  int? survey_id;
+  GetQuestionForAsyncResponse(
+    this.id,
+    this.question,
+    this.question_order,
+    this.is_required,
+    this.type,
+      this.survey_id
+  ); // from json
+  factory GetQuestionForAsyncResponse.fromJson(Map<String, dynamic> json) =>
+      _$GetQuestionForAsyncResponseFromJson(json);
+  // to json
+  Map<String, dynamic> toJson() => _$GetQuestionForAsyncResponseToJson(this);
+}
+
+@JsonSerializable()
+class GetAnswerForAsyncResponse {
+  @JsonKey(name: "id")
+  int? id;
+  @JsonKey(name: "title")
+  String? title;
+  @JsonKey(name: "question_id")
+  int? question_id;
+  GetAnswerForAsyncResponse(this.id, this.title, this.question_id);
+  // from json
+  factory GetAnswerForAsyncResponse.fromJson(Map<String, dynamic> json) =>
+      _$GetAnswerForAsyncResponseFromJson(json);
+  // to json
+  Map<String, dynamic> toJson() => _$GetAnswerForAsyncResponseToJson(this);
+}
+
+@JsonSerializable()
+class SurveyConferenceForAsyncResponse {
+  @JsonKey(name: "id")
+  int? id;
+  @JsonKey(name: "survey_order")
+  int? survey_order;
+  @JsonKey(name: "survey_id")
+  int? survey_id;
+  @JsonKey(name: "conference_id")
+  int? conference_id;
+
+  SurveyConferenceForAsyncResponse(this.id, this.survey_order, this.survey_id,
+      this.conference_id); // from json
+  factory SurveyConferenceForAsyncResponse.fromJson(
+    Map<String, dynamic> json,
+  ) => _$SurveyConferenceForAsyncResponseFromJson(json);
+  // to json
+  Map<String, dynamic> toJson() =>
+      _$SurveyConferenceForAsyncResponseToJson(this);
 }

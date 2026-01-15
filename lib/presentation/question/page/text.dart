@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:formify/domain/models/models.dart';
+import 'package:formify/presentation/question/widgets/next_widget.dart';
 import 'package:formify/presentation/question/widgets/question_widget.dart';
-import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 
 class TextQuestionPage extends StatelessWidget {
@@ -15,7 +15,7 @@ class TextQuestionPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Scaffold(
+    return  Scaffold(
       backgroundColor: colorScheme.background,
 
       appBar: AppBar(title: const Text("Text Question")),
@@ -72,7 +72,9 @@ class TextQuestionPage extends StatelessWidget {
                                     ),
                                     Switch(
                                       value:
-                                          surveyModel.questions.last.isRequired,
+                                           BlocProvider.of<SurveyBloc>(
+                                        context,
+                                      ).question.isRequired,
                                       activeColor: colorScheme.primary,
                                       onChanged: (val) {
                                         context.read<SurveyBloc>().add(
@@ -112,18 +114,22 @@ class TextQuestionPage extends StatelessWidget {
                                   children: [
                                     Flexible(
                                       child: Text(
-                                        surveyModel.questions.last.title.isEmpty
+                                         BlocProvider.of<SurveyBloc>(
+                                        context,
+                                      ).question.title.isEmpty
                                             ? "Question label will appear here"
-                                            : surveyModel.questions.last.title,
+                                            :  BlocProvider.of<SurveyBloc>(
+                                        context,
+                                      ).question.title,
                                         style: TextStyle(
                                           fontWeight: FontWeight.w600,
                                           color: colorScheme.onSurface,
                                         ),
                                       ),
                                     ),
-                                    if (surveyModel
-                                        .questions
-                                        .last
+                                    if ( BlocProvider.of<SurveyBloc>(
+                                      context,
+                                    ).question
                                         .isRequired) ...[
                                       const SizedBox(width: 4),
                                       Text(
@@ -146,7 +152,9 @@ class TextQuestionPage extends StatelessWidget {
                                     ),
                                   ),
                                   validator: (value) {
-                                    if (surveyModel.questions.last.isRequired &&
+                                    if ( BlocProvider.of<SurveyBloc>(
+                                        context,
+                                      ).question.isRequired &&
                                         (value == null ||
                                             value.trim().isEmpty)) {
                                       return "Answer cannot be empty";
@@ -183,17 +191,7 @@ class TextQuestionPage extends StatelessWidget {
                       ),
                     ),
                   ),
-
-                  // زر Next ثابت تحت (بدون Spacer)
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, Routes.viewSurvey);
-                      },
-                      child: const Text("Next"),
-                    ),
-                  ),
+                  nextWidget(context)
                 ],
               ),
             );

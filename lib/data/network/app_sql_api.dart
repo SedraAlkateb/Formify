@@ -1,8 +1,11 @@
 import 'package:formify/data/network/sqlite_factory.dart';
+import 'package:formify/domain/models/models.dart';
 import 'package:sqflite/sqflite.dart';
 
 abstract class AppSqlApiAbs {
-  Future<void> editIsLogin(int repId, int isLogin);
+  Future<String> asyncData(
+      GetAsyncModel asyncData
+      ) ;
 }
 
 class AppSqlApi extends AppSqlApiAbs {
@@ -11,13 +14,62 @@ class AppSqlApi extends AppSqlApiAbs {
   Future<void> initializeDatabase() async {
     await databaseFactory.debugSetLogLevel(sqfliteLogLevelVerbose);
   }
-  Future<void> editIsLogin(int repId, int isLogin) async {
-    final mydb = await databaseHelper.database;
-    await mydb.update(
-      'rep',
-      {'isLogin': isLogin},
-      where: 'repId = ?',
-      whereArgs: [repId],
-    );
+
+  @override
+  Future<String> asyncData(
+      GetAsyncModel asyncData
+      ) async {
+    try {
+      final db = await databaseHelper.database;
+
+      await db.transaction((txn) async {
+        final batch = txn.batch();
+
+        batch.insert(
+          'conference',
+          asyncData.conferenceModel.toMap(),
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+
+        for (final survey in asyncData.surveys) {
+          batch.insert(
+            'survey',
+            survey.toMap(),
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
+        }
+
+        for (final question in asyncData. questions) {
+          batch.insert(
+            'questions',
+            question.toMap(),
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
+        }
+
+        for (final answer in  asyncData.answers) {
+          batch.insert(
+            'answers',
+            answer.toMap(),
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
+        }
+
+        for (final sc in  asyncData.surveyConference) {
+          batch.insert(
+            'survey_conference',
+            sc.toMap(),
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
+        }
+
+        await batch.commit(noResult: true);
+      });
+
+      return "";
+    } catch (e) {
+      return e.toString();
+    }
   }
+
 }

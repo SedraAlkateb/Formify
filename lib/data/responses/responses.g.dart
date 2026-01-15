@@ -162,6 +162,26 @@ Map<String, dynamic> _$GetSurveyWithQuestionAndAnswerResponseToJson(
   'questions': instance.questions,
 };
 
+GetSurveyWithQuestionAndAnswerByIdBaseResponse
+_$GetSurveyWithQuestionAndAnswerByIdBaseResponseFromJson(
+  Map<String, dynamic> json,
+) =>
+    GetSurveyWithQuestionAndAnswerByIdBaseResponse(
+        GetSurveyWithQuestionAndAnswerResponse.fromJson(
+          json['data'] as Map<String, dynamic>,
+        ),
+      )
+      ..status = json['status'] as String?
+      ..message = json['message'] as String?;
+
+Map<String, dynamic> _$GetSurveyWithQuestionAndAnswerByIdBaseResponseToJson(
+  GetSurveyWithQuestionAndAnswerByIdBaseResponse instance,
+) => <String, dynamic>{
+  'status': instance.status,
+  'message': instance.message,
+  'data': instance.data,
+};
+
 GetQuestionAndAnswerResponse _$GetQuestionAndAnswerResponseFromJson(
   Map<String, dynamic> json,
 ) => GetQuestionAndAnswerResponse(
@@ -398,4 +418,112 @@ Map<String, dynamic> _$GetAllSurveyWithActiveBaseResponseToJson(
   'status': instance.status,
   'message': instance.message,
   'data': instance.data,
+};
+
+GetAllAsyncByConferenceIdBaseResponse
+_$GetAllAsyncByConferenceIdBaseResponseFromJson(Map<String, dynamic> json) =>
+    GetAllAsyncByConferenceIdBaseResponse(
+        GetAsyncConferenceResponse.fromJson(
+          json['data'] as Map<String, dynamic>,
+        ),
+      )
+      ..status = json['status'] as String?
+      ..message = json['message'] as String?;
+
+Map<String, dynamic> _$GetAllAsyncByConferenceIdBaseResponseToJson(
+  GetAllAsyncByConferenceIdBaseResponse instance,
+) => <String, dynamic>{
+  'status': instance.status,
+  'message': instance.message,
+  'data': instance.data,
+};
+
+GetAsyncConferenceResponse _$GetAsyncConferenceResponseFromJson(
+  Map<String, dynamic> json,
+) => GetAsyncConferenceResponse(
+  GetAllConferenceResponse.fromJson(json['conference'] as Map<String, dynamic>),
+  (json['survey'] as List<dynamic>)
+      .map((e) => GetSurveyResponse.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  (json['questions'] as List<dynamic>)
+      .map(
+        (e) => GetQuestionForAsyncResponse.fromJson(e as Map<String, dynamic>),
+      )
+      .toList(),
+  (json['answers'] as List<dynamic>)
+      .map((e) => GetAnswerForAsyncResponse.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  (json['survey_conference'] as List<dynamic>)
+      .map(
+        (e) => SurveyConferenceForAsyncResponse.fromJson(
+          e as Map<String, dynamic>,
+        ),
+      )
+      .toList(),
+);
+
+Map<String, dynamic> _$GetAsyncConferenceResponseToJson(
+  GetAsyncConferenceResponse instance,
+) => <String, dynamic>{
+  'conference': instance.conference,
+  'survey': instance.survey,
+  'questions': instance.questions,
+  'answers': instance.answers,
+  'survey_conference': instance.survey_conference,
+};
+
+GetQuestionForAsyncResponse _$GetQuestionForAsyncResponseFromJson(
+  Map<String, dynamic> json,
+) => GetQuestionForAsyncResponse(
+  (json['id'] as num?)?.toInt(),
+  json['question'] as String?,
+  (json['question_order'] as num?)?.toInt(),
+  json['is_required'] as bool?,
+  json['type'] as String?,
+  (json['survey_id'] as num?)?.toInt(),
+);
+
+Map<String, dynamic> _$GetQuestionForAsyncResponseToJson(
+  GetQuestionForAsyncResponse instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'question': instance.question,
+  'question_order': instance.question_order,
+  'is_required': instance.is_required,
+  'type': instance.type,
+  'survey_id': instance.survey_id,
+};
+
+GetAnswerForAsyncResponse _$GetAnswerForAsyncResponseFromJson(
+  Map<String, dynamic> json,
+) => GetAnswerForAsyncResponse(
+  (json['id'] as num?)?.toInt(),
+  json['title'] as String?,
+  (json['question_id'] as num?)?.toInt(),
+);
+
+Map<String, dynamic> _$GetAnswerForAsyncResponseToJson(
+  GetAnswerForAsyncResponse instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'title': instance.title,
+  'question_id': instance.question_id,
+};
+
+SurveyConferenceForAsyncResponse _$SurveyConferenceForAsyncResponseFromJson(
+  Map<String, dynamic> json,
+) => SurveyConferenceForAsyncResponse(
+  (json['id'] as num?)?.toInt(),
+  (json['survey_order'] as num?)?.toInt(),
+  (json['survey_id'] as num?)?.toInt(),
+  (json['conference_id'] as num?)?.toInt(),
+);
+
+Map<String, dynamic> _$SurveyConferenceForAsyncResponseToJson(
+  SurveyConferenceForAsyncResponse instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'survey_order': instance.survey_order,
+  'survey_id': instance.survey_id,
+  'conference_id': instance.conference_id,
 };
