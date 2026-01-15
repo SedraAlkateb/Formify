@@ -123,6 +123,16 @@ class MainSurveyModel {
   String color;
 
   MainSurveyModel(this.id, this.title, this.description, this.color);
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id':id,
+      'title': title,
+      'description': description,
+      'color': color,
+    };
+  }
+
 }
 
 class IsActiveMainSurveyModel {
@@ -331,6 +341,17 @@ class GetAllConferenceModel {
     this.endDate,
     this.isActive,
   );
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'description': description,
+      'address': address,
+      'start_date': startDate,
+      'end_date': endDate,
+      'is_active': isActive
+    };
+  }
 }
 class GetAllConferenceByIdModel {
   int id;
@@ -377,9 +398,23 @@ class AsyncQuestionModel {
   int order;
   bool isRequired;
   QuestionType type;
+  int survey_id;
+  AsyncQuestionModel(this.id,
+      this.title, this.order,
+      this.isRequired, this.type,
+      this.survey_id
+      );
 
-  AsyncQuestionModel(this.id, this.title, this.order, this.isRequired, this.type);
-
+  Map<String, dynamic> toMap() {
+    return {
+      'id':id,
+      'survey_id':survey_id,
+      'question': title,
+      'question_order': order,
+      'is_required': isRequired,
+      'type': type.name,
+    };
+  }
 }
 class GetAsyncAnswerModel{
   int id;
@@ -387,7 +422,13 @@ class GetAsyncAnswerModel{
   String title;
 
   GetAsyncAnswerModel(this.id, this.questionId, this.title);
-
+  Map<String, dynamic> toMap() {
+    return {
+      'id':id,
+      'title': title,
+      'question_id': questionId,
+    };
+  }
 }
 class SurveyConferenceAsyncModel {
   int id;
@@ -397,5 +438,12 @@ class SurveyConferenceAsyncModel {
 
   SurveyConferenceAsyncModel(this.id, this.survey_order, this.survey_id,
       this.conference_id);
-
+  Map<String, dynamic> toMap() {
+    return {
+      'id':id,
+      'survey_id':survey_id,
+      'conference_id': conference_id,
+      'survey_order': survey_order,
+    };
+  }
 }

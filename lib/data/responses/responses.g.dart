@@ -480,6 +480,7 @@ GetQuestionForAsyncResponse _$GetQuestionForAsyncResponseFromJson(
   (json['question_order'] as num?)?.toInt(),
   json['is_required'] as bool?,
   json['type'] as String?,
+  (json['survey_id'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$GetQuestionForAsyncResponseToJson(
@@ -490,6 +491,7 @@ Map<String, dynamic> _$GetQuestionForAsyncResponseToJson(
   'question_order': instance.question_order,
   'is_required': instance.is_required,
   'type': instance.type,
+  'survey_id': instance.survey_id,
 };
 
 GetAnswerForAsyncResponse _$GetAnswerForAsyncResponseFromJson(

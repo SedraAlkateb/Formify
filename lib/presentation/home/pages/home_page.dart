@@ -35,8 +35,10 @@ class HomePage extends StatelessWidget {
                   fontSize: 20,
                 ),
               ),
-              SizedBox(height: 500,
-                  child: CustomGridPage()),
+              SizedBox(
+                  height: 500,
+                  child: CustomGridPage()
+              ),
               Text(
                 "Ended Conference",
                 style: TextStyle(fontWeight: FontWeight.w600, fontSize: 30),
@@ -46,15 +48,13 @@ class HomePage extends StatelessWidget {
                 current is GetAllConferenceState ||
                     current is GetAllConferenceLoadingState||
                     current is GetAllConferenceErrorState
-                    ||current is GetAllEmptyConferenceState
-                ,
-
+                    ||current is GetAllEmptyConferenceState,
                 builder: (context, state) {
-
                   if (state is GetAllConferenceLoadingState) {
                     return loadingFullScreen(context);
-                  } else if (state is GetAllConferenceErrorState) {
-                    return errorFullScreen(context);
+                  }
+                  else if (state is GetAllConferenceErrorState) {
+                    return errorFullScreen(context,func:()=>BlocProvider.of<ConferenceBloc>(context).add(GetAllNotActiveConferenceEvent()));
                   } else if (state is GetAllConferenceState) {
                     return ListView.separated(
                       physics: NeverScrollableScrollPhysics(),

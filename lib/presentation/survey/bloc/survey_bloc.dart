@@ -20,9 +20,17 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
   CreateSurveyQuestionUsecase createSurveyQuestionUsecase;
   GetAllSurveyUsecase getAllSurveyUsecase;
   int id = 0;
+  QuestionModel question=QuestionModel.create();
+  List<QuestionModel> questions=[];
   SurveyModel surveyModel = SurveyModel.create();
-  SurveyBloc(this.createSurveyUsecase, this.createSurveyQuestionUsecase,this.getAllSurveyUsecase,this.getSurveyQuestionIdUsecase)
-    : super(SurveyInitial()) {
+
+
+  SurveyBloc(
+    this.createSurveyUsecase,
+    this.createSurveyQuestionUsecase,
+    this.getAllSurveyUsecase,
+    this.getSurveyQuestionIdUsecase,
+  ) : super(SurveyInitial()) {
     on<SurveyEvent>((event, emit) async {
       if (event is CreateSurveyEvent) {
         surveyModel.description = event.description;
@@ -41,59 +49,63 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
           },
         );
       }
-      else  if (event is GetAllSurveyEvent) {
+      else if (event is GetAllSurveyEvent) {
         emit(GetAllSurveyLoadingState());
-        (await getAllSurveyUsecase.execute(
-        )).fold(
-              (failure) {
+        (await getAllSurveyUsecase.execute()).fold(
+          (failure) {
             emit(GetAllSurveyErrorState(failure: failure));
           },
-              (data) async {
+          (data) async {
             emit(GetAllSurveyState(data));
           },
         );
       }
-      else if (event is CreateQuesSurveyEvent) {
-        event.questionModel.order = surveyModel.questions.length + 2;
-        surveyModel.questions.add(event.questionModel);
-        emit(ViewSurveyState(surveyModel));
-      } else if (event is CreateQuesNameSurveyEvent) {
-        surveyModel.questions.last.title = event.questionName;
+      // else if (event is CreateQuesSurveyEvent) {
+      //   question=QuestionModel.create();
+      //   event.questionModel.order = surveyModel.questions.length + 2;
+      //   question=event.questionModel;
+      //  // surveyModel.questions.add(event.questionModel);
+      //   emit(ViewSurveyState(surveyModel));
+      // }
+      //
+      else if (event is CreateQuesNameSurveyEvent) {
+        question.title = event.questionName;
         emit(ViewSurveyState(surveyModel));
       } else if (event is CreateQuesIsRequiredSurveyEvent) {
-        surveyModel.questions.last.isRequired = event.isRequired;
+        question.isRequired = event.isRequired;
         emit(ViewSurveyState(surveyModel));
       } else if (event is CreateEmptyAnswerSurveyEvent) {
-        surveyModel.questions.last.answers.add(AnswerModel( 0,""));
+        question.answers.add(AnswerModel(0, ""));
         emit(ViewSurveyState(surveyModel));
       } else if (event is CreateBoolAnswerSurveyEvent) {
-        surveyModel.questions.last.answers.add(AnswerModel( 0,""));
+        question.answers.add(AnswerModel(0, ""));
         emit(ViewSurveyState(surveyModel));
       } else if (event is CreateEmptyQuesNameSurveyEvent) {
-        surveyModel.questions.add(
-          QuestionModel(
-            title: "",
-            order: surveyModel.questions.length + 2,
-            isRequired: true,
-            answers: [],
-            type: event.type,
-          ),
+        question=  QuestionModel(
+          title: "",
+          order: surveyModel.questions.length + 2,
+          isRequired: true,
+          answers: [],
+          type: event.type,
         );
+
         emit(ViewSurveyState(surveyModel));
       } else if (event is RemoveLastAnswerEvent) {
-        surveyModel.questions.last.answers.clear();
+        question.answers.clear();
         emit(ViewSurveyState(surveyModel));
       } else if (event is RemoveAnswerAtEvent) {
-        surveyModel.questions.last.answers.removeAt(event.index);
+        question.answers.removeAt(event.index);
         emit(ViewSurveyState(surveyModel));
       } else if (event is CreateAnswerSurveyEvent) {
-        surveyModel.questions.last.answers[event.index] = AnswerModel(0, event.value);
+        question.answers[event.index] = AnswerModel(
+          0,
+          event.value,
+        );
         emit(ViewSurveyState(surveyModel));
       } else if (event is CreateSurveyWithQuestionEvent) {
         emit(CreateSurveyWithQuestionLoadingState());
-
         (await createSurveyQuestionUsecase.execute(
-          SurveyQuestionAndAnswersModel(id, surveyModel.questions),
+          SurveyQuestionAndAnswersModel(id, questions),
         )).fold(
           (failure) {
             emit(CreateSurveyWithQuestionErrorState(failure: failure));
@@ -103,22 +115,27 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
             emit(CreateSurveyWithQuestionState());
           },
         );
-      }else if (event is ViewSurveyByIdEvent) {
+      } else if (event is ViewSurveyByIdEvent) {
         emit(ViewSurveyLoadingState());
 
-        (await getSurveyQuestionIdUsecase.execute(
-         event.id
-        )).fold(
-              (failure) {
+        (await getSurveyQuestionIdUsecase.execute(event.id)).fold(
+          (failure) {
             emit(ViewSurveyErrorState(failure: failure));
           },
-              (data) async {
-                surveyModel=data;
-                id=data.id??0;
+          (data) async {
+            surveyModel = data;
+            id = data.id ?? 0;
+            questions=[];
             emit(ViewSurveyState(data));
           },
         );
       }
+      if(event is AddQuestionEvent){
+        if(question.title!=""||question.title.isNotEmpty){
+          questions.add(question);
+          surveyModel.questions.add(question);
+        emit(ViewSurveyState(surveyModel));
+      }}
     });
   }
 }

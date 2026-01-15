@@ -476,12 +476,15 @@ class GetQuestionForAsyncResponse {
   bool? is_required;
   @JsonKey(name: "type")
   String? type;
+  @JsonKey(name: "survey_id")
+  int? survey_id;
   GetQuestionForAsyncResponse(
     this.id,
     this.question,
     this.question_order,
     this.is_required,
     this.type,
+      this.survey_id
   ); // from json
   factory GetQuestionForAsyncResponse.fromJson(Map<String, dynamic> json) =>
       _$GetQuestionForAsyncResponseFromJson(json);

@@ -2,7 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:formify/data/mapper/mapper.dart';
 import 'package:formify/data/network/failure.dart';
-import 'package:formify/domain/models/models.dart' ;
+import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/models/request.dart';
 import 'package:formify/domain/usecase/create_conference_usecase.dart';
 import 'package:formify/domain/usecase/delete_conference_usecase.dart';
@@ -31,7 +31,7 @@ class ConferenceBloc extends Bloc<ConferenceEvent, ConferenceState> {
     this.getAllConferenceUsecase,
     this.linkSurveyConferenceUsecase,
     this.deleteConferenceUsecase,
-      this.getConferenceByIdUsecase
+    this.getConferenceByIdUsecase,
   ) : super(ConferenceInitial()) {
     on<ConferenceEvent>((event, emit) async {
       if (event is CreateConferenceEvent) {
@@ -47,7 +47,7 @@ class ConferenceBloc extends Bloc<ConferenceEvent, ConferenceState> {
           },
         );
       }
-      if (event is GetAllSurveyEvent) {
+      if (event is GetAllSurveyByConferenceEvent) {
         emit(GetAllSurveyLoadingState());
         (await getAllSurveyUsecase.execute()).fold(
           (failure) {
@@ -61,7 +61,12 @@ class ConferenceBloc extends Bloc<ConferenceEvent, ConferenceState> {
       if (event is LinkSurveyConferenceEvent) {
         emit(LinkSurveyConferenceLoadingState());
         (await linkSurveyConferenceUsecase.execute(
-          SurveyConference(event.surveyId, conferenceId, 1, !event.surveys[event.index].isActive),
+          SurveyConference(
+            event.surveyId,
+           event. conferenceId,
+            1,
+            !event.surveys[event.index].isActive,
+          ),
         )).fold(
           (failure) {
             emit(LinkSurveyConferenceErrorState(failure: failure));
@@ -89,14 +94,17 @@ class ConferenceBloc extends Bloc<ConferenceEvent, ConferenceState> {
             emit(GetAllActiveConferenceState(data));
           },
         );
-      }if(event is GetConferenceByIdEvent){
+      }
+      if (event is GetConferenceByIdEvent) {
         emit(GetConferenceByIdLoadingState());
         (await getConferenceByIdUsecase.execute(event.conferenceModel.id)).fold(
-              (failure) {
+          (failure) {
             emit(GetConferenceByIdErrorState(failure: failure));
           },
-              (data) async {
-                data.surveys.sort((a, b) => a.survey_order.compareTo(b.survey_order));
+          (data) async {
+            data.surveys.sort(
+              (a, b) => a.survey_order.compareTo(b.survey_order),
+            );
             emit(GetConferenceByIdState(data));
           },
         );

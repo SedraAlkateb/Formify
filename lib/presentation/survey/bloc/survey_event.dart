@@ -19,15 +19,15 @@ class GetAllSurveyEvent extends SurveyEvent {
   @override
   List<Object?> get props => [];
 }
-
-class CreateQuesSurveyEvent extends SurveyEvent {
-  final QuestionModel questionModel;
-
-  CreateQuesSurveyEvent(this.questionModel);
-
-  @override
-  List<Object?> get props => [questionModel];
-}
+//
+// class CreateQuesSurveyEvent extends SurveyEvent {
+//   final QuestionModel questionModel;
+//
+//   CreateQuesSurveyEvent(this.questionModel);
+//
+//   @override
+//   List<Object?> get props => [questionModel];
+// }
 
 class CreateQuesNameSurveyEvent extends SurveyEvent {
   final String questionName;
@@ -102,6 +102,13 @@ final int id;
 class CreateBoolAnswerSurveyEvent extends SurveyEvent {
 
   CreateBoolAnswerSurveyEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+class AddQuestionEvent extends SurveyEvent {
+
+  AddQuestionEvent();
 
   @override
   List<Object?> get props => [];

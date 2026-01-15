@@ -56,7 +56,8 @@ extension GetAsyncQuestionModelMapper on GetQuestionForAsyncResponse? {
       this?.question ?? Constants.empty,
      this?.question_order ?? Constants.zero,
        this?.is_required ?? false,
-        convertToQuestionType(this?.type?? "TextField")
+        convertToQuestionType(this?.type?? "TextField"),
+      this?.survey_id ?? Constants.zero,
     );
   }
 }

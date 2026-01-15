@@ -34,6 +34,9 @@ class ViewSurvey extends StatelessWidget {
         child: FormBuilder(
           key: _formKey,
           child: BlocBuilder<SurveyBloc, SurveyState>(
+            buildWhen: (previous, current) => current is ViewSurveyErrorState ||
+                current is ViewSurveyLoadingState ||
+                current is ViewSurveyState ,
             builder: (context, state) {
               if (state is ViewSurveyState) {
                 final SurveyModel surveyModel = state.surveyModel;
