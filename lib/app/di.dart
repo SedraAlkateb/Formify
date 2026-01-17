@@ -17,9 +17,11 @@ import 'package:formify/domain/usecase/delete_conference_usecase.dart';
 import 'package:formify/domain/usecase/get_all_conference_usecase.dart';
 import 'package:formify/domain/usecase/get_all_survey_and_active_usecase.dart';
 import 'package:formify/domain/usecase/get_all_survey_usecase.dart';
+import 'package:formify/domain/usecase/get_all_user_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_by_id_usecase.dart';
 import 'package:formify/domain/usecase/get_survey_question_id_usecase.dart';
 import 'package:formify/domain/usecase/link_survey_conference_usecase.dart';
+import 'package:formify/presentation/active_conference/bloc/active_conference_bloc.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 import 'package:formify/presentation/onboarding/bloc/onboarding_bloc.dart';
 import 'package:formify/presentation/resources/theme_bloc/theme_bloc.dart';
@@ -99,6 +101,39 @@ Future<void> initConferenceModule() async {
       ),
     );
   }
+}
+Future<void> initActiveConferenceModule() async {
+  if (!GetIt.I.isRegistered<GetAllSurveyUsecase>()) {
+    instance.registerFactory<GetAllSurveyUsecase>(
+          () => GetAllSurveyUsecase(instance()),
+    );
+  }
+  if (!GetIt.I.isRegistered<GetConferenceByIdUsecase>()) {
+    instance.registerFactory<GetConferenceByIdUsecase>(
+          () => GetConferenceByIdUsecase(instance()),
+    );
+  }
+  if (!GetIt.I.isRegistered<GetAllConferenceUsecase>()) {
+    instance.registerFactory<GetAllConferenceUsecase>(
+          () => GetAllConferenceUsecase(instance()),
+    );
+  }
+  if (!GetIt.I.isRegistered<GetAllUserUsecase>()) {
+    instance.registerFactory<GetAllUserUsecase>(
+          () => GetAllUserUsecase(instance()),
+    );
+  }
+  if (!GetIt.I.isRegistered<ActiveConferenceBloc>()) {
+
+    instance.registerFactory<ActiveConferenceBloc>(
+          () => ActiveConferenceBloc(
+        instance(),
+        instance(),
+       instance(),
+      ),
+    );
+  }
+
 }
 
 Future<void> initSurveyModule() async {

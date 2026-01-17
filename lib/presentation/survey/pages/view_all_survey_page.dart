@@ -25,15 +25,13 @@ class _ViewAllSurveyPageState extends State<ViewAllSurveyPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorManager.background,
-      appBar:
-
-      AppBar(
+      appBar: AppBar(
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
           icon: Icon(Icons.arrow_back_ios_new, color: ColorManager.black),
         ),
         title: Text(
-          "Active Conference",
+          "View Surveys",
           style: TextStyle(color: ColorManager.black),
         ),
         backgroundColor: ColorManager.white,

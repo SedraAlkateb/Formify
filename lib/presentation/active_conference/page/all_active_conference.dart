@@ -1,73 +1,73 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:formify/presentation/active_conference/bloc/active_conference_bloc.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 import 'package:formify/presentation/home/widget/conference_ended_widget.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
-class AllConferencePage extends StatelessWidget {
-  const AllConferencePage({super.key});
+class AllActiveConferencePage extends StatelessWidget {
+  const AllActiveConferencePage({super.key});
+
+  @override
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ColorManager.background,
       appBar: AppBar(
-        title: Text(
-          "Ended Conference",
-          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 30),
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.arrow_back_ios_new, color: ColorManager.black),
         ),
+        title: Text(
+          "Active Conference",
+          style: TextStyle(color: ColorManager.black),
+        ),
+        backgroundColor: ColorManager.white,
       ),
-      body: BlocConsumer<ConferenceBloc, ConferenceState>(
-        buildWhen: (previous, current) =>
-        current is GetAllConferenceState ||
-            current is GetAllConferenceLoadingState||
-            current is GetAllConferenceErrorState
-        ||current is GetAllEmptyConferenceState
-        ,
+
+      body: BlocConsumer<ActiveConferenceBloc, ActiveConferenceState>(
         listener: (context, state) {
-          if (state is GetConferenceByIdState) {
+          if (state is GetActiveConferenceByIdState) {
             Navigator.pushNamed(context, Routes.viewConference);
           }
-          },
+
+        },
         builder: (context, state) {
 
-          if (state is GetAllConferenceLoadingState) {
+          if (state is GetAllActiveConferenceLoadingState) {
             return loadingFullScreen(context);
-          } else if (state is GetAllConferenceErrorState) {
+          } else if (state is GetAllActiveConferenceErrorState) {
             return errorFullScreen(context);
-          } else if (state is GetAllConferenceState) {
+          } else if (state is GetAllActiveConferenceState) {
             return ListView.separated(
-              physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
-              itemCount: BlocProvider.of<ConferenceBloc>(
+              itemCount: BlocProvider.of<ActiveConferenceBloc>(
                 context,
-              ).allNotActiveConference.length,
+              ).allActiveConference.length,
               separatorBuilder: (context, index) => const SizedBox(height: 10),
               itemBuilder: (context, index) {
                 return InkWell(
-                  onTap: () => BlocProvider.of<ConferenceBloc>(
+                  onTap: () => BlocProvider.of<ActiveConferenceBloc>(
                     context,
-                  ).add(GetConferenceByIdEvent(BlocProvider.of<ConferenceBloc>(
+                  ).add(GetActiveConferenceByIdEvent(BlocProvider.of<ActiveConferenceBloc>(
                     context,
-                  ).allNotActiveConference[index])),
+                  ).allActiveConference[index])),
                   child: ConferenceEndedWidget(
                     index: index,
-                    allConference: BlocProvider.of<ConferenceBloc>(
+                    allConference: BlocProvider.of<ActiveConferenceBloc>(
                       context,
-                    ).allNotActiveConference,
+                    ).allActiveConference,
                   ),
                 );
               },
             );
-          } else if (state is GetAllEmptyConferenceState) {
+          } else if (state is GetAllActiveEmptyConferenceState) {
             return emptyFullScreen(context);
           } else
-            return Container(
-              height: 100,
-              width: 100,
-              color: ColorManager.black,
-            );
+            return SizedBox();
         },
       ),
     );

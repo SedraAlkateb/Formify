@@ -24,7 +24,6 @@ class ConferenceBloc extends Bloc<ConferenceEvent, ConferenceState> {
   DeleteConferenceUsecase deleteConferenceUsecase;
   GetAllSurveyAndActiveUsecase getAllSurveyAndActiveUsecase;
   GetConferenceByIdUsecase getConferenceByIdUsecase;
-  List<GetAllConferenceModel> allActiveConference = [];
   List<GetAllConferenceModel> allNotActiveConference = [];
   int conferenceId = 0;
   ConferenceBloc(
@@ -37,19 +36,7 @@ class ConferenceBloc extends Bloc<ConferenceEvent, ConferenceState> {
       this.getAllSurveyAndActiveUsecase
   ) : super(ConferenceInitial()) {
     on<ConferenceEvent>((event, emit) async {
-      if (event is CreateConferenceEvent) {
-        emit(CreateConferenceLoadingState());
-        (await createConferenceUsecase.execute(event.payload)).fold(
-          (failure) {
-            emit(CreateConferenceErrorState(failure: failure));
-          },
-          (data) async {
-            conferenceId = data;
 
-            emit(CreateConferenceState());
-          },
-        );
-      }
       if (event is GetAllSurveyByConferenceEvent) {
         emit(GetAllSurveyLoadingState());
         event.conferenceId==-1?
@@ -69,58 +56,36 @@ class ConferenceBloc extends Bloc<ConferenceEvent, ConferenceState> {
           },
         );
       }
-      if (event is LinkSurveyConferenceEvent) {
-        emit(LinkSurveyConferenceLoadingState());
-        (await linkSurveyConferenceUsecase.execute(
-          SurveyConference(
-            event.surveyId,
-           event. conferenceId,
-            1,
-            !event.surveys[event.index].isActive,
-          ),
-        )).fold(
-          (failure) {
-            emit(LinkSurveyConferenceErrorState(failure: failure));
-          },
-          (data) async {
-            event.surveys[event.index].isActive =
-                !event.surveys[event.index].isActive;
-            emit(GetAllSurveyState(event.surveys));
-          },
-        );
-      }
-
-      /////////////// Active in AllConferencePage = 0 Not Active in home = 1
-      if (event is GetAllActiveConferenceEvent) {
-        emit(GetAllActiveConferenceLoadingState());
-        (await getAllConferenceUsecase.execute(1)).fold(
-          (failure) {
-            emit(GetAllActiveConferenceErrorState(failure: failure));
-          },
-          (data) async {
-            allActiveConference = data;
-            if (allActiveConference.isEmpty) {
-              emit(GetAllActiveEmptyConferenceState());
-            }
-            emit(GetAllActiveConferenceState(data));
-          },
-        );
-      }
       if (event is GetConferenceByIdEvent) {
         emit(GetConferenceByIdLoadingState());
         (await getConferenceByIdUsecase.execute(event.conferenceModel.id)).fold(
-          (failure) {
+              (failure) {
             emit(GetConferenceByIdErrorState(failure: failure));
           },
-          (data) async {
+              (data) async {
             data.surveys.sort(
-              (a, b) => a.survey_order.compareTo(b.survey_order),
+                  (a, b) => a.survey_order.compareTo(b.survey_order),
             );
             emit(GetConferenceByIdState(data));
           },
         );
       }
 
+      /////////////// Active in AllConferencePage = 0 Not Active in home = 1
+
+      if (event is CreateConferenceEvent) {
+        emit(CreateConferenceLoadingState());
+        (await createConferenceUsecase.execute(event.payload)).fold(
+              (failure) {
+            emit(CreateConferenceErrorState(failure: failure));
+          },
+              (data) async {
+            conferenceId = data;
+
+            emit(CreateConferenceState());
+          },
+        );
+      }
       if (event is GetAllNotActiveConferenceEvent) {
         emit(GetAllConferenceLoadingState());
         (await getAllConferenceUsecase.execute(0)).fold(
@@ -149,6 +114,27 @@ class ConferenceBloc extends Bloc<ConferenceEvent, ConferenceState> {
           },
         );
       }
+      if (event is LinkSurveyConferenceEvent) {
+        emit(LinkSurveyConferenceLoadingState());
+        (await linkSurveyConferenceUsecase.execute(
+          SurveyConference(
+            event.surveyId,
+            event. conferenceId,
+            1,
+            !event.surveys[event.index].isActive,
+          ),
+        )).fold(
+              (failure) {
+            emit(LinkSurveyConferenceErrorState(failure: failure));
+          },
+              (data) async {
+            event.surveys[event.index].isActive =
+            !event.surveys[event.index].isActive;
+            emit(GetAllSurveyState(event.surveys));
+          },
+        );
+      }
+
     });
   }
 }

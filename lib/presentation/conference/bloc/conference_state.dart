@@ -72,26 +72,7 @@ final class GetAllConferenceLoadingState extends ConferenceState {
   @override
   List<Object?> get props => [];
 }
-///////////////////////////AllActiveConference////////////////////
-final class GetAllActiveConferenceState extends ConferenceState {
-  final List<GetAllConferenceModel> allActiveConference;
-  GetAllActiveConferenceState(this.allActiveConference);
-  List<Object?> get props => [allActiveConference];
-}
-final class GetAllActiveEmptyConferenceState extends ConferenceState {
 
-  List<Object?> get props => [];
-}
-final class GetAllActiveConferenceErrorState extends ConferenceState {
-  final Failure failure;
-  GetAllActiveConferenceErrorState({required this.failure});
-  @override
-  List<Object?> get props =>[failure];
-}
-final class GetAllActiveConferenceLoadingState extends ConferenceState {
-  @override
-  List<Object?> get props => [];
-}
 //////////////////////Delete
 final class DeleteConferenceState extends ConferenceState {
 

@@ -85,7 +85,7 @@ class HomePage extends StatelessWidget {
                   } else if (state is GetAllEmptyConferenceState) {
                     return emptyFullScreen(context);
                   } else
-                    return Container(
+                    return  Container(
                       height: 100,
                       width: 100,
                       color: ColorManager.black,

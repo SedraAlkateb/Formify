@@ -231,71 +231,52 @@ class UserInputModel {
     this.conferenceId,
   );
 }
-class UserModel {
-  int? id; // المعرف
-  String fullName; // الاسم الكامل
-  String email; // البريد الإلكتروني
-  String phone; // رقم الهاتف
-  String address; // العنوان
-  List<AnswerSqlModel> answersModel; // قائمة الإجابات المرتبطة بالمستخدم
-
-  // مُنشئ لتخزين البيانات
-  UserModel({
-    this.id,
-    required this.fullName,
-    required this.email,
-    required this.phone,
-    required this.address,
-    required this.answersModel,
-  });
-
-  // تحويل البيانات إلى JSON (لاستخدامها مع قاعدة البيانات أو الواجهة)
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'fullname': fullName,
-      'email': email,
-      'phone': phone,
-      'address': address,
-      'answers': answersModel
-          .map((answer) => answer.toJson())
-          .toList(), // تحويل قائمة الإجابات
-    };
-  }
-
-  // تحويل البيانات من قاعدة البيانات إلى كائن من UserModel
-  factory UserModel.fromMap(Map<String, dynamic> map) {
-    return UserModel(
-      id: map['id'],
-      fullName: map['full_name'],
-      email: map['email'],
-      phone: map['phone'],
-      address: map['address'],
-      answersModel: List<AnswerSqlModel>.from(
-        map['answers'].map((answer) => AnswerSqlModel.fromMap(answer)),
-      ), // تحويل الإجابات المرتبطة
-    );
-  }
-}
-class AllUserModel {
-  List<UserModel> users; // قائمة من المستخدمين (UserModel)
-
-  AllUserModel(this.users); // المُنشئ الذي يأخذ قائمة المستخدمين
-
-  Map<String, dynamic> toJson() {
-    return {
-      'users': users.map((user) => user.toJson()).toList(), // تحويل قائمة المستخدمين إلى JSON
-    };
-  }
-  factory AllUserModel.fromMap(Map<String, dynamic> map) {
-    return AllUserModel(
-      List<UserModel>.from(
-        map['users'].map((userMap) => UserModel.fromMap(userMap)),
-      ),
-    );
-  }
-}
-
+// class UserModel {
+//   int? id; // المعرف
+//   String fullName; // الاسم الكامل
+//   String email; // البريد الإلكتروني
+//   String phone; // رقم الهاتف
+//   String address; // العنوان
+//   List<AnswerSqlModel> answersModel; // قائمة الإجابات المرتبطة بالمستخدم
+//
+//   // مُنشئ لتخزين البيانات
+//   UserModel({
+//     this.id,
+//     required this.fullName,
+//     required this.email,
+//     required this.phone,
+//     required this.address,
+//     required this.answersModel,
+//   });
+//
+//   // تحويل البيانات إلى JSON (لاستخدامها مع قاعدة البيانات أو الواجهة)
+//   Map<String, dynamic> toJson() {
+//     return {
+//       'id': id,
+//       'fullname': fullName,
+//       'email': email,
+//       'phone': phone,
+//       'address': address,
+//       'answers': answersModel
+//           .map((answer) => answer.toJson())
+//           .toList(), // تحويل قائمة الإجابات
+//     };
+//   }
+//
+//   // تحويل البيانات من قاعدة البيانات إلى كائن من UserModel
+//   factory UserModel.fromMap(Map<String, dynamic> map) {
+//     return UserModel(
+//       id: map['id'],
+//       fullName: map['full_name'],
+//       email: map['email'],
+//       phone: map['phone'],
+//       address: map['address'],
+//       answersModel: List<AnswerSqlModel>.from(
+//         map['answers'].map((answer) => AnswerSqlModel.fromMap(answer)),
+//       ), // تحويل الإجابات المرتبطة
+//     );
+//   }
+// }
 class AnswerSqlModel {
   int answer_id;
   int user_id;
@@ -447,3 +428,38 @@ class SurveyConferenceAsyncModel {
     };
   }
 }
+
+class UserModel {
+  int id; // المعرف
+  String fullName; // الاسم الكامل
+  String email; // البريد الإلكتروني
+  String phone; // رقم الهاتف
+  String address; // العنوان
+
+  // مُنشئ لتخزين البيانات
+  UserModel(
+    this.id,
+     this.fullName,
+     this.email,
+     this.phone,
+     this.address,
+  );
+}
+// class AllUserModel {
+//   List<UserModel> users; // قائمة من المستخدمين (UserModel)
+//
+//   AllUserModel(this.users); // المُنشئ الذي يأخذ قائمة المستخدمين
+//
+//   Map<String, dynamic> toJson() {
+//     return {
+//       'users': users.map((user) => user.toJson()).toList(), // تحويل قائمة المستخدمين إلى JSON
+//     };
+//   }
+//   factory AllUserModel.fromMap(Map<String, dynamic> map) {
+//     return AllUserModel(
+//       List<UserModel>.from(
+//         map['users'].map((userMap) => UserModel.fromMap(userMap)),
+//       ),
+//     );
+//   }
+// }

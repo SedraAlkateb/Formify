@@ -28,11 +28,6 @@ class LinkSurveyConferenceEvent extends ConferenceEvent {
   List<Object?> get props => [surveyId, surveys];
 }
 
-class GetAllActiveConferenceEvent extends ConferenceEvent {
-  GetAllActiveConferenceEvent();
-  @override
-  List<Object?> get props => [];
-}
 
 class GetConferenceByIdEvent extends ConferenceEvent {
   final GetAllConferenceModel conferenceModel;

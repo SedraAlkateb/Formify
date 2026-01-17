@@ -111,7 +111,12 @@ Widget _getRetryButton(String buttonTitle,BuildContext context){
     child: SizedBox(
       width: double.infinity,
 
-    child:  ElevatedButton(onPressed: (){
+    child:  ElevatedButton(
+        style: ButtonStyle(
+          backgroundColor:
+          MaterialStateProperty.all(ColorManager.primary),
+        ),
+        onPressed: (){
       if(stateRendererType==StateRendererType.fullScreenErrorState){
         retryActionFunction.call();
       }else{

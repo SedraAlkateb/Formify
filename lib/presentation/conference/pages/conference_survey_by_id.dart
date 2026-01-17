@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
+import 'package:formify/presentation/conference/widget/header_card_widget.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/unit/add_survey_button.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
 class ConferenceSurveyById extends StatelessWidget {
-  const ConferenceSurveyById({super.key,required this.conferenceId});
-final int conferenceId;
+  const ConferenceSurveyById({super.key, required this.conferenceId});
+  final int conferenceId;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,7 +43,6 @@ final int conferenceId;
             if (state is GetAllSurveyLoadingState) {
               return loadingFullScreen(context);
             }
-
             if (state is GetAllSurveyErrorState) {
               return errorFullScreen(
                 context,
@@ -58,26 +58,12 @@ final int conferenceId;
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
-                      child: _HeaderCard(
-                        onAdd: () {
-                          // TODO: Navigator to create survey
-                        },
-                      ),
+                      child: HeaderCard(),
                     ),
                   ),
 
                   if (surveys.isEmpty)
-                    SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: _EmptyState(
-                          onAdd: () {
-                          Navigator.pushNamed(context, Routes.createSurvey);
-                          },
-                        ),
-                      ),
-                    )
+                    emptyFullScreen(context)
                   else
                     SliverPadding(
                       padding: const EdgeInsets.fromLTRB(16, 0, 16, 90),
@@ -86,15 +72,21 @@ final int conferenceId;
                         separatorBuilder: (_, __) => const SizedBox(height: 10),
                         itemBuilder: (_, i) {
                           final s = surveys[i];
-                          final bool isSelected =s.isActive;
                           return _SurveyTile(
                             title: s.title,
-                            subtitle: (s.description ).trim(),
-                            leadingColor: s.color.contains("0x")?Color(int.parse(s.color)):Colors.white,
-                            value: isSelected,
+                           subtitle: (s.description).trim(),
+                            leadingColor: s.color.contains("0x")
+                                ? Color(int.parse(s.color))
+                                : Color(0xE5D796CE),
+                            value: s.isActive,
                             onChanged: (v) {
                               BlocProvider.of<ConferenceBloc>(context).add(
-                                LinkSurveyConferenceEvent( s.id,i,surveys,conferenceId),
+                                LinkSurveyConferenceEvent(
+                                  s.id,
+                                  i,
+                                  surveys,
+                                  conferenceId,
+                                ),
                               );
                             },
                             onTap: () {
@@ -115,73 +107,7 @@ final int conferenceId;
 
       // زر إضافة واضح وأنيق
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton:surveyButton(context)
-    );
-  }
-}
-
-class _HeaderCard extends StatelessWidget {
-  const _HeaderCard({required this.onAdd});
-  final VoidCallback onAdd;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: ColorManager.primary.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: const Icon(Icons.link_rounded, color: ColorManager.primary),
-          ),
-          const SizedBox(width: 12),
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "اختر الاستبيانات",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  "فعّل السويتش لربط الاستبيان مع المؤتمر.",
-                  style: TextStyle(fontSize: 12.8, color: Colors.black54),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 10),
-          InkWell(
-            onTap: null, // استبدلها بـ onAdd إذا بدك زر صغير هنا
-            borderRadius: BorderRadius.circular(14),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-              decoration: BoxDecoration(
-                color: ColorManager.primary.withOpacity(0.10),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: const Icon(Icons.add_rounded, color: ColorManager.primary),
-            ),
-          ),
-        ],
-      ),
+      floatingActionButton: surveyButton(context),
     );
   }
 }
@@ -219,16 +145,17 @@ class _SurveyTile extends StatelessWidget {
           ),
           child: Row(
             children: [
-              // leading
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: leadingColor.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(14),
+              Card(
+                margin: const EdgeInsets.all(5),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                elevation: 4,
+                color:leadingColor,
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Icon(Icons.description_outlined, color: Color(0xffffffff),size: 30,),
                 ),
-                child: Icon(Icons.fact_check_rounded, color: leadingColor),
               ),
+
               const SizedBox(width: 12),
 
               // text
@@ -262,8 +189,15 @@ class _SurveyTile extends StatelessWidget {
 
               const SizedBox(width: 10),
 
-              // switch + label
-              Column(
+              
+              BlocBuilder<ConferenceBloc, ConferenceState>(
+  builder: (context, state) {
+
+
+    return
+      state is LinkSurveyConferenceLoadingState?
+      CircularProgressIndicator():
+      Column(
                 children: [
                   Switch.adaptive(
                     value: value,
@@ -279,7 +213,9 @@ class _SurveyTile extends StatelessWidget {
                     ),
                   ),
                 ],
-              ),
+              );
+  },
+),
             ],
           ),
         ),
@@ -288,78 +224,3 @@ class _SurveyTile extends StatelessWidget {
   }
 }
 
-class _EmptyState extends StatelessWidget {
-  const _EmptyState({required this.onAdd});
-  final VoidCallback onAdd;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 54,
-            height: 54,
-            decoration: BoxDecoration(
-              color: ColorManager.primary.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(18),
-            ),
-            child: const Icon(Icons.inbox_rounded, color: ColorManager.primary),
-          ),
-          const SizedBox(height: 10),
-          const Text(
-            "لا يوجد استبيانات",
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
-          ),
-          const SizedBox(height: 6),
-          const Text(
-            "أضف استبيان جديد ثم اربطه مع المؤتمر بالسويتش.",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 12.8,
-              color: Colors.black54,
-              height: 1.3,
-            ),
-          ),
-          const SizedBox(height: 14),
-          SizedBox(
-            width: double.infinity,
-            height: 48,
-            child: ElevatedButton.icon(
-
-              onPressed: (){
-                Navigator.pushNamed(context, Routes.createSurvey);
-              },
-              icon: const Icon(Icons.add_rounded),
-              label: const Text(
-                "إضافة استبيان",
-                style: TextStyle(fontWeight: FontWeight.w800),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: ColorManager.primary,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

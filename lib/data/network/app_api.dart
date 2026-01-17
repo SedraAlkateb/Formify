@@ -69,6 +69,10 @@ abstract class AppServiceClient {
   Future<GetAllAsyncByConferenceIdBaseResponse> getAllInformationConference(
       @Part(name: "conference_id") int conference_id,
       );
+  @POST("users-crud/get_users_by_conferenceId.php")
+  Future<GetAllUserBaseResponse> getUsersByConferenceId(
+      @Part(name: "conference_id") int conference_id,
+      );
   /////////////update_survey
 /////////update_conference
 }

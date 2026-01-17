@@ -384,7 +384,7 @@ GetSurveyWithActiveResponse _$GetSurveyWithActiveResponseFromJson(
   json['title'] as String?,
   json['description'] as String?,
   json['color'] as String?,
-  json['isActive'] as bool?,
+  json['is_active'] as bool?,
 );
 
 Map<String, dynamic> _$GetSurveyWithActiveResponseToJson(
@@ -394,7 +394,7 @@ Map<String, dynamic> _$GetSurveyWithActiveResponseToJson(
   'title': instance.title,
   'description': instance.description,
   'color': instance.color,
-  'isActive': instance.isActive,
+  'is_active': instance.isActive,
 };
 
 GetAllSurveyWithActiveBaseResponse _$GetAllSurveyWithActiveBaseResponseFromJson(
@@ -526,4 +526,40 @@ Map<String, dynamic> _$SurveyConferenceForAsyncResponseToJson(
   'survey_order': instance.survey_order,
   'survey_id': instance.survey_id,
   'conference_id': instance.conference_id,
+};
+
+UserResponse _$UserResponseFromJson(Map<String, dynamic> json) => UserResponse(
+  (json['id'] as num?)?.toInt(),
+  json['fullname'] as String?,
+  json['email'] as String?,
+  json['phone'] as String?,
+  json['address'] as String?,
+);
+
+Map<String, dynamic> _$UserResponseToJson(UserResponse instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'fullname': instance.fullName,
+      'email': instance.email,
+      'phone': instance.phone,
+      'address': instance.address,
+    };
+
+GetAllUserBaseResponse _$GetAllUserBaseResponseFromJson(
+  Map<String, dynamic> json,
+) =>
+    GetAllUserBaseResponse(
+        (json['data'] as List<dynamic>)
+            .map((e) => UserResponse.fromJson(e as Map<String, dynamic>))
+            .toList(),
+      )
+      ..status = json['status'] as String?
+      ..message = json['message'] as String?;
+
+Map<String, dynamic> _$GetAllUserBaseResponseToJson(
+  GetAllUserBaseResponse instance,
+) => <String, dynamic>{
+  'status': instance.status,
+  'message': instance.message,
+  'data': instance.data,
 };
