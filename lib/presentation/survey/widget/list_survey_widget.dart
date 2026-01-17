@@ -24,7 +24,7 @@ Widget surveyListWidget(MainSurveyModel survey) {
                margin: const EdgeInsets.all(4),
                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                elevation: 4,
-               color: Colors.pinkAccent,
+               color:survey.color.contains("0x")? Color(int.parse(survey.color)):Colors.pinkAccent,
                child: Padding(
                  padding: const EdgeInsets.all(8.0),
                  child: Icon(Icons.description_outlined, color: Color(0xffffffff)),

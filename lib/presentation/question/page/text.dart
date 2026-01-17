@@ -23,11 +23,9 @@ class TextQuestionPage extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: BlocBuilder<SurveyBloc, SurveyState>(
           builder: (context, state) {
-            SurveyModel surveyModel = BlocProvider.of<SurveyBloc>(
-              context,
-            ).surveyModel;
-            if (state is ViewSurveyState) {
-              surveyModel = state.surveyModel;
+            QuestionModel surveyModel=BlocProvider.of<SurveyBloc>(context,listen: true).question;
+            if(state is ViewQuestionState){
+              surveyModel=state.questionModel;
             }
             return FormBuilder(
               key: _formKey,
@@ -72,9 +70,7 @@ class TextQuestionPage extends StatelessWidget {
                                     ),
                                     Switch(
                                       value:
-                                           BlocProvider.of<SurveyBloc>(
-                                        context,
-                                      ).question.isRequired,
+                                      surveyModel.isRequired,
                                       activeColor: colorScheme.primary,
                                       onChanged: (val) {
                                         context.read<SurveyBloc>().add(
@@ -114,22 +110,16 @@ class TextQuestionPage extends StatelessWidget {
                                   children: [
                                     Flexible(
                                       child: Text(
-                                         BlocProvider.of<SurveyBloc>(
-                                        context,
-                                      ).question.title.isEmpty
+                                        surveyModel.title.isEmpty
                                             ? "Question label will appear here"
-                                            :  BlocProvider.of<SurveyBloc>(
-                                        context,
-                                      ).question.title,
+                                            :  surveyModel.title,
                                         style: TextStyle(
                                           fontWeight: FontWeight.w600,
                                           color: colorScheme.onSurface,
                                         ),
                                       ),
                                     ),
-                                    if ( BlocProvider.of<SurveyBloc>(
-                                      context,
-                                    ).question
+                                    if ( surveyModel
                                         .isRequired) ...[
                                       const SizedBox(width: 4),
                                       Text(
@@ -152,9 +142,7 @@ class TextQuestionPage extends StatelessWidget {
                                     ),
                                   ),
                                   validator: (value) {
-                                    if ( BlocProvider.of<SurveyBloc>(
-                                        context,
-                                      ).question.isRequired &&
+                                    if ( surveyModel.isRequired &&
                                         (value == null ||
                                             value.trim().isEmpty)) {
                                       return "Answer cannot be empty";

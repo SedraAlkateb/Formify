@@ -24,6 +24,7 @@ class AllActiveConferencePage extends StatelessWidget {
           if (state is GetConferenceByIdState) {
             Navigator.pushNamed(context, Routes.viewConference);
           }
+
         },
         builder: (context, state) {
 

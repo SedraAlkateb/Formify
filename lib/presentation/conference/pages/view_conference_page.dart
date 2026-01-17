@@ -18,7 +18,9 @@ class ViewConferencePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return  BlocBuilder<ConferenceBloc, ConferenceState>(
       builder: (context, state) {
-        
+        final GetAllConferenceByIdModel? conference =
+        state is GetConferenceByIdState?
+            state.conferenceModel:null;
     return
       
       Scaffold(
@@ -53,7 +55,7 @@ class ViewConferencePage extends StatelessWidget {
 
         onPressed: () {
           BlocProvider.of<ConferenceBloc>(context)
-              .add(GetAllSurveyByConferenceEvent());
+              .add(GetAllSurveyByConferenceEvent(conference!.id));
           Navigator.pushReplacementNamed(
               context, Routes.conferenceSurveyById,
             arguments: 5,
@@ -66,8 +68,8 @@ class ViewConferencePage extends StatelessWidget {
 
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
 
-      body:    if (state is GetConferenceByIdState) {
-      final GetAllConferenceByIdModel conference = state.conferenceModel;
+      body:  state is GetConferenceByIdState?
+
       SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
         child: Column(
@@ -98,7 +100,7 @@ class ViewConferencePage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      conference.name,
+                      conference!.name,
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -283,12 +285,12 @@ class ViewConferencePage extends StatelessWidget {
             ),
           ],
         ),
-      );
-    } else if (state is GetConferenceByIdErrorState){
-        errorFullScreen(context);
-        } else if (state is GetConferenceByIdLoadingState){
-        const Center(child: CircularProgressIndicator());
-        }
+      ):
+   state is GetConferenceByIdErrorState?
+        errorFullScreen(context):
+        state is GetConferenceByIdLoadingState?
+        const Center(child: CircularProgressIndicator()):SizedBox()
+
     );
   },
 );

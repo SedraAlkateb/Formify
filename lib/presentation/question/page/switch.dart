@@ -24,12 +24,13 @@ class SwitchQuestionPage extends StatelessWidget {
           builder: (context, state) {
             context.read<SurveyBloc>().add(CreateBoolAnswerSurveyEvent());
 
-            SurveyModel surveyModel = BlocProvider.of<SurveyBloc>(
+            QuestionModel surveyModel = BlocProvider.of<SurveyBloc>(
               context,
-            ).surveyModel;
-            if (state is ViewSurveyState) {
-              surveyModel = state.surveyModel;
+            ).question;
+            if(state is ViewQuestionState){
+              surveyModel=state.questionModel;
             }
+
             return FormBuilder(
               key: _formKey,
               child: Column(
@@ -81,9 +82,9 @@ class SwitchQuestionPage extends StatelessWidget {
                       children: [
                         FormBuilderSwitch(
                           title: Text(
-                            surveyModel.questions.last.title.isEmpty
+                           surveyModel.title.isEmpty
                                 ? "Question label will appear here"
-                                : surveyModel.questions.last.title,
+                                : surveyModel.title,
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                               color: colorScheme.onSurface,
@@ -98,7 +99,7 @@ class SwitchQuestionPage extends StatelessWidget {
                             ),
                           ),
                           validator: (value) {
-                            if (surveyModel.questions.last.isRequired &&
+                            if (surveyModel.isRequired &&
                                 (value == null)) {
                               return "Answer cannot be empty";
                             }

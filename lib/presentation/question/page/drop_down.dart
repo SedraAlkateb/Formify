@@ -24,9 +24,10 @@ class DropDownQuestionPage extends StatelessWidget {
         child: BlocBuilder<SurveyBloc, SurveyState>(
 
           builder: (context, state) {
-            SurveyModel surveyModel=BlocProvider.of<SurveyBloc>(context).surveyModel;
-            if(state is ViewSurveyState ){
-              surveyModel=state.surveyModel;
+            QuestionModel questionModel=
+                BlocProvider.of<SurveyBloc>(context,listen: true).question;
+            if(state is ViewQuestionState){
+              questionModel=state.questionModel;
             }
             return  FormBuilder(
               key: _formKey,
@@ -63,7 +64,7 @@ class DropDownQuestionPage extends StatelessWidget {
                     const SizedBox(height: 14),
 
                     // ================= قسم الإجابات =================
-                 viewAnswerWidget(context, surveyModel),
+                 viewAnswerWidget(context, questionModel),
 
                     const SizedBox(height: 14),
 
@@ -77,7 +78,7 @@ class DropDownQuestionPage extends StatelessWidget {
                     // ضع هنا preview تبعك (FilterChips / Dropdown ...)
 
                     const SizedBox(height: 14),
-                    if (surveyModel.questions.isEmpty)
+                    if (questionModel.title.isEmpty)
                       const Text("No question to preview yet.")
                     else ...[
                       Container(
@@ -93,9 +94,9 @@ class DropDownQuestionPage extends StatelessWidget {
                           children: [
                             // ===== السؤال بالأعلى =====
                             Text(
-                              surveyModel.questions.last.title.isEmpty
+                              questionModel.title.isEmpty
                                   ? "Question will appear here"
-                                  : surveyModel.questions.last.title,
+                                  : questionModel.title,
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -112,7 +113,7 @@ class DropDownQuestionPage extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
-                              items: (surveyModel.questions.last.answers)
+                              items: (questionModel.answers)
                                   .map(
                                     (a) => DropdownMenuItem<String>(
                                   value: a.content,

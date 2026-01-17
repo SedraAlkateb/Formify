@@ -24,9 +24,11 @@ class MultipleChoicePage extends StatelessWidget {
         child: BlocBuilder<SurveyBloc, SurveyState>(
 
           builder: (context, state) {
-            SurveyModel surveyModel=BlocProvider.of<SurveyBloc>(context).surveyModel;
-            if(state is ViewSurveyState ){
-              surveyModel=state.surveyModel;
+
+            QuestionModel questionModel=
+                BlocProvider.of<SurveyBloc>(context,listen: true).question;
+            if(state is ViewQuestionState){
+              questionModel=state.questionModel;
             }
             return  FormBuilder(
               key: _formKey,
@@ -62,7 +64,7 @@ class MultipleChoicePage extends StatelessWidget {
                     const SizedBox(height: 14),
 
                     // ================= قسم الإجابات =================
-                    viewAnswerWidget(context, surveyModel),
+                    viewAnswerWidget(context, questionModel),
 
                     const SizedBox(height: 14),
 
@@ -76,7 +78,7 @@ class MultipleChoicePage extends StatelessWidget {
                     // ضع هنا preview تبعك (FilterChips / Dropdown ...)
 
                     const SizedBox(height: 14),
-                    if (surveyModel.questions.isEmpty)
+                    if (questionModel.title.isEmpty)
                       const Text("No question to preview yet.")
                     else ...[
                       Container(
@@ -92,23 +94,21 @@ class MultipleChoicePage extends StatelessWidget {
                           children: [
                             // ===== السؤال بالأعلى =====
                             Text(
-                              surveyModel.questions.last.title.isEmpty
+                              questionModel.title.isEmpty
                                   ? "Question will appear here"
-                                  : surveyModel.questions.last.title,
+                                  : questionModel.title,
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             const SizedBox(height: 12),
-
-                            // ===== Dropdown فيها الإجابات =====
                             FormBuilderRadioGroup<String>(
                               name: "preview_multiple_choice",
                               decoration: const InputDecoration(
                                 border: InputBorder.none,
                               ),
-                              options: surveyModel.questions.last.answers
+                              options: questionModel.answers
                                   .map(
                                     (a) => FormBuilderFieldOption<String>(
                                   value: a.content,

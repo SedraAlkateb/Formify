@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
+import 'package:formify/presentation/resources/routes_manager.dart';
+import 'package:formify/presentation/unit/add_survey_button.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
 class ConferenceSurveyById extends StatelessWidget {
@@ -29,7 +31,7 @@ final int conferenceId;
 
             onPressed: () => BlocProvider.of<ConferenceBloc>(
               context,
-            ).add(GetAllSurveyByConferenceEvent()),
+            ).add(GetAllSurveyByConferenceEvent(conferenceId)),
             icon: Icon(Icons.refresh_rounded, color: ColorManager.black),
           ),
         ],
@@ -46,7 +48,7 @@ final int conferenceId;
                 context,
                 func: () => BlocProvider.of<ConferenceBloc>(
                   context,
-                ).add(GetAllSurveyByConferenceEvent()),
+                ).add(GetAllSurveyByConferenceEvent(conferenceId)),
               );
             }
             if (state is GetAllSurveyState) {
@@ -71,7 +73,7 @@ final int conferenceId;
                         padding: const EdgeInsets.all(16),
                         child: _EmptyState(
                           onAdd: () {
-                            // TODO: Navigator to create survey
+                          Navigator.pushNamed(context, Routes.createSurvey);
                           },
                         ),
                       ),
@@ -88,10 +90,9 @@ final int conferenceId;
                           return _SurveyTile(
                             title: s.title,
                             subtitle: (s.description ).trim(),
-                            leadingColor: _parseColorSafe(s.color),
+                            leadingColor: s.color.contains("0x")?Color(int.parse(s.color)):Colors.white,
                             value: isSelected,
                             onChanged: (v) {
-                              print("object");
                               BlocProvider.of<ConferenceBloc>(context).add(
                                 LinkSurveyConferenceEvent( s.id,i,surveys,conferenceId),
                               );
@@ -114,31 +115,7 @@ final int conferenceId;
 
       // زر إضافة واضح وأنيق
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: SizedBox(
-          width: double.infinity,
-          height: 52,
-          child: ElevatedButton.icon(
-            onPressed: () {
-              // TODO: Navigator to create survey
-            },
-            icon: const Icon(Icons.add_rounded),
-            label: const Text(
-              "إضافة استبيان جديد",
-              style: TextStyle(fontWeight: FontWeight.w800),
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: ColorManager.primary,
-              foregroundColor: Colors.white,
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-            ),
-          ),
-        ),
-      ),
+      floatingActionButton:surveyButton(context)
     );
   }
 }
@@ -362,7 +339,10 @@ class _EmptyState extends StatelessWidget {
             width: double.infinity,
             height: 48,
             child: ElevatedButton.icon(
-              onPressed: onAdd,
+
+              onPressed: (){
+                Navigator.pushNamed(context, Routes.createSurvey);
+              },
               icon: const Icon(Icons.add_rounded),
               label: const Text(
                 "إضافة استبيان",
@@ -381,38 +361,5 @@ class _EmptyState extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-// إذا عندك لون كنص (مثل "red") أو hex عدّل هون حسب داتاك
-Color _parseColorSafe(dynamic color) {
-  if (color == null) return ColorManager.primary;
-
-  final c = color.toString().toLowerCase().trim();
-
-  // hex مثل #ff0000 أو ff0000
-  if (c.startsWith('#') || RegExp(r'^[0-9a-f]{6,8}$').hasMatch(c)) {
-    final hex = c.replaceAll('#', '');
-    final normalized = hex.length == 6 ? 'FF$hex' : hex;
-    return Color(int.parse(normalized, radix: 16));
-  }
-
-  switch (c) {
-    case 'red':
-      return Colors.red;
-    case 'blue':
-      return Colors.blue;
-    case 'green':
-      return Colors.green;
-    case 'orange':
-      return Colors.orange;
-    case 'purple':
-      return Colors.purple;
-    case 'teal':
-      return Colors.teal;
-    case 'indigo':
-      return Colors.indigo;
-    default:
-      return ColorManager.primary;
   }
 }

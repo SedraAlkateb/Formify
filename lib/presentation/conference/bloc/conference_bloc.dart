@@ -7,6 +7,7 @@ import 'package:formify/domain/models/request.dart';
 import 'package:formify/domain/usecase/create_conference_usecase.dart';
 import 'package:formify/domain/usecase/delete_conference_usecase.dart';
 import 'package:formify/domain/usecase/get_all_conference_usecase.dart';
+import 'package:formify/domain/usecase/get_all_survey_and_active_usecase.dart';
 import 'package:formify/domain/usecase/get_all_survey_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_by_id_usecase.dart';
 import 'package:formify/domain/usecase/link_survey_conference_usecase.dart';
@@ -21,6 +22,7 @@ class ConferenceBloc extends Bloc<ConferenceEvent, ConferenceState> {
   GetAllConferenceUsecase getAllConferenceUsecase;
   LinkSurveyConferenceUsecase linkSurveyConferenceUsecase;
   DeleteConferenceUsecase deleteConferenceUsecase;
+  GetAllSurveyAndActiveUsecase getAllSurveyAndActiveUsecase;
   GetConferenceByIdUsecase getConferenceByIdUsecase;
   List<GetAllConferenceModel> allActiveConference = [];
   List<GetAllConferenceModel> allNotActiveConference = [];
@@ -32,6 +34,7 @@ class ConferenceBloc extends Bloc<ConferenceEvent, ConferenceState> {
     this.linkSurveyConferenceUsecase,
     this.deleteConferenceUsecase,
     this.getConferenceByIdUsecase,
+      this.getAllSurveyAndActiveUsecase
   ) : super(ConferenceInitial()) {
     on<ConferenceEvent>((event, emit) async {
       if (event is CreateConferenceEvent) {
@@ -49,12 +52,20 @@ class ConferenceBloc extends Bloc<ConferenceEvent, ConferenceState> {
       }
       if (event is GetAllSurveyByConferenceEvent) {
         emit(GetAllSurveyLoadingState());
+        event.conferenceId==-1?
         (await getAllSurveyUsecase.execute()).fold(
           (failure) {
             emit(GetAllSurveyErrorState(failure: failure));
           },
           (data) async {
             emit(GetAllSurveyState(data.toDomain()));
+          },
+        ): (await getAllSurveyAndActiveUsecase.execute(event.conferenceId)).fold(
+              (failure) {
+            emit(GetAllSurveyErrorState(failure: failure));
+          },
+              (data) async {
+            emit(GetAllSurveyState(data));
           },
         );
       }

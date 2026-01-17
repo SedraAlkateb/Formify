@@ -17,14 +17,22 @@ class CreateConferencePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-
     return Scaffold(
-      backgroundColor: colors.background,
-      appBar: AppBar(
-        title: const Text('Create Conference'),
-        backgroundColor: colors.primary,
+      backgroundColor: ColorManager.background,
+      appBar:
+
+      AppBar(
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.arrow_back_ios_new, color: ColorManager.black),
+        ),
+        title: Text(
+          'Create Conference',
+          style: TextStyle(color: ColorManager.black),
+        ),
+        backgroundColor: ColorManager.white,
       ),
+
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -143,10 +151,17 @@ class CreateConferencePage extends StatelessWidget {
                           children: [
                             Expanded(
                               child: FormBuilderDateTimePicker(
+                                cursorColor: ColorManager.primary,
+                                style: TextStyle(color: ColorManager.primary, ),
                                 name: 'start_date',
+
                                 inputType: InputType.date,
                                 decoration: InputDecoration(
                                   labelText: 'Start date',
+                                  focusColor: ColorManager.primary,
+                                  hoverColor: ColorManager.primary,
+                                  iconColor: ColorManager.primary,
+                                  labelStyle: TextStyle(color: ColorManager.primary, ),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(15),
                                   ),
@@ -158,17 +173,49 @@ class CreateConferencePage extends StatelessWidget {
                             ),
                             const SizedBox(width: 12),
                             Expanded(
-                              child: FormBuilderDateTimePicker(
+                              child:FormBuilderDateTimePicker(
                                 name: 'end_date',
+                                cursorColor: ColorManager.primary,
                                 inputType: InputType.date,
+                                style: TextStyle(color: ColorManager.primary), // لون النص
                                 decoration: InputDecoration(
                                   labelText: 'End date',
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(15),
+                                  labelStyle: TextStyle(color: ColorManager.primary),
+                                  hintStyle: TextStyle(color: ColorManager.primary.withOpacity(0.6)),
+                                  suffixIcon: Icon(
+                                    Icons.calendar_month,
+                                    color: ColorManager.primary,
                                   ),
-                                  suffixIcon:
-                                  const Icon(Icons.calendar_month),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide: BorderSide(
+                                      color: ColorManager.primary,
+                                      width: 1.5,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide: BorderSide(
+                                      color: ColorManager.primary,
+                                      width: 2,
+                                    ),
+                                  ),
+                                  errorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide: BorderSide(
+                                      color: ColorManager.primary,
+                                    ),
+                                  ),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                    borderSide: BorderSide(
+                                      color: ColorManager.primary,
+                                      width: 2,
+                                    ),
+                                  ),
                                 ),
+                                //TODO
+
                                 validator: (val) {
                                   final start = _formKey
                                       .currentState
@@ -181,19 +228,20 @@ class CreateConferencePage extends StatelessWidget {
                                   return null;
                                 },
                               ),
+
                             ),
                           ],
                         ),
                         const SizedBox(height: 12),
-                        FormBuilderSwitch(
-                          name: 'is_active',
-                          initialValue: true,
-                          title: const Text(
-                            'Is Active',
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                        ),
+                        // FormBuilderSwitch(
+                        //   name: 'is_active',
+                        //   initialValue: true,
+                        //   title: const Text(
+                        //     'Is Active',
+                        //     style: TextStyle(
+                        //         fontSize: 16, fontWeight: FontWeight.bold),
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
@@ -210,13 +258,24 @@ class CreateConferencePage extends StatelessWidget {
                   error(context, state.failure.massage, state.failure.code);
                 } else if (state is CreateConferenceState) {
                   BlocProvider.of<ConferenceBloc>(context)
-                      .add(GetAllSurveyByConferenceEvent());
+                      .add(GetAllSurveyByConferenceEvent(
+                    -1
+                  ));
                  Navigator.pushReplacementNamed(context, Routes.conferenceSurveyById);
                 }
               },
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: ColorManager.primary, // لون الخلفية
+                    foregroundColor: Colors.white,          // لون النص
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 4,
+                  ),
                   onPressed: () {
                     final ok = _formKey.currentState?.saveAndValidate() ?? false;
                     if (!ok) return;
@@ -230,12 +289,17 @@ class CreateConferencePage extends StatelessWidget {
                       "end_date": _toYmd(v["end_date"] as DateTime),
                       "is_active": (v["is_active"] == true) ? 1 : 0,
                     };
+
                     BlocProvider.of<ConferenceBloc>(context)
                         .add(CreateConferenceEvent(ConferenceModel.fromMap(payload)));
                   },
-                  child: const Text('Create'),
+                  child: const Text(
+                    'Create',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
                 ),
               ),
+
             ),
           ],
         ),

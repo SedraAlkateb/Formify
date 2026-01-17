@@ -24,9 +24,9 @@ class CheckboxPage extends StatelessWidget {
         child: BlocBuilder<SurveyBloc, SurveyState>(
 
           builder: (context, state) {
-            SurveyModel surveyModel=BlocProvider.of<SurveyBloc>(context).surveyModel;
-            if(state is ViewSurveyState ){
-              surveyModel=state.surveyModel;
+            QuestionModel surveyModel=BlocProvider.of<SurveyBloc>(context).question;
+            if(state is ViewQuestionState){
+              surveyModel=state.questionModel;
             }
             return  FormBuilder(
               key: _formKey,
@@ -76,7 +76,7 @@ class CheckboxPage extends StatelessWidget {
                     // ضع هنا preview تبعك (FilterChips / Dropdown ...)
 
                     const SizedBox(height: 14),
-                    if (surveyModel.questions.isEmpty)
+                    if (surveyModel.title.isEmpty)
                       const Text("No question to preview yet.")
                     else ...[
                       Container(
@@ -92,9 +92,9 @@ class CheckboxPage extends StatelessWidget {
                           children: [
                             // ===== السؤال بالأعلى =====
                             Text(
-                              surveyModel.questions.last.title.isEmpty
+                              surveyModel.title.isEmpty
                                   ? "Question will appear here"
-                                  : surveyModel.questions.last.title,
+                                  : surveyModel.title,
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -105,7 +105,7 @@ class CheckboxPage extends StatelessWidget {
                             // ===== Dropdown فيها الإجابات =====
                             FormBuilderCheckboxGroup<String>(
                               name: "preview_multiple_choice",
-                              options: surveyModel.questions.last.answers
+                              options: surveyModel.answers
                                   .map(
                                     (a) => FormBuilderFieldOption(
                                   value: a.content,
