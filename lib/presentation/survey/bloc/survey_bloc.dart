@@ -23,8 +23,6 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
   QuestionModel question=QuestionModel.create();
   List<QuestionModel> questions=[];
   SurveyModel surveyModel = SurveyModel.create();
-
-
   SurveyBloc(
     this.createSurveyUsecase,
     this.createSurveyQuestionUsecase,

@@ -6,6 +6,7 @@ import 'package:formify/presentation/home/widget/grid_icon.dart';
 import 'package:formify/presentation/home/widget/isMorning.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
+import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
 class HomePage extends StatelessWidget {
@@ -35,62 +36,98 @@ class HomePage extends StatelessWidget {
                   fontSize: 20,
                 ),
               ),
-              SizedBox(
-                  height: 500,
-                  child: CustomGridPage()
-              ),
+              SizedBox(height: 500, child: CustomGridPage()),
               Text(
                 "Ended Conference",
                 style: TextStyle(fontWeight: FontWeight.w600, fontSize: 30),
               ),
-              BlocBuilder<ConferenceBloc, ConferenceState>(
-                buildWhen: (previous, current) =>
-                current is GetAllConferenceState ||
-                    current is GetAllConferenceLoadingState||
-                    current is GetAllConferenceErrorState
-                    ||current is GetAllEmptyConferenceState,
-                builder: (context, state) {
-                  if (state is GetAllConferenceLoadingState) {
-                    return loadingFullScreen(context);
-                  }
-                  else if (state is GetAllConferenceErrorState) {
-                    return errorFullScreen(context,func:()=>BlocProvider.of<ConferenceBloc>(context).add(GetAllNotActiveConferenceEvent()));
-                  } else if (state is GetAllConferenceState) {
-                    return ListView.separated(
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: BlocProvider.of<ConferenceBloc>(
+              MultiBlocListener(
+                listeners: [
+                  BlocListener<SyncBloc, SyncState>(
+                    listener: (context, state) {
+                      if (state is DataLoadingState) {
+                        loading(context);
+                      } else if (state is DataErrorState) {
+                        error(
+                          context,
+                          state.failure.massage,
+                          state.failure.code,
+                        );
+                      } else if (state is GetDataState) {
+                        BlocProvider.of<SyncBloc>(
+                          context,
+                        ).add(UploadDataEvent(state.users));
+                      } else if (state is UploadDataState) {
+                        BlocProvider.of<SyncBloc>(
+                          context,
+                        ).add(DeleteDataEvent());
+                      } else if (state is DeleteDataState) {
+                        BlocProvider.of<SyncBloc>(
+                          context,
+                        ).add(AsyncDataEvent());
+                      } else if (state is AsyncConferenceState) {
+                        BlocProvider.of<SyncBloc>(
+                          context,
+                        ).add(InsertDataSqlEvent());
+                      } else if (state is InsertSucState) {
+                        success(context);
+                      }
+                    },
+                  ),
+                ],
+
+                child: BlocBuilder<ConferenceBloc, ConferenceState>(
+                  buildWhen: (previous, current) =>
+                      current is GetAllConferenceState ||
+                      current is GetAllConferenceLoadingState ||
+                      current is GetAllConferenceErrorState ||
+                      current is GetAllEmptyConferenceState ||
+                      current is SelectEndedConferenceState,
+                  builder: (context, state) {
+                    if (state is GetAllConferenceLoadingState) {
+                      return loadingFullScreen(context);
+                    } else if (state is GetAllConferenceErrorState) {
+                      return errorFullScreen(
                         context,
-                      ).allNotActiveConference.length,
-                      separatorBuilder: (context, index) => const SizedBox(height: 10),
+                        func: () => context.read<ConferenceBloc>().add(
+                          GetAllNotActiveConferenceEvent(),
+                        ),
+                      );
+                    } else if (state is GetAllEmptyConferenceState) {
+                      return emptyFullScreen(context);
+                    }
+                    final items = context
+                        .read<ConferenceBloc>()
+                        .allNotActiveConference;
+
+                    return ListView.separated(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: items.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 10),
                       itemBuilder: (context, index) {
                         return InkWell(
                           onTap: () {
-                            BlocProvider.of<ConferenceBloc>(
+                            Navigator.pushNamed(
                               context,
-                            ).add(GetConferenceByIdEvent(BlocProvider.of<ConferenceBloc>(
-                              context,
-                            ).allNotActiveConference[index]));
-                            Navigator.pushNamed(context, Routes.viewConference);
+                              Routes.viewConference,
+                              arguments: items[index].id,
+                            );
                           },
                           child: ConferenceEndedWidget(
+                            value:
+                                context
+                                    .read<ConferenceBloc>()
+                                    .selectConferenceId ??
+                                0,
                             index: index,
-                            allConference: BlocProvider.of<ConferenceBloc>(
-                              context,
-                            ).allNotActiveConference,
+                            allConference: items,
                           ),
                         );
                       },
                     );
-                  } else if (state is GetAllEmptyConferenceState) {
-                    return emptyFullScreen(context);
-                  } else
-                    return  Container(
-                      height: 100,
-                      width: 100,
-                      color: ColorManager.black,
-                    );
-                },
+                  },
+                ),
               ),
             ],
           ),

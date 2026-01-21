@@ -6,6 +6,7 @@ import 'package:formify/presentation/onboarding/bloc/onboarding_bloc.dart';
 import 'package:formify/presentation/onboarding/widget/onboarding_widget.dart';
 import 'package:formify/presentation/resources/assets_manager.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
+import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/unit/animated_button.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -77,40 +78,9 @@ class OnBoardingPage extends StatelessWidget {
                         : "التالي",
                     onPressed: () {
                       if (BlocProvider.of<OnboardingBloc>(context).isLastPage) {
-                      initConferenceModule();
-                        Navigator.pushReplacement(
+                        Navigator.pushReplacementNamed(
                           context,
-                          PageRouteBuilder(
-                            transitionDuration: Duration(milliseconds: 400),
-                            pageBuilder:
-                                (context, animation, secondaryAnimation) {
-                                  return HomePage();
-                                }, // غيريها حسب الصفحة المطلوبة
-                            transitionsBuilder:
-                                (
-                                  context,
-                                  animation,
-                                  secondaryAnimation,
-                                  child,
-                                ) {
-                                  const begin = Offset(
-                                    1.0,
-                                    0.0,
-                                  ); // من اليمين لليسار
-                                  const end = Offset.zero;
-                                  const curve = Curves.easeInOut;
-
-                                  final tween = Tween(
-                                    begin: begin,
-                                    end: end,
-                                  ).chain(CurveTween(curve: curve));
-
-                                  return SlideTransition(
-                                    position: animation.drive(tween),
-                                    child: child,
-                                  );
-                                },
-                          ),
+                        Routes.home
                         );
                       } else {
                         BlocProvider.of<OnboardingBloc>(

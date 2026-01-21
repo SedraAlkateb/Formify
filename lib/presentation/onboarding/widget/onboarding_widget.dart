@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:formify/app/di.dart';
 import 'package:formify/presentation/home/pages/home_page.dart';
+import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/unit/text_animation.dart';
 import 'package:lottie/lottie.dart';
 
@@ -28,31 +29,9 @@ class buildPageLottie extends StatelessWidget {
               alignment: Alignment.topRight,
               child: InkWell(
                 onTap: () {
-                  initConferenceModule();
-                  Navigator.pushReplacement(
-                    context,
-                    PageRouteBuilder(
-                      transitionDuration: Duration(milliseconds: 400),
-                      pageBuilder: (context, animation, secondaryAnimation) {
-                        return HomePage();
-                      }, // غيريها حسب الصفحة المطلوبة
-                      transitionsBuilder:
-                          (context, animation, secondaryAnimation, child) {
-                            const begin = Offset(1.0, 0.0); // من اليمين لليسار
-                            const end = Offset.zero;
-                            const curve = Curves.easeInOut;
-
-                            final tween = Tween(
-                              begin: begin,
-                              end: end,
-                            ).chain(CurveTween(curve: curve));
-
-                            return SlideTransition(
-                              position: animation.drive(tween),
-                              child: child,
-                            );
-                          },
-                    ),
+                  Navigator.pushReplacementNamed(
+                      context,
+                      Routes.home
                   );
                 },
                 child: Text(

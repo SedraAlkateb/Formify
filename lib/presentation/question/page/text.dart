@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:formify/domain/models/model_q.dart';
 import 'package:formify/domain/models/models.dart';
+import 'package:formify/presentation/question/page/view_Question.dart';
 import 'package:formify/presentation/question/widgets/next_widget.dart';
 import 'package:formify/presentation/question/widgets/question_widget.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
@@ -18,7 +20,9 @@ class TextQuestionPage extends StatelessWidget {
     return  Scaffold(
       backgroundColor: colorScheme.background,
 
-      appBar: AppBar(title: const Text("Text Question")),
+      appBar: AppBar(title: Text("${
+          BlocProvider.of<SurveyBloc>(context,listen: true).question.type.title
+      } Question")),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: BlocBuilder<SurveyBloc, SurveyState>(
@@ -105,7 +109,10 @@ class TextQuestionPage extends StatelessWidget {
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
+
                               children: [
+                                surveyModel.type.title=="Switch"?
+                                SizedBox():
                                 Row(
                                   children: [
                                     Flexible(
@@ -133,23 +140,8 @@ class TextQuestionPage extends StatelessWidget {
                                   ],
                                 ),
                                 const SizedBox(height: 8),
-                                FormBuilderTextField(
-                                  name: 'answer_text',
-                                  decoration: InputDecoration(
-                                    hintText: "Answer...",
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                  validator: (value) {
-                                    if ( surveyModel.isRequired &&
-                                        (value == null ||
-                                            value.trim().isEmpty)) {
-                                      return "Answer cannot be empty";
-                                    }
-                                    return null;
-                                  },
-                                ),
+
+                                QuestionPreviewBuilder(question: surveyModel),
                                 const SizedBox(height: 16),
                                 ElevatedButton(
                                   onPressed: () {

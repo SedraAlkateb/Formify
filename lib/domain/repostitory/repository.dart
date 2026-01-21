@@ -19,6 +19,6 @@ abstract class Repository {
   Future<Either<Failure,GetAsyncModel>> getAllInformationConference(int id);
   Future<Either<Failure,List<IsActiveMainSurveyModel>>>  getAllSurveyAndActiveSurvey(int conferenceId);
   Future<Either<Failure,List<UserModel>>>  getUsersByConferenceId(int conferenceId);
-
+  Future<Either<Failure,Null>>  synchronizeUsersAnswers(List<UserRequest> userRequest,);
 
 }

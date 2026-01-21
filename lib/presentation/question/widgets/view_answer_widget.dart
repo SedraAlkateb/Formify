@@ -41,9 +41,7 @@ Widget viewAnswerWidget(BuildContext context, QuestionModel surveyModel) {
             physics: const NeverScrollableScrollPhysics(),
             separatorBuilder: (_, __) => const SizedBox(height: 10),
             itemBuilder: (context, index) {
-              // عندك answers عندك String، بس انت ما عم تستخدمه داخل TextField.
-              // الأفضل تربطه بالعرض (initialValue) باستخدام FormBuilderTextField بدل TextField
-              final String item =
+                    final String item =
                   surveyModel.answers[index].content;
 
               return Row(

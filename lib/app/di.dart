@@ -10,22 +10,28 @@ import 'package:formify/data/repository/repository.dart';
 import 'package:formify/data/repository/repositroy_sql.dart';
 import 'package:formify/domain/repostitory/repository.dart';
 import 'package:formify/domain/repostitory/repository_sql.dart';
+import 'package:formify/domain/usecase/add_async_data_sql_usecase.dart';
 import 'package:formify/domain/usecase/create_conference_usecase.dart';
 import 'package:formify/domain/usecase/create_survey_question_usecase.dart';
 import 'package:formify/domain/usecase/create_survey_usecase.dart';
 import 'package:formify/domain/usecase/delete_conference_usecase.dart';
+import 'package:formify/domain/usecase/delete_data_sql_usecase.dart';
+import 'package:formify/domain/usecase/get_all_async_info_usecase.dart';
 import 'package:formify/domain/usecase/get_all_conference_usecase.dart';
 import 'package:formify/domain/usecase/get_all_survey_and_active_usecase.dart';
 import 'package:formify/domain/usecase/get_all_survey_usecase.dart';
 import 'package:formify/domain/usecase/get_all_user_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_by_id_usecase.dart';
 import 'package:formify/domain/usecase/get_survey_question_id_usecase.dart';
+import 'package:formify/domain/usecase/get_user_answer_sql_usecase.dart';
 import 'package:formify/domain/usecase/link_survey_conference_usecase.dart';
+import 'package:formify/domain/usecase/synchronize_users_answers_usecase.dart';
 import 'package:formify/presentation/active_conference/bloc/active_conference_bloc.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 import 'package:formify/presentation/onboarding/bloc/onboarding_bloc.dart';
 import 'package:formify/presentation/resources/theme_bloc/theme_bloc.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
+import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -155,6 +161,30 @@ Future<void> initSurveyModule() async {
 
     instance.registerFactory<SurveyBloc>(
       () => SurveyBloc(instance(), instance(), instance(), instance()),
+    );
+  }
+}
+
+
+Future<void> initSyncModule() async {
+  if (!GetIt.I.isRegistered<GetUserAnswerSqlUsecase>()) {
+    instance.registerFactory<GetUserAnswerSqlUsecase>(
+          () => GetUserAnswerSqlUsecase(instance()),
+    );
+    instance.registerFactory<AddAsyncDataSqlUsecase>(
+          () => AddAsyncDataSqlUsecase(instance()),
+    );
+    instance.registerFactory<GetAllAsyncInfoUsecase>(
+          () => GetAllAsyncInfoUsecase(instance()),
+    );
+    instance.registerFactory<SynchronizeUsersAnswersUsecase>(
+          () => SynchronizeUsersAnswersUsecase(instance()),
+    );
+    instance.registerFactory<DeleteDataSqlUsecase>(
+          () => DeleteDataSqlUsecase(instance()),
+    );
+    instance.registerFactory<SyncBloc>(
+          () => SyncBloc(instance(), instance(), instance(), instance(), instance()),
     );
   }
 }

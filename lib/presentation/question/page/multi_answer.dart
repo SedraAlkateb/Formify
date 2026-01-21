@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:formify/domain/models/model_q.dart';
 import 'package:formify/domain/models/models.dart';
+import 'package:formify/presentation/question/page/view_Question.dart';
 import 'package:formify/presentation/question/widgets/add_answer_widget.dart';
 import 'package:formify/presentation/question/widgets/next_widget.dart';
 import 'package:formify/presentation/question/widgets/question_widget.dart';
 import 'package:formify/presentation/question/widgets/view_answer_widget.dart';
-import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 
-class DropDownQuestionPage extends StatelessWidget {
-   DropDownQuestionPage({super.key});
+class MultiAnswerPage extends StatelessWidget {
+  MultiAnswerPage({super.key});
   final _formKey = GlobalKey<FormBuilderState>();
   @override
   Widget build(BuildContext context) {
@@ -18,12 +19,13 @@ class DropDownQuestionPage extends StatelessWidget {
 
     return  Scaffold(
       backgroundColor: colorScheme.background,
-      appBar: AppBar(title: const Text("DropDown Question")),
+      appBar: AppBar(title:  Text("${BlocProvider.of<SurveyBloc>(context).question.type.title} Question")),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: BlocBuilder<SurveyBloc, SurveyState>(
 
           builder: (context, state) {
+
             QuestionModel questionModel=
                 BlocProvider.of<SurveyBloc>(context,listen: true).question;
             if(state is ViewQuestionState){
@@ -55,8 +57,7 @@ class DropDownQuestionPage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           questionWidget(context),
-
-                         addAnswerWidget(context)
+                          addAnswerWidget(context)
                         ],
                       ),
                     ),
@@ -64,7 +65,7 @@ class DropDownQuestionPage extends StatelessWidget {
                     const SizedBox(height: 14),
 
                     // ================= قسم الإجابات =================
-                 viewAnswerWidget(context, questionModel),
+                    viewAnswerWidget(context, questionModel),
 
                     const SizedBox(height: 14),
 
@@ -103,25 +104,7 @@ class DropDownQuestionPage extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(height: 12),
-
-                            // ===== Dropdown فيها الإجابات =====
-                            FormBuilderDropdown<String>(
-                              name: "preview_dropdown",
-                              decoration: InputDecoration(
-                                hintText: "Select an answer",
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              items: (questionModel.answers)
-                                  .map(
-                                    (a) => DropdownMenuItem<String>(
-                                  value: a.content,
-                                  child: Text(a.content,style: TextStyle(color: ColorManager.black),),
-                                ),
-                              )
-                                  .toList(),
-                            ),
+                            QuestionPreviewBuilder(question: questionModel),
                           ],
                         ),
                       ),

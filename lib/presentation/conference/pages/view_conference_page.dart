@@ -1,22 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:formify/app/di.dart';
 import 'package:formify/data/mapper/mapper.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
+import 'package:formify/presentation/resources/theme_bloc/theme_bloc.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 import 'package:formify/presentation/survey/widget/list_survey_widget.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
-///////////
-class ViewConferencePage extends StatelessWidget {
-  const ViewConferencePage({super.key});
+class ViewConferencePage extends StatefulWidget {
+  const ViewConferencePage({super.key,required this.conferenceId});
+final int conferenceId;
 
+  @override
+  State<ViewConferencePage> createState() => _ViewConferencePageState();
+}
+
+class _ViewConferencePageState extends State<ViewConferencePage> {
+  @override
+  void initState() {
+    BlocProvider.of<ConferenceBloc>(
+      context,
+    ).add(GetConferenceByIdEvent(widget.conferenceId));
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ConferenceBloc, ConferenceState>(
+      buildWhen: (previous, current) => current is GetConferenceByIdState
+          ||current is GetConferenceByIdLoadingState || current is GetConferenceByIdErrorState,
       builder: (context, state) {
         final GetAllConferenceByIdModel? conference =
             state is GetConferenceByIdState ? state.conferenceModel : null;
@@ -242,13 +256,13 @@ class ViewConferencePage extends StatelessWidget {
                             InkWell(
                               onTap: () {
                                 BlocProvider.of<ConferenceBloc>(context).add(
-                                  GetAllSurveyByConferenceEvent(conference!.id),
+                                  GetAllSurveyByConferenceEvent(conference.id),
                                 );
 
                                 Navigator.pushNamed(
                                   context,
                                   Routes.conferenceSurveyById,
-                                  arguments: conference!.id,
+                                  arguments: conference.id,
                                 );
                               },
                               child: Row(
@@ -316,16 +330,25 @@ class ViewConferencePage extends StatelessWidget {
                               itemBuilder: (context, index) {
                                 return InkWell(
                                   onTap: () {
-                                    initSurveyModule();
+                                    Navigator.pushNamed(
+
+                                      context,
+                                      Routes.viewSurvey,
+                                    );
+                                    BlocProvider.of<ThemeBloc>(context).add(
+                                      ChangeThemeColorEvent(
+                                        Color(int.parse(conference
+                                            .surveys[index].color)),
+                                        conference
+                                            .surveys[index].color,
+                                      ),
+                                    );
                                     BlocProvider.of<SurveyBloc>(context).add(
                                       ViewSurveyByIdEvent(
                                         conference.surveys[index].id,
                                       ),
                                     );
-                                    Navigator.pushNamed(
-                                      context,
-                                      Routes.viewSurvey,
-                                    );
+
                                   },
                                   child: surveyListWidget(
                                     conference.surveys[index].toDomain(),
