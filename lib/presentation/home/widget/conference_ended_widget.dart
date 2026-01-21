@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:formify/app/di.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
+import 'package:formify/presentation/conference/widget/conferm_dialog.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
+import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
 
 class ConferenceEndedWidget extends StatelessWidget {
-  const ConferenceEndedWidget({super.key,required this.index,required this.allConference});
+  const ConferenceEndedWidget({
+    super.key,
+    required this.index,
+    required this.allConference,
+    required this.value,
+  });
   final int index;
+  final int value;
   final List<GetAllConferenceModel> allConference;
   @override
   Widget build(BuildContext context) {
@@ -26,11 +35,7 @@ class ConferenceEndedWidget extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Icon(
-            Icons.event_available,
-            color: ColorManager.primary,
-            size: 30,
-          ),
+          Icon(Icons.event_available, color: ColorManager.primary, size: 30),
 
           const SizedBox(width: 16),
 
@@ -51,27 +56,45 @@ class ConferenceEndedWidget extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   "Started at: ${allConference[index].startDate}",
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey.shade700,
-                  ),
+                  style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
                 ),
                 Text(
                   "Ended at:  ${allConference[index].endDate}",
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey.shade700,
-                  ),
+                  style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
                 ),
               ],
             ),
           ),
 
-          IconButton(
-            onPressed: () => BlocProvider.of<ConferenceBloc>(context).add(DeleteConferenceEvent(allConference[index].id, index)),
-       icon: Icon(Icons.delete,
-         color: ColorManager.secondary,),
+          Column(
+            children: [
+              IconButton(
+                onPressed: () => BlocProvider.of<ConferenceBloc>(
+                  context,
+                ).add(DeleteConferenceEvent(allConference[index].id, index)),
+                icon: Icon(Icons.delete, color: ColorManager.secondary),
+              ),
+              Radio<int>(
+                value: allConference[index].id,
+                groupValue: value,
+                activeColor: ColorManager.primary,
+                onChanged: (v) {
+                  showConfirmDialog(
+                    context: context,
+                    title: "offline conference",
+                    message: "Are you sure you want to save conference offline",
+                    onConfirm: () {
 
+                      BlocProvider.of<SyncBloc>(
+                        context,
+                      ).add(GetDataEvent(allConference[index].id));
+
+                      //    BlocProvider.of<ConferenceBloc>(context).add(SelectEndedConferenceEvent( allConference[index].id));
+                    },
+                  );
+                },
+              ),
+            ],
           ),
         ],
       ),

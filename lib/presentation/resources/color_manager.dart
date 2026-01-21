@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 class ColorManager {
   // ========= LIGHT COLORS =========
   static const Color primary = Color(0xFF3A5A75);
+  static const Color splash1 = Color(0xFF4A7FA7);
+  static const Color splash2 = Color(0xFF3F7FBF);
+  static const Color splash3 = Color(0xFF4B6F8E);
+
   static const Color secondary = Color(0xFFD4AF37);
   static const Color accent = Color(0xFF607D8B);
 

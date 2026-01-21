@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/presentation/active_conference/bloc/active_conference_bloc.dart';
-import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 import 'package:formify/presentation/home/widget/conference_ended_widget.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
@@ -31,7 +30,7 @@ class AllActiveConferencePage extends StatelessWidget {
       body: BlocConsumer<ActiveConferenceBloc, ActiveConferenceState>(
         listener: (context, state) {
           if (state is GetActiveConferenceByIdState) {
-            Navigator.pushNamed(context, Routes.viewConference);
+            Navigator.pushNamed(context, Routes.viewConference, arguments:state.conferenceModel.id,);
           }
 
         },
@@ -59,7 +58,8 @@ class AllActiveConferencePage extends StatelessWidget {
                     index: index,
                     allConference: BlocProvider.of<ActiveConferenceBloc>(
                       context,
-                    ).allActiveConference,
+                    ).allActiveConference,value: 0,
+
                   ),
                 );
               },

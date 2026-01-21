@@ -30,12 +30,12 @@ class LinkSurveyConferenceEvent extends ConferenceEvent {
 
 
 class GetConferenceByIdEvent extends ConferenceEvent {
-  final GetAllConferenceModel conferenceModel;
+  final int conferenceId;
 
-  GetConferenceByIdEvent(this.conferenceModel);
+  GetConferenceByIdEvent(this.conferenceId);
 
   @override
-  List<Object?> get props => [conferenceModel];
+  List<Object?> get props => [conferenceId];
 }
 
 class GetAllNotActiveConferenceEvent extends ConferenceEvent {
@@ -51,3 +51,10 @@ class DeleteConferenceEvent extends ConferenceEvent {
   @override
   List<Object?> get props => [id];
 }
+class SelectEndedConferenceEvent extends ConferenceEvent {
+  final int index;
+  SelectEndedConferenceEvent(this.index);
+  @override
+  List<Object?> get props => [index];
+}
+

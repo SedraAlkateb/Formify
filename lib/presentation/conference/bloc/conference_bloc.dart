@@ -25,7 +25,9 @@ class ConferenceBloc extends Bloc<ConferenceEvent, ConferenceState> {
   GetAllSurveyAndActiveUsecase getAllSurveyAndActiveUsecase;
   GetConferenceByIdUsecase getConferenceByIdUsecase;
   List<GetAllConferenceModel> allNotActiveConference = [];
+  int ?selectConferenceId;
   int conferenceId = 0;
+  List<IsActiveMainSurveyModel> surveys=[];
   ConferenceBloc(
     this.createConferenceUsecase,
     this.getAllSurveyUsecase,
@@ -38,27 +40,29 @@ class ConferenceBloc extends Bloc<ConferenceEvent, ConferenceState> {
     on<ConferenceEvent>((event, emit) async {
 
       if (event is GetAllSurveyByConferenceEvent) {
-        emit(GetAllSurveyLoadingState());
+        emit(GetAllSurveyConferenceLoadingState());
         event.conferenceId==-1?
         (await getAllSurveyUsecase.execute()).fold(
           (failure) {
-            emit(GetAllSurveyErrorState(failure: failure));
+            emit(GetAllSurveyConferenceErrorState(failure: failure));
           },
           (data) async {
-            emit(GetAllSurveyState(data.toDomain()));
+            surveys=data.toDomain();
+            emit(GetAllSurveyConferenceState(data.toDomain()));
           },
         ): (await getAllSurveyAndActiveUsecase.execute(event.conferenceId)).fold(
               (failure) {
-            emit(GetAllSurveyErrorState(failure: failure));
+            emit(GetAllSurveyConferenceErrorState(failure: failure));
           },
               (data) async {
-            emit(GetAllSurveyState(data));
+                surveys=data;
+            emit(GetAllSurveyConferenceState(data));
           },
         );
       }
       if (event is GetConferenceByIdEvent) {
         emit(GetConferenceByIdLoadingState());
-        (await getConferenceByIdUsecase.execute(event.conferenceModel.id)).fold(
+        (await getConferenceByIdUsecase.execute(event.conferenceId)).fold(
               (failure) {
             emit(GetConferenceByIdErrorState(failure: failure));
           },
@@ -115,7 +119,7 @@ class ConferenceBloc extends Bloc<ConferenceEvent, ConferenceState> {
         );
       }
       if (event is LinkSurveyConferenceEvent) {
-        emit(LinkSurveyConferenceLoadingState());
+        emit(LinkSurveyConferenceLoadingState(event.index));
         (await linkSurveyConferenceUsecase.execute(
           SurveyConference(
             event.surveyId,
@@ -130,9 +134,13 @@ class ConferenceBloc extends Bloc<ConferenceEvent, ConferenceState> {
               (data) async {
             event.surveys[event.index].isActive =
             !event.surveys[event.index].isActive;
-            emit(GetAllSurveyState(event.surveys));
+            emit(GetAllSurveyConferenceState(event.surveys));
           },
         );
+
+      }if(event is SelectEndedConferenceEvent){
+        selectConferenceId=event.index;
+        emit(SelectEndedConferenceState(selectConferenceId));
       }
 
     });
