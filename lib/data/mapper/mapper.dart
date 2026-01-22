@@ -168,6 +168,8 @@ extension GetConferenceMapper on GetAllConferenceResponse? {
     );
   }
 }
+
+
 extension GetAllAsyncByConferenceMapper on GetAllAsyncByConferenceIdBaseResponse {
   GetAsyncModel toDomain() {
     return GetAsyncModel(
@@ -279,6 +281,52 @@ extension GetAllAsyncSurveyMapper on  List<GetSurveyResponse>? {
     (this?.map((response) => response.toDomain()) ??
         const Iterable.empty())
         .cast<MainSurveyModel>()
+        .toList();
+    return allSurvey;
+  }
+}
+
+extension GetConferenceModelMapper on GetSurveyWithActiveResponse? {
+  IsActiveMainSurveyModel toDomain() {
+    return IsActiveMainSurveyModel(
+      this?.id ?? Constants.zero,
+      this?.title ?? Constants.empty,
+      this?.description ?? Constants.empty,
+      this?.color ?? Constants.empty,
+      this?.isActive ?? false,
+    );
+  }
+}
+
+extension GetAllConferenceModelMapper on  GetAllSurveyWithActiveBaseResponse {
+  List<IsActiveMainSurveyModel> toDomain() {
+    List<IsActiveMainSurveyModel> allSurvey =
+    (data.map((response) => response.toDomain()))
+        .cast<IsActiveMainSurveyModel>()
+        .toList();
+    return allSurvey;
+  }
+}
+
+
+/////////////////////////USER
+extension GetUserModelMapper on UserResponse? {
+  UserModel toDomain() {
+    return UserModel(
+      this?.id ?? Constants.zero,
+      this?.fullName ?? Constants.empty,
+      this?.email ?? Constants.empty,
+      this?.phone ?? Constants.empty,
+      this?.address ?? Constants.empty,
+    );
+  }
+}
+
+extension GetAllUserModelMapper on  GetAllUserBaseResponse {
+  List<UserModel> toDomain() {
+    List<UserModel> allSurvey =
+    (data.map((response) => response.toDomain()))
+        .cast<UserModel>()
         .toList();
     return allSurvey;
   }

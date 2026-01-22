@@ -17,11 +17,19 @@ class CreateSurveyPage extends StatelessWidget {
 
     final colors = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: colors.background,
+      backgroundColor: ColorManager.background,
       appBar: AppBar(
-        title: const Text('Dynamic FormBuilder Example'),
-        backgroundColor: colors.primary,
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.arrow_back_ios_new, color: ColorManager.black),
+        ),
+        title: Text(
+          'Dynamic FormBuilder Example',
+          style: TextStyle(color: ColorManager.black),
+        ),
+        backgroundColor: ColorManager.white,
       ),
+
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
         child: Column(

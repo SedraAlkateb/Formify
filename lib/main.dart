@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:formify/app/app.dart';
 import 'package:formify/app/di.dart';

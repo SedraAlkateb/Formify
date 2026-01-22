@@ -4,7 +4,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 
-Widget viewAnswerWidget(BuildContext context, SurveyModel surveyModel) {
+Widget viewAnswerWidget(BuildContext context, QuestionModel surveyModel) {
   final colorScheme = Theme.of(context).colorScheme;
 
   return Container(
@@ -31,20 +31,18 @@ Widget viewAnswerWidget(BuildContext context, SurveyModel surveyModel) {
 
         const SizedBox(height: 10),
 
-        if (surveyModel.questions.isEmpty ||
-            surveyModel.questions.last.answers.isEmpty)
+        if (
+            surveyModel.answers.isEmpty)
           const Text("No answers yet. Tap 'Add Answer' to add one.")
         else
           ListView.separated(
-            itemCount: surveyModel.questions.last.answers.length,
+            itemCount: surveyModel.answers.length,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             separatorBuilder: (_, __) => const SizedBox(height: 10),
             itemBuilder: (context, index) {
-              // عندك answers عندك String، بس انت ما عم تستخدمه داخل TextField.
-              // الأفضل تربطه بالعرض (initialValue) باستخدام FormBuilderTextField بدل TextField
-              final String item =
-                  surveyModel.questions.last.answers[index].content;
+                    final String item =
+                  surveyModel.answers[index].content;
 
               return Row(
                 children: [

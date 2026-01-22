@@ -4,3 +4,31 @@ part of 'sync_bloc.dart';
 sealed class SyncEvent extends Equatable{}
 
 
+class AsyncDataEvent extends SyncEvent {
+
+  @override
+  List<Object?> get props => [];
+}
+class InsertDataSqlEvent extends SyncEvent {
+
+  @override
+  List<Object?> get props => [];
+}
+class DeleteDataEvent extends SyncEvent {
+  DeleteDataEvent();
+  @override
+  List<Object?> get props => [];
+}
+class UploadDataEvent extends SyncEvent {
+  final List<UserRequest> userRequest;
+  UploadDataEvent( this.userRequest);
+  @override
+  List<Object?> get props => [userRequest];
+}
+
+class GetDataEvent extends SyncEvent {
+ final  int conferenceId;
+ GetDataEvent(this.conferenceId);
+  @override
+  List<Object?> get props => [conferenceId];
+}

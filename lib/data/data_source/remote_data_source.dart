@@ -29,6 +29,10 @@ abstract class RemoteDataSource {
   );
   Future<GetAllAsyncByConferenceIdBaseResponse> getAllInformationConference(int conferenceId,
       );
+  Future<GetAllSurveyWithActiveBaseResponse> getAllSurveyAndActiveSurvey(int conference_id,);
+  Future<GetAllUserBaseResponse> getUsersByConferenceId(int conferenceId);
+  Future<Message1Response> synchronizeUsersAnswers(List<UserRequest> userRequest,
+      );
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -115,5 +119,21 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   Future<GetAllAsyncByConferenceIdBaseResponse> getAllInformationConference(int conferenceId)  async {
     return await _appServiceClient.getAllInformationConference(conferenceId);
   }
+
+  @override
+  Future<GetAllSurveyWithActiveBaseResponse> getAllSurveyAndActiveSurvey(int conference_id)  async {
+    return await _appServiceClient.getAllSurveyAndActiveSurvey(conference_id);
+  }
+
+  @override
+  Future<GetAllUserBaseResponse> getUsersByConferenceId(int conferenceId)  async {
+    return await _appServiceClient.getUsersByConferenceId(conferenceId);
+  }
+
+  @override
+  Future<Message1Response> synchronizeUsersAnswers(List<UserRequest> userRequest) async {
+    return await _appServiceClient.synchronizeUsersAnswers(userRequest);
+  }
+
 
 }

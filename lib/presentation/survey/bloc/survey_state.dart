@@ -27,6 +27,14 @@ class ViewSurveyState extends SurveyState {
 }
 
 
+class ViewQuestionState extends SurveyState {
+  final QuestionModel questionModel;
+  ViewQuestionState(this.questionModel) ;
+
+  @override
+  List<Object?> get props => [questionModel];
+}
+
 
 final class CreateSurveyState extends SurveyState {
   CreateSurveyState();

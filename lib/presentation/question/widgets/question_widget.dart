@@ -25,8 +25,7 @@ Widget questionWidget(BuildContext context) {
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         ),
         onChanged: (val) {
-
-          context.read<SurveyBloc>().add(CreateQuesNameSurveyEvent(val ?? ""));
+          BlocProvider.of<SurveyBloc>(context).add(CreateQuesNameSurveyEvent(val ?? ""));
         },
         validator: (v) {
           if (v == null || v.trim().isEmpty) {

@@ -107,9 +107,10 @@ flutter:
   assets:
     - assets/images/onboarding/json/
     - assets/images/onboarding/
+    - assets/images/main/
     - assets/images/home/
     - assets/json/
-
+    - assets/images/
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
@@ -135,3 +136,22 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/main/logo.png"
+  adaptive_icon_foreground: "assets/images/main/logo.png"
+  adaptive_icon_background: "#3F7FBF"
+  min_sdk_android: 21
+flutter_native_splash:
+  color: "#3F7FBF"
+  image: assets/images/main/splash_screen1.png
+
+  android_12:
+    color: "#3F7FBF"
+    image: assets/images/main/splash_screen1.png
+
+  android: true
+  ios: true
+  android_gravity: fill
+  ios_content_mode: scaleAspectFill

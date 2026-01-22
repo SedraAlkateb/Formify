@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
+import 'package:formify/presentation/resources/theme_bloc/theme_bloc.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 import 'package:formify/presentation/survey/widget/list_survey_widget.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
@@ -18,18 +20,25 @@ class _ViewAllSurveyPageState extends State<ViewAllSurveyPage> {
     BlocProvider.of<SurveyBloc>(context).add(GetAllSurveyEvent());
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: ColorManager.background,
       appBar: AppBar(
-        title: Text(
-          "Active Conference",
-          style: TextStyle(fontWeight: FontWeight.w600, fontSize: 26),
+        leading: IconButton(
+          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.arrow_back_ios_new, color: ColorManager.black),
         ),
+        title: Text(
+          "View Surveys",
+          style: TextStyle(color: ColorManager.black),
+        ),
+        backgroundColor: ColorManager.white,
       ),
+
       body: BlocBuilder<SurveyBloc, SurveyState>(
         builder: (context, state) {
-
           if (state is GetAllSurveyLoadingState) {
             return loadingFullScreen(context);
           } else if (state is GetAllSurveyErrorState) {
@@ -42,12 +51,15 @@ class _ViewAllSurveyPageState extends State<ViewAllSurveyPage> {
               itemBuilder: (context, index) {
                 return InkWell(
                   onTap: () {
+                    BlocProvider.of<ThemeBloc>(context).add(
+                      ChangeThemeColorEvent(
+                        Color(int.parse(state.surveys[index].color)),
+                        state.surveys[index].color,
+                      ),
+                    );
                     Navigator.pushNamed(context, Routes.viewSurvey);
                   },
-                  child: surveyListWidget(
-                 state.surveys[index]
-
-                  ),
+                  child: surveyListWidget(state.surveys[index]),
                 );
               },
             );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:formify/app/di.dart';
+import 'package:formify/presentation/active_conference/bloc/active_conference_bloc.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 import 'package:formify/presentation/onboarding/bloc/onboarding_bloc.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
@@ -9,6 +10,7 @@ import 'package:formify/presentation/resources/them_manager.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:formify/presentation/resources/theme_bloc/theme_bloc.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
+import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -19,6 +21,8 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => instance<OnboardingBloc>()),
+      //  BlocProvider(create: (_) => instance<ActiveConferenceBloc>()),
+        BlocProvider(create: (_) => instance<SyncBloc>()),
         BlocProvider(create: (_) => instance<ThemeBloc>()),
         BlocProvider(create: (_) => instance<ConferenceBloc>()),
         BlocProvider(create: (_) => instance<SurveyBloc>()),
@@ -55,7 +59,8 @@ class MyApp extends StatelessWidget {
                   GlobalCupertinoLocalizations.delegate,
                 ],
                 onGenerateRoute: RouteGenerator.getRoute,
-                initialRoute: Routes.onboarding,
+                initialRoute:Routes.showConference,
+               // Routes.onboarding,
               );
             },
           );
@@ -64,3 +69,5 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+

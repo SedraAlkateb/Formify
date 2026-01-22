@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:formify/domain/models/model_q.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/question/page/view_Question.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
@@ -9,7 +10,7 @@ import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
 class ViewSurvey extends StatelessWidget {
-   ViewSurvey({super.key});
+  ViewSurvey({super.key});
 
   final _formKey = GlobalKey<FormBuilderState>();
 
@@ -34,9 +35,10 @@ class ViewSurvey extends StatelessWidget {
         child: FormBuilder(
           key: _formKey,
           child: BlocBuilder<SurveyBloc, SurveyState>(
-            buildWhen: (previous, current) => current is ViewSurveyErrorState ||
+            buildWhen: (previous, current) =>
+                current is ViewSurveyErrorState ||
                 current is ViewSurveyLoadingState ||
-                current is ViewSurveyState ,
+                current is ViewSurveyState,
             builder: (context, state) {
               if (state is ViewSurveyState) {
                 final SurveyModel surveyModel = state.surveyModel;
@@ -161,18 +163,21 @@ class ViewSurvey extends StatelessWidget {
                                           ),
                                         ),
                                         const SizedBox(width: 10),
-                                        Expanded(
-                                          child: Text(
-                                            q.title,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              color: colors.onSurface,
-                                              fontSize: 15,
-                                            ),
-                                          ),
-                                        ),
+                                        q.type.title == "Switch"
+                                            ? SizedBox()
+                                            : Expanded(
+                                                child: Text(
+                                                  q.title,
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                    color: colors.onSurface,
+                                                    fontSize: 15,
+                                                  ),
+                                                ),
+                                              ),
                                       ],
                                     ),
+                                    const SizedBox(height: 10),
                                     QuestionPreviewBuilder(question: q),
                                     const SizedBox(height: 10),
                                   ],
@@ -232,10 +237,9 @@ class ViewSurvey extends StatelessWidget {
                     ),
                   ],
                 );
-              }
-              else if(state is ViewSurveyErrorState){
+              } else if (state is ViewSurveyErrorState) {
                 return errorFullScreen(context);
-              }else if(state is ViewSurveyLoadingState){
+              } else if (state is ViewSurveyLoadingState) {
                 return loadingFullScreen(context);
               }
               return SizedBox();

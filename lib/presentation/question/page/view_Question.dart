@@ -10,16 +10,19 @@ class QuestionPreviewBuilder extends StatelessWidget {
 
   const QuestionPreviewBuilder({super.key, required this.question});
 
-  double _toDouble(String? v, {double fallback = 0}) {
-    if (v == null) return fallback;
-    return double.tryParse(v) ?? fallback;
+  // double _toDouble(String? v, {double fallback = 0}) {
+  //   if (v == null) return fallback;
+  //   return double.tryParse(v) ?? fallback;
+  // }
+  //
+  // int _toInt(String? v, {int fallback = 0}) {
+  //   if (v == null) return fallback;
+  //   return int.tryParse(v) ?? fallback;
+  // }
+  bool _toBool(String? v) {
+    if (v == null) return false;
+    return v=="0"?false:true;
   }
-
-  int _toInt(String? v, {int fallback = 0}) {
-    if (v == null) return fallback;
-    return int.tryParse(v) ?? fallback;
-  }
-
   @override
   Widget build(BuildContext context) {
     switch (question.type) {
@@ -118,7 +121,10 @@ class QuestionPreviewBuilder extends StatelessWidget {
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           ),
           items: question.answers
-              .map((a) => DropdownMenuItem(value: a.content, child: Text(a.content)))
+              .map(
+                (a) =>
+                    DropdownMenuItem(value: a.content, child: Text(a.content)),
+              )
               .toList(),
           validator: question.isRequired == true
               ? FormBuilderValidators.required(
@@ -127,30 +133,33 @@ class QuestionPreviewBuilder extends StatelessWidget {
               : null,
         );
 
-      case QuestionType.searchableList:
-        return FormBuilderDropdown<String>(
-          name: "q_${question.order}",
-          decoration: InputDecoration(
-            hintText: "Search & select",
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-          ),
-          items: question.answers
-              .map((a) => DropdownMenuItem(value:  a.content, child: Text( a.content)))
-              .toList(),
-          isExpanded: true,
-          validator: question.isRequired == true
-              ? FormBuilderValidators.required(
-                  errorText: "This question is required",
-                )
-              : null,
-        );
+      // case QuestionType.searchableList:
+      //   return FormBuilderDropdown<String>(
+      //     name: "q_${question.order}",
+      //     decoration: InputDecoration(
+      //       hintText: "Search & select",
+      //       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+      //     ),
+      //     items: question.answers
+      //         .map(
+      //           (a) =>
+      //               DropdownMenuItem(value: a.content, child: Text(a.content)),
+      //         )
+      //         .toList(),
+      //     isExpanded: true,
+      //     validator: question.isRequired == true
+      //         ? FormBuilderValidators.required(
+      //             errorText: "This question is required",
+      //           )
+      //         : null,
+      //   );
 
       /// ================= MULTIPLE CHOICE (RADIO) =================
       case QuestionType.multipleChoice:
         return FormBuilderRadioGroup<String>(
           name: "q_${question.order}",
           options: question.answers
-              .map((a) => FormBuilderFieldOption(value:  a.content))
+              .map((a) => FormBuilderFieldOption(value: a.content))
               .toList(),
           validator: question.isRequired == true
               ? FormBuilderValidators.required()
@@ -162,7 +171,7 @@ class QuestionPreviewBuilder extends StatelessWidget {
         return FormBuilderCheckboxGroup<String>(
           name: "q_${question.order}",
           options: question.answers
-              .map((a) => FormBuilderFieldOption(value:  a.content))
+              .map((a) => FormBuilderFieldOption(value: a.content))
               .toList(),
           validator: question.isRequired == true
               ? FormBuilderValidators.minLength(
@@ -183,7 +192,10 @@ class QuestionPreviewBuilder extends StatelessWidget {
           //      multiple: true,
           options: question.answers
               .map(
-                (a) => FormBuilderChipOption<String>(value:  a.content, child: Text( a.content)),
+                (a) => FormBuilderChipOption<String>(
+                  value: a.content,
+                  child: Text(a.content),
+                ),
               )
               .toList(),
           validator: question.isRequired == true
@@ -218,13 +230,14 @@ class QuestionPreviewBuilder extends StatelessWidget {
                     if (q.isEmpty) return const Iterable<String>.empty();
 
                     // تصفية الإجابات والرجوع فقط إلى النصوص (content)
-                    Iterable<String> an = question.answers.where(
-                          (a) => a.content.toLowerCase().contains(q),
-                    ).map((a) => a.content);  // هنا نقوم بأخذ content فقط
+                    Iterable<String> an = question.answers
+                        .where((a) => a.content.toLowerCase().contains(q))
+                        .map((a) => a.content); // هنا نقوم بأخذ content فقط
 
-                    return an;  // إرجاع Iterable من النصوص فقط
+                    return an; // إرجاع Iterable من النصوص فقط
                   },
-                  onSelected: (val) => field.didChange(val),  // التعامل مع النص الذي تم اختياره
+                  onSelected: (val) =>
+                      field.didChange(val), // التعامل مع النص الذي تم اختياره
                   fieldViewBuilder: (context, controller, focusNode, onSubmit) {
                     controller.text = field.value ?? controller.text;
                     return TextField(
@@ -241,7 +254,6 @@ class QuestionPreviewBuilder extends StatelessWidget {
                     );
                   },
                 ),
-
               ],
             );
           },
@@ -253,7 +265,7 @@ class QuestionPreviewBuilder extends StatelessWidget {
           name: "q_${question.order}",
           title: Text(question.title),
           initialValue:
-              (question.answers.isNotEmpty && question.answers[0] == "1"),
+              ((question.answers.isNotEmpty) && (question.answers[0].content == "1")),
           validator: (value) {
             if (question.isRequired == true && value != true) {
               return "This question is required";
@@ -307,29 +319,12 @@ class QuestionPreviewBuilder extends StatelessWidget {
       /// ================= SLIDER =================
       /// answers: [min, max, initial?, divisions?]
       case QuestionType.slider:
-        final min = _toDouble(
-          question.answers.isNotEmpty ? question.answers[0].content : null,
-          fallback: 0,
-        );
-        final max = _toDouble(
-          question.answers.length > 1 ? question.answers[1].content : null,
-          fallback: 100,
-        );
-        final initial = _toDouble(
-          question.answers.length > 2 ? question.answers[2] .content: null,
-          fallback: min,
-        );
-        final divisions = _toInt(
-          question.answers.length > 3 ? question.answers[3].content : null,
-          fallback: 0,
-        );
-
         return FormBuilderSlider(
           name: "q_${question.order}",
-          min: min,
-          max: max,
-          initialValue: initial.clamp(min, max),
-          divisions: divisions > 0 ? divisions : null,
+          min: 0,
+          max: 100,
+          initialValue: 0,
+          divisions: 50 ,
           validator: question.isRequired == true
               ? FormBuilderValidators.required(
                   errorText: "This question is required",
@@ -339,45 +334,11 @@ class QuestionPreviewBuilder extends StatelessWidget {
 
       /// ================= RANGE SLIDER =================
       /// answers: [min, max, start?, end?]
-      case QuestionType.rangeSlider:
-        final min = _toDouble(
-          question.answers.isNotEmpty ? question.answers[0] .content: null,
-          fallback: 0,
-        );
-        final max = _toDouble(
-          question.answers.length > 1 ? question.answers[1].content : null,
-          fallback: 100,
-        );
-        final start = _toDouble(
-          question.answers.length > 2 ? question.answers[2] .content: null,
-          fallback: min,
-        );
-        final end = _toDouble(
-          question.answers.length > 3 ? question.answers[3].content : null,
-          fallback: max,
-        );
-
-        return FormBuilderRangeSlider(
-          name: "q_${question.order}",
-          min: min,
-          max: max,
-          initialValue: RangeValues(start.clamp(min, max), end.clamp(min, max)),
-          validator: question.isRequired == true
-              ? (value) {
-                  if (value == null) return "This question is required";
-                  return null;
-                }
-              : null,
-        );
-
       case QuestionType.rating:
         return FormBuilderRatingBar(
           name: "q_${question.order}",
           initialValue: 0,
-          maxRating: _toDouble(
-            question.answers.isNotEmpty ? question.answers[0] .content: null,
-            fallback: 5,
-          ),
+          maxRating: 5,
           allowHalfRating: true,
           validator: question.isRequired == true
               ? (value) {
@@ -387,73 +348,6 @@ class QuestionPreviewBuilder extends StatelessWidget {
                   return null;
                 }
               : null,
-        );
-
-      /// ================= STEPPER NUMBER =================
-      /// answers: [min, max, step, initial?]
-      case QuestionType.stepperNumber:
-        final min = _toDouble(
-          question.answers.isNotEmpty ? question.answers[0].content : null,
-          fallback: 0,
-        );
-        final max = _toDouble(
-          question.answers.length > 1 ? question.answers[1].content : null,
-          fallback: 100,
-        );
-        final step = _toDouble(
-          question.answers.length > 2 ? question.answers[2].content : null,
-          fallback: 1,
-        );
-        final initial = _toDouble(
-          question.answers.length > 3 ? question.answers[3].content : null,
-          fallback: min,
-        );
-
-        return FormBuilderTouchSpin(
-          name: "q_${question.order}",
-          min: min,
-          max: max,
-          step: step,
-          initialValue: initial.clamp(min, max),
-          validator: question.isRequired == true
-              ? FormBuilderValidators.required()
-              : null,
-        );
-
-      /// ================= SECTION HEADER =================
-      case QuestionType.sectionHeader:
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 6),
-          child: Text(
-            (question.title.isNotEmpty) ? question.title : "Section",
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-          ),
-        );
-
-      /// ================= HTML CONTENT =================
-      /// عرض نص فقط (Preview). إذا تحتاج HTML حقيقي استخدم flutter_widget_from_html.
-      case QuestionType.htmlContent:
-        return Text(
-          (question.title.isNotEmpty) ? question.title : "",
-          style: const TextStyle(height: 1.4),
-        );
-
-      /// ================= HIDDEN =================
-      /// قيمة مخفية: استخدم FormBuilderField بدون UI أو SizedBox.shrink()
-      case QuestionType.hidden:
-        return FormBuilderField<String>(
-          name: "q_${question.order}",
-          initialValue: question.answers.isNotEmpty
-              ? question.answers.first.content
-              : "",
-          builder: (field) => const SizedBox.shrink(),
-        );
-
-      /// ================= MULTI PAGE STEPPER =================
-      case QuestionType.multiPageStepper:
-        return const Text(
-          "Multi-page stepper handled at form level",
-          style: TextStyle(color: Colors.grey),
         );
 
       /// ================= GENERIC =================

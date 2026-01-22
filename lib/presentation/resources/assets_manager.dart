@@ -16,8 +16,18 @@ class JsonAssets {
   static const String loading2 = "$jsonPath/loading2.json";
   static const String suc2 = "$jsonPath/suc2.json";
 }
+class ShowConferenceJsonAssets {
+
+
+  static const String bubbles = "$jsonPath/bubbles.json";
+}
 class OnBoardingJsonAssets {
+
   static const String analyses = "$imagePathOnboardingJson/analyses.json";
   static const String conference = "$imagePathOnboardingJson/conference.json";
   static const String survey = "$imagePathOnboardingJson/survey.json";
+}
+class ImageAssets {
+  static const String logoDomina = "$imagePath/logoDomina.png";
+
 }

@@ -23,8 +23,6 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
   QuestionModel question=QuestionModel.create();
   List<QuestionModel> questions=[];
   SurveyModel surveyModel = SurveyModel.create();
-
-
   SurveyBloc(
     this.createSurveyUsecase,
     this.createSurveyQuestionUsecase,
@@ -70,16 +68,16 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
       //
       else if (event is CreateQuesNameSurveyEvent) {
         question.title = event.questionName;
-        emit(ViewSurveyState(surveyModel));
+        emit(ViewQuestionState(question));
       } else if (event is CreateQuesIsRequiredSurveyEvent) {
         question.isRequired = event.isRequired;
-        emit(ViewSurveyState(surveyModel));
+        emit(ViewQuestionState(question));
       } else if (event is CreateEmptyAnswerSurveyEvent) {
         question.answers.add(AnswerModel(0, ""));
-        emit(ViewSurveyState(surveyModel));
+        emit(ViewQuestionState(question));
       } else if (event is CreateBoolAnswerSurveyEvent) {
         question.answers.add(AnswerModel(0, ""));
-        emit(ViewSurveyState(surveyModel));
+        emit(ViewQuestionState(question));
       } else if (event is CreateEmptyQuesNameSurveyEvent) {
         question=  QuestionModel(
           title: "",
@@ -89,19 +87,19 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
           type: event.type,
         );
 
-        emit(ViewSurveyState(surveyModel));
+        emit(ViewQuestionState(question));
       } else if (event is RemoveLastAnswerEvent) {
         question.answers.clear();
-        emit(ViewSurveyState(surveyModel));
+        emit(ViewQuestionState(question));
       } else if (event is RemoveAnswerAtEvent) {
         question.answers.removeAt(event.index);
-        emit(ViewSurveyState(surveyModel));
+        emit(ViewQuestionState(question));
       } else if (event is CreateAnswerSurveyEvent) {
         question.answers[event.index] = AnswerModel(
           0,
           event.value,
         );
-        emit(ViewSurveyState(surveyModel));
+        emit(ViewQuestionState(question));
       } else if (event is CreateSurveyWithQuestionEvent) {
         emit(CreateSurveyWithQuestionLoadingState());
         (await createSurveyQuestionUsecase.execute(

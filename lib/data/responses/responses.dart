@@ -396,7 +396,7 @@ class GetSurveyWithActiveResponse {
   String? description;
   @JsonKey(name: "color")
   String? color;
-  @JsonKey(name: "isActive")
+  @JsonKey(name: "is_active")
   bool? isActive;
 
   GetSurveyWithActiveResponse(
@@ -527,4 +527,39 @@ class SurveyConferenceForAsyncResponse {
   // to json
   Map<String, dynamic> toJson() =>
       _$SurveyConferenceForAsyncResponseToJson(this);
+}
+/////////////////////GETALL USER
+@JsonSerializable()
+class UserResponse {
+  @JsonKey(name: "id")
+  int? id;
+  @JsonKey(name: "fullname")
+  String? fullName;
+  @JsonKey(name: "email")
+  String? email;
+  @JsonKey(name: "phone")
+  String? phone;
+  @JsonKey(name: "address")
+  String? address;
+
+  UserResponse(this.id, this.fullName, this.email, this.phone,
+      this.address); // from json
+  factory UserResponse.fromJson(Map<String, dynamic> json) =>
+      _$UserResponseFromJson(json);
+  // to json
+  Map<String, dynamic> toJson() => _$UserResponseToJson(this);
+}
+@JsonSerializable()
+class GetAllUserBaseResponse extends BaseResponse {
+  @JsonKey(name: "data")
+  List<UserResponse> data;
+  GetAllUserBaseResponse(this.data);
+  // from json
+  factory GetAllUserBaseResponse.fromJson(
+      Map<String, dynamic> json,
+      ) => _$GetAllUserBaseResponseFromJson(json);
+
+  // to json
+  Map<String, dynamic> toJson() =>
+      _$GetAllUserBaseResponseToJson(this);
 }

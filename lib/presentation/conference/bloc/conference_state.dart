@@ -23,18 +23,18 @@ final class CreateConferenceLoadingState extends ConferenceState {
   List<Object?> get props => [];
 }
 /////////////////////////////////////////
-final class GetAllSurveyState extends ConferenceState {
+final class GetAllSurveyConferenceState extends ConferenceState {
  final List<IsActiveMainSurveyModel> allSurvey;
-  GetAllSurveyState(this.allSurvey);
+  GetAllSurveyConferenceState(this.allSurvey);
   List<Object?> get props => [allSurvey];
 }
-final class GetAllSurveyErrorState extends ConferenceState {
+final class GetAllSurveyConferenceErrorState extends ConferenceState {
   final Failure failure;
-  GetAllSurveyErrorState({required this.failure});
+  GetAllSurveyConferenceErrorState({required this.failure});
   @override
   List<Object?> get props =>[failure];
 }
-final class GetAllSurveyLoadingState extends ConferenceState {
+final class GetAllSurveyConferenceLoadingState extends ConferenceState {
   @override
   List<Object?> get props => [];
 }
@@ -48,6 +48,8 @@ final class LinkSurveyConferenceErrorState extends ConferenceState {
   List<Object?> get props =>[failure];
 }
 final class LinkSurveyConferenceLoadingState extends ConferenceState {
+  final int index;
+  LinkSurveyConferenceLoadingState(this.index);
   @override
   List<Object?> get props => [];
 }
@@ -72,26 +74,7 @@ final class GetAllConferenceLoadingState extends ConferenceState {
   @override
   List<Object?> get props => [];
 }
-///////////////////////////AllActiveConference////////////////////
-final class GetAllActiveConferenceState extends ConferenceState {
-  final List<GetAllConferenceModel> allActiveConference;
-  GetAllActiveConferenceState(this.allActiveConference);
-  List<Object?> get props => [allActiveConference];
-}
-final class GetAllActiveEmptyConferenceState extends ConferenceState {
 
-  List<Object?> get props => [];
-}
-final class GetAllActiveConferenceErrorState extends ConferenceState {
-  final Failure failure;
-  GetAllActiveConferenceErrorState({required this.failure});
-  @override
-  List<Object?> get props =>[failure];
-}
-final class GetAllActiveConferenceLoadingState extends ConferenceState {
-  @override
-  List<Object?> get props => [];
-}
 //////////////////////Delete
 final class DeleteConferenceState extends ConferenceState {
 
@@ -124,4 +107,11 @@ final class GetConferenceByIdErrorState extends ConferenceState {
 final class GetConferenceByIdLoadingState extends ConferenceState {
   @override
   List<Object?> get props => [];
+}
+final class SelectEndedConferenceState extends ConferenceState {
+
+  final int ?index;
+  SelectEndedConferenceState(this.index);
+  @override
+  List<Object?> get props => [index];
 }
