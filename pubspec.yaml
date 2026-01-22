@@ -110,7 +110,7 @@ flutter:
     - assets/images/main/
     - assets/images/home/
     - assets/json/
-
+    - assets/images/
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
