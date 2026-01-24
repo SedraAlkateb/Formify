@@ -57,7 +57,7 @@ final class UploadDataLoadingState extends SyncState {
 
 
 final class GetDataState extends SyncState {
- final List<UserRequest> users;
+ final AllUserModel users;
   GetDataState(this.users);
   List<Object?> get props => [];
 }

@@ -431,7 +431,6 @@ class SurveyConferenceAsyncModel {
 }
 
 class UserSqlModel {
-  int id; // المعرف
   String fullName; // الاسم الكامل
   String email; // البريد الإلكتروني
   String phone; // رقم الهاتف
@@ -439,7 +438,6 @@ class UserSqlModel {
   List<AnswerModel> answerModel;
   // مُنشئ لتخزين البيانات
   UserSqlModel({
-    required this.id,
     required this.fullName,
     required this.email,
     required this.phone,
@@ -448,26 +446,24 @@ class UserSqlModel {
   });
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
       'fullname': fullName,
       'email': email,
       'phone': phone,
       'address': address,
-      'answerModel':answerModel.map((user) => user.toJson()).toList(),
+      'answers':answerModel.map((user) => user.toJson()).toList(),
     };
   }
   factory UserSqlModel.fromMap(Map<String, dynamic> map) {
     return UserSqlModel(
-      id: map['id'],
       fullName: map['fullname'],
       email: map['email'],
       phone: map['phone'],
       address: map['address'],
-        answerModel:map['answerModel']
+        answerModel:map['answers']
     );
   }
 }
-
+//
 class AllUserModel {
   List<UserSqlModel> users; // قائمة من المستخدمين (UserModel)
 
@@ -478,7 +474,7 @@ class AllUserModel {
       'users': users.map((user) => user.toJson()).toList(), // تحويل قائمة المستخدمين إلى JSON
     };
   }
-  factory AllUserModel.fromMap(Map<String, dynamic> map) {
+  factory AllUserModel.fromJson(Map<String, dynamic> map) {
     return AllUserModel(
       List<UserSqlModel>.from(
         map['users'].map((userMap) => UserModel.fromMap(userMap)),

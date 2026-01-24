@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:formify/presentation/resources/assets_manager.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
+import 'package:formify/presentation/sync/widget/button_widget.dart';
 import 'package:formify/presentation/sync/widget/doforma_container_widget.dart';
 import 'package:formify/presentation/sync/widget/press_scale.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
@@ -208,34 +209,9 @@ class ShowConferencePage extends StatelessWidget {
                           children: [
                             LottieBuilder.asset(ShowConferenceJsonAssets.bubbles,width: 200,
                             fit: BoxFit.cover,),
-                            ElevatedButton(
-                              style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all(
-                                  ColorManager.primary,
-                                ), // تغيير اللون هنا
-                                minimumSize: MaterialStateProperty.all(
-                                  Size(double.infinity, 60),
-                                ), // جعل الزر يمتد كامل العرض
-                                padding: MaterialStateProperty.all(
-                                  EdgeInsets.symmetric(vertical: 15),
-                                ), // زيادة ارتفاع الزر
-                              ),
-                              onPressed: () {
-                                Navigator.pushReplacementNamed(context, Routes.listOfSurveys);
-                              },
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text("ابدأ الاستبيانات",style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20,
-                                  ),),
-                                  SizedBox(width: 8),
-                                  Icon(Icons.arrow_forward_ios),
-                                ],
-                              ),
-                            ),
+                            animatedButton(context, () {
+                              Navigator.pushReplacementNamed(context, Routes.listOfSurveys);
+                            },)
                           ],
                         ),
                       ],

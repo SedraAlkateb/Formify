@@ -31,7 +31,7 @@ abstract class RemoteDataSource {
       );
   Future<GetAllSurveyWithActiveBaseResponse> getAllSurveyAndActiveSurvey(int conference_id,);
   Future<GetAllUserBaseResponse> getUsersByConferenceId(int conferenceId);
-  Future<Message1Response> synchronizeUsersAnswers(List<UserRequest> userRequest,
+  Future<Message1Response> synchronizeUsersAnswers(AllUserModel userRequest,
       );
 }
 
@@ -131,7 +131,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<Message1Response> synchronizeUsersAnswers(List<UserRequest> userRequest) async {
+  Future<Message1Response> synchronizeUsersAnswers(AllUserModel userRequest) async {
     return await _appServiceClient.synchronizeUsersAnswers(userRequest);
   }
 

@@ -2,7 +2,6 @@ import 'package:formify/app/constants.dart';
 import 'package:dio/dio.dart';
 import 'package:formify/data/responses/responses.dart';
 import 'package:formify/domain/models/models.dart';
-import 'package:formify/domain/models/request.dart';
 import 'package:retrofit/error_logger.dart';
 import 'package:retrofit/http.dart';
 part 'app_api.g.dart';
@@ -73,7 +72,7 @@ abstract class AppServiceClient {
   );
   @POST("synchronize/synchronize_users_answers")
   Future<Message1Response> synchronizeUsersAnswers(
-    @Body() List<UserRequest> userRequest,
+    @Body() AllUserModel userRequest,
   );
   /////////////update_survey
   /////////update_conference
