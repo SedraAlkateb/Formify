@@ -59,7 +59,7 @@ class MyApp extends StatelessWidget {
                   GlobalCupertinoLocalizations.delegate,
                 ],
                 onGenerateRoute: RouteGenerator.getRoute,
-                initialRoute:Routes.showConference,
+                initialRoute:Routes.onboarding,
                // Routes.onboarding,
               );
             },

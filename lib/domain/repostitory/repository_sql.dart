@@ -7,7 +7,7 @@ import 'package:formify/domain/models/request.dart';
 abstract class RepositorySql {
   Future<Either<Failure, String>> asyncData(GetAsyncModel asyncData);
   Future<Either<Failure, void>>  deleteData();
-  Future<Either<Failure, List<UserRequest>>> getDataSql();
+  Future<Either<Failure, AllUserModel>> getDataSql();
 
 
 }

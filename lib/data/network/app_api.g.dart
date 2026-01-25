@@ -454,12 +454,13 @@ class _AppServiceClient implements AppServiceClient {
 
   @override
   Future<Message1Response> synchronizeUsersAnswers(
-    List<UserRequest> userRequest,
+    AllUserModel userRequest,
   ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = userRequest.map((e) => e.toJson()).toList();
+    final _data = <String, dynamic>{};
+    _data.addAll(userRequest.toJson());
     final _options = _setStreamType<Message1Response>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(

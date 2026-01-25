@@ -20,7 +20,7 @@ class DeleteDataEvent extends SyncEvent {
   List<Object?> get props => [];
 }
 class UploadDataEvent extends SyncEvent {
-  final List<UserRequest> userRequest;
+  final AllUserModel userRequest;
   UploadDataEvent( this.userRequest);
   @override
   List<Object?> get props => [userRequest];

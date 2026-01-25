@@ -355,7 +355,7 @@ class RepositoryImp implements Repository {
   }
 
   @override
-  Future<Either<Failure, Null>> synchronizeUsersAnswers(List<UserRequest> userRequest)  async {
+  Future<Either<Failure, Null>> synchronizeUsersAnswers(AllUserModel userRequest)  async {
     try {
       if (await _networkInfo.isConnected) {
         final response = await _remoteDataSource.synchronizeUsersAnswers(userRequest);

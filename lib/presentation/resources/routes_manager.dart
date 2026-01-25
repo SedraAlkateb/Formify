@@ -15,6 +15,7 @@ import 'package:formify/presentation/survey/pages/view_all_survey_page.dart';
 import 'package:formify/presentation/survey/pages/view_survey.dart';
 import 'package:formify/presentation/sync/page/list_of_surveys_page.dart';
 import 'package:formify/presentation/sync/page/show_conference_page.dart';
+import 'package:formify/presentation/sync/page/survey_input_page.dart';
 
 class Routes {
   static const String onboarding = "/onboarding";
@@ -32,6 +33,7 @@ class Routes {
   static const String multiAnswer = "/multiAnswer";
   static const String showConference = "/ShowConference";
   static const String listOfSurveys = "/listOfSurveys";
+  static const String surveyInput = "/surveyInput";
 
 }
 
@@ -75,6 +77,8 @@ class RouteGenerator {
         return _animatedRoute(ShowConferencePage());
       case Routes.listOfSurveys:
         return _animatedRoute(ListOfSurveysPage());
+      case Routes.surveyInput:
+        return _animatedRoute(SurveyInputPage());
 
       // case Routes.getAllConference:
       //   initConferenceModule();

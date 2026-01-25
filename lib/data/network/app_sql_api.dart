@@ -1,6 +1,5 @@
 import 'package:formify/data/network/sqlite_factory.dart';
 import 'package:formify/domain/models/models.dart';
-import 'package:formify/domain/models/request.dart';
 import 'package:sqflite/sqflite.dart';
 
 abstract class AppSqlApiAbs {
@@ -8,7 +7,7 @@ abstract class AppSqlApiAbs {
       GetAsyncModel asyncData
       ) ;
   Future<void> deleteData();
-  Future<List<UserRequest>> getDataSql();
+  Future<AllUserModel> getDataSql();
 }
 
 class AppSqlApi extends AppSqlApiAbs {
@@ -95,7 +94,7 @@ class AppSqlApi extends AppSqlApiAbs {
   }
 
   @override
-  Future<List<UserRequest>> getDataSql() async {
+  Future<AllUserModel> getDataSql() async {
     final db = await databaseHelper.database;
     try {
       final List<Map<String, dynamic>> maps = await db.rawQuery('''
@@ -104,13 +103,11 @@ FROM users
 JOIN users_answers ON users.id = users_answers.user_id;
     ''', []);
       if (maps.isNotEmpty) {
-        return
-
-          List.generate(maps.length, (i) {
-          return UserRequest.fromMap(maps[i]);
-        });
+        return AllUserModel( List.generate(maps.length, (i) {
+          return UserSqlModel. fromMap(maps[i]);
+        }));
       } else {
-        return [];
+        return AllUserModel([]);
       }
     } catch (e) {
       throw Exception("حدث خطأ أثناء جلب المستشفيات: $e");
