@@ -8,8 +8,7 @@ final class SyncInitial extends SyncState {
   List<Object?> get props =>  [];
 }
 final class AsyncConferenceState extends SyncState {
-final GetAsyncModel asyncModel;
-AsyncConferenceState(this.asyncModel);
+AsyncConferenceState();
   List<Object?> get props => [];
 }
 final class AsyncConferenceErrorState extends SyncState {
@@ -72,9 +71,9 @@ final class DataLoadingState extends SyncState {
   List<Object?> get props => [];
 }
 final class GetConferenceAsyncState extends SyncState {
-  final GetAsyncModel asyncModel;
-  GetConferenceAsyncState(this.asyncModel);
-  List<Object?> get props => [];
+  final GetAllConferenceModel conferenceModel;
+  GetConferenceAsyncState(this.conferenceModel);
+  List<Object?> get props => [conferenceModel];
 }
 final class GetConferenceAsyncErrorState extends SyncState {
   final Failure failure;

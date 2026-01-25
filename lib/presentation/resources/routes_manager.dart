@@ -69,8 +69,12 @@ class RouteGenerator {
       case Routes.textQuestion:
         return _animatedRoute(TextQuestionPage());
       case Routes.conferenceSurveyById:
-        final conferenceId = settings.arguments as int;
-        return _animatedRoute(ConferenceSurveyById(conferenceId: conferenceId));
+        final args = settings.arguments as Map<String, dynamic>;
+        final conferenceId = args["conferenceId"] as int;
+        return _animatedRoute(
+          ConferenceSurveyById(conferenceId: conferenceId),
+        );
+
       case Routes.multiAnswer:
         return _animatedRoute(MultiAnswerPage());
       case Routes.showConference:

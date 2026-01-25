@@ -456,8 +456,13 @@ class GetAsyncConferenceResponse {
   @JsonKey(name: "survey_conference")
   List<SurveyConferenceForAsyncResponse> survey_conference;
 
-  GetAsyncConferenceResponse(this.conference, this.survey, this.questions,
-      this.answers, this.survey_conference); // from json
+  GetAsyncConferenceResponse(
+    this.conference,
+    this.survey,
+    this.questions,
+    this.answers,
+    this.survey_conference,
+  ); // from json
   factory GetAsyncConferenceResponse.fromJson(Map<String, dynamic> json) =>
       _$GetAsyncConferenceResponseFromJson(json);
   // to json
@@ -484,7 +489,7 @@ class GetQuestionForAsyncResponse {
     this.question_order,
     this.is_required,
     this.type,
-      this.survey_id
+    this.survey_id,
   ); // from json
   factory GetQuestionForAsyncResponse.fromJson(Map<String, dynamic> json) =>
       _$GetQuestionForAsyncResponseFromJson(json);
@@ -519,8 +524,12 @@ class SurveyConferenceForAsyncResponse {
   @JsonKey(name: "conference_id")
   int? conference_id;
 
-  SurveyConferenceForAsyncResponse(this.id, this.survey_order, this.survey_id,
-      this.conference_id); // from json
+  SurveyConferenceForAsyncResponse(
+    this.id,
+    this.survey_order,
+    this.survey_id,
+    this.conference_id,
+  ); // from json
   factory SurveyConferenceForAsyncResponse.fromJson(
     Map<String, dynamic> json,
   ) => _$SurveyConferenceForAsyncResponseFromJson(json);
@@ -528,6 +537,7 @@ class SurveyConferenceForAsyncResponse {
   Map<String, dynamic> toJson() =>
       _$SurveyConferenceForAsyncResponseToJson(this);
 }
+
 /////////////////////GETALL USER
 @JsonSerializable()
 class UserResponse {
@@ -542,24 +552,28 @@ class UserResponse {
   @JsonKey(name: "address")
   String? address;
 
-  UserResponse(this.id, this.fullName, this.email, this.phone,
-      this.address); // from json
+  UserResponse(
+    this.id,
+    this.fullName,
+    this.email,
+    this.phone,
+    this.address,
+  ); // from json
   factory UserResponse.fromJson(Map<String, dynamic> json) =>
       _$UserResponseFromJson(json);
   // to json
   Map<String, dynamic> toJson() => _$UserResponseToJson(this);
 }
+
 @JsonSerializable()
 class GetAllUserBaseResponse extends BaseResponse {
   @JsonKey(name: "data")
   List<UserResponse> data;
   GetAllUserBaseResponse(this.data);
   // from json
-  factory GetAllUserBaseResponse.fromJson(
-      Map<String, dynamic> json,
-      ) => _$GetAllUserBaseResponseFromJson(json);
+  factory GetAllUserBaseResponse.fromJson(Map<String, dynamic> json) =>
+      _$GetAllUserBaseResponseFromJson(json);
 
   // to json
-  Map<String, dynamic> toJson() =>
-      _$GetAllUserBaseResponseToJson(this);
+  Map<String, dynamic> toJson() => _$GetAllUserBaseResponseToJson(this);
 }

@@ -3,7 +3,6 @@ import 'package:formify/data/network/app_sql_api.dart';
 import 'package:formify/data/network/error_handler.dart';
 import 'package:formify/data/network/failure.dart';
 import 'package:formify/domain/models/models.dart';
-import 'package:formify/domain/models/request.dart';
 import 'package:formify/domain/repostitory/repository_sql.dart';
 
 class RepositroySqlImp extends RepositorySql {
@@ -45,7 +44,7 @@ class RepositroySqlImp extends RepositorySql {
   }
 
   @override
-  Future<Either<Failure, GetAsyncModel>> getConference() async {
+  Future<Either<Failure, GetAllConferenceModel>> getConference() async {
     try {
       final response = await _databaseHelper.getConference();
       return Right(response);

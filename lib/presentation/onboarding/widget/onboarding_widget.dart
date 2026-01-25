@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:formify/app/di.dart';
-import 'package:formify/presentation/home/pages/home_page.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/unit/text_animation.dart';
 import 'package:lottie/lottie.dart';

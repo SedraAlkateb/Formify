@@ -82,11 +82,11 @@ class ListOfSurveysPage extends StatelessWidget {
                         height: 10,
                       ),
                       Text(
-                          BlocProvider.of<SyncBloc>(context).asyncModel!.surveys[index].title,
+                          BlocProvider.of<SyncBloc>(context).asyncModel.surveys[index].title,
                         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        BlocProvider.of<SyncBloc>(context).asyncModel!.surveys[index].description,
+                        BlocProvider.of<SyncBloc>(context).asyncModel.surveys[index].description,
                         style: TextStyle(fontSize: 15),
                       ),
                       SizedBox(
@@ -98,7 +98,7 @@ class ListOfSurveysPage extends StatelessWidget {
                     ],
                   ),
                 ),
-                itemCount: 5,
+                itemCount:  BlocProvider.of<SyncBloc>(context).asyncModel!.surveys.length,
               ),
             ),
           ],

@@ -259,9 +259,13 @@ class CreateConferencePage extends StatelessWidget {
                 } else if (state is CreateConferenceState) {
                   BlocProvider.of<ConferenceBloc>(context)
                       .add(GetAllSurveyByConferenceEvent(
-                    -1
+                    state.conferenceId
                   ));
-                 Navigator.pushReplacementNamed(context, Routes.conferenceSurveyById);
+                 Navigator.pushReplacementNamed(context, Routes.conferenceSurveyById,
+                   arguments: {
+                     "conferenceId": state.conferenceId
+                   },
+                 );
                 }
               },
               child: SizedBox(

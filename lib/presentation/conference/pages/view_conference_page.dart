@@ -262,7 +262,10 @@ class _ViewConferencePageState extends State<ViewConferencePage> {
                                 Navigator.pushNamed(
                                   context,
                                   Routes.conferenceSurveyById,
-                                  arguments: conference.id,
+                                  arguments: {
+                                    "conferenceId": conference.id,
+
+                                  },
                                 );
                               },
                               child: Row(
