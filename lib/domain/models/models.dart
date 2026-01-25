@@ -76,7 +76,7 @@ class QuestionModel {
 
   Map<String, dynamic> toMap() {
     return {
-      'id':id,
+      'id': id,
       'title': title,
       'order': order,
       'isRequired': isRequired,
@@ -126,13 +126,21 @@ class MainSurveyModel {
 
   Map<String, dynamic> toMap() {
     return {
-      'id':id,
+      'id': id,
       'title': title,
       'description': description,
       'color': color,
     };
   }
 
+  factory MainSurveyModel.fromMap(Map<String, dynamic> map) {
+    return MainSurveyModel(
+      map['id'],
+      map['title'],
+      map['description'],
+      map['color'],
+    );
+  }
 }
 
 class IsActiveMainSurveyModel {
@@ -238,17 +246,17 @@ class UserModel {
   String email; // البريد الإلكتروني
   String phone; // رقم الهاتف
   String address; // العنوان
- // List<AnswerSqlModel> answersModel; // قائمة الإجابات المرتبطة بالمستخدم
+  // List<AnswerSqlModel> answersModel; // قائمة الإجابات المرتبطة بالمستخدم
 
   // مُنشئ لتخزين البيانات
   UserModel(
     this.id,
-     this.fullName,
-     this.email,
-     this.phone,
-     this.address,
- //   required this.answersModel,
-);
+    this.fullName,
+    this.email,
+    this.phone,
+    this.address,
+    //   required this.answersModel,
+  );
 
   // تحويل البيانات إلى JSON (لاستخدامها مع قاعدة البيانات أو الواجهة)
   Map<String, dynamic> toJson() {
@@ -268,16 +276,17 @@ class UserModel {
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
       map['id'],
-     map['full_name'],
-     map['email'],
-    map['phone'],
-     map['address'],
+      map['full_name'],
+      map['email'],
+      map['phone'],
+      map['address'],
       // answersModel: List<AnswerSqlModel>.from(
       //   map['answers'].map((answer) => AnswerSqlModel.fromMap(answer)),
       // ), // تحويل الإجابات المرتبطة
     );
   }
 }
+
 class AnswerSqlModel {
   int answer_id;
   int user_id;
@@ -291,17 +300,16 @@ class AnswerSqlModel {
 
   // تحويل الإجابة إلى JSON
   Map<String, dynamic> toJson() {
-    return {'answer_id': answer_id,
-      'user_id': user_id,
-      'content': content};
+    return {'answer_id': answer_id, 'user_id': user_id, 'content': content};
   }
 
   // تحويل الإجابة من الخريطة
   factory AnswerSqlModel.fromMap(Map<String, dynamic> map) {
     return AnswerSqlModel(
-        answer_id: map['answer_id'],
-        user_id: map['user_id'],
-        content: map['content']);
+      answer_id: map['answer_id'],
+      user_id: map['user_id'],
+      content: map['content'],
+    );
   }
 }
 
@@ -331,10 +339,23 @@ class GetAllConferenceModel {
       'address': address,
       'start_date': startDate,
       'end_date': endDate,
-      'is_active': isActive
+      'is_active': isActive ? 1 : 0,
     };
   }
+
+  factory GetAllConferenceModel.fromMap(Map<String, dynamic> map) {
+    return GetAllConferenceModel(
+      map['id'],
+      map['name'],
+      map['description'],
+      map['address'],
+      map['start_date'],
+      map['end_date'],
+      map['is_active']==1?true:false,
+    );
+  }
 }
+
 class GetAllConferenceByIdModel {
   int id;
   String name;
@@ -345,35 +366,48 @@ class GetAllConferenceByIdModel {
   bool isActive;
   List<SurveyToConferenceModel> surveys;
   GetAllConferenceByIdModel(
-      this.id,
-      this.name,
-      this.description,
-      this.address,
-      this.startDate,
-      this.endDate,
-      this.isActive,
-      this.surveys
-      );
+    this.id,
+    this.name,
+    this.description,
+    this.address,
+    this.startDate,
+    this.endDate,
+    this.isActive,
+    this.surveys,
+  );
 }
+
 class SurveyToConferenceModel {
   int id;
   String title;
   String description;
   String color;
   int survey_order;
-  SurveyToConferenceModel(this.id, this.title, this.description, this.color,this.survey_order);
+  SurveyToConferenceModel(
+    this.id,
+    this.title,
+    this.description,
+    this.color,
+    this.survey_order,
+  );
 }
-class GetAsyncModel{
+
+class GetAsyncModel {//
   GetAllConferenceModel conferenceModel;
   List<MainSurveyModel> surveys;
   List<AsyncQuestionModel> questions;
   List<GetAsyncAnswerModel> answers;
   List<SurveyConferenceAsyncModel> surveyConference;
 
-  GetAsyncModel(this.conferenceModel, this.surveys, this.questions, this.answers,
-      this.surveyConference);
-
+  GetAsyncModel(
+    this.conferenceModel,
+    this.surveys,
+    this.questions,
+    this.answers,
+    this.surveyConference,
+  );
 }
+
 class AsyncQuestionModel {
   int? id;
   String title;
@@ -381,52 +415,81 @@ class AsyncQuestionModel {
   bool isRequired;
   QuestionType type;
   int survey_id;
-  AsyncQuestionModel(this.id,
-      this.title, this.order,
-      this.isRequired, this.type,
-      this.survey_id
-      );
+  AsyncQuestionModel(
+    this.id,
+    this.title,
+    this.order,
+    this.isRequired,
+    this.type,
+    this.survey_id,
+  );
 
   Map<String, dynamic> toMap() {
     return {
-      'id':id,
-      'survey_id':survey_id,
+      'id': id,
+      'survey_id': survey_id,
       'question': title,
       'question_order': order,
-      'is_required': isRequired,
+      'is_required': isRequired ? 1 : 0,
       'type': type.name,
     };
   }
+
+  factory AsyncQuestionModel.fromMap(Map<String, dynamic> map) {
+    return AsyncQuestionModel(
+      map['id'],
+      map['question'],
+      map['question_order'],
+      map['is_required']==1?true:false,
+      convertToQuestionType(map['type']),
+      map['survey_id'],
+    );
+  }
 }
-class GetAsyncAnswerModel{
+
+class GetAsyncAnswerModel {
   int id;
   int questionId;
   String title;
 
   GetAsyncAnswerModel(this.id, this.questionId, this.title);
   Map<String, dynamic> toMap() {
-    return {
-      'id':id,
-      'title': title,
-      'question_id': questionId,
-    };
+    return {'id': id, 'title': title, 'question_id': questionId};
+  }
+
+  factory GetAsyncAnswerModel.fromMap(Map<String, dynamic> map) {
+    return GetAsyncAnswerModel(map['id'], map['question_id'], map['title']);
   }
 }
+
 class SurveyConferenceAsyncModel {
   int id;
   int survey_order;
   int survey_id;
   int conference_id;
 
-  SurveyConferenceAsyncModel(this.id, this.survey_order, this.survey_id,
-      this.conference_id);
+  SurveyConferenceAsyncModel(
+    this.id,
+    this.survey_order,
+    this.survey_id,
+    this.conference_id,
+  );
   Map<String, dynamic> toMap() {
     return {
-      'id':id,
-      'survey_id':survey_id,
+      'id': id,
+      'survey_id': survey_id,
       'conference_id': conference_id,
       'survey_order': survey_order,
     };
+  }
+  factory SurveyConferenceAsyncModel.fromMap(Map<String, dynamic> map) {
+    return SurveyConferenceAsyncModel(
+        map['id'],
+        map['survey_order'],
+        map['survey_id'],
+        map['conference_id']
+
+    );
   }
 }
 
@@ -442,7 +505,7 @@ class UserSqlModel {
     required this.email,
     required this.phone,
     required this.address,
-    required this.answerModel
+    required this.answerModel,
   });
   Map<String, dynamic> toJson() {
     return {
@@ -450,19 +513,21 @@ class UserSqlModel {
       'email': email,
       'phone': phone,
       'address': address,
-      'answers':answerModel.map((user) => user.toJson()).toList(),
+      'answers': answerModel.map((user) => user.toJson()).toList(),
     };
   }
+
   factory UserSqlModel.fromMap(Map<String, dynamic> map) {
     return UserSqlModel(
       fullName: map['fullname'],
       email: map['email'],
       phone: map['phone'],
       address: map['address'],
-        answerModel:map['answers']
+      answerModel: map['answers'],
     );
   }
 }
+
 //
 class AllUserModel {
   List<UserSqlModel> users; // قائمة من المستخدمين (UserModel)
@@ -471,9 +536,12 @@ class AllUserModel {
 
   Map<String, dynamic> toJson() {
     return {
-      'users': users.map((user) => user.toJson()).toList(), // تحويل قائمة المستخدمين إلى JSON
+      'users': users
+          .map((user) => user.toJson())
+          .toList(), // تحويل قائمة المستخدمين إلى JSON
     };
   }
+
   factory AllUserModel.fromJson(Map<String, dynamic> map) {
     return AllUserModel(
       List<UserSqlModel>.from(

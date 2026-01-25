@@ -43,4 +43,15 @@ class RepositroySqlImp extends RepositorySql {
       return Left(failure);
     }
   }
+
+  @override
+  Future<Either<Failure, GetAsyncModel>> getConference() async {
+    try {
+      final response = await _databaseHelper.getConference();
+      return Right(response);
+    } catch (e) {
+      Failure failure = ErrorHandler.handle(e).failure;
+      return Left(failure);
+    }
+  }
 }

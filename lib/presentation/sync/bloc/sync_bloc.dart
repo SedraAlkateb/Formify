@@ -6,6 +6,7 @@ import 'package:formify/domain/models/request.dart';
 import 'package:formify/domain/usecase/add_async_data_sql_usecase.dart';
 import 'package:formify/domain/usecase/delete_data_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_all_async_info_usecase.dart';
+import 'package:formify/domain/usecase/get_conference_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_user_answer_sql_usecase.dart';
 import 'package:formify/domain/usecase/synchronize_users_answers_usecase.dart';
 import 'package:meta/meta.dart';
@@ -19,6 +20,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   GetUserAnswerSqlUsecase getUserAnswerSqlUsecase;
   DeleteDataSqlUsecase deleteDataSqlUsecase;
   SynchronizeUsersAnswersUsecase synchronizeUsersAnswersUsecase;
+  GetConferenceSqlUsecase getConferenceSqlUsecase;
   GetAsyncModel? asyncModel;
   int ?conferenceId;
 
@@ -28,11 +30,12 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     this.getUserAnswerSqlUsecase,
     this.deleteDataSqlUsecase,
     this.synchronizeUsersAnswersUsecase,
+      this.getConferenceSqlUsecase
   ) : super(SyncInitial()) {
     on<SyncEvent>((event, emit) async {
       ////////////////4
       if (event is AsyncDataEvent) {
-        emit(DataLoadingState());
+
         (await getAllAsyncInfoUsecase.execute(conferenceId??-1)).fold(
           (failure) {
             emit(DataErrorState(failure: failure));
@@ -45,7 +48,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
       }
       //////////////////5
       if (event is InsertDataSqlEvent) {
-        emit(DataLoadingState());
+
         (await addAsyncDataSqlUsecase.execute(asyncModel!)).fold(
           (failure) {
             emit(DataErrorState(failure: failure));
@@ -57,7 +60,6 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
       }
  //////////////3
       if (event is DeleteDataEvent) {
-        emit(DataLoadingState());
         (await deleteDataSqlUsecase.execute()).fold(
               (failure) {
             emit(DataErrorState(failure: failure));
@@ -82,13 +84,25 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
       }
       /////////2
       if (event is UploadDataEvent) {
-        emit(DataLoadingState());
         (await synchronizeUsersAnswersUsecase.execute(event.userRequest)).fold(
               (failure) {
             emit(DataErrorState(failure: failure));
           },
               (data) async {
             emit(UploadDataState());
+          },
+        );
+      }
+      //////////////////
+      if (event is GetConferenceAsyncEvent) {
+        emit(GetConferenceAsyncLoadingState());
+        (await getConferenceSqlUsecase.execute()).fold(
+              (failure) {
+            emit(GetConferenceAsyncErrorState(failure: failure));
+          },
+              (data) async {
+                asyncModel=data;
+            emit(GetConferenceAsyncState(data));
           },
         );
       }

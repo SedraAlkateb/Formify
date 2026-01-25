@@ -71,3 +71,18 @@ final class DataLoadingState extends SyncState {
   @override
   List<Object?> get props => [];
 }
+final class GetConferenceAsyncState extends SyncState {
+  final GetAsyncModel asyncModel;
+  GetConferenceAsyncState(this.asyncModel);
+  List<Object?> get props => [];
+}
+final class GetConferenceAsyncErrorState extends SyncState {
+  final Failure failure;
+  GetConferenceAsyncErrorState({required this.failure});
+  @override
+  List<Object?> get props =>[failure];
+}
+final class GetConferenceAsyncLoadingState extends SyncState {
+  @override
+  List<Object?> get props => [];
+}

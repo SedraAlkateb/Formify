@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:formify/presentation/resources/assets_manager.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
+import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
 import 'package:formify/presentation/sync/widget/bouncing_icon_card.dart';
 import 'package:formify/presentation/sync/widget/button_widget.dart';
 import 'package:formify/presentation/sync/widget/card_list_up_down.dart';
-import 'package:formify/presentation/sync/widget/doforma_container_widget.dart';
-import 'package:formify/presentation/sync/widget/press_scale.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
-import 'package:lottie/lottie.dart';
 
 class ListOfSurveysPage extends StatelessWidget {
   const ListOfSurveysPage({super.key});
@@ -68,7 +64,6 @@ class ListOfSurveysPage extends StatelessWidget {
             ),
             Expanded(
               child: ListView.builder(
-                itemExtent: 2,
                 itemBuilder: (context, index) => Container(
                   decoration: BoxDecoration(
                     border: Border.all(color: ColorManager.primary),
@@ -87,11 +82,11 @@ class ListOfSurveysPage extends StatelessWidget {
                         height: 10,
                       ),
                       Text(
-                        "استبثيان رضا الحظور",
+                          BlocProvider.of<SyncBloc>(context).asyncModel!.surveys[index].title,
                         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        "ساعدنا في تقييم تجربتك في المؤتمر ومستوى رضاك عن الفعاليات والخدمات المقدمة",
+                        BlocProvider.of<SyncBloc>(context).asyncModel!.surveys[index].description,
                         style: TextStyle(fontSize: 15),
                       ),
                       SizedBox(

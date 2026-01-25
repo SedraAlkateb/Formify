@@ -74,6 +74,7 @@ class RouteGenerator {
       case Routes.multiAnswer:
         return _animatedRoute(MultiAnswerPage());
       case Routes.showConference:
+        initSyncModule();
         return _animatedRoute(ShowConferencePage());
       case Routes.listOfSurveys:
         return _animatedRoute(ListOfSurveysPage());

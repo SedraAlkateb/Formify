@@ -8,6 +8,8 @@ abstract class AppSqlApiAbs {
       ) ;
   Future<void> deleteData();
   Future<AllUserModel> getDataSql();
+  Future<GetAsyncModel> getConference();
+
 }
 
 class AppSqlApi extends AppSqlApiAbs {
@@ -112,6 +114,44 @@ JOIN users_answers ON users.id = users_answers.user_id;
     } catch (e) {
       throw Exception("حدث خطأ أثناء جلب المستشفيات: $e");
     }
+  }
+
+  @override
+  Future<GetAsyncModel> getConference() async {
+    final db = await databaseHelper.database;
+    List<Map<String, dynamic>> maps;
+    maps = await db.query(
+      'conference',
+    );
+    GetAllConferenceModel conferenceModel= List.generate(maps.length, (i) {
+      return GetAllConferenceModel.fromMap(maps[i]);
+    }).first;
+    maps = await db.query(
+      'survey',
+    );
+    List<MainSurveyModel> surveys= List.generate(maps.length, (i) {
+      return MainSurveyModel.fromMap(maps[i]);
+    });
+    maps = await db.query(
+      'questions',
+    );
+    List<AsyncQuestionModel> questions= List.generate(maps.length, (i) {
+      return AsyncQuestionModel.fromMap(maps[i]);
+    });
+    maps = await db.query(
+      'answers',
+    );
+    List<GetAsyncAnswerModel> answers= List.generate(maps.length, (i) {
+      return GetAsyncAnswerModel.fromMap(maps[i]);
+    });
+    maps = await db.query(
+      'survey_conference',
+    );
+    List<SurveyConferenceAsyncModel> surveyConference= List.generate(maps.length, (i) {
+      return SurveyConferenceAsyncModel.fromMap(maps[i]);
+    });
+
+    return GetAsyncModel(conferenceModel, surveys, questions, answers, surveyConference);
   }
 
 }

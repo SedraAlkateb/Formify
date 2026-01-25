@@ -32,3 +32,8 @@ class GetDataEvent extends SyncEvent {
   @override
   List<Object?> get props => [conferenceId];
 }
+class GetConferenceAsyncEvent extends SyncEvent {
+  GetConferenceAsyncEvent();
+  @override
+  List<Object?> get props => [];
+}

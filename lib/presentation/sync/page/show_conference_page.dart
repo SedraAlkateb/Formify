@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:formify/presentation/resources/assets_manager.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
+import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
 import 'package:formify/presentation/sync/widget/button_widget.dart';
 import 'package:formify/presentation/sync/widget/doforma_container_widget.dart';
 import 'package:formify/presentation/sync/widget/press_scale.dart';
+import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:lottie/lottie.dart';
 
@@ -24,7 +27,15 @@ class ShowConferencePage extends StatelessWidget {
           ])
         ),
         child: SafeArea(
-          child: SingleChildScrollView(
+          child: BlocBuilder<SyncBloc, SyncState>(
+  builder: (context, state) {
+    if(state is GetConferenceAsyncLoadingState){
+      return loadingFullScreen(context);
+    }
+    else if(state is AsyncConferenceErrorState){
+      return errorFullScreen(context);
+    }
+    return SingleChildScrollView(
             child: Column(
               children: [
                 FloatingContainer(),
@@ -51,7 +62,7 @@ class ShowConferencePage extends StatelessWidget {
                     child: Column(
                       children: [
                         Text(
-                          "المؤتمر الدولي للابتكارات الطبية 2026 ",
+                          BlocProvider.of<SyncBloc>(context).asyncModel!.conferenceModel.name,
                           textAlign: TextAlign.start,
                           style: TextStyle(
                             color: ColorManager.primary,
@@ -61,7 +72,7 @@ class ShowConferencePage extends StatelessWidget {
                         ),
                         SizedBox(height: 5),
                         Text(
-                          "نرحب بكم في المؤتمر السنوي الذي يجمع نخبة من الخبراء والمتخصصين في المجال الطبي والصيدلاني. شارك معنا في رحلة استكشاف أحدث الابتكارات والتقنيات في صناعة الأدوية.",
+                          BlocProvider.of<SyncBloc>(context).asyncModel!.conferenceModel.description,
                           textAlign: TextAlign.start,
                           style: TextStyle(
                             color: ColorManager.black,
@@ -116,7 +127,7 @@ class ShowConferencePage extends StatelessWidget {
                                           ),
                                         ),
                                         Text(
-                                          "فندق الريتز كارلتون - دبي، الإمارات العربية المتحدة",
+                                          BlocProvider.of<SyncBloc>(context).asyncModel!.conferenceModel.address,
                                           textAlign: TextAlign.start,
                                           style: TextStyle(
                                             color: ColorManager.black,
@@ -178,7 +189,8 @@ class ShowConferencePage extends StatelessWidget {
                                           ),
                                         ),
                                         Text(
-                                          " 15 مارس 2026 - 18",
+                                          BlocProvider.of<SyncBloc>(context).asyncModel!.conferenceModel.startDate,
+
                                           textAlign: TextAlign.start,
                                           style: TextStyle(
                                             color: ColorManager.black,
@@ -187,7 +199,7 @@ class ShowConferencePage extends StatelessWidget {
                                           ),
                                         ),
                                         Text(
-                                          " 15 مارس ",
+                                          BlocProvider.of<SyncBloc>(context).asyncModel!.conferenceModel.endDate,
                                           textAlign: TextAlign.start,
                                           style: TextStyle(
                                             color: ColorManager.black,
@@ -220,7 +232,9 @@ class ShowConferencePage extends StatelessWidget {
                 ),
               ],
             ),
-          ),
+          );
+  },
+),
         ),
       ),
     );

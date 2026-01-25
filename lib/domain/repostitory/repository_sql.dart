@@ -8,6 +8,5 @@ abstract class RepositorySql {
   Future<Either<Failure, String>> asyncData(GetAsyncModel asyncData);
   Future<Either<Failure, void>>  deleteData();
   Future<Either<Failure, AllUserModel>> getDataSql();
-
-
+  Future<Either<Failure, GetAsyncModel>>getConference();
 }

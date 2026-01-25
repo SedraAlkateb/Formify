@@ -70,7 +70,7 @@ abstract class AppServiceClient {
   Future<GetAllUserBaseResponse> getUsersByConferenceId(
     @Part(name: "conference_id") int conference_id,
   );
-  @POST("synchronize/synchronize_users_answers")
+  @POST("synchronize/synchronize_users_answers.php")
   Future<Message1Response> synchronizeUsersAnswers(
     @Body() AllUserModel userRequest,
   );
