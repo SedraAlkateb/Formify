@@ -8,4 +8,5 @@ abstract class RepositorySql {
   Future<Either<Failure, void>>  deleteData();
   Future<Either<Failure, AllUserModel>> getDataSql();
   Future<Either<Failure, GetAllConferenceModel>>getConference();
+  Future<Either<Failure, List<MainSurveyModel>>>getSurveys();
 }

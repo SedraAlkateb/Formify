@@ -71,7 +71,7 @@ class HomePage extends StatelessWidget {
                           } else if (state is AsyncConferenceState) {
                             BlocProvider.of<SyncBloc>(
                               context,
-                            ).add(InsertDataSqlEvent());
+                            ).add(InsertDataSqlEvent(state.asyncModel));
                           } else if (state is InsertSucState) {
                             success(context);
                           }

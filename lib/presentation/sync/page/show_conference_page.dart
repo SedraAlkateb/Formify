@@ -225,7 +225,7 @@ class ShowConferencePage extends StatelessWidget {
                         LottieBuilder.asset(ShowConferenceJsonAssets.bubbles,width: 200,
                           fit: BoxFit.cover,),
                         animatedButton(context, () {
-                          Navigator.pushReplacementNamed(context, Routes.listOfSurveys);
+                          Navigator.pushReplacementNamed(context, Routes.insertUser);
                         },)
                       ],
                     ),

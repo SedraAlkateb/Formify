@@ -8,8 +8,9 @@ final class SyncInitial extends SyncState {
   List<Object?> get props =>  [];
 }
 final class AsyncConferenceState extends SyncState {
-AsyncConferenceState();
-  List<Object?> get props => [];
+  final   GetAsyncModel asyncModel;
+AsyncConferenceState(this.asyncModel);
+  List<Object?> get props => [asyncModel];
 }
 final class AsyncConferenceErrorState extends SyncState {
   final Failure failure;
@@ -82,6 +83,22 @@ final class GetConferenceAsyncErrorState extends SyncState {
   List<Object?> get props =>[failure];
 }
 final class GetConferenceAsyncLoadingState extends SyncState {
+  @override
+  List<Object?> get props => [];
+}
+
+final class GetSurveyAsyncState extends SyncState {
+  final List<MainSurveyModel> surveys;
+  GetSurveyAsyncState(this.surveys);
+  List<Object?> get props => [surveys];
+}
+final class GetSurveyAsyncErrorState extends SyncState {
+  final Failure failure;
+  GetSurveyAsyncErrorState({required this.failure});
+  @override
+  List<Object?> get props =>[failure];
+}
+final class GetSurveyAsyncLoadingState extends SyncState {
   @override
   List<Object?> get props => [];
 }

@@ -274,9 +274,9 @@ class GetAllConferenceResponse {
   String? description;
   @JsonKey(name: "address")
   String? address;
-  @JsonKey(name: "start_date")
+  @JsonKey(name: "startDate")
   String? start_date;
-  @JsonKey(name: "end_date")
+  @JsonKey(name: "endDate")
   String? end_date;
   @JsonKey(name: "is_active")
   bool? is_active;
