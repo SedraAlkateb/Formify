@@ -57,7 +57,7 @@ class ListOfSurveysPage extends StatelessWidget {
                             color: ColorManager.primary,
                           ),
                         ),
-                        Text("اختر الاستبيان الذي تود المشاركة فيه",),
+                        Text("اختر الاستبيان الذي تود المشاركة فيه"),
                       ],
                     ),
                   ],
@@ -65,56 +65,64 @@ class ListOfSurveysPage extends StatelessWidget {
               ),
             ),
             BlocBuilder<SyncBloc, SyncState>(
-  builder: (context, state) {
-    if(state is GetSurveyAsyncErrorState){
-      return errorFullScreen(context);
-    }else if(state is GetSurveyAsyncLoadingState){
-      return loadingFullScreen(context);
-  }else if( state is GetSurveyAsyncState){
-      List<MainSurveyModel> surveys=state.surveys;
-      return Expanded(
-        child: ListView.builder(
-          itemBuilder: (context, index) => Container(
-            decoration: BoxDecoration(
-              border: Border.all(color: ColorManager.primary),
-              color: ColorManager.white,
-              //.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
+              builder: (context, state) {
+                if (state is GetSurveyAsyncErrorState) {
+                  return errorFullScreen(context);
+                } else if (state is GetSurveyAsyncLoadingState) {
+                  return loadingFullScreen(context);
+                } else if (state is GetSurveyAsyncState) {
+                  List<MainSurveyModel> surveys = state.surveys;
+                  return Expanded(
+                    child: ListView.builder(
+                      itemBuilder: (context, index) => Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: ColorManager.primary),
+                          color: ColorManager.white,
+                          //.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: EdgeInsets.all(20),
+                        margin: EdgeInsets.symmetric(
+                          horizontal: 30,
+                          vertical: 20,
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CardListUpDown(),
+                            SizedBox(height: 10),
+                            Text(
+                              surveys[index].title,
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              surveys[index].description,
+                              style: TextStyle(fontSize: 15),
+                            ),
+                            SizedBox(height: 30),
+                            animatedButton(context, () {
+                              BlocProvider.of<SyncBloc>(
+                                context,
+                              ).add(GetQuestionAnswersEvent(surveys[index].id));
+                              Navigator.pushReplacementNamed(
+                                context,
+                                Routes.surveyInput,
+                              );
+                            }),
+                          ],
+                        ),
+                      ),
+                      itemCount: surveys.length,
+                    ),
+                  );
+                } else
+                  return SizedBox();
+              },
             ),
-            padding: EdgeInsets.all(20),
-            margin: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CardListUpDown(),
-                SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  surveys[index].title,
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                Text(
-                    surveys[index].description,
-                  style: TextStyle(fontSize: 15),
-                ),
-                SizedBox(
-                  height: 30,
-                ),
-                animatedButton(context, () {
-                  Navigator.pushReplacementNamed(context, Routes.surveyInput);
-                },)
-              ],
-            ),
-          ),
-          itemCount: surveys.length,
-        ),
-      );
-    }
-  else return SizedBox();
-  },
-),
           ],
         ),
       ),

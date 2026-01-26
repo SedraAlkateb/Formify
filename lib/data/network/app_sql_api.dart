@@ -1,4 +1,5 @@
 import 'package:formify/data/network/sqlite_factory.dart';
+import 'package:formify/domain/models/model_q.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -10,6 +11,10 @@ abstract class AppSqlApiAbs {
   Future<List<MainSurveyModel>> getSurveys();
   Future<List<AsyncQuestionModel>> getQuestions();
   Future<List<GetAsyncAnswerModel>> getAnswers();
+ // Future<List<QuestionModel>> getQuestionAnswers();
+  Future<List<QuestionModel>> getSurveyQuestionsWithAnswers(
+      int surveyId,
+      );
 }
 
 class AppSqlApi extends AppSqlApiAbs {
@@ -17,6 +22,78 @@ class AppSqlApi extends AppSqlApiAbs {
   AppSqlApi(this.databaseHelper);
   Future<void> initializeDatabase() async {
     await databaseFactory.debugSetLogLevel(sqfliteLogLevelVerbose);
+  }
+  @override
+  Future<List<QuestionModel>> getSurveyQuestionsWithAnswers(
+      int surveyId,
+      ) async {
+    final db = await databaseHelper.database;
+
+    final rows = await db.rawQuery('''
+    SELECT
+      q.id              AS q_id,
+      q.question        AS q_question,
+      q.question_order  AS q_order,
+      q.is_required     AS q_required,
+      q.type            AS q_type,
+
+      a.id              AS a_id,
+      a.title           AS a_title
+    FROM questions q
+    LEFT JOIN answers a ON a.question_id = q.id
+    WHERE q.survey_id = ?
+    ORDER BY q.question_order ASC, a.id ASC
+  ''', [surveyId]);
+
+    // نجمعهم حسب السؤال
+    final Map<int, Map<String, dynamic>> qMap = {};
+    final Map<int, List<AnswerModel>> aMap = {};
+
+    for (final r in rows) {
+      final qId = r['q_id'] as int;
+
+      qMap.putIfAbsent(qId, () {
+        return {
+          'id': qId,
+          'question': r['q_question'],
+          'question_order': r['q_order'],
+          'is_required': r['q_required'],
+          'type': r['q_type'],
+        };
+      });
+
+      final aId = r['a_id'];
+      if (aId != null) {
+        aMap.putIfAbsent(qId, () => []);
+        aMap[qId]!.add(
+          AnswerModel(
+           aId as int,
+           r['a_title'] as String,
+          ),
+        );
+      }
+    }
+
+    // تحويل إلى QuestionModel
+    final result = <QuestionModel>[];
+    for (final entry in qMap.entries) {
+      final qId = entry.key;
+      final qRow = entry.value;
+      final answers = aMap[qId] ?? [];
+
+      result.add(
+        QuestionModel(
+          id: qRow['id'] as int,
+          title: qRow['question'] as String,
+          order: (qRow['question_order'] as int?) ?? 0,
+          isRequired: ((qRow['is_required'] as int?) ?? 0) == 1,
+          type: convertToQuestionType((qRow['type'] as String?) ?? 'text'),
+          answers: answers,
+        ),
+      );
+    }
+
+    return result;
   }
 
   @override

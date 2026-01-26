@@ -64,4 +64,15 @@ class RepositroySqlImp extends RepositorySql {
       return Left(failure);
     }
   }
+
+  @override
+  Future<Either<Failure, List<QuestionModel>>> getSurveyQuestionsWithAnswers(int surveyId) async {
+    try {
+      final response = await _databaseHelper.getSurveyQuestionsWithAnswers(surveyId);
+      return Right(response);
+    } catch (e) {
+      Failure failure = ErrorHandler.handle(e).failure;
+      return Left(failure);
+    }
+  }
 }

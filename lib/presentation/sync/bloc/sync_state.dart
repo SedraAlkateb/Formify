@@ -102,3 +102,19 @@ final class GetSurveyAsyncLoadingState extends SyncState {
   @override
   List<Object?> get props => [];
 }
+
+final class GetQuestionAnswersState extends SyncState {
+  final List<QuestionModel> conferenceModel;
+  GetQuestionAnswersState(this.conferenceModel);
+  List<Object?> get props => [conferenceModel];
+}
+final class GetQuestionAnswersErrorState extends SyncState {
+  final Failure failure;
+  GetQuestionAnswersErrorState({required this.failure});
+  @override
+  List<Object?> get props =>[failure];
+}
+final class GetQuestionAnswersLoadingState extends SyncState {
+  @override
+  List<Object?> get props => [];
+}

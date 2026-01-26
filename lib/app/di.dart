@@ -23,6 +23,7 @@ import 'package:formify/domain/usecase/get_all_survey_usecase.dart';
 import 'package:formify/domain/usecase/get_all_user_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_by_id_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_sql_usecase.dart';
+import 'package:formify/domain/usecase/get_question_answers_usecase.dart';
 import 'package:formify/domain/usecase/get_survey_question_id_usecase.dart';
 import 'package:formify/domain/usecase/get_surveys_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_user_answer_sql_usecase.dart';
@@ -191,8 +192,11 @@ Future<void> initSyncModule() async {
     instance.registerFactory<GetSurveysSqlUsecase>(
           () => GetSurveysSqlUsecase(instance()),
     );
+    instance.registerFactory<GetQuestionAnswersUsecase>(
+          () => GetQuestionAnswersUsecase(instance()),
+    );
     instance.registerFactory<SyncBloc>(
-          () => SyncBloc(instance(), instance(),instance(), instance(), instance(), instance(), instance()),
+          () => SyncBloc(instance(),instance(), instance(),instance(), instance(), instance(), instance(), instance()),
     );
   }
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/resources/assets_manager.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
@@ -10,7 +9,6 @@ import 'package:formify/presentation/sync/widget/button_widget.dart';
 import 'package:formify/presentation/sync/widget/doforma_container_widget.dart';
 import 'package:formify/presentation/sync/widget/press_scale.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:lottie/lottie.dart';
 
 class ShowConferencePage extends StatelessWidget {
@@ -69,7 +67,7 @@ class ShowConferencePage extends StatelessWidget {
                       textAlign: TextAlign.start,
                       style: TextStyle(
                         color: ColorManager.primary,
-                        fontSize: 45,
+                        fontSize: 40,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -79,8 +77,8 @@ class ShowConferencePage extends StatelessWidget {
                       textAlign: TextAlign.start,
                       style: TextStyle(
                         color: ColorManager.black,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w300,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
                       ),
                     ),
                     //   SizedBox(height: 8),
