@@ -44,6 +44,7 @@ class SurveyModel {
       questions: [], // أصبحت قائمة أسئلة وليس سؤال واحد
     );
   }
+
 }
 ///*
 ///class QuestionModel {
@@ -125,6 +126,19 @@ class QuestionModel {
       isRequired: map['isRequired'],
       type: map['Type'],
       answers: map['answer'],
+    );
+  }
+  factory QuestionModel.fromDbRow({
+    required Map<String, dynamic> qRow,
+    required List<AnswerModel> answers,
+  }) {
+    return QuestionModel(
+      id: qRow['id'] as int?,
+      title: qRow['question'] as String,
+      order: (qRow['question_order'] as int?) ?? 0,
+      isRequired: ((qRow['is_required'] as int?) ?? 0) == 1,
+      type: convertToQuestionType((qRow['type'] as String?) ?? 'text'),
+      answers: answers,
     );
   }
 }
@@ -242,6 +256,18 @@ class AnswerModel {
 
   factory AnswerModel.fromMap(Map<String, dynamic> map) {
     return AnswerModel(map['answer_id'], map['content']);
+  }
+
+  Map<String, dynamic> toMap() => {
+    'id': answer_id,
+    'title': content,
+  };
+
+  factory AnswerModel.fromJsonOffline(Map<String, dynamic> map) {
+    return AnswerModel(
+    map['id'],
+      map['title']
+    );
   }
 }
 
@@ -484,7 +510,7 @@ class AsyncQuestionModel {
     );
   }
 }
-
+/////////TODO
 class GetAsyncAnswerModel {
   int id;
   int questionId;
