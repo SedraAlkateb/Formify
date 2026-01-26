@@ -1,4 +1,3 @@
-import 'package:formify/domain/models/models.dart';
 
 class SurveyRequest {
   String title;

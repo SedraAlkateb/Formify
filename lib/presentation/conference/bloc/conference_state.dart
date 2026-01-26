@@ -9,8 +9,9 @@ final class ConferenceInitial extends ConferenceState {
 }
 ////////////////////////////////////////
 final class CreateConferenceState extends ConferenceState {
-  CreateConferenceState();
-  List<Object?> get props => [];
+  final int conferenceId ;
+  CreateConferenceState(this.conferenceId);
+  List<Object?> get props => [conferenceId];
 }
 final class CreateConferenceErrorState extends ConferenceState {
   final Failure failure;

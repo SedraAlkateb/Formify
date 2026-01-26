@@ -3,13 +3,13 @@ import 'package:formify/domain/models/models.dart';
 import 'package:sqflite/sqflite.dart';
 
 abstract class AppSqlApiAbs {
-  Future<String> asyncData(
-      GetAsyncModel asyncData
-      ) ;
+  Future<String> asyncData(GetAsyncModel asyncData);
   Future<void> deleteData();
   Future<AllUserModel> getDataSql();
-  Future<GetAsyncModel> getConference();
-
+  Future<GetAllConferenceModel> getConference();
+  Future<List<MainSurveyModel>> getSurveys();
+  Future<List<AsyncQuestionModel>> getQuestions();
+  Future<List<GetAsyncAnswerModel>> getAnswers();
 }
 
 class AppSqlApi extends AppSqlApiAbs {
@@ -20,9 +20,7 @@ class AppSqlApi extends AppSqlApiAbs {
   }
 
   @override
-  Future<String> asyncData(
-      GetAsyncModel asyncData
-      ) async {
+  Future<String> asyncData(GetAsyncModel asyncData) async {
     try {
       final db = await databaseHelper.database;
 
@@ -43,7 +41,7 @@ class AppSqlApi extends AppSqlApiAbs {
           );
         }
 
-        for (final question in asyncData. questions) {
+        for (final question in asyncData.questions) {
           batch.insert(
             'questions',
             question.toMap(),
@@ -51,7 +49,7 @@ class AppSqlApi extends AppSqlApiAbs {
           );
         }
 
-        for (final answer in  asyncData.answers) {
+        for (final answer in asyncData.answers) {
           batch.insert(
             'answers',
             answer.toMap(),
@@ -59,7 +57,7 @@ class AppSqlApi extends AppSqlApiAbs {
           );
         }
 
-        for (final sc in  asyncData.surveyConference) {
+        for (final sc in asyncData.surveyConference) {
           batch.insert(
             'survey_conference',
             sc.toMap(),
@@ -105,9 +103,11 @@ FROM users
 JOIN users_answers ON users.id = users_answers.user_id;
     ''', []);
       if (maps.isNotEmpty) {
-        return AllUserModel( List.generate(maps.length, (i) {
-          return UserSqlModel. fromMap(maps[i]);
-        }));
+        return AllUserModel(
+          List.generate(maps.length, (i) {
+            return UserSqlModel.fromMap(maps[i]);
+          }),
+        );
       } else {
         return AllUserModel([]);
       }
@@ -117,41 +117,58 @@ JOIN users_answers ON users.id = users_answers.user_id;
   }
 
   @override
-  Future<GetAsyncModel> getConference() async {
+  Future<GetAllConferenceModel> getConference() async {
     final db = await databaseHelper.database;
     List<Map<String, dynamic>> maps;
-    maps = await db.query(
-      'conference',
-    );
-    GetAllConferenceModel conferenceModel= List.generate(maps.length, (i) {
+    maps = await db.query('conference');
+    return List.generate(maps.length, (i) {
       return GetAllConferenceModel.fromMap(maps[i]);
     }).first;
-    maps = await db.query(
-      'survey',
-    );
-    List<MainSurveyModel> surveys= List.generate(maps.length, (i) {
-      return MainSurveyModel.fromMap(maps[i]);
-    });
-    maps = await db.query(
-      'questions',
-    );
-    List<AsyncQuestionModel> questions= List.generate(maps.length, (i) {
-      return AsyncQuestionModel.fromMap(maps[i]);
-    });
-    maps = await db.query(
-      'answers',
-    );
-    List<GetAsyncAnswerModel> answers= List.generate(maps.length, (i) {
-      return GetAsyncAnswerModel.fromMap(maps[i]);
-    });
-    maps = await db.query(
-      'survey_conference',
-    );
-    List<SurveyConferenceAsyncModel> surveyConference= List.generate(maps.length, (i) {
-      return SurveyConferenceAsyncModel.fromMap(maps[i]);
-    });
-
-    return GetAsyncModel(conferenceModel, surveys, questions, answers, surveyConference);
   }
 
+  @override
+  Future<List<MainSurveyModel>> getSurveys() async {
+    final db = await databaseHelper.database;
+    List<Map<String, dynamic>> maps;
+    maps = await db.query('survey');
+    return List.generate(maps.length, (i) {
+      return MainSurveyModel.fromMap(maps[i]);
+    });
+  }
+
+  @override
+  Future<List<AsyncQuestionModel>> getQuestions() async {
+    final db = await databaseHelper.database;
+    List<Map<String, dynamic>> maps;
+
+    maps = await db.query('questions');
+    return List.generate(maps.length, (i) {
+      return AsyncQuestionModel.fromMap(maps[i]);
+    });
+  }
+
+  @override
+  Future<List<GetAsyncAnswerModel>> getAnswers() async {
+    final db = await databaseHelper.database;
+    List<Map<String, dynamic>> maps;
+    maps = await db.rawQuery('''
+SELECT 
+  q.id            AS question_id,
+  q.question      AS question_text,
+  q.question_order,
+  q.is_required,
+  q.type,
+
+  a.id            AS answer_id,
+  a.title         AS answer_title
+
+FROM questions q
+LEFT JOIN answers a ON a.question_id = q.id
+WHERE q.survey_id = ?
+ORDER BY q.question_order ASC, a.id ASC;
+''', []);
+    return List.generate(maps.length, (i) {
+      return GetAsyncAnswerModel.fromMap(maps[i]);
+    });
+  }
 }

@@ -85,8 +85,7 @@ class ConferenceBloc extends Bloc<ConferenceEvent, ConferenceState> {
           },
               (data) async {
             conferenceId = data;
-
-            emit(CreateConferenceState());
+            emit(CreateConferenceState(conferenceId));
           },
         );
       }

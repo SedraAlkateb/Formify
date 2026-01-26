@@ -21,7 +21,8 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   DeleteDataSqlUsecase deleteDataSqlUsecase;
   SynchronizeUsersAnswersUsecase synchronizeUsersAnswersUsecase;
   GetConferenceSqlUsecase getConferenceSqlUsecase;
-  GetAsyncModel? asyncModel;
+  GetAsyncModel asyncModel= GetAsyncModel.create();
+
   int ?conferenceId;
 
   SyncBloc(
@@ -41,15 +42,14 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
             emit(DataErrorState(failure: failure));
           },
           (data) async {
-            asyncModel = data;
-            emit(AsyncConferenceState(data));
+            emit(AsyncConferenceState());
           },
         );
       }
       //////////////////5
       if (event is InsertDataSqlEvent) {
 
-        (await addAsyncDataSqlUsecase.execute(asyncModel!)).fold(
+        (await addAsyncDataSqlUsecase.execute(asyncModel)).fold(
           (failure) {
             emit(DataErrorState(failure: failure));
           },
@@ -101,7 +101,6 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
             emit(GetConferenceAsyncErrorState(failure: failure));
           },
               (data) async {
-                asyncModel=data;
             emit(GetConferenceAsyncState(data));
           },
         );

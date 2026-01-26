@@ -45,7 +45,39 @@ class SurveyModel {
     );
   }
 }
-
+///*
+///class QuestionModel {
+//   int? id;
+//   String title;
+//   int order;
+//   bool isRequired;
+//   QuestionType type;
+//   List<AnswerModel> answers;
+//
+//   QuestionModel({
+//     this.id,
+//     required this.title,
+//     required this.order,
+//     required this.isRequired,
+//     required this.type,
+//     required this.answers,
+//   });
+//
+//   factory QuestionModel.fromMap(
+//     Map<String, dynamic> map,
+//     List<AnswerModel> answers,
+//   ) {
+//     return QuestionModel(
+//       id: map['question_id'],
+//       title: map['question'],
+//       order: map['question_order'],
+//       isRequired: map['is_required'] == 1,
+//       type: QuestionType.values.byName(map['type']),
+//       answers: answers,
+//     );
+//   }
+// }
+///
 class QuestionModel {
   int? id;
   String title;
@@ -354,6 +386,9 @@ class GetAllConferenceModel {
       map['is_active']==1?true:false,
     );
   }
+  static GetAllConferenceModel create(){
+    return GetAllConferenceModel(0, "", "", "", "", "", false);
+  }
 }
 
 class GetAllConferenceByIdModel {
@@ -392,7 +427,7 @@ class SurveyToConferenceModel {
   );
 }
 
-class GetAsyncModel {//
+class GetAsyncModel {
   GetAllConferenceModel conferenceModel;
   List<MainSurveyModel> surveys;
   List<AsyncQuestionModel> questions;
@@ -406,6 +441,9 @@ class GetAsyncModel {//
     this.answers,
     this.surveyConference,
   );
+static  GetAsyncModel create(){
+    return GetAsyncModel(GetAllConferenceModel.create(), [], [], [], []);
+  }
 }
 
 class AsyncQuestionModel {
