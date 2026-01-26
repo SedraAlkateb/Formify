@@ -2,11 +2,11 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:formify/data/network/failure.dart';
 import 'package:formify/domain/models/models.dart';
-import 'package:formify/domain/models/request.dart';
 import 'package:formify/domain/usecase/add_async_data_sql_usecase.dart';
 import 'package:formify/domain/usecase/delete_data_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_all_async_info_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_sql_usecase.dart';
+import 'package:formify/domain/usecase/get_question_answers_usecase.dart';
 import 'package:formify/domain/usecase/get_surveys_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_user_answer_sql_usecase.dart';
 import 'package:formify/domain/usecase/synchronize_users_answers_usecase.dart';
@@ -23,7 +23,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   SynchronizeUsersAnswersUsecase synchronizeUsersAnswersUsecase;
   GetConferenceSqlUsecase getConferenceSqlUsecase;
   GetSurveysSqlUsecase getSurveysSqlUsecase;
-
+  GetQuestionAnswersUsecase getQuestionAnswersUsecase;
   UserSqlModel? userSqlModel;
   int ?conferenceId;
 
@@ -34,7 +34,8 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     this.deleteDataSqlUsecase,
     this.synchronizeUsersAnswersUsecase,
       this.getConferenceSqlUsecase,
-      this.getSurveysSqlUsecase
+      this.getSurveysSqlUsecase,
+      this.getQuestionAnswersUsecase
 
       ) : super(SyncInitial()) {
     on<SyncEvent>((event, emit) async {
@@ -107,6 +108,17 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
           },
               (data) async {
             emit(GetConferenceAsyncState(data));
+          },
+        );
+      }
+      if (event is GetQuestionAnswersEvent) {
+        emit(GetQuestionAnswersLoadingState());
+        (await getQuestionAnswersUsecase.execute(event.id)).fold(
+              (failure) {
+            emit(GetQuestionAnswersErrorState(failure: failure));
+          },
+              (data) async {
+            emit(GetQuestionAnswersState(data));
           },
         );
       }
