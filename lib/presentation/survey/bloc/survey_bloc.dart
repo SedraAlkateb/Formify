@@ -20,6 +20,7 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
   CreateSurveyQuestionUsecase createSurveyQuestionUsecase;
   GetAllSurveyUsecase getAllSurveyUsecase;
   int id = 0;
+  /////////////////////////////////////////////
   QuestionModel question=QuestionModel.create();
   List<QuestionModel> questions=[];
   SurveyModel surveyModel = SurveyModel.create();

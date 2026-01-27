@@ -65,12 +65,17 @@ class ListOfSurveysPage extends StatelessWidget {
               ),
             ),
             BlocBuilder<SyncBloc, SyncState>(
+              buildWhen: (previous, current) =>
+              current is GetSurveyAsyncErrorState
+                  || current is GetSurveyAsyncLoadingState
+                  || current is GetSurveyAsyncState,
               builder: (context, state) {
                 if (state is GetSurveyAsyncErrorState) {
                   return errorFullScreen(context);
                 } else if (state is GetSurveyAsyncLoadingState) {
                   return loadingFullScreen(context);
-                } else if (state is GetSurveyAsyncState) {
+                }
+                else if (state is GetSurveyAsyncState) {
                   List<MainSurveyModel> surveys = state.surveys;
                   return Expanded(
                     child: ListView.builder(
@@ -107,8 +112,8 @@ class ListOfSurveysPage extends StatelessWidget {
                             animatedButton(context, () {
                               BlocProvider.of<SyncBloc>(
                                 context,
-                              ).add(GetQuestionAnswersEvent(surveys[index].id));
-                              Navigator.pushReplacementNamed(
+                              ).add(GetQuestionAnswersEvent(surveys[index].id,surveys[index].title));
+                              Navigator.pushNamed(
                                 context,
                                 Routes.surveyInput,
                               );

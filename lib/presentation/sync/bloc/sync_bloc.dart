@@ -9,6 +9,7 @@ import 'package:formify/domain/usecase/get_conference_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_question_answers_usecase.dart';
 import 'package:formify/domain/usecase/get_surveys_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_user_answer_sql_usecase.dart';
+import 'package:formify/domain/usecase/insert_user_and_answer_usecase.dart';
 import 'package:formify/domain/usecase/synchronize_users_answers_usecase.dart';
 import 'package:meta/meta.dart';
 
@@ -24,8 +25,11 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   GetConferenceSqlUsecase getConferenceSqlUsecase;
   GetSurveysSqlUsecase getSurveysSqlUsecase;
   GetQuestionAnswersUsecase getQuestionAnswersUsecase;
+  InsertUserAndAnswerUsecase insertUserAndAnswerUsecase;
   UserSqlModel? userSqlModel;
   int ?conferenceId;
+  List<QuestionModel> questions=[];
+  Map<String, AnswerUserModel> answers = {};
 
   SyncBloc(
     this.getAllAsyncInfoUsecase,
@@ -35,7 +39,8 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     this.synchronizeUsersAnswersUsecase,
       this.getConferenceSqlUsecase,
       this.getSurveysSqlUsecase,
-      this.getQuestionAnswersUsecase
+      this.getQuestionAnswersUsecase,
+      this.insertUserAndAnswerUsecase
 
       ) : super(SyncInitial()) {
     on<SyncEvent>((event, emit) async {
@@ -118,7 +123,8 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
             emit(GetQuestionAnswersErrorState(failure: failure));
           },
               (data) async {
-            emit(GetQuestionAnswersState(data));
+                questions=data;
+            emit(GetQuestionAnswersState(data,event.surveyName));
           },
         );
       }

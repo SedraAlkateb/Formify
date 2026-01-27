@@ -22,23 +22,23 @@ class _InsertUserPageState extends State<InsertUserPage> {
   final TextEditingController addressController = TextEditingController();
 
   void _submit() {
-  //  if (_formKey.currentState!.validate()) {
-      final user = UserSqlModel(
-        fullName: fullNameController.text,
-        email: emailController.text,
-        phone: phoneController.text,
-        address: addressController.text,
-        answerModel: [], // تُملأ لاحقًا
-      );
+    //  if (_formKey.currentState!.validate()) {
+    final user = UserSqlModel(
+      fullName: fullNameController.text,
+      email: emailController.text,
+      phone: phoneController.text,
+      address: addressController.text,
+      answerModel: [], // تُملأ لاحقًا
+    );
 
-      BlocProvider.of<SyncBloc>(context).add(InputUserSqlEvent(user));
-      BlocProvider.of<SyncBloc>(context).add(GetSurveyAsyncEvent());
-      debugPrint(user.toJson().toString());
-      Navigator.pushReplacementNamed(context, Routes.listOfSurveys);
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   const SnackBar(content: Text('تم حفظ البيانات بنجاح ✅')),
-      // );
-   // }
+    BlocProvider.of<SyncBloc>(context).add(InputUserSqlEvent(user));
+    BlocProvider.of<SyncBloc>(context).add(GetSurveyAsyncEvent());
+    debugPrint(user.toJson().toString());
+    Navigator.pushReplacementNamed(context, Routes.listOfSurveys);
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   const SnackBar(content: Text('تم حفظ البيانات بنجاح ✅')),
+    // );
+    // }
   }
 
   @override
@@ -109,14 +109,17 @@ class _InsertUserPageState extends State<InsertUserPage> {
                   children: [
                     GlowTextField(
 
-                      controller: fullNameController,
+                      hint: " ادخل اسمك الكامل ",
                       label: 'الاسم الكامل',
+                      controller: fullNameController,
+
                       icon: Icons.person_outline,
                       validator: (v) => v!.isEmpty ? 'الاسم مطلوب' : null,
                     ),
                     GlowTextField(
                       controller: emailController,
-                      label: 'البريد الإلكتروني',
+                      hint: "example@gmail.com",
+                      label: 'البريد الإلكتروني *',
                       icon: Icons.email_outlined,
                       keyboardType: TextInputType.emailAddress,
                       validator: (v) =>
@@ -124,7 +127,8 @@ class _InsertUserPageState extends State<InsertUserPage> {
                     ),
                     GlowTextField(
                       controller: phoneController,
-                      label: 'رقم الهاتف',
+                      label: 'رقم الهاتف *',
+                      hint: "09xxxxxxxx",
                       icon: Icons.phone_outlined,
                       keyboardType: TextInputType.phone,
                       validator: (v) => v!.length < 8 ? 'رقم غير صحيح' : null,
@@ -132,6 +136,7 @@ class _InsertUserPageState extends State<InsertUserPage> {
                     GlowTextField(
                       controller: addressController,
                       label: 'العنوان',
+                      hint: "أدخل عنوانك الكامل",
                       icon: Icons.location_on_outlined,
                       validator: (v) => v!.isEmpty ? 'العنوان مطلوب' : null,
                     ),
@@ -139,7 +144,7 @@ class _InsertUserPageState extends State<InsertUserPage> {
                     ElevatedButton.icon(
                       onPressed: _submit,
                       icon: const Icon(Icons.arrow_forward),
-                      iconAlignment:IconAlignment.end ,
+                      iconAlignment: IconAlignment.end,
                       label: const Text('متابعة الى الاستبيان'),
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
@@ -192,31 +197,21 @@ class _InsertUserPageState extends State<InsertUserPage> {
           // أثناء الفوكس (يبقى Primary)
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(
-              color: ColorManager.primary,
-              width: 2,
-            ),
+            borderSide: BorderSide(color: ColorManager.primary, width: 2),
           ),
 
           // في حال الخطأ
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(
-              color: Colors.red,
-              width: 1.5,
-            ),
+            borderSide: BorderSide(color: Colors.red, width: 1.5),
           ),
 
           focusedErrorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(
-              color: Colors.red,
-              width: 2,
-            ),
+            borderSide: BorderSide(color: Colors.red, width: 2),
           ),
         ),
       ),
     );
-
   }
 }

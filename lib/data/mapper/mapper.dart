@@ -19,6 +19,7 @@ extension GetAnswerModelMapper on GetAnswerResponse? {
     return AnswerModel(
       this?.id ?? Constants.zero,
       this?.title ?? Constants.empty,
+
     );
   }
 }
@@ -233,22 +234,21 @@ extension GetAllSurveyToConferenceMapper
   }
 }
 extension GetAsyncAnswerMapper on GetAnswerForAsyncResponse? {
-  GetAsyncAnswerModel toDomain() {
-    return GetAsyncAnswerModel(
+  AnswerModel toDomain() {
+    return AnswerModel(
       this?.id ?? Constants.zero,
-      this?.question_id ?? Constants.zero,
       this?.title ?? Constants.empty,
-
+      questionId: this?.question_id ?? Constants.zero,
     );
   }
 }
 
 extension GetAllAsyncAnswerMapper on   List<GetAnswerForAsyncResponse>? {
-  List<GetAsyncAnswerModel> toDomain() {
-    List<GetAsyncAnswerModel> allAnswer =
+  List<AnswerModel> toDomain() {
+    List<AnswerModel> allAnswer =
     (this?.map((response) => response.toDomain()) ??
         const Iterable.empty())
-        .cast<GetAsyncAnswerModel>()
+        .cast<AnswerModel>()
         .toList();
     return allAnswer;
   }

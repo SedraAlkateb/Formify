@@ -21,6 +21,7 @@ dependencies:
   dartz: ^0.10.1
   logging: ^1.3.0
 
+
   # Localization / UI
   easy_localization: ^3.0.7
   flutter_screenutil: ^5.9.3
@@ -58,23 +59,15 @@ dependencies:
 
   # Serialization
   json_annotation: ^4.9.0
-
-  # ✅ Retrofit (PINNED to avoid Parser.DartMappable build_runner error)
-  retrofit: 4.8.0
-
+  retrofit: 4.9.2
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
-
-  # ✅ code generation (dev only)
   build_runner: ^2.5.4
   retrofit_generator: ^10.2.1
   json_serializable: ^6.9.5
   freezed: ^3.2.4
-
-dependency_overrides:
-  retrofit: 4.8.0
 
 flutter:
   uses-material-design: true

@@ -473,11 +473,11 @@ class GetAsyncConferenceResponse {
 class GetQuestionForAsyncResponse {
   @JsonKey(name: "id")
   int? id;
-  @JsonKey(name: "question")
+  @JsonKey(name: "title")
   String? question;
-  @JsonKey(name: "question_order")
+  @JsonKey(name: "order")
   int? question_order;
-  @JsonKey(name: "is_required")
+  @JsonKey(name: "isRequired")
   bool? is_required;
   @JsonKey(name: "type")
   String? type;

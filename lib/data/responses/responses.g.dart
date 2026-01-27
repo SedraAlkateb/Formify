@@ -268,8 +268,8 @@ GetAllConferenceResponse _$GetAllConferenceResponseFromJson(
   json['name'] as String?,
   json['description'] as String?,
   json['address'] as String?,
-  json['start_date'] as String?,
-  json['end_date'] as String?,
+  json['startDate'] as String?,
+  json['endDate'] as String?,
   json['is_active'] as bool?,
 );
 
@@ -280,8 +280,8 @@ Map<String, dynamic> _$GetAllConferenceResponseToJson(
   'name': instance.name,
   'description': instance.description,
   'address': instance.address,
-  'start_date': instance.start_date,
-  'end_date': instance.end_date,
+  'startDate': instance.start_date,
+  'endDate': instance.end_date,
   'is_active': instance.is_active,
 };
 
@@ -476,9 +476,9 @@ GetQuestionForAsyncResponse _$GetQuestionForAsyncResponseFromJson(
   Map<String, dynamic> json,
 ) => GetQuestionForAsyncResponse(
   (json['id'] as num?)?.toInt(),
-  json['question'] as String?,
-  (json['question_order'] as num?)?.toInt(),
-  json['is_required'] as bool?,
+  json['title'] as String?,
+  (json['order'] as num?)?.toInt(),
+  json['isRequired'] as bool?,
   json['type'] as String?,
   (json['survey_id'] as num?)?.toInt(),
 );
@@ -487,9 +487,9 @@ Map<String, dynamic> _$GetQuestionForAsyncResponseToJson(
   GetQuestionForAsyncResponse instance,
 ) => <String, dynamic>{
   'id': instance.id,
-  'question': instance.question,
-  'question_order': instance.question_order,
-  'is_required': instance.is_required,
+  'title': instance.question,
+  'order': instance.question_order,
+  'isRequired': instance.is_required,
   'type': instance.type,
   'survey_id': instance.survey_id,
 };

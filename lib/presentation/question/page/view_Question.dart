@@ -19,19 +19,20 @@ class QuestionPreviewBuilder extends StatelessWidget {
   //   if (v == null) return fallback;
   //   return int.tryParse(v) ?? fallback;
   // }
-  bool _toBool(String? v) {
-    if (v == null) return false;
-    return v=="0"?false:true;
-  }
+  // bool _toBool(String? v) {
+  //   if (v == null) return false;
+  //   return v=="0"?false:true;
+  // }
   @override
   Widget build(BuildContext context) {
     switch (question.type) {
       /// ================= TEXT =================
       case QuestionType.text:
         return FormBuilderTextField(
+          maxLines: 5,
           name: "q_${question.order}",
           decoration: InputDecoration(
-            hintText: "Answer...",
+            hintText: " Answer...",
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           ),
           validator: question.isRequired == true
@@ -123,7 +124,7 @@ class QuestionPreviewBuilder extends StatelessWidget {
           items: question.answers
               .map(
                 (a) =>
-                    DropdownMenuItem(value: a.content, child: Text(a.content)),
+                    DropdownMenuItem(value: a.title, child: Text(a.title)),
               )
               .toList(),
           validator: question.isRequired == true
@@ -143,7 +144,7 @@ class QuestionPreviewBuilder extends StatelessWidget {
       //     items: question.answers
       //         .map(
       //           (a) =>
-      //               DropdownMenuItem(value: a.content, child: Text(a.content)),
+      //               DropdownMenuItem(value: a.title, child: Text(a.title)),
       //         )
       //         .toList(),
       //     isExpanded: true,
@@ -159,7 +160,7 @@ class QuestionPreviewBuilder extends StatelessWidget {
         return FormBuilderRadioGroup<String>(
           name: "q_${question.order}",
           options: question.answers
-              .map((a) => FormBuilderFieldOption(value: a.content))
+              .map((a) => FormBuilderFieldOption(value: a.title))
               .toList(),
           validator: question.isRequired == true
               ? FormBuilderValidators.required()
@@ -171,7 +172,7 @@ class QuestionPreviewBuilder extends StatelessWidget {
         return FormBuilderCheckboxGroup<String>(
           name: "q_${question.order}",
           options: question.answers
-              .map((a) => FormBuilderFieldOption(value: a.content))
+              .map((a) => FormBuilderFieldOption(value: a.title))
               .toList(),
           validator: question.isRequired == true
               ? FormBuilderValidators.minLength(
@@ -193,8 +194,8 @@ class QuestionPreviewBuilder extends StatelessWidget {
           options: question.answers
               .map(
                 (a) => FormBuilderChipOption<String>(
-                  value: a.content,
-                  child: Text(a.content),
+                  value: a.title,
+                  child: Text(a.title),
                 ),
               )
               .toList(),
@@ -229,10 +230,10 @@ class QuestionPreviewBuilder extends StatelessWidget {
                     final q = textEditingValue.text.trim().toLowerCase();
                     if (q.isEmpty) return const Iterable<String>.empty();
 
-                    // تصفية الإجابات والرجوع فقط إلى النصوص (content)
+                    // تصفية الإجابات والرجوع فقط إلى النصوص (title)
                     Iterable<String> an = question.answers
-                        .where((a) => a.content.toLowerCase().contains(q))
-                        .map((a) => a.content); // هنا نقوم بأخذ content فقط
+                        .where((a) => a.title.toLowerCase().contains(q))
+                        .map((a) => a.title); // هنا نقوم بأخذ title فقط
 
                     return an; // إرجاع Iterable من النصوص فقط
                   },
@@ -265,7 +266,7 @@ class QuestionPreviewBuilder extends StatelessWidget {
           name: "q_${question.order}",
           title: Text(question.title),
           initialValue:
-              ((question.answers.isNotEmpty) && (question.answers[0].content == "1")),
+              ((question.answers.isNotEmpty) && (question.answers[0].title == "1")),
           validator: (value) {
             if (question.isRequired == true && value != true) {
               return "This question is required";

@@ -22,101 +22,100 @@ class MultiAnswerPage extends StatelessWidget {
       appBar: AppBar(title:  Text("${BlocProvider.of<SurveyBloc>(context).question.type.title} Question")),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: BlocBuilder<SurveyBloc, SurveyState>(
-
-          builder: (context, state) {
-
-            QuestionModel questionModel=
-                BlocProvider.of<SurveyBloc>(context,listen: true).question;
-            if(state is ViewQuestionState){
-              questionModel=state.questionModel;
-            }
-            return  FormBuilder(
-              key: _formKey,
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // ================= لوحة التحكم =================
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: colorScheme.surface,
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: colorScheme.outline.withOpacity(0.25)),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 8,
-                            offset: Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          questionWidget(context),
-                          addAnswerWidget(context)
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 14),
-
-                    // ================= قسم الإجابات =================
-                    viewAnswerWidget(context, questionModel),
-
-                    const SizedBox(height: 14),
-
-                    // ================= Preview =================
-                    const Text(
-                      "Preview",
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                    ),
-                    const SizedBox(height: 8),
-
-                    // ضع هنا preview تبعك (FilterChips / Dropdown ...)
-
-                    const SizedBox(height: 14),
-                    if (questionModel.title.isEmpty)
-                      const Text("No question to preview yet.")
-                    else ...[
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: colorScheme.surface,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: colorScheme.outline.withOpacity(0.25)),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // ===== السؤال بالأعلى =====
-                            Text(
-                              questionModel.title.isEmpty
-                                  ? "Question will appear here"
-                                  : questionModel.title,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            QuestionPreviewBuilder(question: questionModel),
-                          ],
-                        ),
+        child: FormBuilder(
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // ================= لوحة التحكم =================
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: colorScheme.surface,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: colorScheme.outline.withOpacity(0.25)),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 8,
+                        offset: Offset(0, 3),
                       ),
                     ],
-                    const SizedBox(height: 20),
-                    nextWidget(context)
-                  ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      questionWidget(context),
+                      addAnswerWidget(context)
+                    ],
+                  ),
                 ),
-              ),
-            );
 
-          },
+                const SizedBox(height: 14),
+
+                // ================= قسم الإجابات =================
+                viewAnswerWidget(context),
+
+                const SizedBox(height: 14),
+
+                // ================= Preview =================
+                const Text(
+                  "Preview",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+                const SizedBox(height: 8),
+
+                // ضع هنا preview تبعك (FilterChips / Dropdown ...)
+
+                const SizedBox(height: 14),
+                BlocBuilder<SurveyBloc, SurveyState>(
+
+                    builder: (context, state) {
+                      if (state is ViewQuestionState) {
+                        print("RemoveAnswerAtEvent");
+                        QuestionModel  questionModel = state.questionModel;
+
+                        return      questionModel.title.isEmpty?
+                        Text("No question to preview yet."):
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: colorScheme.surface,
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: colorScheme.outline.withOpacity(0.25)),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // ===== السؤال بالأعلى =====
+                              Text(
+                                questionModel.title.isEmpty
+                                    ? "Question will appear here"
+                                    : questionModel.title,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              QuestionPreviewBuilder(question: questionModel),
+                            ],
+                          ),
+                        );
+                      }
+                      else {
+                        return SizedBox();
+                      }
+                    }),
+
+                const SizedBox(height: 20),
+                nextWidget(context)
+              ],
+            ),
+          ),
         ),
       ),
     );

@@ -104,9 +104,10 @@ final class GetSurveyAsyncLoadingState extends SyncState {
 }
 
 final class GetQuestionAnswersState extends SyncState {
-  final List<QuestionModel> conferenceModel;
-  GetQuestionAnswersState(this.conferenceModel);
-  List<Object?> get props => [conferenceModel];
+  final List<QuestionModel> questions;
+  final String surveyName;
+  GetQuestionAnswersState(this.questions,this.surveyName);
+  List<Object?> get props => [questions,surveyName];
 }
 final class GetQuestionAnswersErrorState extends SyncState {
   final Failure failure;

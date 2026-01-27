@@ -75,4 +75,17 @@ class RepositroySqlImp extends RepositorySql {
       return Left(failure);
     }
   }
+
+
+  @override
+  Future<Either<Failure, void>> insertUserWithAnswer(UserSqlModel user)  async {
+    try {
+      final response =await _databaseHelper.insertUserWithAnswer(user);
+      return Right(response);
+    } catch (e) {
+      Failure failure = ErrorHandler.handle(e).failure;
+      return Left(failure);
+    }
+  }
+
 }

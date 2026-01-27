@@ -42,7 +42,7 @@ class _ViewAllSurveyPageState extends State<ViewAllSurveyPage> {
           if (state is GetAllSurveyLoadingState) {
             return loadingFullScreen(context);
           } else if (state is GetAllSurveyErrorState) {
-            return errorFullScreen(context);
+            return errorFullScreen(context,func:()=> BlocProvider.of<SurveyBloc>(context).add(GetAllSurveyEvent()) );
           } else if (state is GetAllSurveyState) {
             return ListView.separated(
               shrinkWrap: true,
