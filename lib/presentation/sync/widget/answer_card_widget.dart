@@ -6,16 +6,14 @@ class QuestionCard extends StatelessWidget {
   final int number;
   final int total;
   final QuestionModel questionModel;
-  final TextEditingController controller;
   final bool isLast;
   final VoidCallback onPrev;
   final VoidCallback onNext;
 
-  const QuestionCard({
+  const QuestionCard({super.key,
     required this.number,
     required this.total,
     required this.questionModel,
-    required this.controller,
     required this.isLast,
     required this.onPrev,
     required this.onNext,
@@ -98,7 +96,6 @@ class QuestionCard extends StatelessWidget {
               QuestionPreviewBuilder(question: questionModel),
               // Text answer
               // TextField(
-              //   controller: controller,
               //   maxLines: 5,
               //   decoration: InputDecoration(
               //     hintText: hint,

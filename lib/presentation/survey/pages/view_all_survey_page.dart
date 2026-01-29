@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/resources/theme_bloc/theme_bloc.dart';
@@ -38,33 +39,46 @@ class _ViewAllSurveyPageState extends State<ViewAllSurveyPage> {
       ),
 
       body: BlocBuilder<SurveyBloc, SurveyState>(
+        buildWhen: (previous, current) =>
+            current is GetAllSurveyLoadingState ||
+            current is GetAllEmptySurveyState ||
+            current is GetAllSurveyErrorState ||
+            current is GetAllSurveyState,
         builder: (context, state) {
           if (state is GetAllSurveyLoadingState) {
             return loadingFullScreen(context);
+          } else if (state is GetAllEmptySurveyState) {
+            return emptyFullScreen(context);
           } else if (state is GetAllSurveyErrorState) {
-            return errorFullScreen(context,func:()=> BlocProvider.of<SurveyBloc>(context).add(GetAllSurveyEvent()) );
+            return errorFullScreen(
+              context,
+              func: () =>
+                  BlocProvider.of<SurveyBloc>(context).add(GetAllSurveyEvent()),
+            );
           } else if (state is GetAllSurveyState) {
+            List<MainSurveyModel> surveys = state.surveys;
             return ListView.separated(
               shrinkWrap: true,
-              itemCount: state.surveys.length,
+              itemCount: surveys.length,
               separatorBuilder: (context, index) => const SizedBox(height: 10),
               itemBuilder: (context, index) {
                 return InkWell(
                   onTap: () {
                     BlocProvider.of<ThemeBloc>(context).add(
                       ChangeThemeColorEvent(
-                        Color(int.parse(state.surveys[index].color)),
-                        state.surveys[index].color,
+                        Color(int.parse(surveys[index].color)),
+                        surveys[index].color,
                       ),
                     );
                     Navigator.pushNamed(context, Routes.viewSurvey);
+                    BlocProvider.of<SurveyBloc>(
+                      context,
+                    ).add(ViewSurveyByIdEvent(surveys[index].id));
                   },
-                  child: surveyListWidget(state.surveys[index]),
+                  child: surveyListWidget(surveys[index]),
                 );
               },
             );
-          } else if (state is GetAllEmptySurveyState) {
-            return emptyFullScreen(context);
           } else
             return SizedBox();
         },

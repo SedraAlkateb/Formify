@@ -1,32 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/models/model_q.dart';
 import 'package:form_builder_extra_fields/form_builder_extra_fields.dart';
+import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
+import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
 
 class QuestionPreviewBuilder extends StatelessWidget {
   final QuestionModel question;
 
   const QuestionPreviewBuilder({super.key, required this.question});
+  void handleTextQuestion(List<AnswerUserModel> answer, BuildContext context) {
+    BlocProvider.of<SyncBloc>(context).answer = answer;
+  }
 
-  // double _toDouble(String? v, {double fallback = 0}) {
-  //   if (v == null) return fallback;
-  //   return double.tryParse(v) ?? fallback;
-  // }
-  //
-  // int _toInt(String? v, {int fallback = 0}) {
-  //   if (v == null) return fallback;
-  //   return int.tryParse(v) ?? fallback;
-  // }
-  // bool _toBool(String? v) {
-  //   if (v == null) return false;
-  //   return v=="0"?false:true;
-  // }
   @override
   Widget build(BuildContext context) {
     switch (question.type) {
-      /// ================= TEXT =================
       case QuestionType.text:
         return FormBuilderTextField(
           maxLines: 5,
@@ -40,6 +32,9 @@ class QuestionPreviewBuilder extends StatelessWidget {
                   errorText: "This question is required",
                 )
               : null,
+          onChanged: (value) {
+            handleTextQuestion([AnswerUserModel(question.answers[0].id, value ?? "")], context);
+          },
         );
 
       /// ================= EMAIL =================
@@ -58,6 +53,9 @@ class QuestionPreviewBuilder extends StatelessWidget {
               ),
             FormBuilderValidators.email(errorText: "Invalid email"),
           ]),
+          onChanged: (value) {
+            handleTextQuestion([AnswerUserModel(question.answers[0].id, value ?? "")], context);
+          },
         );
 
       /// ================= PASSWORD =================
@@ -74,6 +72,9 @@ class QuestionPreviewBuilder extends StatelessWidget {
                   errorText: "This question is required",
                 )
               : null,
+          onChanged: (value) {
+            handleTextQuestion([AnswerUserModel(question.answers[0].id, value ?? "")], context);
+          },
         );
 
       /// ================= PHONE =================
@@ -93,6 +94,9 @@ class QuestionPreviewBuilder extends StatelessWidget {
             FormBuilderValidators.numeric(errorText: "Numbers only"),
             FormBuilderValidators.minLength(7, errorText: "Too short"),
           ]),
+          onChanged: (value) {
+            handleTextQuestion([AnswerUserModel(question.answers[0].id, value ?? "")], context);
+          },
         );
 
       /// ================= NUMBER =================
@@ -111,27 +115,31 @@ class QuestionPreviewBuilder extends StatelessWidget {
               ),
             FormBuilderValidators.numeric(errorText: "Invalid number"),
           ]),
+          onChanged: (value) {
+            handleTextQuestion([AnswerUserModel(question.answers[0].id, value ?? "")], context);
+          },
         );
 
       /// ================= DROPDOWN =================
       case QuestionType.dropdown:
-        return FormBuilderDropdown<String>(
+        return FormBuilderDropdown<AnswerModel>(
           name: "q_${question.order}",
+
           decoration: InputDecoration(
             hintText: "Select an answer",
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           ),
           items: question.answers
-              .map(
-                (a) =>
-                    DropdownMenuItem(value: a.title, child: Text(a.title)),
-              )
+              .map((a) => DropdownMenuItem(value: a, child: Text(a.title)))
               .toList(),
           validator: question.isRequired == true
               ? FormBuilderValidators.required(
                   errorText: "This question is required",
                 )
               : null,
+          onChanged: (value) {
+            handleTextQuestion((value!=null?([AnswerUserModel(value.id, value.title)] ) : [AnswerUserModel(0, "")]), context);
+          },
         );
 
       // case QuestionType.searchableList:
@@ -157,22 +165,30 @@ class QuestionPreviewBuilder extends StatelessWidget {
 
       /// ================= MULTIPLE CHOICE (RADIO) =================
       case QuestionType.multipleChoice:
-        return FormBuilderRadioGroup<String>(
+        return FormBuilderRadioGroup<AnswerModel>(
           name: "q_${question.order}",
+          initialValue:
+          BlocProvider.of<SyncBloc>(context).answer.map((answer) =>AnswerModel(answer.answer_id??0, answer.content) ).first,
+
           options: question.answers
-              .map((a) => FormBuilderFieldOption(value: a.title))
+              .map((a) => FormBuilderFieldOption(value: a))
               .toList(),
           validator: question.isRequired == true
               ? FormBuilderValidators.required()
               : null,
+          onChanged: (value) {
+            handleTextQuestion((value!=null?([AnswerUserModel(value.id, value.title)] ) : [AnswerUserModel(0, "")]), context);
+          },
         );
 
       /// ================= CHECKBOX =================
       case QuestionType.checkbox:
-        return FormBuilderCheckboxGroup<String>(
+        return FormBuilderCheckboxGroup<AnswerModel>(
           name: "q_${question.order}",
+
+          initialValue: BlocProvider.of<SyncBloc>(context).answer.map((answer) =>AnswerModel(answer.answer_id??0, answer.content) ).toList(),
           options: question.answers
-              .map((a) => FormBuilderFieldOption(value: a.title))
+              .map((a) => FormBuilderFieldOption(value: a))
               .toList(),
           validator: question.isRequired == true
               ? FormBuilderValidators.minLength(
@@ -180,6 +196,19 @@ class QuestionPreviewBuilder extends StatelessWidget {
                   errorText: "Select at least one option",
                 )
               : null,
+          onChanged: (value) {
+            List<AnswerUserModel> answers=[];
+            if(value!=null){
+              Set<int> uniqueIds = Set(); // لإنشاء مجموعة لتخزين المعرفات الفريدة
+              for (var item in value) {
+                if (!uniqueIds.contains(item.id)) {
+                  uniqueIds.add(item.id); // إضافة المعرف إلى المجموعة الفريدة
+                  answers.add(AnswerUserModel(item.id, item.title)); // إضافة الإجابة فقط إذا لم يكن المعرف مكررًا
+                }
+              }
+              handleTextQuestion(answers, context);
+            }
+          },
         );
 
       /// ================= CHIPS =================
@@ -188,6 +217,9 @@ class QuestionPreviewBuilder extends StatelessWidget {
       case QuestionType.chips:
         return FormBuilderChoiceChips<String>(
           name: "q_${question.order}",
+          // initialValue:
+          // BlocProvider.of<SyncBloc>(context).answer.map((answer) =>AnswerModel(answer.answer_id??0, answer.content) ).first,
+
           spacing: 8,
           runSpacing: 8,
           //      multiple: true,
@@ -266,7 +298,8 @@ class QuestionPreviewBuilder extends StatelessWidget {
           name: "q_${question.order}",
           title: Text(question.title),
           initialValue:
-              ((question.answers.isNotEmpty) && (question.answers[0].title == "1")),
+              ((question.answers.isNotEmpty) &&
+              (question.answers[0].title == "1")),
           validator: (value) {
             if (question.isRequired == true && value != true) {
               return "This question is required";
@@ -325,7 +358,7 @@ class QuestionPreviewBuilder extends StatelessWidget {
           min: 0,
           max: 100,
           initialValue: 0,
-          divisions: 50 ,
+          divisions: 50,
           validator: question.isRequired == true
               ? FormBuilderValidators.required(
                   errorText: "This question is required",

@@ -33,22 +33,25 @@ Widget surveyListWidget(MainSurveyModel survey) {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      survey.title,
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                    ),
-                    Text(
-                      survey.description,
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-                      maxLines: 2, // تحديد عدد الأسطر المسموح بها
-                      overflow: TextOverflow
-                          .ellipsis, // إضافة نقاط في نهاية النص إذا كان طويلًا
-                    ),
-                  ],
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        survey.title,
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
+                      Text(
+
+                        survey.description,
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                    //    maxLines: 2, // تحديد عدد الأسطر المسموح بها
+                        overflow: TextOverflow
+                            .ellipsis, // إضافة نقاط في نهاية النص إذا كان طويلًا
+                      ),
+                    ],
+                  ),
                 ),
                 Icon(
 

@@ -45,7 +45,15 @@ class QuestionModel {
     required this.type,
     required this.answers,
   });
-
+  QuestionModel instanceQuestion(){
+    return QuestionModel(
+      title: title,
+      order: order,
+      isRequired: isRequired,
+      type: type,
+      answers: answers,
+    );
+  }
   /// إنشاء كائن فارغ جاهز للاستخدام
   static QuestionModel create() {
     return QuestionModel(
@@ -64,7 +72,8 @@ class QuestionModel {
       'order': order,
       'isRequired': isRequired,
       'Type': type.name,
-      'answer': answers.map((e) => e.title).toList(),
+      'answer': answers.isEmpty?[type.answer]:
+      answers.map((e) => e.title).toList(),
     };
   }
 

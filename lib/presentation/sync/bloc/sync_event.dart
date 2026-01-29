@@ -61,3 +61,8 @@ class GetSurveyAsyncEvent extends SyncEvent {
   @override
   List<Object?> get props => [];
 }
+class CreateUserAnswerEvent extends SyncEvent {
+  CreateUserAnswerEvent();
+  @override
+  List<Object?> get props => [];
+}
