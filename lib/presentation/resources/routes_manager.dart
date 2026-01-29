@@ -93,7 +93,6 @@ class RouteGenerator {
       //   return _animatedRoute(AllConferencePage());
 
       case Routes.getAllActiveConference:
-        initActiveConferenceModule();
         return _animatedRoute(AllActiveConferencePage());
       case Routes.getAllSurvey:
         initSurveyModule();
