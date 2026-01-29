@@ -9,6 +9,7 @@ import 'package:formify/domain/usecase/get_conference_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_question_answers_usecase.dart';
 import 'package:formify/domain/usecase/get_surveys_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_user_answer_sql_usecase.dart';
+import 'package:formify/domain/usecase/insert_user_and_answer_usecase.dart';
 import 'package:formify/domain/usecase/synchronize_users_answers_usecase.dart';
 import 'package:meta/meta.dart';
 
@@ -24,25 +25,27 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   GetConferenceSqlUsecase getConferenceSqlUsecase;
   GetSurveysSqlUsecase getSurveysSqlUsecase;
   GetQuestionAnswersUsecase getQuestionAnswersUsecase;
+  InsertUserAndAnswerUsecase insertUserAndAnswerUsecase;
   UserSqlModel? userSqlModel;
-  int ?conferenceId;
-
+  int? conferenceId;
+  List<QuestionModel> questions = [];
+  Map<int, List<AnswerUserModel>> answers = {};
+  List<AnswerUserModel> answer = [];
   SyncBloc(
     this.getAllAsyncInfoUsecase,
     this.addAsyncDataSqlUsecase,
     this.getUserAnswerSqlUsecase,
     this.deleteDataSqlUsecase,
     this.synchronizeUsersAnswersUsecase,
-      this.getConferenceSqlUsecase,
-      this.getSurveysSqlUsecase,
-      this.getQuestionAnswersUsecase
-
-      ) : super(SyncInitial()) {
+    this.getConferenceSqlUsecase,
+    this.getSurveysSqlUsecase,
+    this.getQuestionAnswersUsecase,
+    this.insertUserAndAnswerUsecase,
+  ) : super(SyncInitial()) {
     on<SyncEvent>((event, emit) async {
       ////////////////4
       if (event is AsyncDataEvent) {
-
-        (await getAllAsyncInfoUsecase.execute(conferenceId??-1)).fold(
+        (await getAllAsyncInfoUsecase.execute(conferenceId ?? -1)).fold(
           (failure) {
             emit(DataErrorState(failure: failure));
           },
@@ -53,24 +56,23 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
       }
       //////////////////5
       if (event is InsertDataSqlEvent) {
-
         (await addAsyncDataSqlUsecase.execute(event.asyncModel)).fold(
           (failure) {
             emit(DataErrorState(failure: failure));
           },
           (data) async {
-                emit(InsertSucState());
+            emit(InsertSucState());
           },
         );
       }
 
- //////////////3
+      //////////////3
       if (event is DeleteDataEvent) {
         (await deleteDataSqlUsecase.execute()).fold(
-              (failure) {
+          (failure) {
             emit(DataErrorState(failure: failure));
           },
-              (data) async {
+          (data) async {
             emit(DeleteDataState());
           },
         );
@@ -79,11 +81,11 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
       if (event is GetDataEvent) {
         emit(DataLoadingState());
         (await getUserAnswerSqlUsecase.execute()).fold(
-              (failure) {
+          (failure) {
             emit(DataErrorState(failure: failure));
           },
-              (data) async {
-                conferenceId=event.conferenceId;
+          (data) async {
+            conferenceId = event.conferenceId;
             emit(GetDataState(data));
           },
         );
@@ -91,10 +93,10 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
       /////////2
       if (event is UploadDataEvent) {
         (await synchronizeUsersAnswersUsecase.execute(event.userRequest)).fold(
-              (failure) {
+          (failure) {
             emit(DataErrorState(failure: failure));
           },
-              (data) async {
+          (data) async {
             emit(UploadDataState());
           },
         );
@@ -103,10 +105,10 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
       if (event is GetConferenceAsyncEvent) {
         emit(GetConferenceAsyncLoadingState());
         (await getConferenceSqlUsecase.execute()).fold(
-              (failure) {
+          (failure) {
             emit(GetConferenceAsyncErrorState(failure: failure));
           },
-              (data) async {
+          (data) async {
             emit(GetConferenceAsyncState(data));
           },
         );
@@ -114,15 +116,28 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
       if (event is GetQuestionAnswersEvent) {
         emit(GetQuestionAnswersLoadingState());
         (await getQuestionAnswersUsecase.execute(event.id)).fold(
-              (failure) {
+          (failure) {
             emit(GetQuestionAnswersErrorState(failure: failure));
           },
-              (data) async {
-            emit(GetQuestionAnswersState(data));
+          (data) async {
+            questions = data;
+            emit(GetQuestionAnswersState(data, event.surveyName));
           },
         );
       }
       if (event is GetSurveyAsyncEvent) {
+        emit(GetSurveyAsyncLoadingState());
+        (await getSurveysSqlUsecase.execute()).fold(
+          (failure) {
+            emit(GetSurveyAsyncErrorState(failure: failure));
+          },
+          (data) async {
+            emit(GetSurveyAsyncState(data));
+          },
+        );
+      }
+   else   if (event is CreateUserAnswerEvent) {
+
         emit(GetSurveyAsyncLoadingState());
         (await getSurveysSqlUsecase.execute()).fold(
               (failure) {
@@ -133,10 +148,17 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
           },
         );
       }
-
       if (event is InputUserSqlEvent) {
-        userSqlModel=event.userSqlModel;
+        userSqlModel = event.userSqlModel;
       }
     });
   }
+  void addUserAnswer(int key) {
+    if (answers.containsKey(key)) {
+      answers[key] = answer;
+    } else {
+      answers.putIfAbsent(key, () => answer);
+    }
+  }
+
 }

@@ -2,11 +2,13 @@
 
 part of 'app_api.dart';
 
+// dart format off
+
 // **************************************************************************
 // RetrofitGenerator
 // **************************************************************************
 
-// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter
+// ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter,avoid_unused_constructor_parameters,unreachable_from_main
 
 class _AppServiceClient implements AppServiceClient {
   _AppServiceClient(this._dio, {this.baseUrl, this.errorLogger}) {
@@ -21,10 +23,10 @@ class _AppServiceClient implements AppServiceClient {
 
   @override
   Future<CreateSurveyBaseResponse> createSurvey(
-      String title,
-      String description,
-      String color,
-      ) async {
+    String title,
+    String description,
+    String color,
+  ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -35,11 +37,11 @@ class _AppServiceClient implements AppServiceClient {
     final _options = _setStreamType<CreateSurveyBaseResponse>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
-        _dio.options,
-        'survey-crud/create_survey.php',
-        queryParameters: queryParameters,
-        data: _data,
-      )
+            _dio.options,
+            'survey-crud/create_survey.php',
+            queryParameters: queryParameters,
+            data: _data,
+          )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
@@ -47,7 +49,7 @@ class _AppServiceClient implements AppServiceClient {
     try {
       _value = CreateSurveyBaseResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -55,8 +57,8 @@ class _AppServiceClient implements AppServiceClient {
 
   @override
   Future<CreateSurveyQuestionsBaseResponse> createSurveyQuestionsAndAnswers(
-      SurveyQuestionAndAnswersModel surveyQ,
-      ) async {
+    SurveyQuestionAndAnswersModel surveyQ,
+  ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -65,11 +67,11 @@ class _AppServiceClient implements AppServiceClient {
     final _options = _setStreamType<CreateSurveyQuestionsBaseResponse>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
-        _dio.options,
-        'survey-crud/create_survey_questionsAndAnswers.php',
-        queryParameters: queryParameters,
-        data: _data,
-      )
+            _dio.options,
+            'survey-crud/create_survey_questionsAndAnswers.php',
+            queryParameters: queryParameters,
+            data: _data,
+          )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
@@ -77,7 +79,7 @@ class _AppServiceClient implements AppServiceClient {
     try {
       _value = CreateSurveyQuestionsBaseResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -92,11 +94,11 @@ class _AppServiceClient implements AppServiceClient {
     final _options = _setStreamType<GetAllSurveyBaseResponse>(
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
-        _dio.options,
-        'survey-crud/get_all_survey.php',
-        queryParameters: queryParameters,
-        data: _data,
-      )
+            _dio.options,
+            'survey-crud/get_all_survey.php',
+            queryParameters: queryParameters,
+            data: _data,
+          )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
@@ -104,7 +106,7 @@ class _AppServiceClient implements AppServiceClient {
     try {
       _value = GetAllSurveyBaseResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -119,18 +121,18 @@ class _AppServiceClient implements AppServiceClient {
     final _data = FormData();
     _data.fields.add(MapEntry('id', id.toString()));
     final _options =
-    _setStreamType<GetSurveyWithQuestionAndAnswerByIdBaseResponse>(
-      Options(method: 'POST', headers: _headers, extra: _extra)
-          .compose(
-        _dio.options,
-        'survey-crud/get_surveyWithQuestion_by_id.php',
-        queryParameters: queryParameters,
-        data: _data,
-      )
-          .copyWith(
-        baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl),
-      ),
-    );
+        _setStreamType<GetSurveyWithQuestionAndAnswerByIdBaseResponse>(
+          Options(method: 'POST', headers: _headers, extra: _extra)
+              .compose(
+                _dio.options,
+                'survey-crud/get_surveyWithQuestion_by_id.php',
+                queryParameters: queryParameters,
+                data: _data,
+              )
+              .copyWith(
+                baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl),
+              ),
+        );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
     late GetSurveyWithQuestionAndAnswerByIdBaseResponse _value;
     try {
@@ -138,7 +140,7 @@ class _AppServiceClient implements AppServiceClient {
         _result.data!,
       );
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -146,8 +148,8 @@ class _AppServiceClient implements AppServiceClient {
 
   @override
   Future<CreateConferenceBaseResponse> createConference(
-      ConferenceModel conference,
-      ) async {
+    ConferenceModel conference,
+  ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -156,11 +158,11 @@ class _AppServiceClient implements AppServiceClient {
     final _options = _setStreamType<CreateConferenceBaseResponse>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
-        _dio.options,
-        'conference-crud/create_conference.php',
-        queryParameters: queryParameters,
-        data: _data,
-      )
+            _dio.options,
+            'conference-crud/create_conference.php',
+            queryParameters: queryParameters,
+            data: _data,
+          )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
@@ -168,7 +170,7 @@ class _AppServiceClient implements AppServiceClient {
     try {
       _value = CreateConferenceBaseResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -184,11 +186,11 @@ class _AppServiceClient implements AppServiceClient {
     final _options = _setStreamType<GetAllConferenceBaseResponse>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
-        _dio.options,
-        'conference-crud/get_all_conference.php',
-        queryParameters: queryParameters,
-        data: _data,
-      )
+            _dio.options,
+            'conference-crud/get_all_conference.php',
+            queryParameters: queryParameters,
+            data: _data,
+          )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
@@ -196,7 +198,7 @@ class _AppServiceClient implements AppServiceClient {
     try {
       _value = GetAllConferenceBaseResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -212,11 +214,11 @@ class _AppServiceClient implements AppServiceClient {
     final _options = _setStreamType<GetConferenceByIdBaseResponse>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
-        _dio.options,
-        'conference-crud/get_conference_by_id.php',
-        queryParameters: queryParameters,
-        data: _data,
-      )
+            _dio.options,
+            'conference-crud/get_conference_by_id.php',
+            queryParameters: queryParameters,
+            data: _data,
+          )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
@@ -224,7 +226,7 @@ class _AppServiceClient implements AppServiceClient {
     try {
       _value = GetConferenceByIdBaseResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -240,11 +242,11 @@ class _AppServiceClient implements AppServiceClient {
     final _options = _setStreamType<Message1Response>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
-        _dio.options,
-        'conference-crud/delete_conference.php',
-        queryParameters: queryParameters,
-        data: _data,
-      )
+            _dio.options,
+            'conference-crud/delete_conference.php',
+            queryParameters: queryParameters,
+            data: _data,
+          )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
@@ -252,7 +254,7 @@ class _AppServiceClient implements AppServiceClient {
     try {
       _value = Message1Response.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -260,11 +262,11 @@ class _AppServiceClient implements AppServiceClient {
 
   @override
   Future<Message1Response> linkSurveyConference(
-      int survey_id,
-      int conference_id,
-      int survey_order,
-      bool is_active,
-      ) async {
+    int survey_id,
+    int conference_id,
+    int survey_order,
+    bool is_active,
+  ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -276,11 +278,11 @@ class _AppServiceClient implements AppServiceClient {
     final _options = _setStreamType<Message1Response>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
-        _dio.options,
-        'survey-conference/link_survey_conference.php',
-        queryParameters: queryParameters,
-        data: _data,
-      )
+            _dio.options,
+            'survey-conference/link_survey_conference.php',
+            queryParameters: queryParameters,
+            data: _data,
+          )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
@@ -288,7 +290,7 @@ class _AppServiceClient implements AppServiceClient {
     try {
       _value = Message1Response.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -296,8 +298,8 @@ class _AppServiceClient implements AppServiceClient {
 
   @override
   Future<GetAllSurveyWithActiveBaseResponse> getAllSurveyAndActiveSurvey(
-      int conference_id,
-      ) async {
+    int conference_id,
+  ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -306,11 +308,11 @@ class _AppServiceClient implements AppServiceClient {
     final _options = _setStreamType<GetAllSurveyWithActiveBaseResponse>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
-        _dio.options,
-        'survey-conference/get_allSurvey_and_activeSurvey.php',
-        queryParameters: queryParameters,
-        data: _data,
-      )
+            _dio.options,
+            'survey-conference/get_allSurvey_and_activeSurvey.php',
+            queryParameters: queryParameters,
+            data: _data,
+          )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
@@ -318,7 +320,7 @@ class _AppServiceClient implements AppServiceClient {
     try {
       _value = GetAllSurveyWithActiveBaseResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -326,12 +328,12 @@ class _AppServiceClient implements AppServiceClient {
 
   @override
   Future<CreateUserResponse> createUserWithConferenceId(
-      String fullname,
-      String email,
-      String phone,
-      String address,
-      int conference_id,
-      ) async {
+    String fullname,
+    String email,
+    String phone,
+    String address,
+    int conference_id,
+  ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -344,11 +346,11 @@ class _AppServiceClient implements AppServiceClient {
     final _options = _setStreamType<CreateUserResponse>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
-        _dio.options,
-        'users-crud/create_user_with_conferenceId.php',
-        queryParameters: queryParameters,
-        data: _data,
-      )
+            _dio.options,
+            'users-crud/create_user_with_conferenceId.php',
+            queryParameters: queryParameters,
+            data: _data,
+          )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
@@ -356,7 +358,7 @@ class _AppServiceClient implements AppServiceClient {
     try {
       _value = CreateUserResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -364,8 +366,8 @@ class _AppServiceClient implements AppServiceClient {
 
   @override
   Future<CreateConferenceBaseResponse> add_users_answers(
-      UseAnswerModel userAnswerModel,
-      ) async {
+    UseAnswerModel userAnswerModel,
+  ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -374,11 +376,11 @@ class _AppServiceClient implements AppServiceClient {
     final _options = _setStreamType<CreateConferenceBaseResponse>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
-        _dio.options,
-        'users-crud/add_users_answers.php',
-        queryParameters: queryParameters,
-        data: _data,
-      )
+            _dio.options,
+            'users-crud/add_users_answers.php',
+            queryParameters: queryParameters,
+            data: _data,
+          )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
@@ -386,7 +388,7 @@ class _AppServiceClient implements AppServiceClient {
     try {
       _value = CreateConferenceBaseResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -394,8 +396,8 @@ class _AppServiceClient implements AppServiceClient {
 
   @override
   Future<GetAllAsyncByConferenceIdBaseResponse> getAllInformationConference(
-      int conference_id,
-      ) async {
+    int conference_id,
+  ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -404,11 +406,11 @@ class _AppServiceClient implements AppServiceClient {
     final _options = _setStreamType<GetAllAsyncByConferenceIdBaseResponse>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
-        _dio.options,
-        'synchronize/get_allInformation_confernce.php',
-        queryParameters: queryParameters,
-        data: _data,
-      )
+            _dio.options,
+            'synchronize/get_allInformation_confernce.php',
+            queryParameters: queryParameters,
+            data: _data,
+          )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
@@ -416,7 +418,7 @@ class _AppServiceClient implements AppServiceClient {
     try {
       _value = GetAllAsyncByConferenceIdBaseResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -424,8 +426,8 @@ class _AppServiceClient implements AppServiceClient {
 
   @override
   Future<GetAllUserBaseResponse> getUsersByConferenceId(
-      int conference_id,
-      ) async {
+    int conference_id,
+  ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -434,11 +436,11 @@ class _AppServiceClient implements AppServiceClient {
     final _options = _setStreamType<GetAllUserBaseResponse>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
-        _dio.options,
-        'users-crud/get_users_by_conferenceId.php',
-        queryParameters: queryParameters,
-        data: _data,
-      )
+            _dio.options,
+            'users-crud/get_users_by_conferenceId.php',
+            queryParameters: queryParameters,
+            data: _data,
+          )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
@@ -446,7 +448,7 @@ class _AppServiceClient implements AppServiceClient {
     try {
       _value = GetAllUserBaseResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -454,8 +456,8 @@ class _AppServiceClient implements AppServiceClient {
 
   @override
   Future<Message1Response> synchronizeUsersAnswers(
-      AllUserModel userRequest,
-      ) async {
+    AllUserModel userRequest,
+  ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -464,11 +466,11 @@ class _AppServiceClient implements AppServiceClient {
     final _options = _setStreamType<Message1Response>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
-        _dio.options,
-        'synchronize/synchronize_users_answers.php',
-        queryParameters: queryParameters,
-        data: _data,
-      )
+            _dio.options,
+            'synchronize/synchronize_users_answers.php',
+            queryParameters: queryParameters,
+            data: _data,
+          )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
@@ -476,7 +478,7 @@ class _AppServiceClient implements AppServiceClient {
     try {
       _value = Message1Response.fromJson(_result.data!);
     } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
+      errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
     }
     return _value;
@@ -509,3 +511,5 @@ class _AppServiceClient implements AppServiceClient {
     return Uri.parse(dioBaseUrl).resolveUri(url).toString();
   }
 }
+
+// dart format on

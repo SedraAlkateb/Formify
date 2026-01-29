@@ -6,12 +6,23 @@ import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
-class AllActiveConferencePage extends StatelessWidget {
+class AllActiveConferencePage extends StatefulWidget {
   const AllActiveConferencePage({super.key});
 
   @override
+  State<AllActiveConferencePage> createState() => _AllActiveConferencePageState();
+}
 
+class _AllActiveConferencePageState extends State<AllActiveConferencePage> {
+
+ @override
+  void initState() {
+   BlocProvider.of<ActiveConferenceBloc>(context).add(GetAllActiveConferenceEvent());
+
+   super.initState();
+  }
   @override
+
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorManager.background,

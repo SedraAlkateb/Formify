@@ -20,8 +20,9 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
   CreateSurveyQuestionUsecase createSurveyQuestionUsecase;
   GetAllSurveyUsecase getAllSurveyUsecase;
   int id = 0;
-  QuestionModel question=QuestionModel.create();
-  List<QuestionModel> questions=[];
+  /////////////////////////////////////////////
+  QuestionModel question = QuestionModel.create();
+  List<QuestionModel> questions = [];
   SurveyModel surveyModel = SurveyModel.create();
   SurveyBloc(
     this.createSurveyUsecase,
@@ -46,8 +47,7 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
             emit(CreateSurveyState());
           },
         );
-      }
-      else if (event is GetAllSurveyEvent) {
+      } else if (event is GetAllSurveyEvent) {
         emit(GetAllSurveyLoadingState());
         (await getAllSurveyUsecase.execute()).fold(
           (failure) {
@@ -68,18 +68,22 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
       //
       else if (event is CreateQuesNameSurveyEvent) {
         question.title = event.questionName;
-        emit(ViewQuestionState(question));
+        QuestionModel question1 = question.instanceQuestion();
+        emit(ViewQuestionState(question1));
       } else if (event is CreateQuesIsRequiredSurveyEvent) {
         question.isRequired = event.isRequired;
-        emit(ViewQuestionState(question));
+        QuestionModel question1 = question.instanceQuestion();
+        emit(ViewQuestionState(question1));
       } else if (event is CreateEmptyAnswerSurveyEvent) {
         question.answers.add(AnswerModel(0, ""));
-        emit(ViewQuestionState(question));
+        QuestionModel question1 = question.instanceQuestion();
+        emit(ViewQuestionState(question1));
       } else if (event is CreateBoolAnswerSurveyEvent) {
         question.answers.add(AnswerModel(0, ""));
-        emit(ViewQuestionState(question));
+        QuestionModel question1 = question.instanceQuestion();
+        emit(ViewQuestionState(question1));
       } else if (event is CreateEmptyQuesNameSurveyEvent) {
-        question=  QuestionModel(
+        question = QuestionModel(
           title: "",
           order: surveyModel.questions.length + 2,
           isRequired: true,
@@ -90,16 +94,16 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
         emit(ViewQuestionState(question));
       } else if (event is RemoveLastAnswerEvent) {
         question.answers.clear();
-        emit(ViewQuestionState(question));
+        QuestionModel question1 = question.instanceQuestion();
+        emit(ViewQuestionState(question1));
       } else if (event is RemoveAnswerAtEvent) {
         question.answers.removeAt(event.index);
-        emit(ViewQuestionState(question));
+        QuestionModel question1 = question.instanceQuestion();
+        emit(ViewQuestionState(question1));
       } else if (event is CreateAnswerSurveyEvent) {
-        question.answers[event.index] = AnswerModel(
-          0,
-          event.value,
-        );
-        emit(ViewQuestionState(question));
+        question.answers[event.index] = AnswerModel(0, event.value);
+        QuestionModel question1 = question.instanceQuestion();
+        emit(ViewQuestionState(question1));
       } else if (event is CreateSurveyWithQuestionEvent) {
         emit(CreateSurveyWithQuestionLoadingState());
         (await createSurveyQuestionUsecase.execute(
@@ -123,17 +127,18 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
           (data) async {
             surveyModel = data;
             id = data.id ?? 0;
-            questions=[];
+            questions = [];
             emit(ViewSurveyState(data));
           },
         );
       }
-      if(event is AddQuestionEvent){
-        if(question.title!=""||question.title.isNotEmpty){
+      if (event is AddQuestionEvent) {
+        if (question.title != "" || question.title.isNotEmpty) {
           questions.add(question);
           surveyModel.questions.add(question);
-        emit(ViewSurveyState(surveyModel));
-      }}
+          emit(ViewSurveyState(surveyModel));
+        }
+      }
     });
   }
 }

@@ -51,12 +51,18 @@ class GetConferenceAsyncEvent extends SyncEvent {
 }
 class GetQuestionAnswersEvent extends SyncEvent {
   final int id;
-  GetQuestionAnswersEvent(this.id);
+  final String surveyName;
+  GetQuestionAnswersEvent(this.id,this.surveyName);
   @override
   List<Object?> get props => [];
 }
 class GetSurveyAsyncEvent extends SyncEvent {
   GetSurveyAsyncEvent();
+  @override
+  List<Object?> get props => [];
+}
+class CreateUserAnswerEvent extends SyncEvent {
+  CreateUserAnswerEvent();
   @override
   List<Object?> get props => [];
 }

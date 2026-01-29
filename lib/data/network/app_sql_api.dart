@@ -9,12 +9,11 @@ abstract class AppSqlApiAbs {
   Future<AllUserModel> getDataSql();
   Future<GetAllConferenceModel> getConference();
   Future<List<MainSurveyModel>> getSurveys();
-  Future<List<AsyncQuestionModel>> getQuestions();
-  Future<List<GetAsyncAnswerModel>> getAnswers();
- // Future<List<QuestionModel>> getQuestionAnswers();
-  Future<List<QuestionModel>> getSurveyQuestionsWithAnswers(
-      int surveyId,
-      );
+  // Future<List<AnswerModel>> getAnswers();
+  // Future<List<QuestionModel>> getQuestionAnswers();
+  Future<List<QuestionModel>> getSurveyQuestionsWithAnswers(int surveyId);
+  Future<void>  insertUserWithAnswer(UserSqlModel user);
+  //Future<List<AsyncQuestionModel>> getQuestions();
 }
 
 class AppSqlApi extends AppSqlApiAbs {
@@ -23,13 +22,15 @@ class AppSqlApi extends AppSqlApiAbs {
   Future<void> initializeDatabase() async {
     await databaseFactory.debugSetLogLevel(sqfliteLogLevelVerbose);
   }
+
   @override
   Future<List<QuestionModel>> getSurveyQuestionsWithAnswers(
-      int surveyId,
-      ) async {
+    int surveyId,
+  ) async {
     final db = await databaseHelper.database;
 
-    final rows = await db.rawQuery('''
+    final rows = await db.rawQuery(
+      '''
     SELECT
       q.id              AS q_id,
       q.question        AS q_question,
@@ -43,8 +44,9 @@ class AppSqlApi extends AppSqlApiAbs {
     LEFT JOIN answers a ON a.question_id = q.id
     WHERE q.survey_id = ?
     ORDER BY q.question_order ASC, a.id ASC
-  ''', [surveyId]);
-
+  ''',
+      [surveyId],
+    );
     // نجمعهم حسب السؤال
     final Map<int, Map<String, dynamic>> qMap = {};
     final Map<int, List<AnswerModel>> aMap = {};
@@ -65,22 +67,14 @@ class AppSqlApi extends AppSqlApiAbs {
       final aId = r['a_id'];
       if (aId != null) {
         aMap.putIfAbsent(qId, () => []);
-        aMap[qId]!.add(
-          AnswerModel(
-           aId as int,
-           r['a_title'] as String,
-          ),
-        );
+        aMap[qId]!.add(AnswerModel(aId as int, r['a_title'] as String));
       }
     }
-
-    // تحويل إلى QuestionModel
     final result = <QuestionModel>[];
     for (final entry in qMap.entries) {
       final qId = entry.key;
       final qRow = entry.value;
       final answers = aMap[qId] ?? [];
-
       result.add(
         QuestionModel(
           id: qRow['id'] as int,
@@ -214,6 +208,19 @@ JOIN users_answers ON users.id = users_answers.user_id;
   }
 
   @override
+  Future<void>  insertUserWithAnswer(UserSqlModel user) async {
+    final db = await databaseHelper.database;
+    await db.transaction((txn) async {
+      int userId = await txn.insert('users', user.toJson());
+      for (var answer in user.answerModel) {
+        await txn.insert('users_answers', answer.toJsonSql(userId));
+      }
+    });
+  }
+}
+
+/*
+  @override
   Future<List<AsyncQuestionModel>> getQuestions() async {
     final db = await databaseHelper.database;
     List<Map<String, dynamic>> maps;
@@ -225,11 +232,11 @@ JOIN users_answers ON users.id = users_answers.user_id;
   }
 
   @override
-  Future<List<GetAsyncAnswerModel>> getAnswers() async {
+  Future<List<AnswerModel>> getAnswers() async {
     final db = await databaseHelper.database;
     List<Map<String, dynamic>> maps;
     maps = await db.rawQuery('''
-SELECT 
+SELECT
   q.id            AS question_id,
   q.question      AS question_text,
   q.question_order,
@@ -245,7 +252,7 @@ WHERE q.survey_id = ?
 ORDER BY q.question_order ASC, a.id ASC;
 ''', []);
     return List.generate(maps.length, (i) {
-      return GetAsyncAnswerModel.fromMap(maps[i]);
+      return AnswerModel.fromMap(maps[i]);
     });
   }
-}
+ */

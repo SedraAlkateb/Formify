@@ -1,24 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
-//
-// enum QuestionTyspe {
-//   text,
-//   dropdown,
-//   multipleChoice,
-//   checkbox,
-//   switchField,
-//   dateTime,
-//   slider,
-//   fileUpload,
-//   signature,
-//   colorPicker,
-//  // searchableList,
-//   stepperNumber,
-//   multiPageStepper,
-//   generic,
-// }
+
 enum QuestionType {
-  // Text
   text,
   email,
   password,
@@ -92,7 +75,50 @@ extension QuestionTypeX on QuestionType {
         return "Generic Field";
     }
   }
+  String get answer {
+    switch (this) {
+      case QuestionType.text:
+        return "ادخل النص التالي";
+      case QuestionType.email:
+        return "example@gmail.com";
+      case QuestionType.password:
+        return "Password";
+      case QuestionType.phone:
+        return "Phone Number";
+      case QuestionType.number:
+        return "0xxxxxxxx";
 
+      case QuestionType.dropdown:
+        return "Drop Down";
+    // case QuestionType.searchableList:
+    //   return "Searchable List";
+      case QuestionType.multipleChoice:
+        return "Multiple Choice";
+      case QuestionType.checkbox:
+        return "Checkbox";
+      case QuestionType.chips:
+        return "Choice Chips";
+      case QuestionType.autocomplete:
+        return "Autocomplete";
+
+      case QuestionType.date:
+        return "Date";
+      case QuestionType.time:
+        return "Time";
+      case QuestionType.dateTime:
+        return "Date & Time";
+
+      case QuestionType.switchField:
+        return "Switch";
+
+      case QuestionType.slider:
+        return "Slider";
+      case QuestionType.rating:
+        return "Rating";
+      case QuestionType.generic:
+        return "Generic Field";
+    }
+  }
   IconData get icon {
     switch (this) {
       case QuestionType.text:
@@ -135,9 +161,6 @@ extension QuestionTypeX on QuestionType {
         return Icons.extension;
     }
   }
-
-
-  /// route اختياري (null = Coming soon)
   String get route {
     switch (this) {
       case QuestionType.text:
@@ -168,6 +191,7 @@ extension QuestionTypeX on QuestionType {
   }
 
 }
+
 final List<QuestionType> questionTypes = QuestionType.values;
 QuestionType convertToQuestionType(String value){
   return       QuestionType.values.firstWhere(

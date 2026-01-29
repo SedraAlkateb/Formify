@@ -4,7 +4,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 
-Widget viewAnswerWidget(BuildContext context, QuestionModel surveyModel) {
+Widget viewAnswerWidget(BuildContext context) {
   final colorScheme = Theme.of(context).colorScheme;
 
   return Container(
@@ -30,52 +30,60 @@ Widget viewAnswerWidget(BuildContext context, QuestionModel surveyModel) {
         ),
 
         const SizedBox(height: 10),
+        BlocBuilder<SurveyBloc, SurveyState>(
 
-        if (
-            surveyModel.answers.isEmpty)
-          const Text("No answers yet. Tap 'Add Answer' to add one.")
-        else
-          ListView.separated(
-            itemCount: surveyModel.answers.length,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            separatorBuilder: (_, __) => const SizedBox(height: 10),
-            itemBuilder: (context, index) {
-                    final String item =
-                  surveyModel.answers[index].content;
+  builder: (context, state) {
+  if (state is ViewQuestionState) {
+  print("RemoveAnswerAtEvent");
+  QuestionModel questionModel = state.questionModel;
+  return   questionModel.answers.isEmpty?
+  const Text("No answers yet. Tap 'Add Answer' to add one.")
+      :
+  ListView.separated(
+    itemCount: questionModel.answers.length,
+    shrinkWrap: true,
+    physics: const NeverScrollableScrollPhysics(),
+    separatorBuilder: (_, __) => const SizedBox(height: 10),
+    itemBuilder: (context, index) {
+      final String item =
+          questionModel.answers[index].title;
 
-              return Row(
-                children: [
-                  Expanded(
-                    child: FormBuilderTextField(
-                      name: "answer_$index",
-                      initialValue: item,
-                      decoration: InputDecoration(
-                        labelText: "Answer ${index + 1}",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      onChanged: (val) {
-                        context.read<SurveyBloc>().add(
-                          CreateAnswerSurveyEvent(index, val ?? ""),
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  IconButton(
-                    icon: const Icon(Icons.delete_outline),
-                    onPressed: () {
-                      context.read<SurveyBloc>().add(
-                        RemoveAnswerAtEvent(index),
-                      );
-                    },
-                  ),
-                ],
+      return Row(
+        children: [
+          Expanded(
+            child: FormBuilderTextField(
+              name: "answer_$index",
+              initialValue: item,
+              decoration: InputDecoration(
+                labelText: "Answer ${index + 1}",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              onChanged: (val) {
+                context.read<SurveyBloc>().add(
+                  CreateAnswerSurveyEvent(index, val ?? ""),
+                );
+              },
+            ),
+          ),
+          const SizedBox(width: 8),
+          IconButton(
+            icon: const Icon(Icons.delete_outline),
+            onPressed: () {
+              context.read<SurveyBloc>().add(
+                RemoveAnswerAtEvent(index),
               );
             },
           ),
+        ],
+      );
+    },
+  );
+  }
+  return SizedBox();
+  }),
+
       ],
     ),
   );

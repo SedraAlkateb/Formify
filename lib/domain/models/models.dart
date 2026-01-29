@@ -1,23 +1,5 @@
 import 'package:formify/domain/models/model_q.dart';
 
-class LoginModel {
-  int cityId;
-  int repId;
-  int samplesCount;
-  String name;
-  bool isLogin;
-  String repType;
-
-  LoginModel(
-    this.cityId,
-    this.repId,
-    this.samplesCount,
-    this.name,
-    this.isLogin,
-    this.repType,
-  );
-}
-
 class SurveyModel {
   int? id;
   String title;
@@ -46,39 +28,7 @@ class SurveyModel {
   }
 
 }
-///*
-///class QuestionModel {
-//   int? id;
-//   String title;
-//   int order;
-//   bool isRequired;
-//   QuestionType type;
-//   List<AnswerModel> answers;
-//
-//   QuestionModel({
-//     this.id,
-//     required this.title,
-//     required this.order,
-//     required this.isRequired,
-//     required this.type,
-//     required this.answers,
-//   });
-//
-//   factory QuestionModel.fromMap(
-//     Map<String, dynamic> map,
-//     List<AnswerModel> answers,
-//   ) {
-//     return QuestionModel(
-//       id: map['question_id'],
-//       title: map['question'],
-//       order: map['question_order'],
-//       isRequired: map['is_required'] == 1,
-//       type: QuestionType.values.byName(map['type']),
-//       answers: answers,
-//     );
-//   }
-// }
-///
+
 class QuestionModel {
   int? id;
   String title;
@@ -95,7 +45,15 @@ class QuestionModel {
     required this.type,
     required this.answers,
   });
-
+  QuestionModel instanceQuestion(){
+    return QuestionModel(
+      title: title,
+      order: order,
+      isRequired: isRequired,
+      type: type,
+      answers: answers,
+    );
+  }
   /// إنشاء كائن فارغ جاهز للاستخدام
   static QuestionModel create() {
     return QuestionModel(
@@ -114,7 +72,8 @@ class QuestionModel {
       'order': order,
       'isRequired': isRequired,
       'Type': type.name,
-      'answer': answers,
+      'answer': answers.isEmpty?[type.answer]:
+      answers.map((e) => e.title).toList(),
     };
   }
 
@@ -142,19 +101,19 @@ class QuestionModel {
     );
   }
 }
-
+////createSurveyQuestionsAndAnswers
 class SurveyQuestionAndAnswersModel {
   int id;
   List<QuestionModel> questionAndAnswers;
   SurveyQuestionAndAnswersModel(this.id, this.questionAndAnswers);
   Map<String, dynamic> toJson() {
     return {
-      'id': this.id,
+      'id': id,
       'qus': questionAndAnswers.map((e) => e.toMap()).toList(),
     };
   }
 }
-
+//  Future<Either<Failure, CreateSurveyModel>> createSurvey(SurveyRequest survey);
 class CreateSurveyModel {
   int id;
   String title;
@@ -244,36 +203,29 @@ class ConferenceModel {
   }
 }
 
-class AnswerModel {
+//////////////////////////////// for user
+ class AnswerUserModel {
   int? answer_id;
   String content;
 
-  AnswerModel(this.answer_id, this.content);
+  AnswerUserModel(this.answer_id, this.content);
 
   Map<String, dynamic> toJson() {
     return {'answer_id': answer_id, 'content': content};
   }
-
-  factory AnswerModel.fromMap(Map<String, dynamic> map) {
-    return AnswerModel(map['answer_id'], map['content']);
+  Map<String, dynamic> toJsonSql(int userId) {
+    return
+      {'user_id':userId ,'answer_id': answer_id, 'content': content};
+  }
+  factory AnswerUserModel.fromMap(Map<String, dynamic> map) {
+    return AnswerUserModel(map['answer_id'], map['content']);
   }
 
-  Map<String, dynamic> toMap() => {
-    'id': answer_id,
-    'title': content,
-  };
 
-  factory AnswerModel.fromJsonOffline(Map<String, dynamic> map) {
-    return AnswerModel(
-    map['id'],
-      map['title']
-    );
-  }
 }
-
 class UseAnswerModel {
   int user_id;
-  List<AnswerModel> answersModel;
+  List<AnswerUserModel> answersModel;
   UseAnswerModel(this.user_id, this.answersModel);
   Map<String, dynamic> toJson() {
     return {
@@ -297,7 +249,6 @@ class UserInputModel {
     this.conferenceId,
   );
 }
-
 class UserModel {
   int id; // المعرف
   String fullName; // الاسم الكامل
@@ -345,31 +296,6 @@ class UserModel {
   }
 }
 
-class AnswerSqlModel {
-  int answer_id;
-  int user_id;
-  String content;
-
-  AnswerSqlModel({
-    required this.answer_id,
-    required this.user_id,
-    required this.content,
-  });
-
-  // تحويل الإجابة إلى JSON
-  Map<String, dynamic> toJson() {
-    return {'answer_id': answer_id, 'user_id': user_id, 'content': content};
-  }
-
-  // تحويل الإجابة من الخريطة
-  factory AnswerSqlModel.fromMap(Map<String, dynamic> map) {
-    return AnswerSqlModel(
-      answer_id: map['answer_id'],
-      user_id: map['user_id'],
-      content: map['content'],
-    );
-  }
-}
 
 class GetAllConferenceModel {
   int id;
@@ -457,7 +383,7 @@ class GetAsyncModel {
   GetAllConferenceModel conferenceModel;
   List<MainSurveyModel> surveys;
   List<AsyncQuestionModel> questions;
-  List<GetAsyncAnswerModel> answers;
+  List<AnswerModel> answers;
   List<SurveyConferenceAsyncModel> surveyConference;
 
   GetAsyncModel(
@@ -510,19 +436,22 @@ class AsyncQuestionModel {
     );
   }
 }
-/////////TODO
-class GetAsyncAnswerModel {
+/////////AnswerForQuestion
+class AnswerModel {
   int id;
-  int questionId;
+  int? questionId;
   String title;
 
-  GetAsyncAnswerModel(this.id, this.questionId, this.title);
+  AnswerModel(this.id, this.title,{ this.questionId});
   Map<String, dynamic> toMap() {
     return {'id': id, 'title': title, 'question_id': questionId};
   }
+  String toMapString() {
+    return  title;
+  }
 
-  factory GetAsyncAnswerModel.fromMap(Map<String, dynamic> map) {
-    return GetAsyncAnswerModel(map['id'], map['question_id'], map['title']);
+  factory AnswerModel.fromMap(Map<String, dynamic> map) {
+    return AnswerModel(map['id'],  map['title'],questionId: map['question_id']);
   }
 }
 
@@ -562,7 +491,7 @@ class UserSqlModel {
   String email; // البريد الإلكتروني
   String phone; // رقم الهاتف
   String address; // العنوان
-  List<AnswerModel> answerModel;
+  List<AnswerUserModel> answerModel;
   // مُنشئ لتخزين البيانات
   UserSqlModel({
     required this.fullName,

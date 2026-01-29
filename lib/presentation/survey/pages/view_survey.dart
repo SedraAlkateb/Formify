@@ -133,7 +133,6 @@ class ViewSurvey extends StatelessWidget {
                                 const SizedBox(height: 12),
                             itemBuilder: (context, index) {
                               final q = surveyModel.questions[index];
-
                               return Container(
                                 padding: const EdgeInsets.all(12),
                                 decoration: BoxDecoration(
