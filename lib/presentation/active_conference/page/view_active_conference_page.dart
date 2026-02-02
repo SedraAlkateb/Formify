@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/data/mapper/mapper.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/active_conference/bloc/active_conference_bloc.dart';
-import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/resources/theme_bloc/theme_bloc.dart';
@@ -16,10 +15,10 @@ class ViewActiveConferencePage extends StatefulWidget {
 final int conferenceId;
 
   @override
-  State<ViewActiveConferencePage> createState() => _ViewConferencePageState();
+  State<ViewActiveConferencePage> createState() => _ViewActiveConferencePageState();
 }
 
-class _ViewConferencePageState extends State<ViewActiveConferencePage> {
+class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
   @override
   void initState() {
     BlocProvider.of<ActiveConferenceBloc>(
@@ -30,11 +29,11 @@ class _ViewConferencePageState extends State<ViewActiveConferencePage> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ActiveConferenceBloc, ActiveConferenceState>(
-      buildWhen: (previous, current) => current is GetConferenceByIdState
-          ||current is GetConferenceByIdLoadingState || current is GetConferenceByIdErrorState,
+      buildWhen: (previous, current) => current is GetActiveConferenceByIdState
+          ||current is GetActiveConferenceByIdLoadingState || current is GetActiveConferenceByIdErrorState,
       builder: (context, state) {
         final GetAllConferenceByIdModel? conference =
-            state is GetConferenceByIdState ? state.conferenceModel : null;
+            state is GetActiveConferenceByIdState ? state.conferenceModel : null;
         return Scaffold(
           backgroundColor: ColorManager.background,
           appBar: AppBar(
@@ -43,13 +42,13 @@ class _ViewConferencePageState extends State<ViewActiveConferencePage> {
               icon: Icon(Icons.arrow_back_ios_new, color: ColorManager.black),
             ),
             title: Text(
-              "Conference Details",
+              "ActiveConference Details",
               style: TextStyle(color: ColorManager.black),
             ),
             backgroundColor: ColorManager.white,
           ),
 
-          body: state is GetConferenceByIdState
+          body: state is GetActiveConferenceByIdState
               ? SingleChildScrollView(
                   padding: const EdgeInsets.symmetric(
                     vertical: 16,
@@ -58,7 +57,7 @@ class _ViewConferencePageState extends State<ViewActiveConferencePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Conference header section (Card with Conference Info)
+                      // ActiveConference header section (Card with ActiveConference Info)
                       Container(
                         width: MediaQuery.of(context).size.width,
                         decoration: BoxDecoration(
@@ -91,7 +90,7 @@ class _ViewConferencePageState extends State<ViewActiveConferencePage> {
                                 ),
                               ),
                               const SizedBox(height: 10),
-                              // Conference Description
+                              // ActiveConference Description
                               Text(
                                 conference.description,
                                 style: TextStyle(
@@ -257,7 +256,7 @@ class _ViewConferencePageState extends State<ViewActiveConferencePage> {
                             InkWell(
                               onTap: () {
                                 BlocProvider.of<ActiveConferenceBloc>(context).add(
-                                  GetAllSurveyByConferenceEvent(conference.id),
+                                    GetAllSurveyByActiveConferenceEvent(conference.id)
                                 );
 
                                 Navigator.pushNamed(
@@ -364,9 +363,9 @@ class _ViewConferencePageState extends State<ViewActiveConferencePage> {
                     ],
                   ),
                 )
-              : state is GetConferenceByIdErrorState
+              : state is GetActiveConferenceByIdErrorState
               ? errorFullScreen(context)
-              : state is GetConferenceByIdLoadingState
+              : state is GetActiveConferenceByIdLoadingState
               ? const Center(child: CircularProgressIndicator())
               : SizedBox(),
         );
