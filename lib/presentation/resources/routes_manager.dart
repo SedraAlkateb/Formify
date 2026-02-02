@@ -38,7 +38,6 @@ class Routes {
   static const String surveyInput = "/surveyInput";
   static const String insertUser = "/insertUser";
   static const String viewActiveConference = "/viewActiveConference";
-
 }
 
 class RouteGenerator {
@@ -71,16 +70,16 @@ class RouteGenerator {
         return _animatedRoute(ViewConferencePage(conferenceId: conferenceId));
       case Routes.viewActiveConference:
         final conferenceId = settings.arguments as int;
-        return _animatedRoute(ViewActiveConferencePage(conferenceId: conferenceId));
+        return _animatedRoute(
+          ViewActiveConferencePage(conferenceId: conferenceId),
+        );
 
       case Routes.textQuestion:
         return _animatedRoute(TextQuestionPage());
       case Routes.conferenceSurveyById:
         final args = settings.arguments as Map<String, dynamic>;
         final conferenceId = args["conferenceId"] as int;
-        return _animatedRoute(
-          ConferenceSurveyById(conferenceId: conferenceId),
-        );
+        return _animatedRoute(ConferenceSurveyById(conferenceId: conferenceId));
 
       case Routes.multiAnswer:
         return _animatedRoute(MultiAnswerPage());

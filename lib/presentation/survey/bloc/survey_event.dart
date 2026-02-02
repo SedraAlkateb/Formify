@@ -1,7 +1,7 @@
 part of 'survey_bloc.dart';
 
 @immutable
-sealed class SurveyEvent extends Equatable {}
+abstract class SurveyEvent extends Equatable {}
 
 class CreateSurveyEvent extends SurveyEvent {
   final String color;

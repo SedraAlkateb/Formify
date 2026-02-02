@@ -1,7 +1,7 @@
 part of 'active_conference_bloc.dart';
 
 @immutable
-sealed class ActiveConferenceState extends Equatable{}
+abstract class ActiveConferenceState extends Equatable{}
 
 final class ActiveConferenceInitial extends ActiveConferenceState {
   @override

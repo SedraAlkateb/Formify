@@ -1,7 +1,7 @@
 part of 'active_conference_bloc.dart';
 
 @immutable
-sealed class ActiveConferenceEvent extends Equatable{}
+abstract class ActiveConferenceEvent extends Equatable{}
 
 class GetAllActiveConferenceEvent extends ActiveConferenceEvent {
   GetAllActiveConferenceEvent();

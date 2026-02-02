@@ -1,7 +1,7 @@
 part of 'sync_bloc.dart';
 
 @immutable
-sealed class SyncState extends Equatable {
+abstract class SyncState extends Equatable {
   const SyncState();
   @override
   List<Object?> get props => [];

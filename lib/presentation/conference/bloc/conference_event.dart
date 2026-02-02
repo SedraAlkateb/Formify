@@ -1,7 +1,7 @@
 part of 'conference_bloc.dart';
 
 @immutable
-sealed class ConferenceEvent extends Equatable {}
+abstract class ConferenceEvent extends Equatable {}
 
 class CreateConferenceEvent extends ConferenceEvent {
   final ConferenceModel payload;
