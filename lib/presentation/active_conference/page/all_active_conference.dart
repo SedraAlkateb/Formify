@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/presentation/active_conference/bloc/active_conference_bloc.dart';
-import 'package:formify/presentation/home/widget/conference_ended_widget.dart';
+import 'package:formify/presentation/active_conference/widget/activce_conference.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
@@ -26,13 +26,8 @@ class AllActiveConferencePage extends StatelessWidget {
         backgroundColor: ColorManager.white,
       ),
 
-      body: BlocConsumer<ActiveConferenceBloc, ActiveConferenceState>(
-        listener: (context, state) {
-          if (state is GetActiveConferenceByIdState) {
-            Navigator.pushNamed(context, Routes.viewConference, arguments:state.conferenceModel.id,);
-          }
+      body: BlocBuilder<ActiveConferenceBloc, ActiveConferenceState>(
 
-        },
         builder: (context, state) {
 
           if (state is GetAllActiveConferenceLoadingState) {
@@ -40,28 +35,30 @@ class AllActiveConferencePage extends StatelessWidget {
           } else if (state is GetAllActiveConferenceErrorState) {
             return errorFullScreen(context);
           } else if (state is GetAllActiveConferenceState) {
-            return ListView.separated(
-              shrinkWrap: true,
-              itemCount: BlocProvider.of<ActiveConferenceBloc>(
-                context,
-              ).allActiveConference.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 10),
-              itemBuilder: (context, index) {
-                return InkWell(
-                  onTap: () => BlocProvider.of<ActiveConferenceBloc>(
-                    context,
-                  ).add(GetActiveConferenceByIdEvent(BlocProvider.of<ActiveConferenceBloc>(
-                    context,
-                  ).allActiveConference[index])),
-                  child: ConferenceEndedWidget(
-                    index: index,
-                    allConference: BlocProvider.of<ActiveConferenceBloc>(
-                      context,
-                    ).allActiveConference,value: 0,
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: ListView.separated(
+                shrinkWrap: true,
+                itemCount: BlocProvider.of<ActiveConferenceBloc>(
+                  context,
+                ).allActiveConference.length,
 
-                  ),
-                );
-              },
+                separatorBuilder: (context, index) => const SizedBox(height: 10),
+                itemBuilder: (context, index) {
+                  return InkWell(
+                    onTap: () =>    Navigator.pushNamed(context, Routes.viewActiveConference, arguments:
+                   BlocProvider.of<ActiveConferenceBloc>(
+                      context,
+                    ).allActiveConference[index].id,),
+                    child: ActiveConferenceWidget(
+                      conference: BlocProvider.of<ActiveConferenceBloc>(
+                        context,
+                      ).allActiveConference[index]
+
+                    ),
+                  );
+                },
+              ),
             );
           } else if (state is GetAllActiveEmptyConferenceState) {
             return emptyFullScreen(context);

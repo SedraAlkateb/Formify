@@ -10,7 +10,7 @@ class GetAllActiveConferenceEvent extends ActiveConferenceEvent {
 }
 
 class GetActiveConferenceByIdEvent extends ActiveConferenceEvent {
-  final GetAllConferenceModel conferenceModel;
+  final int conferenceModel;
 
   GetActiveConferenceByIdEvent(this.conferenceModel);
 

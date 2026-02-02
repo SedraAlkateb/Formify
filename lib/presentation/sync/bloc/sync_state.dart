@@ -1,121 +1,166 @@
 part of 'sync_bloc.dart';
 
 @immutable
-sealed class SyncState extends Equatable{}
-
-final class SyncInitial extends SyncState {
-  @override
-  List<Object?> get props =>  [];
-}
-final class AsyncConferenceState extends SyncState {
-  final   GetAsyncModel asyncModel;
-AsyncConferenceState(this.asyncModel);
-  List<Object?> get props => [asyncModel];
-}
-final class AsyncConferenceErrorState extends SyncState {
-  final Failure failure;
-  AsyncConferenceErrorState({required this.failure});
-  @override
-  List<Object?> get props =>[failure];
-}
-final class AsyncConferenceLoadingState extends SyncState {
+sealed class SyncState extends Equatable {
+  const SyncState();
   @override
   List<Object?> get props => [];
+}
+
+final class SyncInitial extends SyncState {
+  const SyncInitial();
+}
+
+// ===== Existing states =====
+final class AsyncConferenceState extends SyncState {
+  final GetAsyncModel asyncModel;
+  const AsyncConferenceState(this.asyncModel);
+
+  @override
+  List<Object?> get props => [asyncModel];
+}
+
+final class DataErrorState extends SyncState {
+  final Failure failure;
+  const DataErrorState({required this.failure});
+
+  @override
+  List<Object?> get props => [failure];
+}
+
+final class DataLoadingState extends SyncState {
+  const DataLoadingState();
 }
 
 final class DeleteDataState extends SyncState {
-  List<Object?> get props => [];
-}
-final class DataErrorState extends SyncState {
-  final Failure failure;
-  DataErrorState({required this.failure});
-  @override
-  List<Object?> get props =>[failure];
-}
-final class DeleteDataLoadingState extends SyncState {
-  @override
-  List<Object?> get props => [];
+  const DeleteDataState();
 }
 
 final class InsertSucState extends SyncState {
-  @override
-  List<Object?> get props => [];
-}
-final class UploadDataState extends SyncState {
-  List<Object?> get props => [];
-}
-final class UploadDataErrorState extends SyncState {
-  final Failure failure;
-  UploadDataErrorState({required this.failure});
-  @override
-  List<Object?> get props =>[failure];
-}
-final class UploadDataLoadingState extends SyncState {
-  @override
-  List<Object?> get props => [];
+  const InsertSucState();
 }
 
+final class UploadDataState extends SyncState {
+  const UploadDataState();
+}
 
 final class GetDataState extends SyncState {
- final AllUserModel users;
-  GetDataState(this.users);
-  List<Object?> get props => [];
-}
-final class GetDataErrorState extends SyncState {
-  final Failure failure;
-  GetDataErrorState({required this.failure});
+  final AllUserModel users;
+  const GetDataState(this.users);
+
   @override
-  List<Object?> get props =>[failure];
+  List<Object?> get props => [users];
 }
-final class DataLoadingState extends SyncState {
-  @override
-  List<Object?> get props => [];
-}
+
 final class GetConferenceAsyncState extends SyncState {
   final GetAllConferenceModel conferenceModel;
-  GetConferenceAsyncState(this.conferenceModel);
+  const GetConferenceAsyncState(this.conferenceModel);
+
+  @override
   List<Object?> get props => [conferenceModel];
 }
+
+final class GetConferenceAsyncLoadingState extends SyncState {
+  const GetConferenceAsyncLoadingState();
+}final class AsyncConferenceErrorState extends SyncState {
+  final Failure failure;
+  const AsyncConferenceErrorState({required this.failure});
+
+  @override
+  List<Object?> get props => [failure];
+}
+
 final class GetConferenceAsyncErrorState extends SyncState {
   final Failure failure;
-  GetConferenceAsyncErrorState({required this.failure});
+  const GetConferenceAsyncErrorState({required this.failure});
+
   @override
-  List<Object?> get props =>[failure];
-}
-final class GetConferenceAsyncLoadingState extends SyncState {
-  @override
-  List<Object?> get props => [];
+  List<Object?> get props => [failure];
 }
 
 final class GetSurveyAsyncState extends SyncState {
   final List<MainSurveyModel> surveys;
-  GetSurveyAsyncState(this.surveys);
+  const GetSurveyAsyncState(this.surveys);
+
+  @override
   List<Object?> get props => [surveys];
 }
-final class GetSurveyAsyncErrorState extends SyncState {
-  final Failure failure;
-  GetSurveyAsyncErrorState({required this.failure});
-  @override
-  List<Object?> get props =>[failure];
-}
+
 final class GetSurveyAsyncLoadingState extends SyncState {
-  @override
-  List<Object?> get props => [];
+  const GetSurveyAsyncLoadingState();
 }
 
-final class GetQuestionAnswersState extends SyncState {
-  final List<QuestionModel> questions;
-  final String surveyName;
-  GetQuestionAnswersState(this.questions,this.surveyName);
-  List<Object?> get props => [questions,surveyName];
-}
-final class GetQuestionAnswersErrorState extends SyncState {
+final class GetSurveyAsyncErrorState extends SyncState {
   final Failure failure;
-  GetQuestionAnswersErrorState({required this.failure});
+  const GetSurveyAsyncErrorState({required this.failure});
+
   @override
-  List<Object?> get props =>[failure];
+  List<Object?> get props => [failure];
 }
-final class GetQuestionAnswersLoadingState extends SyncState {
+
+// ===== Survey states (new) =====
+final class SurveyLoadingState extends SyncState {
+  const SurveyLoadingState();
+}
+
+final class SurveyErrorState extends SyncState {
+  final Failure failure;
+  const SurveyErrorState({required this.failure});
+
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [failure];
+}
+
+/// Ready survey (single source of truth for UI)
+final class SurveyReadyState extends SyncState {
+  final String surveyName;
+  final List<QuestionModel> questions;
+
+  /// index -> answers
+  final Map<int, List<AnswerUserModel>> answers;
+
+  /// for UI header/progress only
+  final int currentIndex;
+
+  const SurveyReadyState({
+    required this.surveyName,
+    required this.questions,
+    required this.answers,
+    required this.currentIndex,
+  });
+
+  SurveyReadyState copyWith({
+    Map<int, List<AnswerUserModel>>? answers,
+    int? currentIndex,
+  }) {
+    return SurveyReadyState(
+      surveyName: surveyName,
+      questions: questions,
+      answers: answers ?? this.answers,
+      currentIndex: currentIndex ?? this.currentIndex,
+    );
+  }
+
+  @override
+  List<Object?> get props => [surveyName, questions, answers, currentIndex];
+}
+
+final class SurveySubmittingState extends SyncState {
+  final SurveyReadyState snapshot;
+  const SurveySubmittingState(this.snapshot);
+
+  @override
+  List<Object?> get props => [snapshot];
+}
+
+final class SurveySubmitSuccessState extends SyncState {
+  const SurveySubmitSuccessState();
+}
+
+final class SurveySubmitErrorState extends SyncState {
+  final Failure failure;
+  const SurveySubmitErrorState({required this.failure});
+
+  @override
+  List<Object?> get props => [failure];
 }
