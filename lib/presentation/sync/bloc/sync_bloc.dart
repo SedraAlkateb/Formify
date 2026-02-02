@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:formify/data/network/failure.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/usecase/add_async_data_sql_usecase.dart';
@@ -17,148 +18,194 @@ part 'sync_event.dart';
 part 'sync_state.dart';
 
 class SyncBloc extends Bloc<SyncEvent, SyncState> {
-  GetAllAsyncInfoUsecase getAllAsyncInfoUsecase;
-  AddAsyncDataSqlUsecase addAsyncDataSqlUsecase;
-  GetUserAnswerSqlUsecase getUserAnswerSqlUsecase;
-  DeleteDataSqlUsecase deleteDataSqlUsecase;
-  SynchronizeUsersAnswersUsecase synchronizeUsersAnswersUsecase;
-  GetConferenceSqlUsecase getConferenceSqlUsecase;
-  GetSurveysSqlUsecase getSurveysSqlUsecase;
-  GetQuestionAnswersUsecase getQuestionAnswersUsecase;
-  InsertUserAndAnswerUsecase insertUserAndAnswerUsecase;
+  final GetAllAsyncInfoUsecase getAllAsyncInfoUsecase;
+  final AddAsyncDataSqlUsecase addAsyncDataSqlUsecase;
+  final GetUserAnswerSqlUsecase getUserAnswerSqlUsecase;
+  final DeleteDataSqlUsecase deleteDataSqlUsecase;
+  final SynchronizeUsersAnswersUsecase synchronizeUsersAnswersUsecase;
+  final GetConferenceSqlUsecase getConferenceSqlUsecase;
+  final GetSurveysSqlUsecase getSurveysSqlUsecase;
+  final GetQuestionAnswersUsecase getQuestionAnswersUsecase;
+  final InsertUserAndAnswerUsecase insertUserAndAnswerUsecase;
+
   UserSqlModel? userSqlModel;
   int? conferenceId;
-  List<QuestionModel> questions = [];
-  Map<int, List<AnswerUserModel>> answers = {};
-  List<AnswerUserModel> answer = [];
+
   SyncBloc(
-    this.getAllAsyncInfoUsecase,
-    this.addAsyncDataSqlUsecase,
-    this.getUserAnswerSqlUsecase,
-    this.deleteDataSqlUsecase,
-    this.synchronizeUsersAnswersUsecase,
-    this.getConferenceSqlUsecase,
-    this.getSurveysSqlUsecase,
-    this.getQuestionAnswersUsecase,
-    this.insertUserAndAnswerUsecase,
-  ) : super(SyncInitial()) {
-    on<SyncEvent>((event, emit) async {
-      ////////////////4
-      if (event is AsyncDataEvent) {
-        (await getAllAsyncInfoUsecase.execute(conferenceId ?? -1)).fold(
-          (failure) {
-            emit(DataErrorState(failure: failure));
-          },
-          (data) async {
-            emit(AsyncConferenceState(data));
-          },
-        );
-      }
-      //////////////////5
-      if (event is InsertDataSqlEvent) {
-        (await addAsyncDataSqlUsecase.execute(event.asyncModel)).fold(
-          (failure) {
-            emit(DataErrorState(failure: failure));
-          },
-          (data) async {
-            emit(InsertSucState());
-          },
-        );
-      }
+      this.getAllAsyncInfoUsecase,
+      this.addAsyncDataSqlUsecase,
+      this.getUserAnswerSqlUsecase,
+      this.deleteDataSqlUsecase,
+      this.synchronizeUsersAnswersUsecase,
+      this.getConferenceSqlUsecase,
+      this.getSurveysSqlUsecase,
+      this.getQuestionAnswersUsecase,
+      this.insertUserAndAnswerUsecase,
+      ) : super(const SyncInitial()) {
+    // ===== Existing =====
+    on<AsyncDataEvent>(_onAsyncData);
+    on<InsertDataSqlEvent>(_onInsertSql);
+    on<DeleteDataEvent>(_onDeleteData);
+    on<GetDataEvent>(_onGetData);
+    on<UploadDataEvent>(_onUpload);
+    on<GetConferenceAsyncEvent>(_onGetConference);
+    on<GetSurveyAsyncEvent>(_onGetSurveys);
+    on<InputUserSqlEvent>((e, emit) async => userSqlModel = e.userSqlModel);
 
-      //////////////3
-      if (event is DeleteDataEvent) {
-        (await deleteDataSqlUsecase.execute()).fold(
-          (failure) {
-            emit(DataErrorState(failure: failure));
-          },
-          (data) async {
-            emit(DeleteDataState());
-          },
-        );
-      }
-      //////1
-      if (event is GetDataEvent) {
-        emit(DataLoadingState());
-        (await getUserAnswerSqlUsecase.execute()).fold(
-          (failure) {
-            emit(DataErrorState(failure: failure));
-          },
-          (data) async {
-            conferenceId = event.conferenceId;
-            emit(GetDataState(data));
-          },
-        );
-      }
-      /////////2
-      if (event is UploadDataEvent) {
-        (await synchronizeUsersAnswersUsecase.execute(event.userRequest)).fold(
-          (failure) {
-            emit(DataErrorState(failure: failure));
-          },
-          (data) async {
-            emit(UploadDataState());
-          },
-        );
-      }
-      //////////////////
-      if (event is GetConferenceAsyncEvent) {
-        emit(GetConferenceAsyncLoadingState());
-        (await getConferenceSqlUsecase.execute()).fold(
-          (failure) {
-            emit(GetConferenceAsyncErrorState(failure: failure));
-          },
-          (data) async {
-            emit(GetConferenceAsyncState(data));
-          },
-        );
-      }
-      if (event is GetQuestionAnswersEvent) {
-        emit(GetQuestionAnswersLoadingState());
-        (await getQuestionAnswersUsecase.execute(event.id)).fold(
-          (failure) {
-            emit(GetQuestionAnswersErrorState(failure: failure));
-          },
-          (data) async {
-            questions = data;
-            emit(GetQuestionAnswersState(data, event.surveyName));
-          },
-        );
-      }
-      if (event is GetSurveyAsyncEvent) {
-        emit(GetSurveyAsyncLoadingState());
-        (await getSurveysSqlUsecase.execute()).fold(
-          (failure) {
-            emit(GetSurveyAsyncErrorState(failure: failure));
-          },
-          (data) async {
-            emit(GetSurveyAsyncState(data));
-          },
-        );
-      }
-   else   if (event is CreateUserAnswerEvent) {
-
-        emit(GetSurveyAsyncLoadingState());
-        (await getSurveysSqlUsecase.execute()).fold(
-              (failure) {
-            emit(GetSurveyAsyncErrorState(failure: failure));
-          },
-              (data) async {
-            emit(GetSurveyAsyncState(data));
-          },
-        );
-      }
-      if (event is InputUserSqlEvent) {
-        userSqlModel = event.userSqlModel;
-      }
-    });
+    // ===== Survey flow =====
+    on<GetQuestionAnswersEvent>(_onGetQuestionAnswers);
+    on<SurveyPageChangedEvent>(_onSurveyPageChanged);
+    on<SurveySaveAnswerEvent>(_onSurveySaveAnswer);
+    on<SurveySubmitEvent>(_onSurveySubmit);
   }
-  void addUserAnswer(int key) {
-    if (answers.containsKey(key)) {
-      answers[key] = answer;
-    } else {
-      answers.putIfAbsent(key, () => answer);
+
+  Future<void> _onAsyncData(AsyncDataEvent event, Emitter<SyncState> emit) async {
+    (await getAllAsyncInfoUsecase.execute(conferenceId ?? -1)).fold(
+          (failure) => emit(DataErrorState(failure: failure)),
+          (data) => emit(AsyncConferenceState(data)),
+    );
+  }
+
+  Future<void> _onInsertSql(InsertDataSqlEvent event, Emitter<SyncState> emit) async {
+    (await addAsyncDataSqlUsecase.execute(event.asyncModel)).fold(
+          (failure) => emit(DataErrorState(failure: failure)),
+          (_) => emit(const InsertSucState()),
+    );
+  }
+
+  Future<void> _onDeleteData(DeleteDataEvent event, Emitter<SyncState> emit) async {
+    (await deleteDataSqlUsecase.execute()).fold(
+          (failure) => emit(DataErrorState(failure: failure)),
+          (_) => emit(const DeleteDataState()),
+    );
+  }
+
+  Future<void> _onGetData(GetDataEvent event, Emitter<SyncState> emit) async {
+    emit(const DataLoadingState());
+    (await getUserAnswerSqlUsecase.execute()).fold(
+          (failure) => emit(DataErrorState(failure: failure)),
+          (data) {
+        conferenceId = event.conferenceId;
+        emit(GetDataState(data));
+      },
+    );
+  }
+
+  Future<void> _onUpload(UploadDataEvent event, Emitter<SyncState> emit) async {
+    (await synchronizeUsersAnswersUsecase.execute(event.userRequest)).fold(
+          (failure) => emit(DataErrorState(failure: failure)),
+          (_) => emit(const UploadDataState()),
+    );
+  }
+
+  Future<void> _onGetConference(GetConferenceAsyncEvent event, Emitter<SyncState> emit) async {
+    emit(const GetConferenceAsyncLoadingState());
+    (await getConferenceSqlUsecase.execute()).fold(
+          (failure) => emit(GetConferenceAsyncErrorState(failure: failure)),
+          (data) => emit(GetConferenceAsyncState(data)),
+    );
+  }
+
+  Future<void> _onGetSurveys(GetSurveyAsyncEvent event, Emitter<SyncState> emit) async {
+    emit(const GetSurveyAsyncLoadingState());
+    (await getSurveysSqlUsecase.execute()).fold(
+          (failure) => emit(GetSurveyAsyncErrorState(failure: failure)),
+          (data) => emit(GetSurveyAsyncState(data)),
+    );
+  }
+
+  // ================= Survey flow =================
+
+  Future<void> _onGetQuestionAnswers(GetQuestionAnswersEvent event, Emitter<SyncState> emit) async {
+    emit(const SurveyLoadingState());
+
+    (await getQuestionAnswersUsecase.execute(event.id)).fold(
+          (failure) => emit(SurveyErrorState(failure: failure)),
+          (questions) {
+        emit(
+          SurveyReadyState(
+            surveyName: event.surveyName,
+            questions: questions,
+            answers: <int, List<AnswerUserModel>>{},
+            currentIndex: 0,
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _onSurveyPageChanged(SurveyPageChangedEvent event, Emitter<SyncState> emit) async {
+    final s = state;
+    if (s is! SurveyReadyState) return;
+    emit(s.copyWith(currentIndex: event.index));
+  }
+
+  Future<void> _onSurveySaveAnswer(SurveySaveAnswerEvent event, Emitter<SyncState> emit) async {
+
+    final s = state;
+    if (s is! SurveyReadyState) return;
+
+    final mapped = _mapToAnswers(event.question, event.rawValue);
+
+    final newAnswers = Map<int, List<AnswerUserModel>>.from(s.answers);
+    newAnswers[event.index] = mapped;
+
+    emit(s.copyWith(answers: newAnswers));
+  }
+
+  List<AnswerUserModel> _mapToAnswers(QuestionModel q, dynamic rawValue) {
+    if (rawValue == null) return [];
+
+    // String / num -> content
+    if (rawValue is String || rawValue is num) {
+      final answerId = q.answers.isNotEmpty ? q.answers[0].id : null;
+      return [AnswerUserModel(answerId, rawValue.toString())];
+    }
+
+    // AnswerModel (dropdown/radio)
+    if (rawValue is AnswerModel) {
+      return [AnswerUserModel(rawValue.id, rawValue.title)];
+    }
+
+    // List<AnswerModel> (checkbox)
+    if (rawValue is List<AnswerModel>) {
+      return rawValue.map((a) => AnswerUserModel(a.id, a.title)).toList();
+    }
+
+    // DateTime / bool / double (optional support)
+    if (rawValue is DateTime) {
+      final answerId = q.answers.isNotEmpty ? q.answers[0].id : null;
+      return [AnswerUserModel(answerId, rawValue.toIso8601String())];
+    }
+    if (rawValue is bool) {
+      final answerId = q.answers.isNotEmpty ? q.answers[0].id : null;
+      return [AnswerUserModel(answerId, rawValue ? "1" : "0")];
+    }
+
+    return [];
+  }
+
+  Future<void> _onSurveySubmit(SurveySubmitEvent event, Emitter<SyncState> emit) async {
+    final s = state;
+    if (s is! SurveyReadyState) return;
+
+    emit(SurveySubmittingState(s));
+
+    try {
+      // هنا استخدم s.answers للإدخال/الإرسال
+      // مثال طباعة:
+      s.answers.forEach((index, list) {
+        for (final a in list) {
+          debugPrint("QIndex=$index answer_id=${a.answer_id} content=${a.content}");
+        }
+      });
+
+      // TODO: استدعاء usecase الحقيقي
+      // await insertUserAndAnswerUsecase.execute(...)
+
+      emit(const SurveySubmitSuccessState());
+    } catch (e) {
+      emit(SurveySubmitErrorState(failure: Failure(0, e.toString())));
     }
   }
-
 }

@@ -67,7 +67,7 @@ class ShowConferencePage extends StatelessWidget {
                       textAlign: TextAlign.start,
                       style: TextStyle(
                         color: ColorManager.primary,
-                        fontSize: 40,
+                        fontSize: 35,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

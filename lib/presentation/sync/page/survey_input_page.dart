@@ -1,68 +1,87 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:formify/domain/models/models.dart';
-import 'package:formify/presentation/question/page/view_Question.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
 import 'package:formify/presentation/sync/widget/answer_card_widget.dart';
-
+import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
 class SurveyInputPage extends StatefulWidget {
   const SurveyInputPage({super.key});
 
   @override
-  State<SurveyInputPage> createState() => _SurveyPageState();
+  State<SurveyInputPage> createState() => _SurveyInputPageState();
 }
 
-class _SurveyPageState extends State<SurveyInputPage> {
+class _SurveyInputPageState extends State<SurveyInputPage> {
   final _pageController = PageController();
-  int _index = 0;
+  List<GlobalKey<FormBuilderState>> _formKeys = [];
+
   @override
   void dispose() {
     _pageController.dispose();
     super.dispose();
   }
 
-  void goNext(int length,int index) {
-    BlocProvider.of<SyncBloc>(context).answer=BlocProvider.of<SyncBloc>(context).answers[index+1]??[];
-    if (_index < length - 1) {
-      _pageController.nextPage(
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeOut,
-      );
-
-    } else {
-      _submit();
-    }
-    BlocProvider.of<SyncBloc>(context).addUserAnswer(index);
+  void _ensureKeys(int length) {
+    if (_formKeys.length == length) return;
+    _formKeys = List.generate(length, (_) => GlobalKey<FormBuilderState>());
   }
 
-  void goPrev(int index) {
-    BlocProvider.of<SyncBloc>(context).answer=BlocProvider.of<SyncBloc>(context).answers[index+1]??[];
-
-    if (_index > 0) {
-      _pageController.previousPage(
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeOut,
-      );
-    }
-    BlocProvider.of<SyncBloc>(context).addUserAnswer( index);
-
+  dynamic _readRawValue(int index, SurveyReadyState s) {
+    final formState = _formKeys[index].currentState;
+    if (formState == null) return null;
+    final q = s.questions[index];
+    return formState.value["q_${q.order}"];
   }
 
-  void _submit() {
-    BlocProvider.of<SyncBloc>(context).answers.forEach((key, value) {
-      // إذا كان value هو قائمة من AnswerUserModel
-      value.forEach((answer) {
-        print("Key: $key, Answer ID: ${answer.answer_id}, Answer Title: ${answer.content}");
-      });
-    });
+  bool _saveAndValidate(int index) {
+    final fs = _formKeys[index].currentState;
+    if (fs == null) return true;
+    return fs.saveAndValidate();
+  }
 
+  void _saveOnly(int index) {
+    _formKeys[index].currentState?.save();
+  }
 
-    // هنا ترسل البيانات للسيرفر أو تخزنها محلياً
-    // debugPrint("SUBMIT: $data");
-    // ScaffoldMessenger.of(
-    //   context,
-    // ).showSnackBar(const SnackBar(content: Text("تم إرسال الإجابات")));
+  void _sendAnswerToBloc(int index, SurveyReadyState s) {
+    final q = s.questions[index];
+    final raw = _readRawValue(index, s);
+    context.read<SyncBloc>().add(
+      SurveySaveAnswerEvent(index: index, question: q, rawValue: raw),
+    );
+  }
+
+  void _next(SurveyReadyState s, int index) {
+    final ok = _saveAndValidate(index);
+    if (!ok) return;
+
+    _sendAnswerToBloc(index, s);
+
+    final isLast = index == s.questions.length - 1;
+    if (isLast) {
+      context.read<SyncBloc>().add(const SurveySubmitEvent());
+      return;
+    }
+
+    _pageController.nextPage(
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOut,
+    );
+    context.read<SyncBloc>().add(SurveyPageChangedEvent(index + 1));
+  }
+
+  void _prev(SurveyReadyState s, int index) {
+    _saveOnly(index);
+    _sendAnswerToBloc(index, s);
+
+    if (index <= 0) return;
+
+    _pageController.previousPage(
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOut,
+    );
+    context.read<SyncBloc>().add(SurveyPageChangedEvent(index - 1));
   }
 
   @override
@@ -72,49 +91,57 @@ class _SurveyPageState extends State<SurveyInputPage> {
       child: Scaffold(
         backgroundColor: const Color(0xFFF3F7FF),
         body: SafeArea(
-          child: BlocBuilder<SyncBloc, SyncState>(
+          child: BlocConsumer<SyncBloc, SyncState>(
+            listener: (context, state) {
+              if (state is SurveySubmitSuccessState) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("تم إرسال الإجابات بنجاح")),
+                );
+              }
+              if (state is SurveySubmitErrorState) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text("فشل الإرسال: ${state.failure}")),
+                );
+              }
+            },
             builder: (context, state) {
-              if (state is GetQuestionAnswersState) {
-                List<QuestionModel> questionModel = state.questions;
-                final total = questionModel.length;
-                final progress = (total == 0) ? 0.0 : (_index + 1) / total;
+              if (state is SurveyLoadingState || state is SurveySubmittingState) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (state is SurveyErrorState) {
+                return Center(child: Text("Error: ${state.failure}"));
+              }
+
+              if (state is SurveyReadyState) {
+                final total = state.questions.length;
+                _ensureKeys(total);
+
+                final idx = state.currentIndex;
+                final progress = total == 0 ? 0.0 : (idx + 1) / total;
+
                 return Column(
                   children: [
-                    // Header
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 18,
-                        vertical: 10,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
                       child: Row(
                         children: [
                           TextButton.icon(
                             onPressed: () => Navigator.pop(context),
-                            icon: const Icon(
-                              Icons.arrow_back_ios_new,
-                              size: 16,
-                            ),
+                            icon: const Icon(Icons.arrow_back_ios_new, size: 16),
                             label: const Text("العودة"),
                           ),
-
                           Expanded(
                             child: Text(
-                              textAlign: TextAlign.end,
                               state.surveyName,
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
+                              textAlign: TextAlign.end,
+                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                             ),
                           ),
                         ],
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 18,
-                        vertical: 18,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
                       child: Column(
                         children: [
                           ClipRRect(
@@ -127,51 +154,34 @@ class _SurveyPageState extends State<SurveyInputPage> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            "السؤال ${_index + 1} من $total",
-                            style: TextStyle(
-                              color: Colors.black.withOpacity(0.6),
-                            ),
+                            "السؤال ${idx + 1} من $total",
+                            style: TextStyle(color: Colors.black.withOpacity(0.6)),
                           ),
                         ],
                       ),
                     ),
-
                     const SizedBox(height: 14),
-
-                    // Pages
                     Expanded(
                       child: PageView.builder(
                         controller: _pageController,
-                        physics:
-                            const NeverScrollableScrollPhysics(), // تنقل بالأزرار فقط
+                        physics: const NeverScrollableScrollPhysics(),
                         itemCount: total,
-                        onPageChanged: (i) => setState(() => _index = i),
+                        onPageChanged: (i) => context.read<SyncBloc>().add(SurveyPageChangedEvent(i)),
                         itemBuilder: (context, i) {
-                          final q = questionModel[i];
-                          // if ((BlocProvider.of<SyncBloc>(
-                          //           context,
-                          //         ).userSqlModel !=
-                          //         null) &&
-                          //     (BlocProvider.of<SyncBloc>(
-                          //       context,
-                          //     ).userSqlModel!.answerModel.isNotEmpty)) {
-                          //   answer.text = BlocProvider.of<SyncBloc>(
-                          //     context,
-                          //   ).userSqlModel!.answerModel[i].content;
-                          // }
+                          final q = state.questions[i];
+                          final savedAnswer = state.answers[i]?.first.content;
 
                           return Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 18,
-                              vertical: 12,
-                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
                             child: QuestionCard(
                               number: i + 1,
                               total: total,
                               questionModel: q,
                               isLast: i == total - 1,
-                              onPrev:() =>  goPrev(i),
-                              onNext: () => goNext(questionModel.length,i),
+                              formKey: _formKeys[i],
+                              initialValue: savedAnswer, // passing saved answer as initial value
+                              onPrev: () => _prev(state, i),
+                              onNext: () => _next(state, i),
                             ),
                           );
                         },
@@ -180,7 +190,8 @@ class _SurveyPageState extends State<SurveyInputPage> {
                   ],
                 );
               }
-              return SizedBox();
+
+              return const SizedBox.shrink();
             },
           ),
         ),

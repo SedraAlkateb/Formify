@@ -13,7 +13,7 @@ enum QuestionType {
  // searchableList,
   multipleChoice,
   checkbox,
-  chips,
+  //chips,
   autocomplete,
 
   // Date & Time
@@ -52,8 +52,8 @@ extension QuestionTypeX on QuestionType {
         return "Multiple Choice";
       case QuestionType.checkbox:
         return "Checkbox";
-      case QuestionType.chips:
-        return "Choice Chips";
+      // case QuestionType.chips:
+      //   return "Choice Chips";
       case QuestionType.autocomplete:
         return "Autocomplete";
 
@@ -96,8 +96,8 @@ extension QuestionTypeX on QuestionType {
         return "Multiple Choice";
       case QuestionType.checkbox:
         return "Checkbox";
-      case QuestionType.chips:
-        return "Choice Chips";
+      // case QuestionType.chips:
+      //   return "Choice Chips";
       case QuestionType.autocomplete:
         return "Autocomplete";
 
@@ -140,8 +140,8 @@ extension QuestionTypeX on QuestionType {
         return Icons.radio_button_checked;
       case QuestionType.checkbox:
         return Icons.check_box_outlined;
-      case QuestionType.chips:
-        return Icons.label_outline;
+      // case QuestionType.chips:
+      //   return Icons.label_outline;
       case QuestionType.autocomplete:
         return Icons.auto_awesome;
       case QuestionType.date:

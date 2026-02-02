@@ -57,27 +57,30 @@ class _ViewAllSurveyPageState extends State<ViewAllSurveyPage> {
             );
           } else if (state is GetAllSurveyState) {
             List<MainSurveyModel> surveys = state.surveys;
-            return ListView.separated(
-              shrinkWrap: true,
-              itemCount: surveys.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 10),
-              itemBuilder: (context, index) {
-                return InkWell(
-                  onTap: () {
-                    BlocProvider.of<ThemeBloc>(context).add(
-                      ChangeThemeColorEvent(
-                        Color(int.parse(surveys[index].color)),
-                        surveys[index].color,
-                      ),
-                    );
-                    Navigator.pushNamed(context, Routes.viewSurvey);
-                    BlocProvider.of<SurveyBloc>(
-                      context,
-                    ).add(ViewSurveyByIdEvent(surveys[index].id));
-                  },
-                  child: surveyListWidget(surveys[index]),
-                );
-              },
+            return Padding(
+              padding: const EdgeInsets.all(12),
+              child: ListView.separated(
+                shrinkWrap: true,
+                itemCount: surveys.length,
+                separatorBuilder: (context, index) => const SizedBox(height: 10),
+                itemBuilder: (context, index) {
+                  return InkWell(
+                    onTap: () {
+                      BlocProvider.of<ThemeBloc>(context).add(
+                        ChangeThemeColorEvent(
+                          Color(int.parse(surveys[index].color)),
+                          surveys[index].color,
+                        ),
+                      );
+                      Navigator.pushNamed(context, Routes.viewSurvey);
+                      BlocProvider.of<SurveyBloc>(
+                        context,
+                      ).add(ViewSurveyByIdEvent(surveys[index].id));
+                    },
+                    child: surveyListWidget(surveys[index]),
+                  );
+                },
+              ),
             );
           } else
             return SizedBox();

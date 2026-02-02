@@ -38,7 +38,7 @@ class ActiveConferenceBloc
       }
       if (event is GetActiveConferenceByIdEvent) {
         emit(GetActiveConferenceByIdLoadingState());
-        (await getConferenceByIdUsecase.execute(event.conferenceModel.id)).fold(
+        (await getConferenceByIdUsecase.execute(event.conferenceModel)).fold(
               (failure) {
             emit(GetActiveConferenceByIdErrorState(failure: failure));
           },

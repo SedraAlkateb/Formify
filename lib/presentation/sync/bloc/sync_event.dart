@@ -1,68 +1,101 @@
 part of 'sync_bloc.dart';
 
 @immutable
-sealed class SyncEvent extends Equatable {}
-
-class AsyncDataEvent extends SyncEvent {
+sealed class SyncEvent extends Equatable {
+  const SyncEvent();
   @override
   List<Object?> get props => [];
 }
 
-class InsertDataSqlEvent extends SyncEvent {
+// ===== Existing app events =====
+final class AsyncDataEvent extends SyncEvent {
+  const AsyncDataEvent();
+}
+
+final class InsertDataSqlEvent extends SyncEvent {
   final GetAsyncModel asyncModel;
-
-  InsertDataSqlEvent(this.asyncModel);
+  const InsertDataSqlEvent(this.asyncModel);
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [asyncModel];
 }
-class InputUserSqlEvent extends SyncEvent {
-  final UserSqlModel userSqlModel;
 
-  InputUserSqlEvent(this.userSqlModel);
+final class InputUserSqlEvent extends SyncEvent {
+  final UserSqlModel userSqlModel;
+  const InputUserSqlEvent(this.userSqlModel);
 
   @override
   List<Object?> get props => [userSqlModel];
 }
-class DeleteDataEvent extends SyncEvent {
-  DeleteDataEvent();
-  @override
-  List<Object?> get props => [];
+
+final class DeleteDataEvent extends SyncEvent {
+  const DeleteDataEvent();
 }
 
-class UploadDataEvent extends SyncEvent {
+final class UploadDataEvent extends SyncEvent {
   final AllUserModel userRequest;
-  UploadDataEvent(this.userRequest);
+  const UploadDataEvent(this.userRequest);
+
   @override
   List<Object?> get props => [userRequest];
 }
 
-class GetDataEvent extends SyncEvent {
+final class GetDataEvent extends SyncEvent {
   final int conferenceId;
-  GetDataEvent(this.conferenceId);
+  const GetDataEvent(this.conferenceId);
+
   @override
   List<Object?> get props => [conferenceId];
 }
 
-class GetConferenceAsyncEvent extends SyncEvent {
-  GetConferenceAsyncEvent();
-  @override
-  List<Object?> get props => [];
+final class GetConferenceAsyncEvent extends SyncEvent {
+  const GetConferenceAsyncEvent();
 }
-class GetQuestionAnswersEvent extends SyncEvent {
+
+final class GetSurveyAsyncEvent extends SyncEvent {
+  const GetSurveyAsyncEvent();
+}
+
+final class CreateUserAnswerEvent extends SyncEvent {
+  const CreateUserAnswerEvent();
+}
+
+// ===== Survey Flow events (professional) =====
+/// fetch questions from server/db
+final class GetQuestionAnswersEvent extends SyncEvent {
   final int id;
   final String surveyName;
-  GetQuestionAnswersEvent(this.id,this.surveyName);
+  const GetQuestionAnswersEvent(this.id, this.surveyName);
+
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [id, surveyName];
 }
-class GetSurveyAsyncEvent extends SyncEvent {
-  GetSurveyAsyncEvent();
+
+/// UI tells bloc that page changed (for header/progress only)
+final class SurveyPageChangedEvent extends SyncEvent {
+  final int index;
+  const SurveyPageChangedEvent(this.index);
+
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [index];
 }
-class CreateUserAnswerEvent extends SyncEvent {
-  CreateUserAnswerEvent();
+
+/// UI sends raw value of current page after save/saveAndValidate
+final class SurveySaveAnswerEvent extends SyncEvent {
+  final int index; // question index in list
+  final QuestionModel question;
+  final dynamic rawValue;
+  const SurveySaveAnswerEvent({
+    required this.index,
+    required this.question,
+    required this.rawValue,
+  });
+
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [index, rawValue];
+}
+
+/// submit survey
+final class SurveySubmitEvent extends SyncEvent {
+  const SurveySubmitEvent();
 }
