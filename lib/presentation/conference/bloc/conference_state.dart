@@ -1,7 +1,7 @@
 part of 'conference_bloc.dart';
 
 @immutable
-sealed class ConferenceState extends Equatable{}
+abstract class ConferenceState extends Equatable{}
 
 final class ConferenceInitial extends ConferenceState {
   @override

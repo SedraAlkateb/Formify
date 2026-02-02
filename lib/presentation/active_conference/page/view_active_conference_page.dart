@@ -42,7 +42,7 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
               icon: Icon(Icons.arrow_back_ios_new, color: ColorManager.black),
             ),
             title: Text(
-              "ActiveConference Details",
+              "Conference Participants",
               style: TextStyle(color: ColorManager.black),
             ),
             backgroundColor: ColorManager.white,
@@ -270,26 +270,10 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                               },
                               child: Row(
                                 children: [
-                                  Card(
-                                    margin: const EdgeInsets.all(4),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    elevation: 4,
-                                    color: Color(0xED6ED9F1),
-
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Icon(
-                                        Icons.add,
-                                        color: Colors.white,
-                                        size: 30,
-                                      ),
-                                    ),
-                                  ),
+                                  Icon(Icons.sticky_note_2_outlined,size: 30,),
                                   SizedBox(width: 8),
                                   Text(
-                                    "Add New Survey",
+                                    "Surveys",
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
@@ -359,6 +343,103 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                                 );
                               },
                             )
+                          : emptyFullScreen(context),
+                      SizedBox(height: 4),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            InkWell(
+                              onTap: () {
+                                BlocProvider.of<ActiveConferenceBloc>(context).add(
+                                    GetAllSurveyByActiveConferenceEvent(conference.id)
+                                );
+
+                                Navigator.pushNamed(
+                                  context,
+                                  Routes.conferenceSurveyById,
+                                  arguments: {
+                                    "conferenceId": conference.id,
+
+                                  },
+                                );
+                              },
+                              child: Row(
+                                children: [
+                                  Icon(Icons.group_outlined,size: 30,),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    "Participants",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            // Row(
+                            //   children: [
+                            //     Icon(Icons.description_outlined),
+                            //     SizedBox(width: 8),
+                            //     Text(
+                            //       "Surveys",
+                            //       style: TextStyle(
+                            //         fontSize: 18,
+                            //         fontWeight: FontWeight.bold,
+                            //         color: Colors.black87,
+                            //       ),
+                            //     ),
+                            //   ],
+                            // ),
+                            Row(
+                              children: [
+                                Text(conference.surveys.length.toString()),
+                                Text(" Participants "),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      conference.surveys.isNotEmpty
+                          ? ListView.builder(
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: conference
+                            .surveys
+                            .length, // Number of surveys
+                        itemBuilder: (context, index) {
+                          return InkWell(
+                            onTap: () {
+                              Navigator.pushNamed(
+
+                                context,
+                                Routes.viewSurvey,
+                              );
+                              BlocProvider.of<ThemeBloc>(context).add(
+                                ChangeThemeColorEvent(
+                                  Color(int.parse(conference
+                                      .surveys[index].color)),
+                                  conference
+                                      .surveys[index].color,
+                                ),
+                              );
+                              BlocProvider.of<SurveyBloc>(context).add(
+                                ViewSurveyByIdEvent(
+                                  conference.surveys[index].id,
+                                ),
+                              );
+
+                            },
+                            child: surveyListWidget(
+                              conference.surveys[index].toDomain(),
+                            ),
+                          );
+                        },
+                      )
                           : emptyFullScreen(context),
                     ],
                   ),

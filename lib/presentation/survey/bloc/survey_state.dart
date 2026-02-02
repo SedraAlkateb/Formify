@@ -1,7 +1,7 @@
 part of 'survey_bloc.dart';
 
 @immutable
-sealed class SurveyState extends Equatable{}
+abstract class SurveyState extends Equatable{}
 
 final class SurveyInitial extends SurveyState {
   @override
