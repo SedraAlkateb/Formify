@@ -33,7 +33,7 @@ class RepositroySqlImp extends RepositorySql {
   }
 
   @override
-  Future<Either<Failure, AllUserModel>> getDataSql() async {
+  Future<Either<Failure, List<UserSqlModel>>> getDataSql() async {
     try {
       final response = await _databaseHelper.getDataSql();
       return Right(response);

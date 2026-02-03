@@ -101,7 +101,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   }
 
   Future<void> _onUpload(UploadDataEvent event, Emitter<SyncState> emit) async {
-    (await synchronizeUsersAnswersUsecase.execute(event.userRequest)).fold(
+    (await synchronizeUsersAnswersUsecase.execute(AllUserModel(event.userRequest))).fold(
       (failure) => emit(DataErrorState(failure: failure)),
       (_) => emit(const UploadDataState()),
     );

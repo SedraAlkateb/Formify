@@ -33,7 +33,7 @@ final class DeleteDataEvent extends SyncEvent {
 }
 
 final class UploadDataEvent extends SyncEvent {
-  final AllUserModel userRequest;
+  final List<UserSqlModel> userRequest;
   const UploadDataEvent(this.userRequest);
 
   @override

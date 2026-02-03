@@ -6,13 +6,13 @@ import 'package:sqflite/sqflite.dart';
 abstract class AppSqlApiAbs {
   Future<String> asyncData(GetAsyncModel asyncData);
   Future<void> deleteData();
-  Future<AllUserModel> getDataSql();
+  Future<List<UserSqlModel>> getDataSql();
   Future<GetAllConferenceModel> getConference();
   Future<List<MainSurveyModel>> getSurveys();
   // Future<List<AnswerModel>> getAnswers();
   // Future<List<QuestionModel>> getQuestionAnswers();
   Future<List<QuestionModel>> getSurveyQuestionsWithAnswers(int surveyId);
-  Future<void>  insertUserWithAnswer(UserSqlModel user);
+  Future<void> insertUserWithAnswer(UserSqlModel user);
   //Future<List<AsyncQuestionModel>> getQuestions();
 }
 
@@ -164,28 +164,114 @@ class AppSqlApi extends AppSqlApiAbs {
     await batch.commit(noResult: true);
   }
 
+  // Future<List<UserSqlModel>> getDataSql() async {
+  //   final db = await databaseHelper.database;
+  //
+  //   try {
+  //     final List<Map<String, dynamic>> maps = await db.rawQuery('''
+  //     SELECT users.*, GROUP_CONCAT(users_answers.answer_id) AS answer_ids,
+  //            GROUP_CONCAT(users_answers.content) AS answer_contents
+  //     FROM users
+  //     LEFT JOIN users_answers ON users.id = users_answers.user_id
+  //     GROUP BY users.id;
+  //   ''');
+  //
+  //     return List.generate(maps.length, (i) {
+  //       var map = maps[i];
+  //
+  //       // تقسيم الـ 'answer_ids' و 'answer_contents' إلى قوائم
+  //       List<String> answerIds = map['answer_ids']?.split(',') ?? [];
+  //       List<String> answerContents = map['answer_contents']?.split(',') ?? [];
+  //
+  //       // تحويل الإجابات إلى قائمة من AnswerUserModel
+  //       List<AnswerUserModel> answers = [];
+  //       for (int i = 0; i < answerIds.length; i++) {
+  //         answers.add(AnswerUserModel(
+  //          int.parse(answerIds[i]),
+  //       answerContents[i],
+  //         ));
+  //       }
+  //
+  //       // إعادة بناء كائن المستخدم مع الإجابات
+  //       return UserSqlModel(
+  //         fullName: map['fullname'],
+  //         email: map['email'],
+  //         phone: map['phone'],
+  //         address: map['address'],
+  //         answerModel: answers,
+  //       );
+  //     });
+  //   } catch (e) {
+  //     throw Exception("حدث خطأ أثناء جلب المستخدمين والإجابات: $e");
+  //   }
+  // }
   @override
-  Future<AllUserModel> getDataSql() async {
+  Future<List<UserSqlModel>> getDataSql() async {
     final db = await databaseHelper.database;
-    try {
-      final List<Map<String, dynamic>> maps = await db.rawQuery('''
- SELECT users.*, users_answers.*
-FROM users
-JOIN users_answers ON users.id = users_answers.user_id;
-    ''', []);
-      if (maps.isNotEmpty) {
-        return AllUserModel(
-          List.generate(maps.length, (i) {
-            return UserSqlModel.fromMap(maps[i]);
-          }),
-        );
-      } else {
-        return AllUserModel([]);
-      }
-    } catch (e) {
-      throw Exception("حدث خطأ أثناء جلب المستشفيات: $e");
+
+    final maps = await db.rawQuery('''
+    SELECT
+      users.id            AS user_id,
+      users.fullname      AS fullname,
+      users.email         AS email,
+      users.phone         AS phone,
+      users.address       AS address,
+      users_answers.answer_id AS answer_id,
+      users_answers.content   AS content
+    FROM users
+    JOIN users_answers ON users.id = users_answers.user_id;
+  ''');
+
+    final Map<int, UserSqlModel> usersMap = {};
+
+    for (final row in maps) {
+      final int userId = row['user_id'] as int;
+
+      usersMap.putIfAbsent(
+        userId,
+            () => UserSqlModel(
+          fullName: row['fullname'] as String,
+          email: row['email'] as String,
+          phone: row['phone'] as String,
+          address: row['address'] as String,
+          answerModel: <AnswerUserModel>[],
+        ),
+      );
+
+      usersMap[userId]!.answerModel.add(
+        AnswerUserModel(
+          row['answer_id'] as int,
+          row['content'] as String,
+        ),
+      );
     }
+
+    return usersMap.values.toList();
   }
+
+  //  @override
+  //   Future<List<UserSqlModel>> getDataSql() async {
+  //     final db = await databaseHelper.database;
+  //     try {
+  //       final List<Map<String, dynamic>> maps = await db.rawQuery('''
+  //  SELECT users.*, users_answers.*
+  // FROM users
+  // JOIN users_answers ON users.id = users_answers.user_id;
+  //     ''', []);
+  //       if (maps.isNotEmpty) {
+  //
+  //         // return AllUserModel(
+  //         //   List.generate(maps.length, (i) {
+  //         //     return UserSqlModel.fromMap(maps[i]);
+  //         //   }),
+  //         // );
+  //       } else {
+  //         return [];
+  //       }
+  //     } catch (e) {
+  //       throw Exception("حدث خطأ أثناء جلب المستشفيات: $e");
+  //     }
+  //   }
 
   @override
   Future<GetAllConferenceModel> getConference() async {
@@ -208,7 +294,7 @@ JOIN users_answers ON users.id = users_answers.user_id;
   }
 
   @override
-  Future<void>  insertUserWithAnswer(UserSqlModel user) async {
+  Future<void> insertUserWithAnswer(UserSqlModel user) async {
     final db = await databaseHelper.database;
     await db.transaction((txn) async {
       int userId = await txn.insert('users', user.toJson());

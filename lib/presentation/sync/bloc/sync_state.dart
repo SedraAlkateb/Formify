@@ -45,7 +45,7 @@ final class UploadDataState extends SyncState {
 }
 
 final class GetDataState extends SyncState {
-  final AllUserModel users;
+  final List<UserSqlModel> users;
   const GetDataState(this.users);
 
   @override
