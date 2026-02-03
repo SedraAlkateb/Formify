@@ -7,8 +7,8 @@ import 'package:formify/domain/repostitory/repository_sql.dart';
 class InsertUserAndAnswerUsecase extends Equatable {
   final RepositorySql _repository;
   const InsertUserAndAnswerUsecase(this._repository);
-  Future<Either<Failure, String>> execute(GetAsyncModel asyncData) async {
-    return await _repository.asyncData(asyncData);
+  Future<Either<Failure, void>> execute(UserSqlModel user) async {
+    return await _repository.insertUserWithAnswer(user);
   }
 
   @override

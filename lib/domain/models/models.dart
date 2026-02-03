@@ -506,7 +506,7 @@ class UserSqlModel {
       'email': email,
       'phone': phone,
       'address': address,
-      'answers': answerModel.map((user) => user.toJson()).toList(),
+     // 'answers': answerModel.map((user) => user.toJsonSql(userId)).toList(),
     };
   }
 

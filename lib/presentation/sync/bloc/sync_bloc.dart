@@ -32,16 +32,16 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   int? conferenceId;
 
   SyncBloc(
-      this.getAllAsyncInfoUsecase,
-      this.addAsyncDataSqlUsecase,
-      this.getUserAnswerSqlUsecase,
-      this.deleteDataSqlUsecase,
-      this.synchronizeUsersAnswersUsecase,
-      this.getConferenceSqlUsecase,
-      this.getSurveysSqlUsecase,
-      this.getQuestionAnswersUsecase,
-      this.insertUserAndAnswerUsecase,
-      ) : super(const SyncInitial()) {
+    this.getAllAsyncInfoUsecase,
+    this.addAsyncDataSqlUsecase,
+    this.getUserAnswerSqlUsecase,
+    this.deleteDataSqlUsecase,
+    this.synchronizeUsersAnswersUsecase,
+    this.getConferenceSqlUsecase,
+    this.getSurveysSqlUsecase,
+    this.getQuestionAnswersUsecase,
+    this.insertUserAndAnswerUsecase,
+  ) : super(const SyncInitial()) {
     // ===== Existing =====
     on<AsyncDataEvent>(_onAsyncData);
     on<InsertDataSqlEvent>(_onInsertSql);
@@ -59,32 +59,41 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     on<SurveySubmitEvent>(_onSurveySubmit);
   }
 
-  Future<void> _onAsyncData(AsyncDataEvent event, Emitter<SyncState> emit) async {
+  Future<void> _onAsyncData(
+    AsyncDataEvent event,
+    Emitter<SyncState> emit,
+  ) async {
     (await getAllAsyncInfoUsecase.execute(conferenceId ?? -1)).fold(
-          (failure) => emit(DataErrorState(failure: failure)),
-          (data) => emit(AsyncConferenceState(data)),
+      (failure) => emit(DataErrorState(failure: failure)),
+      (data) => emit(AsyncConferenceState(data)),
     );
   }
 
-  Future<void> _onInsertSql(InsertDataSqlEvent event, Emitter<SyncState> emit) async {
+  Future<void> _onInsertSql(
+    InsertDataSqlEvent event,
+    Emitter<SyncState> emit,
+  ) async {
     (await addAsyncDataSqlUsecase.execute(event.asyncModel)).fold(
-          (failure) => emit(DataErrorState(failure: failure)),
-          (_) => emit(const InsertSucState()),
+      (failure) => emit(DataErrorState(failure: failure)),
+      (_) => emit(const InsertSucState()),
     );
   }
 
-  Future<void> _onDeleteData(DeleteDataEvent event, Emitter<SyncState> emit) async {
+  Future<void> _onDeleteData(
+    DeleteDataEvent event,
+    Emitter<SyncState> emit,
+  ) async {
     (await deleteDataSqlUsecase.execute()).fold(
-          (failure) => emit(DataErrorState(failure: failure)),
-          (_) => emit(const DeleteDataState()),
+      (failure) => emit(DataErrorState(failure: failure)),
+      (_) => emit(const DeleteDataState()),
     );
   }
 
   Future<void> _onGetData(GetDataEvent event, Emitter<SyncState> emit) async {
     emit(const DataLoadingState());
     (await getUserAnswerSqlUsecase.execute()).fold(
-          (failure) => emit(DataErrorState(failure: failure)),
-          (data) {
+      (failure) => emit(DataErrorState(failure: failure)),
+      (data) {
         conferenceId = event.conferenceId;
         emit(GetDataState(data));
       },
@@ -93,35 +102,41 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
 
   Future<void> _onUpload(UploadDataEvent event, Emitter<SyncState> emit) async {
     (await synchronizeUsersAnswersUsecase.execute(event.userRequest)).fold(
-          (failure) => emit(DataErrorState(failure: failure)),
-          (_) => emit(const UploadDataState()),
+      (failure) => emit(DataErrorState(failure: failure)),
+      (_) => emit(const UploadDataState()),
     );
   }
 
-  Future<void> _onGetConference(GetConferenceAsyncEvent event, Emitter<SyncState> emit) async {
+  Future<void> _onGetConference(
+    GetConferenceAsyncEvent event,
+    Emitter<SyncState> emit,
+  ) async {
     emit(const GetConferenceAsyncLoadingState());
     (await getConferenceSqlUsecase.execute()).fold(
-          (failure) => emit(GetConferenceAsyncErrorState(failure: failure)),
-          (data) => emit(GetConferenceAsyncState(data)),
+      (failure) => emit(GetConferenceAsyncErrorState(failure: failure)),
+      (data) => emit(GetConferenceAsyncState(data)),
     );
   }
 
-  Future<void> _onGetSurveys(GetSurveyAsyncEvent event, Emitter<SyncState> emit) async {
+  Future<void> _onGetSurveys(
+    GetSurveyAsyncEvent event,
+    Emitter<SyncState> emit,
+  ) async {
     emit(const GetSurveyAsyncLoadingState());
     (await getSurveysSqlUsecase.execute()).fold(
-          (failure) => emit(GetSurveyAsyncErrorState(failure: failure)),
-          (data) => emit(GetSurveyAsyncState(data)),
+      (failure) => emit(GetSurveyAsyncErrorState(failure: failure)),
+      (data) => emit(GetSurveyAsyncState(data)),
     );
   }
-
-  // ================= Survey flow =================
-
-  Future<void> _onGetQuestionAnswers(GetQuestionAnswersEvent event, Emitter<SyncState> emit) async {
+  Future<void> _onGetQuestionAnswers(
+    GetQuestionAnswersEvent event,
+    Emitter<SyncState> emit,
+  ) async {
     emit(const SurveyLoadingState());
 
     (await getQuestionAnswersUsecase.execute(event.id)).fold(
-          (failure) => emit(SurveyErrorState(failure: failure)),
-          (questions) {
+      (failure) => emit(SurveyErrorState(failure: failure)),
+      (questions) {
         emit(
           SurveyReadyState(
             surveyName: event.surveyName,
@@ -134,14 +149,19 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     );
   }
 
-  Future<void> _onSurveyPageChanged(SurveyPageChangedEvent event, Emitter<SyncState> emit) async {
+  Future<void> _onSurveyPageChanged(
+    SurveyPageChangedEvent event,
+    Emitter<SyncState> emit,
+  ) async {
     final s = state;
     if (s is! SurveyReadyState) return;
     emit(s.copyWith(currentIndex: event.index));
   }
 
-  Future<void> _onSurveySaveAnswer(SurveySaveAnswerEvent event, Emitter<SyncState> emit) async {
-
+  Future<void> _onSurveySaveAnswer(
+    SurveySaveAnswerEvent event,
+    Emitter<SyncState> emit,
+  ) async {
     final s = state;
     if (s is! SurveyReadyState) return;
 
@@ -185,7 +205,10 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     return [];
   }
 
-  Future<void> _onSurveySubmit(SurveySubmitEvent event, Emitter<SyncState> emit) async {
+  Future<void> _onSurveySubmit(
+    SurveySubmitEvent event,
+    Emitter<SyncState> emit,
+  ) async {
     final s = state;
     if (s is! SurveyReadyState) return;
 
@@ -196,12 +219,17 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
       // مثال طباعة:
       s.answers.forEach((index, list) {
         for (final a in list) {
-          debugPrint("QIndex=$index answer_id=${a.answer_id} content=${a.content}");
+          userSqlModel?.answerModel.add(a);
         }
       });
+      emit(const InsertUserLoadingState());
 
-      // TODO: استدعاء usecase الحقيقي
-      // await insertUserAndAnswerUsecase.execute(...)
+      (await insertUserAndAnswerUsecase.execute(userSqlModel!)).fold(
+        (failure) => emit(InsertUserErrorState(failure: failure)),
+        (questions) {
+          emit(InsertUserSuccessState());
+        },
+      );
 
       emit(const SurveySubmitSuccessState());
     } catch (e) {
