@@ -5,7 +5,7 @@ abstract class ActiveConferenceState extends Equatable{}
 
 final class ActiveConferenceInitial extends ActiveConferenceState {
   @override
-  List<Object?> get props => throw [];
+  List<Object?> get props =>  [];
 }
 ///////////////////////////AllActiveConference////////////////////
 final class GetAllActiveConferenceState extends ActiveConferenceState {
@@ -44,6 +44,28 @@ final class GetActiveConferenceByIdErrorState extends ActiveConferenceState {
   List<Object?> get props =>[failure];
 }
 final class GetActiveConferenceByIdLoadingState extends ActiveConferenceState {
+  @override
+  List<Object?> get props => [];
+}
+
+
+///////////////////////////AllUserActiveConference////////////////////
+final class GetAllUserActiveConferenceState extends ActiveConferenceState {
+  final List<UserModel> users;
+  GetAllUserActiveConferenceState(this.users);
+  List<Object?> get props => [users];
+}
+final class GetAllUserActiveEmptyConferenceState extends ActiveConferenceState {
+
+  List<Object?> get props => [];
+}
+final class GetAllUserActiveConferenceErrorState extends ActiveConferenceState {
+  final Failure failure;
+  GetAllUserActiveConferenceErrorState({required this.failure});
+  @override
+  List<Object?> get props =>[failure];
+}
+final class GetAllUserActiveConferenceLoadingState extends ActiveConferenceState {
   @override
   List<Object?> get props => [];
 }

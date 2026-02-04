@@ -27,3 +27,9 @@ class GetAllSurveyByActiveConferenceEvent extends ActiveConferenceEvent {
   @override
   List<Object?> get props => [conferenceId];
 }
+class GetAllUserByActiveConferenceEvent extends ActiveConferenceEvent {
+  final  int conferenceId;
+  GetAllUserByActiveConferenceEvent(this.conferenceId);
+  @override
+  List<Object?> get props => [conferenceId];
+}

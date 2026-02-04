@@ -506,18 +506,31 @@ class UserSqlModel {
       'email': email,
       'phone': phone,
       'address': address,
-      'answers': answerModel.map((user) => user.toJson()).toList(),
+     // 'answers': answerModel.map((user) => user.toJsonSql(userId)).toList(),
     };
   }
 
+  // دالة لتحويل خريطة إلى كائن UserSqlModel
   factory UserSqlModel.fromMap(Map<String, dynamic> map) {
     return UserSqlModel(
       fullName: map['fullname'],
       email: map['email'],
       phone: map['phone'],
       address: map['address'],
-      answerModel: map['answers'],
+      // تحويل الإجابات من الخريطة إلى قائمة من AnswerUserModel
+      answerModel: _mapAnswers( map['answer_id'], map['content']),
     );
+  }
+
+  // دالة لتحويل الإجابات من الخريطة إلى قائمة من AnswerUserModel
+  static List<AnswerUserModel> _mapAnswers(int answerId, String content) {
+    // إذا كان يوجد إجابة مرتبطة بالمستخدم، نقوم بإنشاء كائن من AnswerUserModel
+    return [
+      AnswerUserModel(
+        answerId,
+        content,
+      ),
+    ];
   }
 }
 

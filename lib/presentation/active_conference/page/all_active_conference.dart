@@ -10,8 +10,10 @@ class AllActiveConferencePage extends StatelessWidget {
   const AllActiveConferencePage({super.key});
 
   @override
-
   Widget build(BuildContext context) {
+    // استدعاء الـ Bloc مرة واحدة
+    final bloc = BlocProvider.of<ActiveConferenceBloc>(context);
+
     return Scaffold(
       backgroundColor: ColorManager.background,
       appBar: AppBar(
@@ -27,34 +29,37 @@ class AllActiveConferencePage extends StatelessWidget {
       ),
 
       body: BlocBuilder<ActiveConferenceBloc, ActiveConferenceState>(
-
+        buildWhen: (previous, current) {
+          return current is GetAllActiveConferenceState ||
+              current is GetAllActiveEmptyConferenceState ||
+              current is GetAllActiveConferenceLoadingState ||
+              current is GetAllActiveConferenceErrorState;
+        },
         builder: (context, state) {
-
           if (state is GetAllActiveConferenceLoadingState) {
             return loadingFullScreen(context);
           } else if (state is GetAllActiveConferenceErrorState) {
             return errorFullScreen(context);
           } else if (state is GetAllActiveConferenceState) {
+            final allConferences = state.allActiveConference;
+
             return Padding(
               padding: const EdgeInsets.all(16),
               child: ListView.separated(
                 shrinkWrap: true,
-                itemCount: BlocProvider.of<ActiveConferenceBloc>(
-                  context,
-                ).allActiveConference.length,
-
+                itemCount: allConferences.length,
                 separatorBuilder: (context, index) => const SizedBox(height: 10),
                 itemBuilder: (context, index) {
                   return InkWell(
-                    onTap: () =>    Navigator.pushNamed(context, Routes.viewActiveConference, arguments:
-                   BlocProvider.of<ActiveConferenceBloc>(
-                      context,
-                    ).allActiveConference[index].id,),
-                    child: ActiveConferenceWidget(
-                      conference: BlocProvider.of<ActiveConferenceBloc>(
+                    onTap: () {
+                      Navigator.pushNamed(
                         context,
-                      ).allActiveConference[index]
-
+                        Routes.viewActiveConference,
+                        arguments: allConferences[index].id,
+                      );
+                    },
+                    child: ActiveConferenceWidget(
+                      conference: allConferences[index],
                     ),
                   );
                 },
@@ -62,8 +67,9 @@ class AllActiveConferencePage extends StatelessWidget {
             );
           } else if (state is GetAllActiveEmptyConferenceState) {
             return emptyFullScreen(context);
-          } else
+          } else {
             return SizedBox();
+          }
         },
       ),
     );

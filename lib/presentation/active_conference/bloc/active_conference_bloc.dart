@@ -9,70 +9,63 @@ import 'package:meta/meta.dart';
 
 part 'active_conference_event.dart';
 part 'active_conference_state.dart';
-
-class ActiveConferenceBloc
-    extends Bloc<ActiveConferenceEvent, ActiveConferenceState> {
-  List<GetAllConferenceModel> allActiveConference = [];
+class ActiveConferenceBloc extends Bloc<ActiveConferenceEvent, ActiveConferenceState> {
   GetAllConferenceUsecase getAllConferenceUsecase;
   GetConferenceByIdUsecase getConferenceByIdUsecase;
   GetAllUserUsecase getAllUserUsecase;
-  ///GetAllConferenceUsecase if di
-  ActiveConferenceBloc(this.getAllConferenceUsecase,this.getConferenceByIdUsecase,this.getAllUserUsecase)
-    : super(ActiveConferenceInitial()) {
-    on<ActiveConferenceEvent>((event, emit) async {
-      /////////////// Active in AllConferencePage = 0 Not Active in home = 1
-      if (event is GetAllActiveConferenceEvent) {
-        emit(GetAllActiveConferenceLoadingState());
-        (await getAllConferenceUsecase.execute(1)).fold(
-          (failure) {
-            emit(GetAllActiveConferenceErrorState(failure: failure));
-          },
-          (data) async {
-            allActiveConference = data;
-            if (allActiveConference.isEmpty) {
-              emit(GetAllActiveEmptyConferenceState());
-            }
+
+  ActiveConferenceBloc(
+      this.getAllConferenceUsecase,
+      this.getConferenceByIdUsecase,
+      this.getAllUserUsecase,
+      ) : super(ActiveConferenceInitial()) {
+    on<GetAllActiveConferenceEvent>((event, emit) async {
+      emit(GetAllActiveConferenceLoadingState());
+      final result = await getAllConferenceUsecase.execute(1);
+      result.fold(
+            (failure) {
+          emit(GetAllActiveConferenceErrorState(failure: failure));
+        },
+            (data) async {
+          if (data.isEmpty) {
+            emit(GetAllActiveEmptyConferenceState());
+          } else {
             emit(GetAllActiveConferenceState(data));
-          },
-        );
-      }
-      if (event is GetActiveConferenceByIdEvent) {
-        emit(GetActiveConferenceByIdLoadingState());
-        (await getConferenceByIdUsecase.execute(event.conferenceModel)).fold(
-              (failure) {
-            emit(GetActiveConferenceByIdErrorState(failure: failure));
-          },
-              (data) async {
-            data.surveys.sort(
-                  (a, b) => a.survey_order.compareTo(b.survey_order),
-            );
-            emit(GetActiveConferenceByIdState(data));
-          },
-        );
-      }
-      /*
+          }
+        },
+      );
+    });
+    on<GetAllUserByActiveConferenceEvent>((event, emit) async {
+      emit(GetAllUserActiveConferenceLoadingState());
+      final result = await getAllUserUsecase.execute(event.conferenceId);
+      result.fold(
+            (failure) {
+          emit(GetAllUserActiveConferenceErrorState(failure: failure));
+        },
+            (data) async {
+              if(data.isEmpty){
+                emit(GetAllUserActiveEmptyConferenceState());
+              }else{
+                emit(GetAllUserActiveConferenceState(data));
+              }
 
+        },
+      );
+    });
 
-  if (event is GetAllSurveyByConferenceEvent) {
-        emit(GetAllSurveyLoadingState());
-        event.conferenceId==-1?
-        (await getAllSurveyUsecase.execute()).fold(
-          (failure) {
-            emit(GetAllSurveyErrorState(failure: failure));
-          },
-          (data) async {
-            emit(GetAllSurveyState(data.toDomain()));
-          },
-        ): (await getAllSurveyAndActiveUsecase.execute(event.conferenceId)).fold(
-              (failure) {
-            emit(GetAllSurveyErrorState(failure: failure));
-          },
-              (data) async {
-            emit(GetAllSurveyState(data));
-          },
-        );
-      }
-       */
+    on<GetActiveConferenceByIdEvent>((event, emit) async {
+      emit(GetActiveConferenceByIdLoadingState());
+      final result = await getConferenceByIdUsecase.execute(event.conferenceModel);
+      result.fold(
+            (failure) {
+          emit(GetActiveConferenceByIdErrorState(failure: failure));
+        },
+            (data) async {
+          data.surveys.sort((a, b) => a.survey_order.compareTo(b.survey_order));
+          emit(GetActiveConferenceByIdState(data));
+        },
+      );
     });
   }
 }
+

@@ -7,7 +7,7 @@ import 'package:formify/domain/repostitory/repository_sql.dart';
 class GetUserAnswerSqlUsecase extends Equatable {
   final RepositorySql _repository;
   const GetUserAnswerSqlUsecase(this._repository);
-  Future<Either<Failure, AllUserModel>> execute() async {
+  Future<Either<Failure, List<UserSqlModel>>> execute() async {
     return await _repository.getDataSql();
   }
 

@@ -45,7 +45,7 @@ final class UploadDataState extends SyncState {
 }
 
 final class GetDataState extends SyncState {
-  final AllUserModel users;
+  final List<UserSqlModel> users;
   const GetDataState(this.users);
 
   @override
@@ -163,4 +163,18 @@ final class SurveySubmitErrorState extends SyncState {
 
   @override
   List<Object?> get props => [failure];
+}
+final class InsertUserSuccessState extends SyncState {
+  const InsertUserSuccessState();
+}
+
+final class InsertUserErrorState extends SyncState {
+  final Failure failure;
+  const InsertUserErrorState({required this.failure});
+
+  @override
+  List<Object?> get props => [failure];
+}
+final class InsertUserLoadingState extends SyncState {
+  const InsertUserLoadingState();
 }
