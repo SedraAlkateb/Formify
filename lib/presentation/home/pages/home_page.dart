@@ -59,7 +59,7 @@ class HomePage extends StatelessWidget {
                           }  if (state is GetDataState) {
                             BlocProvider.of<SyncBloc>(
                               context,
-                            ).add(UploadDataEvent(state.users));
+                            ).add(UploadDataEvent(state.users,state.conference_id));
                           } else if (state is UploadDataState) {
                             BlocProvider.of<SyncBloc>(
                               context,

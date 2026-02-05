@@ -69,3 +69,22 @@ final class GetAllUserActiveConferenceLoadingState extends ActiveConferenceState
   @override
   List<Object?> get props => [];
 }
+final class GetUserSurveyState extends ActiveConferenceState {
+  final UserModel userModel;
+  final List<SurveyToConferenceModel> surveys;
+
+  GetUserSurveyState(this.userModel,this.surveys);
+
+  @override
+  List<Object?> get props => [userModel];
+}
+final class GetUserSurveyErrorState extends ActiveConferenceState {
+  final Failure failure;
+  GetUserSurveyErrorState({required this.failure});
+  @override
+  List<Object?> get props =>[failure];
+}
+final class GetUserSurveyLoadingState extends ActiveConferenceState {
+  @override
+  List<Object?> get props => [];
+}

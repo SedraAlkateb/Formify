@@ -45,11 +45,12 @@ final class UploadDataState extends SyncState {
 }
 
 final class GetDataState extends SyncState {
+  final int conference_id;
   final List<UserSqlModel> users;
-  const GetDataState(this.users);
+  const GetDataState(this.users,this.conference_id);
 
   @override
-  List<Object?> get props => [users];
+  List<Object?> get props => [users,conference_id];
 }
 
 final class GetConferenceAsyncState extends SyncState {

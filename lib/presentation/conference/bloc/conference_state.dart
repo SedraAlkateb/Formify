@@ -29,6 +29,9 @@ final class GetAllSurveyConferenceState extends ConferenceState {
   GetAllSurveyConferenceState(this.allSurvey);
   List<Object?> get props => [allSurvey];
 }
+final class GetAllSurveyConferenceEmptyState extends ConferenceState {
+  List<Object?> get props => [];
+}
 final class GetAllSurveyConferenceErrorState extends ConferenceState {
   final Failure failure;
   GetAllSurveyConferenceErrorState({required this.failure});

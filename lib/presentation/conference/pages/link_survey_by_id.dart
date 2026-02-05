@@ -65,6 +65,9 @@ class ConferenceSurveyById extends StatelessWidget {
               if (state is GetAllSurveyConferenceState) {
                 surveys = state.allSurvey;
               }
+              if(state is GetAllSurveyConferenceEmptyState){
+                return emptyFullScreen(context);
+              }
               return CustomScrollView(
                 slivers: [
                   SliverToBoxAdapter(

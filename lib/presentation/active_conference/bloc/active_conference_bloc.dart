@@ -13,7 +13,7 @@ class ActiveConferenceBloc extends Bloc<ActiveConferenceEvent, ActiveConferenceS
   GetAllConferenceUsecase getAllConferenceUsecase;
   GetConferenceByIdUsecase getConferenceByIdUsecase;
   GetAllUserUsecase getAllUserUsecase;
-
+  List<SurveyToConferenceModel> surveyModel=[];
   ActiveConferenceBloc(
       this.getAllConferenceUsecase,
       this.getConferenceByIdUsecase,
@@ -61,11 +61,29 @@ class ActiveConferenceBloc extends Bloc<ActiveConferenceEvent, ActiveConferenceS
           emit(GetActiveConferenceByIdErrorState(failure: failure));
         },
             (data) async {
+
           data.surveys.sort((a, b) => a.survey_order.compareTo(b.survey_order));
+           surveyModel=data.surveys;
           emit(GetActiveConferenceByIdState(data));
         },
       );
     });
+    on<GetUserSurveyEvent>((event, emit) async {
+      emit(GetUserSurveyLoadingState());
+      // final result = await getConferenceByIdUsecase.execute(event.conferenceModel);
+      // result.fold(
+      //       (failure) {
+      //     emit(GetUserSurveyErrorState(failure: failure));
+      //   },
+      //       (data) async {
+      //     data.surveys.sort((a, b) => a.survey_order.compareTo(b.survey_order));
+      //     emit(GetUserSurveyState(data));
+      //   },
+      // );
+
+      emit(GetUserSurveyState(event.userModel,surveyModel));
+    });
+
   }
 }
 

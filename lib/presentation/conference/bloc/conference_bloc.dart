@@ -48,7 +48,11 @@ class ConferenceBloc extends Bloc<ConferenceEvent, ConferenceState> {
           },
           (data) async {
             surveys=data.toDomain();
-            emit(GetAllSurveyConferenceState(data.toDomain()));
+            if(surveys.isEmpty){
+              emit(GetAllSurveyConferenceEmptyState());
+            }else{
+              emit(GetAllSurveyConferenceState(data.toDomain()));
+            }
           },
         ): (await getAllSurveyAndActiveUsecase.execute(event.conferenceId)).fold(
               (failure) {
@@ -56,7 +60,11 @@ class ConferenceBloc extends Bloc<ConferenceEvent, ConferenceState> {
           },
               (data) async {
                 surveys=data;
-            emit(GetAllSurveyConferenceState(data));
+                if(surveys.isEmpty){
+                  emit(GetAllSurveyConferenceEmptyState());
+                }else{
+                  emit(GetAllSurveyConferenceState(data));
+                }
           },
         );
       }
