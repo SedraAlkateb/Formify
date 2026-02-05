@@ -34,10 +34,11 @@ final class DeleteDataEvent extends SyncEvent {
 
 final class UploadDataEvent extends SyncEvent {
   final List<UserSqlModel> userRequest;
-  const UploadDataEvent(this.userRequest);
+  final int conference_id;
+  const UploadDataEvent(this.userRequest,this.conference_id);
 
   @override
-  List<Object?> get props => [userRequest];
+  List<Object?> get props => [userRequest,conference_id];
 }
 
 final class GetDataEvent extends SyncEvent {

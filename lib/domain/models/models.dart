@@ -26,7 +26,6 @@ class SurveyModel {
       questions: [], // أصبحت قائمة أسئلة وليس سؤال واحد
     );
   }
-
 }
 
 class QuestionModel {
@@ -45,7 +44,7 @@ class QuestionModel {
     required this.type,
     required this.answers,
   });
-  QuestionModel instanceQuestion(){
+  QuestionModel instanceQuestion() {
     return QuestionModel(
       title: title,
       order: order,
@@ -54,6 +53,7 @@ class QuestionModel {
       answers: answers,
     );
   }
+
   /// إنشاء كائن فارغ جاهز للاستخدام
   static QuestionModel create() {
     return QuestionModel(
@@ -72,8 +72,9 @@ class QuestionModel {
       'order': order,
       'isRequired': isRequired,
       'Type': type.name,
-      'answer': answers.isEmpty?[type.answer]:
-      answers.map((e) => e.title).toList(),
+      'answer': answers.isEmpty
+          ? [type.answer]
+          : answers.map((e) => e.title).toList(),
     };
   }
 
@@ -101,18 +102,17 @@ class QuestionModel {
     );
   }
 }
+
 ////createSurveyQuestionsAndAnswers
 class SurveyQuestionAndAnswersModel {
   int id;
   List<QuestionModel> questionAndAnswers;
   SurveyQuestionAndAnswersModel(this.id, this.questionAndAnswers);
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'qus': questionAndAnswers.map((e) => e.toMap()).toList(),
-    };
+    return {'id': id, 'qus': questionAndAnswers.map((e) => e.toMap()).toList()};
   }
 }
+
 //  Future<Either<Failure, CreateSurveyModel>> createSurvey(SurveyRequest survey);
 class CreateSurveyModel {
   int id;
@@ -204,7 +204,7 @@ class ConferenceModel {
 }
 
 //////////////////////////////// for user
- class AnswerUserModel {
+class AnswerUserModel {
   int? answer_id;
   String content;
 
@@ -213,16 +213,16 @@ class ConferenceModel {
   Map<String, dynamic> toJson() {
     return {'answer_id': answer_id, 'content': content};
   }
+
   Map<String, dynamic> toJsonSql(int userId) {
-    return
-      {'user_id':userId ,'answer_id': answer_id, 'content': content};
+    return {'user_id': userId, 'answer_id': answer_id, 'content': content};
   }
+
   factory AnswerUserModel.fromMap(Map<String, dynamic> map) {
     return AnswerUserModel(map['answer_id'], map['content']);
   }
-
-
 }
+
 class UseAnswerModel {
   int user_id;
   List<AnswerUserModel> answersModel;
@@ -249,6 +249,7 @@ class UserInputModel {
     this.conferenceId,
   );
 }
+
 class UserModel {
   int id; // المعرف
   String fullName; // الاسم الكامل
@@ -296,7 +297,6 @@ class UserModel {
   }
 }
 
-
 class GetAllConferenceModel {
   int id;
   String name;
@@ -335,10 +335,10 @@ class GetAllConferenceModel {
       map['address'],
       map['start_date'],
       map['end_date'],
-      map['is_active']==1?true:false,
+      map['is_active'] == 1 ? true : false,
     );
   }
-  static GetAllConferenceModel create(){
+  static GetAllConferenceModel create() {
     return GetAllConferenceModel(0, "", "", "", "", "", false);
   }
 }
@@ -393,7 +393,7 @@ class GetAsyncModel {
     this.answers,
     this.surveyConference,
   );
-static  GetAsyncModel create(){
+  static GetAsyncModel create() {
     return GetAsyncModel(GetAllConferenceModel.create(), [], [], [], []);
   }
 }
@@ -430,28 +430,30 @@ class AsyncQuestionModel {
       map['id'],
       map['question'],
       map['question_order'],
-      map['is_required']==1?true:false,
+      map['is_required'] == 1 ? true : false,
       convertToQuestionType(map['type']),
       map['survey_id'],
     );
   }
 }
+
 /////////AnswerForQuestion
 class AnswerModel {
   int id;
   int? questionId;
   String title;
 
-  AnswerModel(this.id, this.title,{ this.questionId});
+  AnswerModel(this.id, this.title, {this.questionId});
   Map<String, dynamic> toMap() {
     return {'id': id, 'title': title, 'question_id': questionId};
   }
+
   String toMapString() {
-    return  title;
+    return title;
   }
 
   factory AnswerModel.fromMap(Map<String, dynamic> map) {
-    return AnswerModel(map['id'],  map['title'],questionId: map['question_id']);
+    return AnswerModel(map['id'], map['title'], questionId: map['question_id']);
   }
 }
 
@@ -475,13 +477,13 @@ class SurveyConferenceAsyncModel {
       'survey_order': survey_order,
     };
   }
+
   factory SurveyConferenceAsyncModel.fromMap(Map<String, dynamic> map) {
     return SurveyConferenceAsyncModel(
-        map['id'],
-        map['survey_order'],
-        map['survey_id'],
-        map['conference_id']
-
+      map['id'],
+      map['survey_order'],
+      map['survey_id'],
+      map['conference_id'],
     );
   }
 }
@@ -506,7 +508,7 @@ class UserSqlModel {
       'email': email,
       'phone': phone,
       'address': address,
-     // 'answers': answerModel.map((user) => user.toJsonSql(userId)).toList(),
+      // 'answers': answerModel.map((user) => user.toJsonSql(userId)).toList(),
     };
   }
 
@@ -518,30 +520,26 @@ class UserSqlModel {
       phone: map['phone'],
       address: map['address'],
       // تحويل الإجابات من الخريطة إلى قائمة من AnswerUserModel
-      answerModel: _mapAnswers( map['answer_id'], map['content']),
+      answerModel: _mapAnswers(map['answer_id'], map['content']),
     );
   }
 
   // دالة لتحويل الإجابات من الخريطة إلى قائمة من AnswerUserModel
   static List<AnswerUserModel> _mapAnswers(int answerId, String content) {
     // إذا كان يوجد إجابة مرتبطة بالمستخدم، نقوم بإنشاء كائن من AnswerUserModel
-    return [
-      AnswerUserModel(
-        answerId,
-        content,
-      ),
-    ];
+    return [AnswerUserModel(answerId, content)];
   }
 }
 
 //
 class AllUserModel {
   List<UserSqlModel> users; // قائمة من المستخدمين (UserModel)
-
-  AllUserModel(this.users); // المُنشئ الذي يأخذ قائمة المستخدمين
+  int conference_id;
+  AllUserModel(this.users,this.conference_id); // المُنشئ الذي يأخذ قائمة المستخدمين
 
   Map<String, dynamic> toJson() {
     return {
+      "conference_id":conference_id,
       'users': users
           .map((user) => user.toJson())
           .toList(), // تحويل قائمة المستخدمين إلى JSON
@@ -553,6 +551,7 @@ class AllUserModel {
       List<UserSqlModel>.from(
         map['users'].map((userMap) => UserModel.fromMap(userMap)),
       ),
+        map['conference_id']
     );
   }
 }

@@ -5,6 +5,7 @@ import 'package:formify/presentation/active_conference/page/view_active_conferen
 import 'package:formify/presentation/conference/pages/link_survey_by_id.dart';
 import 'package:formify/presentation/conference/pages/create_conference_page.dart';
 import 'package:formify/presentation/conference/pages/view_conference_page.dart';
+import 'package:formify/presentation/conference/pages/view_user_survey.dart';
 import 'package:formify/presentation/home/pages/home_page.dart';
 import 'package:formify/presentation/onboarding/pages/onboarding_page.dart';
 import 'package:formify/presentation/question/page/multi_answer.dart';
@@ -38,6 +39,8 @@ class Routes {
   static const String surveyInput = "/surveyInput";
   static const String insertUser = "/insertUser";
   static const String viewActiveConference = "/viewActiveConference";
+  static const String viewUserSurvey = "/viewUserSurvey";
+
 }
 
 class RouteGenerator {
@@ -92,6 +95,8 @@ class RouteGenerator {
         return _animatedRoute(SurveyInputPage());
       case Routes.insertUser:
         return _animatedRoute(InsertUserPage());
+      case Routes.viewUserSurvey:
+        return _animatedRoute(ViewUserSurveyPage());
       // case Routes.getAllConference:
       //   initConferenceModule();
       //   return _animatedRoute(AllConferencePage());

@@ -73,6 +73,7 @@ ThemeData getApplicationTheme({
       color: colorScheme.surface,
       shadowColor: Colors.black12,
       elevation: 3,
+
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSize.s18),
       ),

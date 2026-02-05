@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
 import 'package:formify/presentation/sync/widget/answer_card_widget.dart';
+import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
 class SurveyInputPage extends StatefulWidget {
   const SurveyInputPage({super.key});
@@ -104,11 +105,12 @@ class _SurveyInputPageState extends State<SurveyInputPage> {
               }
             },
             builder: (context, state) {
-              if (state is SurveyLoadingState || state is SurveySubmittingState) {
-                return const Center(child: CircularProgressIndicator());
+              if (state is SurveyLoadingState ||
+                  state is SurveySubmittingState) {
+                return loadingFullScreen(context);
               }
               if (state is SurveyErrorState) {
-                return Center(child: Text("Error: ${state.failure}"));
+                return errorFullScreen(context);
               }
 
               if (state is SurveyReadyState) {
@@ -121,26 +123,38 @@ class _SurveyInputPageState extends State<SurveyInputPage> {
                 return Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 10,
+                      ),
                       child: Row(
                         children: [
                           TextButton.icon(
                             onPressed: () => Navigator.pop(context),
-                            icon: const Icon(Icons.arrow_back_ios_new, size: 16),
+                            icon: const Icon(
+                              Icons.arrow_back_ios_new,
+                              size: 16,
+                            ),
                             label: const Text("العودة"),
                           ),
                           Expanded(
                             child: Text(
                               state.surveyName,
                               textAlign: TextAlign.end,
-                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 18,
+                      ),
                       child: Column(
                         children: [
                           ClipRRect(
@@ -154,7 +168,9 @@ class _SurveyInputPageState extends State<SurveyInputPage> {
                           const SizedBox(height: 8),
                           Text(
                             "السؤال ${idx + 1} من $total",
-                            style: TextStyle(color: Colors.black.withOpacity(0.6)),
+                            style: TextStyle(
+                              color: Colors.black.withOpacity(0.6),
+                            ),
                           ),
                         ],
                       ),
@@ -165,20 +181,26 @@ class _SurveyInputPageState extends State<SurveyInputPage> {
                         controller: _pageController,
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: total,
-                        onPageChanged: (i) => context.read<SyncBloc>().add(SurveyPageChangedEvent(i)),
+                        onPageChanged: (i) => context.read<SyncBloc>().add(
+                          SurveyPageChangedEvent(i),
+                        ),
                         itemBuilder: (context, i) {
                           final q = state.questions[i];
                           final savedAnswer = state.answers[i]?.first.content;
 
                           return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 18,
+                              vertical: 12,
+                            ),
                             child: QuestionCard(
                               number: i + 1,
                               total: total,
                               questionModel: q,
                               isLast: i == total - 1,
                               formKey: _formKeys[i],
-                              initialValue: savedAnswer, // passing saved answer as initial value
+                              initialValue:
+                                  savedAnswer, // passing saved answer as initial value
                               onPrev: () => _prev(state, i),
                               onNext: () => _next(state, i),
                             ),
