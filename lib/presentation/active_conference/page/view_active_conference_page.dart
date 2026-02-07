@@ -264,38 +264,19 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            InkWell(
-                              onTap: () {
-                                BlocProvider.of<ActiveConferenceBloc>(
-                                  context,
-                                ).add(
-                                  GetAllSurveyByActiveConferenceEvent(
-                                    state.conferenceModel.id,
+                            Row(
+                              children: [
+                                Icon(Icons.sticky_note_2_outlined, size: 30),
+                                SizedBox(width: 8),
+                                Text(
+                                  "Surveys",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
                                   ),
-                                );
-
-                                Navigator.pushNamed(
-                                  context,
-                                  Routes.conferenceSurveyById,
-                                  arguments: {
-                                    "conferenceId": state.conferenceModel.id,
-                                  },
-                                );
-                              },
-                              child: Row(
-                                children: [
-                                  Icon(Icons.sticky_note_2_outlined, size: 30),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    "Surveys",
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                             // Row(
                             //   children: [
@@ -398,38 +379,19 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            InkWell(
-                              onTap: () {
-                                BlocProvider.of<ActiveConferenceBloc>(
-                                  context,
-                                ).add(
-                                  GetAllSurveyByActiveConferenceEvent(
-                                    widget.conferenceId,
+                            Row(
+                              children: [
+                                Icon(Icons.group_outlined, size: 30),
+                                SizedBox(width: 8),
+                                Text(
+                                  "Participants",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
                                   ),
-                                );
-
-                                Navigator.pushNamed(
-                                  context,
-                                  Routes.conferenceSurveyById,
-                                  arguments: {
-                                    "conferenceId": widget.conferenceId,
-                                  },
-                                );
-                              },
-                              child: Row(
-                                children: [
-                                  Icon(Icons.group_outlined, size: 30),
-                                  SizedBox(width: 8),
-                                  Text(
-                                    "Participants",
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                             // Row(
                             //   children: [

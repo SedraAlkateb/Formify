@@ -5,7 +5,7 @@ import 'package:formify/presentation/active_conference/page/view_active_conferen
 import 'package:formify/presentation/conference/pages/link_survey_by_id.dart';
 import 'package:formify/presentation/conference/pages/create_conference_page.dart';
 import 'package:formify/presentation/conference/pages/view_conference_page.dart';
-import 'package:formify/presentation/conference/pages/view_user_survey.dart';
+import 'package:formify/presentation/active_conference/page/view_user_survey.dart';
 import 'package:formify/presentation/home/pages/home_page.dart';
 import 'package:formify/presentation/onboarding/pages/onboarding_page.dart';
 import 'package:formify/presentation/question/page/multi_answer.dart';

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:formify/app/constants.dart';
 import 'package:dio/dio.dart';
 import 'package:formify/data/responses/responses.dart';
@@ -16,9 +18,11 @@ abstract class AppServiceClient {
     @Part(name: "description") String description,
     @Part(name: "color") String color,
   );
+  @MultiPart()
   @POST("survey-crud/create_survey_questionsAndAnswers.php")
   Future<CreateSurveyQuestionsBaseResponse> createSurveyQuestionsAndAnswers(
-    @Body() SurveyQuestionAndAnswersModel surveyQ,
+      @Part(name: "data")  String surveyQ,
+      @Part(name: "image") List<File> images
   );
   @GET("survey-crud/get_all_survey.php")
   Future<GetAllSurveyBaseResponse> getAllSurvey();

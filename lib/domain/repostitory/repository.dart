@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dartz/dartz.dart';
 import 'package:formify/data/network/failure.dart';
 import 'package:formify/domain/models/models.dart';
@@ -6,7 +8,7 @@ import 'package:formify/domain/models/request.dart';
 abstract class Repository {
   Future<Either<Failure, CreateSurveyModel>> createSurvey(SurveyRequest survey);
   Future<Either<Failure, Null>> createSurveyQuestionsAndAnswers(
-    SurveyQuestionAndAnswersModel surveyQ,
+    SurveyQuestionAndAnswersModel surveyQ,     List<File>images
   );
  Future<Either<Failure, List<MainSurveyModel>>> getAllSurvey();
   Future<Either<Failure,int>> createConference(ConferenceModel conference);

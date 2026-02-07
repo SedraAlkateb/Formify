@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dartz/dartz.dart';
 import 'package:formify/data/mapper/mapper.dart';
 import 'package:formify/data/data_source/remote_data_source.dart';
@@ -15,9 +17,10 @@ class RepositoryImp implements Repository {
 
   RepositoryImp(this._remoteDataSource, this._networkInfo);
 
-
   @override
-  Future<Either<Failure, CreateSurveyModel>> createSurvey(SurveyRequest survey) async {
+  Future<Either<Failure, CreateSurveyModel>> createSurvey(
+    SurveyRequest survey,
+  ) async {
     try {
       if (await _networkInfo.isConnected) {
         final response = await _remoteDataSource.createSurvey(survey);
@@ -26,8 +29,10 @@ class RepositoryImp implements Repository {
             response.status == ApiInternalStatus.SUCCESS) {
           return Right(response.toDomain());
         } else {
-          Failure failure = Failure(ApiInternalStatus.FAILURE,
-              response.message ?? ResponseMassage.DEFAULT);
+          Failure failure = Failure(
+            ApiInternalStatus.FAILURE,
+            response.message ?? ResponseMassage.DEFAULT,
+          );
           return Left(failure);
 
           // return Left(Failure(ApiInternalStatus.FAILURE,
@@ -41,18 +46,24 @@ class RepositoryImp implements Repository {
       return Left(failure);
     }
   }
+
   @override
-  Future<Either<Failure, Null>> createSurveyQuestionsAndAnswers(SurveyQuestionAndAnswersModel surveyQ) async {
+  Future<Either<Failure, Null>> createSurveyQuestionsAndAnswers(
+    SurveyQuestionAndAnswersModel surveyQ,     List<File>images
+  ) async {
     try {
       if (await _networkInfo.isConnected) {
-        final response = await _remoteDataSource.createSurveyQuestionsAndAnswers(surveyQ);
+        final response = await _remoteDataSource
+            .createSurveyQuestionsAndAnswers(surveyQ,images);
 
         if (response.status == "200" ||
             response.status == ApiInternalStatus.SUCCESS) {
           return Right(null);
         } else {
-          Failure failure = Failure(ApiInternalStatus.FAILURE,
-              response.message ?? ResponseMassage.DEFAULT);
+          Failure failure = Failure(
+            ApiInternalStatus.FAILURE,
+            response.message ?? ResponseMassage.DEFAULT,
+          );
           return Left(failure);
 
           // return Left(Failure(ApiInternalStatus.FAILURE,
@@ -77,8 +88,10 @@ class RepositoryImp implements Repository {
             response.status == ApiInternalStatus.SUCCESS) {
           return Right(response.toDomain());
         } else {
-          Failure failure = Failure(ApiInternalStatus.FAILURE,
-              response.message ?? ResponseMassage.DEFAULT);
+          Failure failure = Failure(
+            ApiInternalStatus.FAILURE,
+            response.message ?? ResponseMassage.DEFAULT,
+          );
           return Left(failure);
 
           // return Left(Failure(ApiInternalStatus.FAILURE,
@@ -94,17 +107,21 @@ class RepositoryImp implements Repository {
   }
 
   @override
-  Future<Either<Failure, int>> createConference(ConferenceModel conference) async {
+  Future<Either<Failure, int>> createConference(
+    ConferenceModel conference,
+  ) async {
     try {
       if (await _networkInfo.isConnected) {
         final response = await _remoteDataSource.createConference(conference);
 
         if (response.status == "200" ||
             response.status == ApiInternalStatus.SUCCESS) {
-          return Right(response.data.id??0);
+          return Right(response.data.id ?? 0);
         } else {
-          Failure failure = Failure(ApiInternalStatus.FAILURE,
-              response.message ?? ResponseMassage.DEFAULT);
+          Failure failure = Failure(
+            ApiInternalStatus.FAILURE,
+            response.message ?? ResponseMassage.DEFAULT,
+          );
           return Left(failure);
 
           // return Left(Failure(ApiInternalStatus.FAILURE,
@@ -120,8 +137,9 @@ class RepositoryImp implements Repository {
   }
 
   @override
-  Future<Either<Failure, List<GetAllConferenceModel>>> getAllConference(int isActive)
-  async {
+  Future<Either<Failure, List<GetAllConferenceModel>>> getAllConference(
+    int isActive,
+  ) async {
     try {
       if (await _networkInfo.isConnected) {
         final response = await _remoteDataSource.getAllConference(isActive);
@@ -130,8 +148,10 @@ class RepositoryImp implements Repository {
             response.status == ApiInternalStatus.SUCCESS) {
           return Right(response.toDomain());
         } else {
-          Failure failure = Failure(ApiInternalStatus.FAILURE,
-              response.message ?? ResponseMassage.DEFAULT);
+          Failure failure = Failure(
+            ApiInternalStatus.FAILURE,
+            response.message ?? ResponseMassage.DEFAULT,
+          );
           return Left(failure);
 
           // return Left(Failure(ApiInternalStatus.FAILURE,
@@ -147,17 +167,23 @@ class RepositoryImp implements Repository {
   }
 
   @override
-  Future<Either<Failure, Null>> linkSurveyConference(SurveyConference surveyConference)   async {
+  Future<Either<Failure, Null>> linkSurveyConference(
+    SurveyConference surveyConference,
+  ) async {
     try {
       if (await _networkInfo.isConnected) {
-        final response = await _remoteDataSource.linkSurveyConference(surveyConference);
+        final response = await _remoteDataSource.linkSurveyConference(
+          surveyConference,
+        );
 
         if (response.status == "200" ||
             response.status == ApiInternalStatus.SUCCESS) {
           return Right(null);
         } else {
-          Failure failure = Failure(ApiInternalStatus.FAILURE,
-              response.message ?? ResponseMassage.DEFAULT);
+          Failure failure = Failure(
+            ApiInternalStatus.FAILURE,
+            response.message ?? ResponseMassage.DEFAULT,
+          );
           return Left(failure);
 
           // return Left(Failure(ApiInternalStatus.FAILURE,
@@ -173,7 +199,7 @@ class RepositoryImp implements Repository {
   }
 
   @override
-  Future<Either<Failure, Null>> deleteConference(int id)   async {
+  Future<Either<Failure, Null>> deleteConference(int id) async {
     try {
       if (await _networkInfo.isConnected) {
         final response = await _remoteDataSource.deleteConference(id);
@@ -182,8 +208,10 @@ class RepositoryImp implements Repository {
             response.status == ApiInternalStatus.SUCCESS) {
           return Right(null);
         } else {
-          Failure failure = Failure(ApiInternalStatus.FAILURE,
-              response.message ?? ResponseMassage.DEFAULT);
+          Failure failure = Failure(
+            ApiInternalStatus.FAILURE,
+            response.message ?? ResponseMassage.DEFAULT,
+          );
           return Left(failure);
 
           // return Left(Failure(ApiInternalStatus.FAILURE,
@@ -199,7 +227,9 @@ class RepositoryImp implements Repository {
   }
 
   @override
-  Future<Either<Failure, GetAllConferenceByIdModel>> getConferenceById(int id)   async {
+  Future<Either<Failure, GetAllConferenceByIdModel>> getConferenceById(
+    int id,
+  ) async {
     try {
       if (await _networkInfo.isConnected) {
         final response = await _remoteDataSource.getConferenceById(id);
@@ -208,8 +238,10 @@ class RepositoryImp implements Repository {
             response.status == ApiInternalStatus.SUCCESS) {
           return Right(response.toDomain());
         } else {
-          Failure failure = Failure(ApiInternalStatus.FAILURE,
-              response.message ?? ResponseMassage.DEFAULT);
+          Failure failure = Failure(
+            ApiInternalStatus.FAILURE,
+            response.message ?? ResponseMassage.DEFAULT,
+          );
           return Left(failure);
 
           // return Left(Failure(ApiInternalStatus.FAILURE,
@@ -225,17 +257,23 @@ class RepositoryImp implements Repository {
   }
 
   @override
-  Future<Either<Failure, int>> createUserWithConferenceId(UserInputModel userInputModel)   async {
+  Future<Either<Failure, int>> createUserWithConferenceId(
+    UserInputModel userInputModel,
+  ) async {
     try {
       if (await _networkInfo.isConnected) {
-        final response = await _remoteDataSource.createUserWithConferenceId(userInputModel);
+        final response = await _remoteDataSource.createUserWithConferenceId(
+          userInputModel,
+        );
 
         if (response.status == "200" ||
             response.status == ApiInternalStatus.SUCCESS) {
-          return Right(response.user_id??0);
+          return Right(response.user_id ?? 0);
         } else {
-          Failure failure = Failure(ApiInternalStatus.FAILURE,
-              response.message ?? ResponseMassage.DEFAULT);
+          Failure failure = Failure(
+            ApiInternalStatus.FAILURE,
+            response.message ?? ResponseMassage.DEFAULT,
+          );
           return Left(failure);
 
           // return Left(Failure(ApiInternalStatus.FAILURE,
@@ -251,17 +289,19 @@ class RepositoryImp implements Repository {
   }
 
   @override
-  Future<Either<Failure, SurveyModel>> getSurveyWithQuestionById(int id)  async {
+  Future<Either<Failure, SurveyModel>> getSurveyWithQuestionById(int id) async {
     try {
       if (await _networkInfo.isConnected) {
         final response = await _remoteDataSource.getSurveyWithQuestionById(id);
 
         if (response.status == "200" ||
             response.status == ApiInternalStatus.SUCCESS) {
-        return Right(response.toDomain());
+          return Right(response.toDomain());
         } else {
-          Failure failure = Failure(ApiInternalStatus.FAILURE,
-              response.message ?? ResponseMassage.DEFAULT);
+          Failure failure = Failure(
+            ApiInternalStatus.FAILURE,
+            response.message ?? ResponseMassage.DEFAULT,
+          );
           return Left(failure);
 
           // return Left(Failure(ApiInternalStatus.FAILURE,
@@ -277,17 +317,23 @@ class RepositoryImp implements Repository {
   }
 
   @override
-  Future<Either<Failure, GetAsyncModel>> getAllInformationConference(int id)async {
+  Future<Either<Failure, GetAsyncModel>> getAllInformationConference(
+    int id,
+  ) async {
     try {
       if (await _networkInfo.isConnected) {
-        final response = await _remoteDataSource.getAllInformationConference(id);
+        final response = await _remoteDataSource.getAllInformationConference(
+          id,
+        );
 
         if (response.status == "200" ||
             response.status == ApiInternalStatus.SUCCESS) {
-          return Right(response.toDomain() );
+          return Right(response.toDomain());
         } else {
-          Failure failure = Failure(ApiInternalStatus.FAILURE,
-              response.message ?? ResponseMassage.DEFAULT);
+          Failure failure = Failure(
+            ApiInternalStatus.FAILURE,
+            response.message ?? ResponseMassage.DEFAULT,
+          );
           return Left(failure);
 
           // return Left(Failure(ApiInternalStatus.FAILURE,
@@ -303,17 +349,22 @@ class RepositoryImp implements Repository {
   }
 
   @override
-  Future<Either<Failure, List<IsActiveMainSurveyModel>>> getAllSurveyAndActiveSurvey(int conferenceId) async {
+  Future<Either<Failure, List<IsActiveMainSurveyModel>>>
+  getAllSurveyAndActiveSurvey(int conferenceId) async {
     try {
       if (await _networkInfo.isConnected) {
-        final response = await _remoteDataSource.getAllSurveyAndActiveSurvey(conferenceId);
+        final response = await _remoteDataSource.getAllSurveyAndActiveSurvey(
+          conferenceId,
+        );
 
         if (response.status == "200" ||
             response.status == ApiInternalStatus.SUCCESS) {
-          return Right(response.toDomain() );
+          return Right(response.toDomain());
         } else {
-          Failure failure = Failure(ApiInternalStatus.FAILURE,
-              response.message ?? ResponseMassage.DEFAULT);
+          Failure failure = Failure(
+            ApiInternalStatus.FAILURE,
+            response.message ?? ResponseMassage.DEFAULT,
+          );
           return Left(failure);
 
           // return Left(Failure(ApiInternalStatus.FAILURE,
@@ -329,17 +380,23 @@ class RepositoryImp implements Repository {
   }
 
   @override
-  Future<Either<Failure, List<UserModel>>> getUsersByConferenceId(int conferenceId) async {
+  Future<Either<Failure, List<UserModel>>> getUsersByConferenceId(
+    int conferenceId,
+  ) async {
     try {
       if (await _networkInfo.isConnected) {
-        final response = await _remoteDataSource.getUsersByConferenceId(conferenceId);
+        final response = await _remoteDataSource.getUsersByConferenceId(
+          conferenceId,
+        );
 
         if (response.status == "200" ||
             response.status == ApiInternalStatus.SUCCESS) {
-          return Right(response.toDomain() );
+          return Right(response.toDomain());
         } else {
-          Failure failure = Failure(ApiInternalStatus.FAILURE,
-              response.message ?? ResponseMassage.DEFAULT);
+          Failure failure = Failure(
+            ApiInternalStatus.FAILURE,
+            response.message ?? ResponseMassage.DEFAULT,
+          );
           return Left(failure);
 
           // return Left(Failure(ApiInternalStatus.FAILURE,
@@ -355,17 +412,23 @@ class RepositoryImp implements Repository {
   }
 
   @override
-  Future<Either<Failure, Null>> synchronizeUsersAnswers(AllUserModel userRequest)  async {
+  Future<Either<Failure, Null>> synchronizeUsersAnswers(
+    AllUserModel userRequest,
+  ) async {
     try {
       if (await _networkInfo.isConnected) {
-        final response = await _remoteDataSource.synchronizeUsersAnswers(userRequest);
+        final response = await _remoteDataSource.synchronizeUsersAnswers(
+          userRequest,
+        );
 
         if (response.status == "200" ||
             response.status == ApiInternalStatus.SUCCESS) {
           return Right(null);
         } else {
-          Failure failure = Failure(ApiInternalStatus.FAILURE,
-              response.message ?? ResponseMassage.DEFAULT);
+          Failure failure = Failure(
+            ApiInternalStatus.FAILURE,
+            response.message ?? ResponseMassage.DEFAULT,
+          );
           return Left(failure);
 
           // return Left(Failure(ApiInternalStatus.FAILURE,
@@ -379,5 +442,4 @@ class RepositoryImp implements Repository {
       return Left(failure);
     }
   }
-
 }

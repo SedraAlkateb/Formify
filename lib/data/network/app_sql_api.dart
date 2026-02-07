@@ -31,6 +31,7 @@ class AppSqlApi extends AppSqlApiAbs {
 
     final rows = await db.rawQuery(
       '''
+      
     SELECT
       q.id              AS q_id,
       q.question        AS q_question,

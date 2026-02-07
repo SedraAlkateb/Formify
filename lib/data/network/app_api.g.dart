@@ -57,15 +57,32 @@ class _AppServiceClient implements AppServiceClient {
 
   @override
   Future<CreateSurveyQuestionsBaseResponse> createSurveyQuestionsAndAnswers(
-    SurveyQuestionAndAnswersModel surveyQ,
+    String surveyQ,
+    List<File> images,
   ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    _data.addAll(surveyQ.toJson());
+    final _data = FormData();
+    _data.fields.add(MapEntry('data', surveyQ));
+    _data.files.addAll(
+      images.map(
+        (i) => MapEntry(
+          'image',
+          MultipartFile.fromFileSync(
+            i.path,
+            filename: i.path.split(Platform.pathSeparator).last,
+          ),
+        ),
+      ),
+    );
     final _options = _setStreamType<CreateSurveyQuestionsBaseResponse>(
-      Options(method: 'POST', headers: _headers, extra: _extra)
+      Options(
+            method: 'POST',
+            headers: _headers,
+            extra: _extra,
+            contentType: 'multipart/form-data',
+          )
           .compose(
             _dio.options,
             'survey-crud/create_survey_questionsAndAnswers.php',

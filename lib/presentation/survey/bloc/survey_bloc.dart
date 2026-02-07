@@ -107,7 +107,7 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
       } else if (event is CreateSurveyWithQuestionEvent) {
         emit(CreateSurveyWithQuestionLoadingState());
         (await createSurveyQuestionUsecase.execute(
-          SurveyQuestionAndAnswersModel(id, questions),
+          SurveyQuestionAndAnswersModel(id, questions),[]
         )).fold(
           (failure) {
             emit(CreateSurveyWithQuestionErrorState(failure: failure));

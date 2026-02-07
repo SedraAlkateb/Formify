@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:formify/data/network/app_api.dart';
 import 'package:formify/data/responses/responses.dart';
 import 'package:formify/domain/models/models.dart';
@@ -7,7 +10,7 @@ abstract class RemoteDataSource {
   Future<CreateSurveyBaseResponse> createSurvey(SurveyRequest survey);
 
   Future<CreateSurveyQuestionsBaseResponse> createSurveyQuestionsAndAnswers(
-    SurveyQuestionAndAnswersModel surveyQ,
+    SurveyQuestionAndAnswersModel surveyQ,     List<File>images
   );
 
   Future<GetAllSurveyBaseResponse> getAllSurvey();
@@ -52,8 +55,10 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   @override
   Future<CreateSurveyQuestionsBaseResponse> createSurveyQuestionsAndAnswers(
     SurveyQuestionAndAnswersModel surveyQ,
+      List<File>images
   ) async {
-    return await _appServiceClient.createSurveyQuestionsAndAnswers(surveyQ);
+    final surveyJson = jsonEncode(surveyQ.toJson());
+    return await _appServiceClient.createSurveyQuestionsAndAnswers(surveyJson,images);
   }
 
   @override
