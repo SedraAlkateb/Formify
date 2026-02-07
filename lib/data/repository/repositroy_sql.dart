@@ -44,7 +44,7 @@ class RepositroySqlImp extends RepositorySql {
   }
 
   @override
-  Future<Either<Failure, GetAllConferenceModel>> getConference() async {
+  Future<Either<Failure, GetAllConferenceModel?>> getConference() async {
     try {
       final response = await _databaseHelper.getConference();
       return Right(response);

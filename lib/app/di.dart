@@ -27,6 +27,7 @@ import 'package:formify/domain/usecase/get_question_answers_usecase.dart';
 import 'package:formify/domain/usecase/get_survey_question_id_usecase.dart';
 import 'package:formify/domain/usecase/get_surveys_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_user_answer_sql_usecase.dart';
+import 'package:formify/domain/usecase/get_user_answers_survey_usecase.dart';
 import 'package:formify/domain/usecase/insert_user_and_answer_usecase.dart';
 import 'package:formify/domain/usecase/link_survey_conference_usecase.dart';
 import 'package:formify/domain/usecase/synchronize_users_answers_usecase.dart';
@@ -97,7 +98,7 @@ Future<void> initConferenceModule() async {
       () => GetConferenceByIdUsecase(instance()),
     );
     instance.registerFactory<GetAllSurveyAndActiveUsecase>(
-          () => GetAllSurveyAndActiveUsecase(instance()),
+      () => GetAllSurveyAndActiveUsecase(instance()),
     );
     instance.registerFactory<ConferenceBloc>(
       () => ConferenceBloc(
@@ -112,38 +113,39 @@ Future<void> initConferenceModule() async {
     );
   }
 }
+
 Future<void> initActiveConferenceModule() async {
   if (!GetIt.I.isRegistered<GetAllSurveyUsecase>()) {
     instance.registerFactory<GetAllSurveyUsecase>(
-          () => GetAllSurveyUsecase(instance()),
+      () => GetAllSurveyUsecase(instance()),
     );
   }
   if (!GetIt.I.isRegistered<GetConferenceByIdUsecase>()) {
     instance.registerFactory<GetConferenceByIdUsecase>(
-          () => GetConferenceByIdUsecase(instance()),
+      () => GetConferenceByIdUsecase(instance()),
     );
   }
   if (!GetIt.I.isRegistered<GetAllConferenceUsecase>()) {
     instance.registerFactory<GetAllConferenceUsecase>(
-          () => GetAllConferenceUsecase(instance()),
+      () => GetAllConferenceUsecase(instance()),
     );
   }
   if (!GetIt.I.isRegistered<GetAllUserUsecase>()) {
     instance.registerFactory<GetAllUserUsecase>(
-          () => GetAllUserUsecase(instance()),
+      () => GetAllUserUsecase(instance()),
+    );
+  }
+  if (!GetIt.I.isRegistered<GetUserAnswersSurveyUsecase>()) {
+    instance.registerFactory<GetUserAnswersSurveyUsecase>(
+      () => GetUserAnswersSurveyUsecase(instance()),
     );
   }
   if (!GetIt.I.isRegistered<ActiveConferenceBloc>()) {
-
     instance.registerFactory<ActiveConferenceBloc>(
-          () => ActiveConferenceBloc(
-        instance(),
-        instance(),
-       instance(),
-      ),
+      () =>
+          ActiveConferenceBloc(instance(), instance(), instance(), instance()),
     );
   }
-
 }
 
 Future<void> initSurveyModule() async {
@@ -169,38 +171,47 @@ Future<void> initSurveyModule() async {
   }
 }
 
-
 Future<void> initSyncModule() async {
   if (!GetIt.I.isRegistered<GetUserAnswerSqlUsecase>()) {
     instance.registerFactory<GetUserAnswerSqlUsecase>(
-          () => GetUserAnswerSqlUsecase(instance()),
+      () => GetUserAnswerSqlUsecase(instance()),
     );
     instance.registerFactory<AddAsyncDataSqlUsecase>(
-          () => AddAsyncDataSqlUsecase(instance()),
+      () => AddAsyncDataSqlUsecase(instance()),
     );
     instance.registerFactory<GetAllAsyncInfoUsecase>(
-          () => GetAllAsyncInfoUsecase(instance()),
+      () => GetAllAsyncInfoUsecase(instance()),
     );
     instance.registerFactory<SynchronizeUsersAnswersUsecase>(
-          () => SynchronizeUsersAnswersUsecase(instance()),
+      () => SynchronizeUsersAnswersUsecase(instance()),
     );
     instance.registerFactory<DeleteDataSqlUsecase>(
-          () => DeleteDataSqlUsecase(instance()),
+      () => DeleteDataSqlUsecase(instance()),
     );
     instance.registerFactory<GetConferenceSqlUsecase>(
-          () => GetConferenceSqlUsecase(instance()),
+      () => GetConferenceSqlUsecase(instance()),
     );
     instance.registerFactory<GetSurveysSqlUsecase>(
-          () => GetSurveysSqlUsecase(instance()),
+      () => GetSurveysSqlUsecase(instance()),
     );
     instance.registerFactory<GetQuestionAnswersUsecase>(
-          () => GetQuestionAnswersUsecase(instance()),
+      () => GetQuestionAnswersUsecase(instance()),
     );
     instance.registerFactory<InsertUserAndAnswerUsecase>(
-          () => InsertUserAndAnswerUsecase(instance()),
+      () => InsertUserAndAnswerUsecase(instance()),
     );
     instance.registerFactory<SyncBloc>(
-          () => SyncBloc(instance(),instance(), instance(), instance(),instance(), instance(), instance(), instance(), instance()),
+      () => SyncBloc(
+        instance(),
+        instance(),
+        instance(),
+        instance(),
+        instance(),
+        instance(),
+        instance(),
+        instance(),
+        instance(),
+      ),
     );
   }
 }

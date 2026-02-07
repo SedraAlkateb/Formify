@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/domain/models/models.dart';
+import 'package:formify/presentation/conference/widget/conferm_dialog.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
@@ -117,7 +118,8 @@ class ListOfSurveysPage extends StatelessWidget {
                                 context,
                                 Routes.surveyInput,
                               );
-                            }),
+                            }, "ابدأ الاستبيانات"),
+                        
                           ],
                         ),
                       ),

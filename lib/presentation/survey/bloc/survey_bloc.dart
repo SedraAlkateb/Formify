@@ -75,11 +75,11 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
         QuestionModel question1 = question.instanceQuestion();
         emit(ViewQuestionState(question1));
       } else if (event is CreateEmptyAnswerSurveyEvent) {
-        question.answers.add(AnswerModel(0, ""));
+        question.answers.add(AnswerModel(0, "",""));
         QuestionModel question1 = question.instanceQuestion();
         emit(ViewQuestionState(question1));
       } else if (event is CreateBoolAnswerSurveyEvent) {
-        question.answers.add(AnswerModel(0, ""));
+        question.answers.add(AnswerModel(0, "",""));
         QuestionModel question1 = question.instanceQuestion();
         emit(ViewQuestionState(question1));
       } else if (event is CreateEmptyQuesNameSurveyEvent) {
@@ -101,7 +101,7 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
         QuestionModel question1 = question.instanceQuestion();
         emit(ViewQuestionState(question1));
       } else if (event is CreateAnswerSurveyEvent) {
-        question.answers[event.index] = AnswerModel(0, event.value);
+        question.answers[event.index] = AnswerModel(0, event.value,"");
         QuestionModel question1 = question.instanceQuestion();
         emit(ViewQuestionState(question1));
       } else if (event is CreateSurveyWithQuestionEvent) {

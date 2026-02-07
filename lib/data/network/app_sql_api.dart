@@ -7,7 +7,7 @@ abstract class AppSqlApiAbs {
   Future<String> asyncData(GetAsyncModel asyncData);
   Future<void> deleteData();
   Future<List<UserSqlModel>> getDataSql();
-  Future<GetAllConferenceModel> getConference();
+  Future<GetAllConferenceModel?> getConference();
   Future<List<MainSurveyModel>> getSurveys();
   // Future<List<AnswerModel>> getAnswers();
   // Future<List<QuestionModel>> getQuestionAnswers();
@@ -68,7 +68,7 @@ class AppSqlApi extends AppSqlApiAbs {
       final aId = r['a_id'];
       if (aId != null) {
         aMap.putIfAbsent(qId, () => []);
-        aMap[qId]!.add(AnswerModel(aId as int, r['a_title'] as String));
+        aMap[qId]!.add(AnswerModel(aId as int, r['a_title'] as String,""));
       }
     }
     final result = <QuestionModel>[];
@@ -238,7 +238,8 @@ class AppSqlApi extends AppSqlApiAbs {
           answerModel: <AnswerUserModel>[],
         ),
       );
-
+//Image.memory(model.imageBlob)
+      //final bytes = await File(imagePath).readAsBytes();
       usersMap[userId]!.answerModel.add(
         AnswerUserModel(
           row['answer_id'] as int,
@@ -275,14 +276,20 @@ class AppSqlApi extends AppSqlApiAbs {
   //   }
 
   @override
-  Future<GetAllConferenceModel> getConference() async {
+  @override
+  Future<GetAllConferenceModel?> getConference() async {
     final db = await databaseHelper.database;
-    List<Map<String, dynamic>> maps;
-    maps = await db.query('conference');
-    return List.generate(maps.length, (i) {
-      return GetAllConferenceModel.fromMap(maps[i]);
-    }).first;
+
+    final List<Map<String, dynamic>> maps = await db.query('conference');
+
+    if (maps.isEmpty) {
+      return null;
+    }
+
+    return GetAllConferenceModel.fromMap(maps.first);
   }
+
+
 
   @override
   Future<List<MainSurveyModel>> getSurveys() async {

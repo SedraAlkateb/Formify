@@ -39,7 +39,7 @@ class GetConferenceByIdEvent extends ConferenceEvent {
 }
 
 class GetAllNotActiveConferenceEvent extends ConferenceEvent {
-  GetAllNotActiveConferenceEvent();
+
   @override
   List<Object?> get props => [];
 }

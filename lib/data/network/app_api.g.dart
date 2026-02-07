@@ -68,7 +68,7 @@ class _AppServiceClient implements AppServiceClient {
     _data.files.addAll(
       images.map(
         (i) => MapEntry(
-          'image',
+          'img_1',
           MultipartFile.fromFileSync(
             i.path,
             filename: i.path.split(Platform.pathSeparator).last,
@@ -494,6 +494,41 @@ class _AppServiceClient implements AppServiceClient {
     late Message1Response _value;
     try {
       _value = Message1Response.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<GetSurveyWithQuestionAndAnswerForUserBaseResponse>
+  getUserAnswersForSpecificSurvey(int id, int user_id) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = FormData();
+    _data.fields.add(MapEntry('id', id.toString()));
+    _data.fields.add(MapEntry('user_id', user_id.toString()));
+    final _options =
+        _setStreamType<GetSurveyWithQuestionAndAnswerForUserBaseResponse>(
+          Options(method: 'POST', headers: _headers, extra: _extra)
+              .compose(
+                _dio.options,
+                'synchronize/get_userAnswersFor_specificSurvey.php',
+                queryParameters: queryParameters,
+                data: _data,
+              )
+              .copyWith(
+                baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl),
+              ),
+        );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late GetSurveyWithQuestionAndAnswerForUserBaseResponse _value;
+    try {
+      _value = GetSurveyWithQuestionAndAnswerForUserBaseResponse.fromJson(
+        _result.data!,
+      );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
       rethrow;

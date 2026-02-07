@@ -95,13 +95,15 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
       (failure) => emit(DataErrorState(failure: failure)),
       (data) {
         conferenceId = event.conferenceId;
-        emit(GetDataState(data,event.conferenceId));
+        emit(GetDataState(data, event.conferenceId));
       },
     );
   }
 
   Future<void> _onUpload(UploadDataEvent event, Emitter<SyncState> emit) async {
-    (await synchronizeUsersAnswersUsecase.execute(AllUserModel(event.userRequest,event.conference_id))).fold(
+    (await synchronizeUsersAnswersUsecase.execute(
+      AllUserModel(event.userRequest, event.conference_id),
+    )).fold(
       (failure) => emit(DataErrorState(failure: failure)),
       (_) => emit(const UploadDataState()),
     );
@@ -114,7 +116,13 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     emit(const GetConferenceAsyncLoadingState());
     (await getConferenceSqlUsecase.execute()).fold(
       (failure) => emit(GetConferenceAsyncErrorState(failure: failure)),
-      (data) => emit(GetConferenceAsyncState(data)),
+      (data) {
+        if (data == null) {
+          emit(GetConferenceAsyncEmptyState());
+        } else {
+          emit(GetConferenceAsyncState(data));
+        }
+      },
     );
   }
 
@@ -128,6 +136,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
       (data) => emit(GetSurveyAsyncState(data)),
     );
   }
+
   Future<void> _onGetQuestionAnswers(
     GetQuestionAnswersEvent event,
     Emitter<SyncState> emit,
@@ -219,6 +228,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
       // مثال طباعة:
       s.answers.forEach((index, list) {
         for (final a in list) {
+          print(a.content);
           userSqlModel?.answerModel.add(a);
         }
       });

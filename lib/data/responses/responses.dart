@@ -165,6 +165,33 @@ class GetSurveyWithQuestionAndAnswerResponse {
   Map<String, dynamic> toJson() =>
       _$GetSurveyWithQuestionAndAnswerResponseToJson(this);
 }
+@JsonSerializable()
+class GetSurveyWithQuestionAndAnswerForUserResponse {
+  @JsonKey(name: "id")
+  int? id;
+  @JsonKey(name: "title")
+  String? title;
+  @JsonKey(name: "description")
+  String? description;
+  @JsonKey(name: "color")
+  String? color;
+  @JsonKey(name: "questions")
+  List<GetQuestionAndAnswerForUserResponse>? questions;
+
+  GetSurveyWithQuestionAndAnswerForUserResponse(
+      this.id,
+      this.title,
+      this.description,
+      this.color,
+      this.questions,
+      ); // from json
+  factory GetSurveyWithQuestionAndAnswerForUserResponse.fromJson(
+      Map<String, dynamic> json,
+      ) => _$GetSurveyWithQuestionAndAnswerForUserResponseFromJson(json);
+  // to json
+  Map<String, dynamic> toJson() =>
+      _$GetSurveyWithQuestionAndAnswerForUserResponseToJson(this);
+}
 
 @JsonSerializable()
 class GetSurveyWithQuestionAndAnswerByIdBaseResponse extends BaseResponse {
@@ -210,6 +237,53 @@ class GetQuestionAndAnswerResponse {
 }
 
 @JsonSerializable()
+class GetQuestionAndAnswerForUserResponse {
+  @JsonKey(name: "id")
+  int? id;
+  @JsonKey(name: "question")
+  String? question;
+  @JsonKey(name: "question_order")
+  int? question_order;
+  @JsonKey(name: "is_required")
+  bool? is_required;
+  @JsonKey(name: "type")
+  String? type;
+  @JsonKey(name: "answers")
+  List<GetAnswerResponse> answers;
+  @JsonKey(name: "user_answer")
+  List<GetAnswerUserResponse> answersUser;
+
+  GetQuestionAndAnswerForUserResponse(
+    this.id,
+    this.question,
+    this.question_order,
+    this.is_required,
+    this.type,
+    this.answers,
+      this.answersUser
+  ); // from json
+  factory GetQuestionAndAnswerForUserResponse.fromJson(Map<String, dynamic> json) =>
+      _$GetQuestionAndAnswerForUserResponseFromJson(json);
+  // to json
+  Map<String, dynamic> toJson() => _$GetQuestionAndAnswerForUserResponseToJson(this);
+}
+@JsonSerializable()
+class GetAnswerUserResponse {
+  @JsonKey(name: "id")
+  int? id;
+  @JsonKey(name: "answer_id")
+  int? answer_id;
+  @JsonKey(name: "content")
+  String? content;
+  GetAnswerUserResponse(this.id, this.answer_id,this.content);
+  // from json
+  factory GetAnswerUserResponse.fromJson(Map<String, dynamic> json) =>
+      _$GetAnswerUserResponseFromJson(json);
+  // to json
+  Map<String, dynamic> toJson() => _$GetAnswerUserResponseToJson(this);
+}
+
+@JsonSerializable()
 class GetAnswerResponse {
   @JsonKey(name: "id")
   int? id;
@@ -236,6 +310,20 @@ class GetSurveyWithQuestionAndAnswerBaseResponse extends BaseResponse {
   // to json
   Map<String, dynamic> toJson() =>
       _$GetSurveyWithQuestionAndAnswerBaseResponseToJson(this);
+}
+@JsonSerializable()
+class GetSurveyWithQuestionAndAnswerForUserBaseResponse extends BaseResponse {
+  @JsonKey(name: "data")
+  GetSurveyWithQuestionAndAnswerForUserResponse data;
+  GetSurveyWithQuestionAndAnswerForUserBaseResponse(this.data);
+  // from json
+  factory GetSurveyWithQuestionAndAnswerForUserBaseResponse.fromJson(
+      Map<String, dynamic> json,
+      ) => _$GetSurveyWithQuestionAndAnswerForUserBaseResponseFromJson(json);
+
+  // to json
+  Map<String, dynamic> toJson() =>
+      _$GetSurveyWithQuestionAndAnswerForUserBaseResponseToJson(this);
 }
 
 @JsonSerializable()

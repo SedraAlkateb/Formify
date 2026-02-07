@@ -81,7 +81,7 @@ class CreateQuesSurveyPage extends StatelessWidget {
                       ));
 
                       final String routeName = item.route;
-                      Navigator.pushNamed(
+                      Navigator.pushReplacementNamed(
                         context,
                         routeName,
                         arguments: {

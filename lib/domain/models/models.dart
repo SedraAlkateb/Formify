@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:formify/domain/models/model_q.dart';
 
 class SurveyModel {
@@ -28,6 +30,26 @@ class SurveyModel {
   }
 }
 
+class SurveyUserModel {
+SurveyModel surveyModel;
+  List<AnswerUserSurveyWithIndexModel> answerUser;
+  SurveyUserModel({
+    required this.surveyModel,
+    required this.answerUser,
+  });
+}
+
+class AnswerUserSurveyModel {
+  int id;
+  int answer_id;
+  String content;
+  AnswerUserSurveyModel(this.id, this.answer_id, this.content);
+}
+class AnswerUserSurveyWithIndexModel {
+   List<AnswerUserSurveyModel> userAnswer;
+  int index;
+   AnswerUserSurveyWithIndexModel(this.userAnswer, this.index);
+}
 class QuestionModel {
   int? id;
   String title;
@@ -73,8 +95,10 @@ class QuestionModel {
       'isRequired': isRequired,
       'Type': type.name,
       'answer': answers.isEmpty
-          ? [type.answer]
-          : answers.map((e) => e.title).toList(),
+          ? [
+              {"title": type.answer, "img": ""},
+            ]
+          : answers.map((e) => e.toJson()).toList(),
     };
   }
 
@@ -102,6 +126,8 @@ class QuestionModel {
     );
   }
 }
+
+class CreateAnswer {}
 
 ////createSurveyQuestionsAndAnswers
 class SurveyQuestionAndAnswersModel {
@@ -442,10 +468,15 @@ class AnswerModel {
   int id;
   int? questionId;
   String title;
-
-  AnswerModel(this.id, this.title, {this.questionId});
+  String? imgName;
+  File? img;
+  AnswerModel(this.id, this.title, this.imgName, {this.questionId, this.img});
   Map<String, dynamic> toMap() {
     return {'id': id, 'title': title, 'question_id': questionId};
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'title': title, 'img': imgName};
   }
 
   String toMapString() {
@@ -453,7 +484,12 @@ class AnswerModel {
   }
 
   factory AnswerModel.fromMap(Map<String, dynamic> map) {
-    return AnswerModel(map['id'], map['title'], questionId: map['question_id']);
+    return AnswerModel(
+      map['id'],
+      map['title'],
+      map['img'],
+      questionId: map['question_id'],
+    );
   }
 }
 
@@ -508,7 +544,7 @@ class UserSqlModel {
       'email': email,
       'phone': phone,
       'address': address,
-      // 'answers': answerModel.map((user) => user.toJsonSql(userId)).toList(),
+      'answers': answerModel.map((user) => user.toJson()).toList(),
     };
   }
 
@@ -535,11 +571,14 @@ class UserSqlModel {
 class AllUserModel {
   List<UserSqlModel> users; // قائمة من المستخدمين (UserModel)
   int conference_id;
-  AllUserModel(this.users,this.conference_id); // المُنشئ الذي يأخذ قائمة المستخدمين
+  AllUserModel(
+    this.users,
+    this.conference_id,
+  ); // المُنشئ الذي يأخذ قائمة المستخدمين
 
   Map<String, dynamic> toJson() {
     return {
-      "conference_id":conference_id,
+      "conference_id": conference_id,
       'users': users
           .map((user) => user.toJson())
           .toList(), // تحويل قائمة المستخدمين إلى JSON
@@ -551,7 +590,7 @@ class AllUserModel {
       List<UserSqlModel>.from(
         map['users'].map((userMap) => UserModel.fromMap(userMap)),
       ),
-        map['conference_id']
+      map['conference_id'],
     );
   }
 }
