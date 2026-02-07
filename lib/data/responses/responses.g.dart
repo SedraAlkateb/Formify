@@ -162,6 +162,33 @@ Map<String, dynamic> _$GetSurveyWithQuestionAndAnswerResponseToJson(
   'questions': instance.questions,
 };
 
+GetSurveyWithQuestionAndAnswerForUserResponse
+_$GetSurveyWithQuestionAndAnswerForUserResponseFromJson(
+  Map<String, dynamic> json,
+) => GetSurveyWithQuestionAndAnswerForUserResponse(
+  (json['id'] as num?)?.toInt(),
+  json['title'] as String?,
+  json['description'] as String?,
+  json['color'] as String?,
+  (json['questions'] as List<dynamic>?)
+      ?.map(
+        (e) => GetQuestionAndAnswerForUserResponse.fromJson(
+          e as Map<String, dynamic>,
+        ),
+      )
+      .toList(),
+);
+
+Map<String, dynamic> _$GetSurveyWithQuestionAndAnswerForUserResponseToJson(
+  GetSurveyWithQuestionAndAnswerForUserResponse instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'title': instance.title,
+  'description': instance.description,
+  'color': instance.color,
+  'questions': instance.questions,
+};
+
 GetSurveyWithQuestionAndAnswerByIdBaseResponse
 _$GetSurveyWithQuestionAndAnswerByIdBaseResponseFromJson(
   Map<String, dynamic> json,
@@ -206,6 +233,50 @@ Map<String, dynamic> _$GetQuestionAndAnswerResponseToJson(
   'answers': instance.answers,
 };
 
+GetQuestionAndAnswerForUserResponse
+_$GetQuestionAndAnswerForUserResponseFromJson(Map<String, dynamic> json) =>
+    GetQuestionAndAnswerForUserResponse(
+      (json['id'] as num?)?.toInt(),
+      json['question'] as String?,
+      (json['question_order'] as num?)?.toInt(),
+      json['is_required'] as bool?,
+      json['type'] as String?,
+      (json['answers'] as List<dynamic>)
+          .map((e) => GetAnswerResponse.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      (json['user_answer'] as List<dynamic>)
+          .map((e) => GetAnswerUserResponse.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$GetQuestionAndAnswerForUserResponseToJson(
+  GetQuestionAndAnswerForUserResponse instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'question': instance.question,
+  'question_order': instance.question_order,
+  'is_required': instance.is_required,
+  'type': instance.type,
+  'answers': instance.answers,
+  'user_answer': instance.answersUser,
+};
+
+GetAnswerUserResponse _$GetAnswerUserResponseFromJson(
+  Map<String, dynamic> json,
+) => GetAnswerUserResponse(
+  (json['id'] as num?)?.toInt(),
+  (json['answer_id'] as num?)?.toInt(),
+  json['content'] as String?,
+);
+
+Map<String, dynamic> _$GetAnswerUserResponseToJson(
+  GetAnswerUserResponse instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'answer_id': instance.answer_id,
+  'content': instance.content,
+};
+
 GetAnswerResponse _$GetAnswerResponseFromJson(Map<String, dynamic> json) =>
     GetAnswerResponse((json['id'] as num?)?.toInt(), json['title'] as String?);
 
@@ -230,6 +301,26 @@ _$GetSurveyWithQuestionAndAnswerBaseResponseFromJson(
 
 Map<String, dynamic> _$GetSurveyWithQuestionAndAnswerBaseResponseToJson(
   GetSurveyWithQuestionAndAnswerBaseResponse instance,
+) => <String, dynamic>{
+  'status': instance.status,
+  'message': instance.message,
+  'data': instance.data,
+};
+
+GetSurveyWithQuestionAndAnswerForUserBaseResponse
+_$GetSurveyWithQuestionAndAnswerForUserBaseResponseFromJson(
+  Map<String, dynamic> json,
+) =>
+    GetSurveyWithQuestionAndAnswerForUserBaseResponse(
+        GetSurveyWithQuestionAndAnswerForUserResponse.fromJson(
+          json['data'] as Map<String, dynamic>,
+        ),
+      )
+      ..status = json['status'] as String?
+      ..message = json['message'] as String?;
+
+Map<String, dynamic> _$GetSurveyWithQuestionAndAnswerForUserBaseResponseToJson(
+  GetSurveyWithQuestionAndAnswerForUserBaseResponse instance,
 ) => <String, dynamic>{
   'status': instance.status,
   'message': instance.message,

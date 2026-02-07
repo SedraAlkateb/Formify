@@ -22,7 +22,7 @@ abstract class AppServiceClient {
   @POST("survey-crud/create_survey_questionsAndAnswers.php")
   Future<CreateSurveyQuestionsBaseResponse> createSurveyQuestionsAndAnswers(
       @Part(name: "data")  String surveyQ,
-      @Part(name: "image") List<File> images
+      @Part(name: "img_1") List<File> images
   );
   @GET("survey-crud/get_all_survey.php")
   Future<GetAllSurveyBaseResponse> getAllSurvey();
@@ -78,6 +78,11 @@ abstract class AppServiceClient {
   Future<Message1Response> synchronizeUsersAnswers(
     @Body() AllUserModel userRequest,
   );
+  @POST("synchronize/get_userAnswersFor_specificSurvey.php")
+  Future<GetSurveyWithQuestionAndAnswerForUserBaseResponse> getUserAnswersForSpecificSurvey(
+  @Part(name: "id") int id,
+      @Part(name: "user_id") int user_id
+      );
   /////////////update_survey
   /////////update_conference
 }

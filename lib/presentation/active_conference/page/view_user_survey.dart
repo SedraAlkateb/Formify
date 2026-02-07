@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/data/mapper/mapper.dart';
-import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/active_conference/bloc/active_conference_bloc.dart';
 import 'package:formify/presentation/active_conference/widget/view_all_user.dart';
 import 'package:formify/presentation/resources/color_manager.dart';

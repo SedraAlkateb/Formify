@@ -7,7 +7,7 @@ import 'package:formify/domain/repostitory/repository_sql.dart';
 class GetConferenceSqlUsecase extends Equatable {
   final RepositorySql _repository;
   const GetConferenceSqlUsecase(this._repository);
-  Future<Either<Failure, GetAllConferenceModel>> execute() async {
+  Future<Either<Failure, GetAllConferenceModel?>> execute() async {
     return await _repository.getConference();
   }
 

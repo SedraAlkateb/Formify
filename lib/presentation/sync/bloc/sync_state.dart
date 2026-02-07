@@ -60,7 +60,11 @@ final class GetConferenceAsyncState extends SyncState {
   @override
   List<Object?> get props => [conferenceModel];
 }
+final class GetConferenceAsyncEmptyState extends SyncState {
 
+  @override
+  List<Object?> get props => [];
+}
 final class GetConferenceAsyncLoadingState extends SyncState {
   const GetConferenceAsyncLoadingState();
 }final class AsyncConferenceErrorState extends SyncState {

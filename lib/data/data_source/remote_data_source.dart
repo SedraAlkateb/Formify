@@ -36,6 +36,9 @@ abstract class RemoteDataSource {
   Future<GetAllUserBaseResponse> getUsersByConferenceId(int conferenceId);
   Future<Message1Response> synchronizeUsersAnswers(AllUserModel userRequest,
       );
+  Future<GetSurveyWithQuestionAndAnswerForUserBaseResponse> getUserAnswersForSpecificSurvey(
+   int id,int user_id
+      );
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -138,6 +141,11 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   @override
   Future<Message1Response> synchronizeUsersAnswers(AllUserModel userRequest) async {
     return await _appServiceClient.synchronizeUsersAnswers(userRequest);
+  }
+
+  @override
+  Future<GetSurveyWithQuestionAndAnswerForUserBaseResponse> getUserAnswersForSpecificSurvey(int id, int user_id)  async {
+    return await _appServiceClient.getUserAnswersForSpecificSurvey(id,user_id);
   }
 
 

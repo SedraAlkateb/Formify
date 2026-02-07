@@ -202,10 +202,11 @@ class ViewSurvey extends StatelessWidget {
                               is CreateSurveyWithQuestionLoadingState) {
                             loading(context);
                           } else if (state is CreateSurveyWithQuestionState) {
-                            Navigator.pushNamedAndRemoveUntil(
+                            success(context);
+                            Navigator.pop(
                               context,
-                              Routes.home,
-                              (route) => false,
+                              // Routes.home,
+                          //    (route) => false,
                             );
                           }
                         },

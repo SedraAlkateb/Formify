@@ -9,7 +9,7 @@ Widget nextWidget(BuildContext context){
     child: ElevatedButton(
       onPressed: () {
         BlocProvider.of<SurveyBloc>(context).add(AddQuestionEvent());
-        Navigator.pushNamed(context, Routes.viewSurvey);
+        Navigator.pushReplacementNamed(context, Routes.viewSurvey);
       },
       child: const Text("Next"),
     ),

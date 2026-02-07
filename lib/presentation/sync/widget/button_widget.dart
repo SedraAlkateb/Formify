@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 
-Widget animatedButton(BuildContext context, void Function()? onPressed) {
-  return _AnimatedButton(onPressed: onPressed);
+Widget animatedButton(BuildContext context, void Function()? onPressed,String text) {
+  return _AnimatedButton(onPressed: onPressed,text:text ,);
 }
 
 class _AnimatedButton extends StatefulWidget {
   final VoidCallback? onPressed;
-  const _AnimatedButton({this.onPressed});
+  final String text;
+  const _AnimatedButton({this.onPressed,required this.text});
 
   @override
   State<_AnimatedButton> createState() => _AnimatedButtonState();
@@ -76,16 +77,16 @@ class _AnimatedButtonState extends State<_AnimatedButton>
               curve: Curves.easeOut,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
+                children: [
                   Text(
-                    "ابدأ الاستبيانات",
-                    style: TextStyle(
+                    widget.text,
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 18, // 👈 أصغر
                     ),
                   ),
-                  SizedBox(width: 6),
-                  Icon(Icons.arrow_forward_ios, size: 18),
+                  const SizedBox(width: 6),
+                  const Icon(Icons.arrow_forward_ios, size: 18),
                 ],
               ),
             ),

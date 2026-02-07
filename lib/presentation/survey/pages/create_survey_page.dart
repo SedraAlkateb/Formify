@@ -162,6 +162,7 @@ class CreateSurveyPage extends StatelessWidget {
   }else if(state is CreateSurveyErrorState){
     error(context,state.failure.massage,state.failure.code);
   }else if(state is CreateSurveyState){
+    success(context);
     Navigator.pushReplacementNamed(
       context,
       Routes.createQuesSurvey,
