@@ -89,5 +89,20 @@ class ActiveConferenceBloc
 
       emit(GetUserSurveyState(event.userModel, surveyModel));
     });
+    on<GetCompletedSurveyEvent>((event, emit) async {
+      emit(GetCompletedSurveyLoadingState());
+      final result = await getUserAnswersSurveyUsecase.execute(
+        event.surveyId,
+        event.userId,
+      );
+      result.fold(
+        (failure) {
+          emit(GetCompletedSurveyErrorState(failure: failure));
+        },
+        (data) async {
+          emit(GetCompletedSurveyState(data));
+        },
+      );
+    });
   }
 }

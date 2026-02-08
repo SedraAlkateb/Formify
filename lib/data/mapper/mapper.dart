@@ -106,11 +106,12 @@ extension GetQuestionModelUserMapper on GetQuestionAndAnswerForUserResponse? {
   }
 }
 
+
 extension GetAllAnswerUserModelMapper on List<GetAnswerUserResponse>? {
-  List<AnswerUserSurveyModel> toDomain() {
-    List<AnswerUserSurveyModel> allAnswer =
-        (this?.map((response) => response.toDomain()) ?? const Iterable.empty())
-            .cast<AnswerUserSurveyModel>()
+  List<String> toDomain() {
+    List<String> allAnswer =
+        (this?.map((response) => response.toDomain().content) ?? const Iterable.empty())
+            .cast<String>()
             .toList();
     return allAnswer;
   }

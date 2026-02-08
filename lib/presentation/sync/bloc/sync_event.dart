@@ -66,7 +66,8 @@ final class CreateUserAnswerEvent extends SyncEvent {
 final class GetQuestionAnswersEvent extends SyncEvent {
   final int id;
   final String surveyName;
-  const GetQuestionAnswersEvent(this.id, this.surveyName);
+  final int index;
+  const GetQuestionAnswersEvent(this.id, this.surveyName,this.index);
 
   @override
   List<Object?> get props => [id, surveyName];

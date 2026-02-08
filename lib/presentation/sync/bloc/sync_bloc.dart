@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:formify/data/mapper/mapper.dart';
 import 'package:formify/data/network/failure.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/usecase/add_async_data_sql_usecase.dart';
@@ -27,7 +28,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   final GetSurveysSqlUsecase getSurveysSqlUsecase;
   final GetQuestionAnswersUsecase getQuestionAnswersUsecase;
   final InsertUserAndAnswerUsecase insertUserAndAnswerUsecase;
-
+  List<IsActiveMainSurveyModel> surveys=[];
   UserSqlModel? userSqlModel;
   int? conferenceId;
 
@@ -101,12 +102,17 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   }
 
   Future<void> _onUpload(UploadDataEvent event, Emitter<SyncState> emit) async {
-    (await synchronizeUsersAnswersUsecase.execute(
-      AllUserModel(event.userRequest, event.conference_id),
-    )).fold(
-      (failure) => emit(DataErrorState(failure: failure)),
-      (_) => emit(const UploadDataState()),
-    );
+    if(event.userRequest.isNotEmpty){
+      (await synchronizeUsersAnswersUsecase.execute(
+        AllUserModel(event.userRequest, event.conference_id),
+      )).fold(
+            (failure) => emit(DataErrorState(failure: failure)),
+            (_) => emit(const UploadDataState()),
+      );
+    }else{
+      emit(DeleteDataState());
+    }
+
   }
 
   Future<void> _onGetConference(
@@ -133,7 +139,11 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     emit(const GetSurveyAsyncLoadingState());
     (await getSurveysSqlUsecase.execute()).fold(
       (failure) => emit(GetSurveyAsyncErrorState(failure: failure)),
-      (data) => emit(GetSurveyAsyncState(data)),
+      (data)  {
+        surveys=data.toDomain();
+        emit(GetSurveyAsyncState(surveys));
+
+        },
     );
   }
 
@@ -148,6 +158,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
       (questions) {
         emit(
           SurveyReadyState(
+            index: event.index,
             surveyName: event.surveyName,
             questions: questions,
             answers: <int, List<AnswerUserModel>>{},
@@ -232,6 +243,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
           userSqlModel?.answerModel.add(a);
         }
       });
+
       emit(const InsertUserLoadingState());
 
       (await insertUserAndAnswerUsecase.execute(userSqlModel!)).fold(
@@ -240,8 +252,8 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
           emit(InsertUserSuccessState());
         },
       );
-
-      emit(const SurveySubmitSuccessState());
+      surveys[s.index].isActive=true;
+      emit( SurveySubmitSuccessState(surveys));
     } catch (e) {
       emit(SurveySubmitErrorState(failure: Failure(0, e.toString())));
     }

@@ -60,6 +60,7 @@ class _SurveyInputPageState extends State<SurveyInputPage> {
 
     final isLast = index == s.questions.length - 1;
     if (isLast) {
+      //
       context.read<SyncBloc>().add(const SurveySubmitEvent());
       return;
     }
@@ -94,6 +95,7 @@ class _SurveyInputPageState extends State<SurveyInputPage> {
           child: BlocConsumer<SyncBloc, SyncState>(
             listener: (context, state) {
               if (state is SurveySubmitSuccessState) {
+                Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text("تم إرسال الإجابات بنجاح")),
                 );

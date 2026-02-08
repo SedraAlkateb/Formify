@@ -84,7 +84,7 @@ final class GetConferenceAsyncErrorState extends SyncState {
 }
 
 final class GetSurveyAsyncState extends SyncState {
-  final List<MainSurveyModel> surveys;
+  final List<IsActiveMainSurveyModel> surveys;
   const GetSurveyAsyncState(this.surveys);
 
   @override
@@ -126,12 +126,13 @@ final class SurveyReadyState extends SyncState {
 
   /// for UI header/progress only
   final int currentIndex;
-
+  final int index;
   const SurveyReadyState({
     required this.surveyName,
     required this.questions,
     required this.answers,
     required this.currentIndex,
+    required this.index
   });
 
   SurveyReadyState copyWith({
@@ -143,6 +144,7 @@ final class SurveyReadyState extends SyncState {
       questions: questions,
       answers: answers ?? this.answers,
       currentIndex: currentIndex ?? this.currentIndex,
+      index: index
     );
   }
 
@@ -159,7 +161,11 @@ final class SurveySubmittingState extends SyncState {
 }
 
 final class SurveySubmitSuccessState extends SyncState {
-  const SurveySubmitSuccessState();
+  final List<IsActiveMainSurveyModel> surveys;
+  const SurveySubmitSuccessState(this.surveys);
+
+  @override
+  List<Object?> get props => [surveys];
 }
 
 final class SurveySubmitErrorState extends SyncState {

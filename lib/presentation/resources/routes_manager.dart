@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:formify/app/di.dart';
 import 'package:formify/presentation/active_conference/page/all_active_conference.dart';
 import 'package:formify/presentation/active_conference/page/view_active_conference_page.dart';
+import 'package:formify/presentation/active_conference/page/view_completed_survey.dart';
 import 'package:formify/presentation/conference/pages/link_survey_by_id.dart';
 import 'package:formify/presentation/conference/pages/create_conference_page.dart';
 import 'package:formify/presentation/conference/pages/view_conference_page.dart';
@@ -40,6 +41,7 @@ class Routes {
   static const String insertUser = "/insertUser";
   static const String viewActiveConference = "/viewActiveConference";
   static const String viewUserSurvey = "/viewUserSurvey";
+  static const String viewCompletedSurvey = "/viewCompletedSurvey";
 
 }
 
@@ -103,6 +105,8 @@ class RouteGenerator {
 
       case Routes.getAllActiveConference:
         return _animatedRoute(AllActiveConferencePage());
+      case Routes.viewCompletedSurvey:
+        return _animatedRoute(ViewCompletedSurvey());
       case Routes.getAllSurvey:
         initSurveyModule();
         return _animatedRoute(ViewAllSurveyPage());

@@ -111,6 +111,13 @@ class _HomePageState extends State<HomePage> {
                         } else if (state is GetAllEmptyConferenceState) {
                           return emptyFullScreen(context);
                         }
+                        // else if(state is GetConferenceAsyncEmptyState){
+                        //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:  const SnackBar(
+                        //     content: Text(
+                        //       "No Conference Found",
+                        //     ),
+                        //   ),));
+                        // }
                         final items = context
                             .read<ConferenceBloc>()
                             .allNotActiveConference;
@@ -151,8 +158,8 @@ class _HomePageState extends State<HomePage> {
           Padding(
             padding: const EdgeInsets.all(30),
             child: ElevatedButton(onPressed: (){
-              Navigator.pushNamed(context,
-              Routes.showConference);
+              Navigator.pushNamedAndRemoveUntil(context,
+              Routes.showConference,(route) => false,);
               BlocProvider.of<SyncBloc>(context).add(GetConferenceAsyncEvent());
             }, child:Text("start") ),
           ),
