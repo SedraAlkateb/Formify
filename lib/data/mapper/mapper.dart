@@ -126,7 +126,7 @@ extension GetAllQuestionForUserMapper
         (this!.data.questions?.asMap().entries.map((entry) {
                   final int index = entry.key;
                   final response = entry.value;
-                  if (response.answersUser.isNotEmpty) {
+                  if (response.answersUser!=null&&response.answersUser!.isNotEmpty) {
                     answerUser.add(
                       AnswerUserSurveyWithIndexModel(
                         response.answersUser.toDomain(),
