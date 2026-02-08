@@ -94,6 +94,7 @@ class ActiveConferenceBloc
       final result = await getUserAnswersSurveyUsecase.execute(
         event.surveyId,
         event.userId,
+
       );
       result.fold(
         (failure) {

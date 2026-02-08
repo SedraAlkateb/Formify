@@ -515,7 +515,7 @@ class _AppServiceClient implements AppServiceClient {
           Options(method: 'POST', headers: _headers, extra: _extra)
               .compose(
                 _dio.options,
-                'synchronize/get_userAnswersFor_specificSurvey.php',
+                'users-crud/get_userAnswersFor_specificSurvey.php',
                 queryParameters: queryParameters,
                 data: _data,
               )

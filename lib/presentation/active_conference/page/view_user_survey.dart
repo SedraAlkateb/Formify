@@ -6,7 +6,6 @@ import 'package:formify/presentation/active_conference/widget/view_all_user.dart
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/resources/theme_bloc/theme_bloc.dart';
-import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 import 'package:formify/presentation/survey/widget/list_survey_widget.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
@@ -104,9 +103,10 @@ class ViewUserSurveyPage extends StatelessWidget {
                                             .color,
                                       ),
                                     );
-                                    BlocProvider.of<SurveyBloc>(context).add(
-                                      ViewSurveyByIdEvent(
+                                    BlocProvider.of<ActiveConferenceBloc>(context).add(
+                                      GetCompletedSurveyEvent(
                                         state.surveys[index].id,
+                                        state.userModel.id
                                       ),
                                     );
                                   },
