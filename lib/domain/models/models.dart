@@ -31,12 +31,9 @@ class SurveyModel {
 }
 
 class SurveyUserModel {
-SurveyModel surveyModel;
+  SurveyModel surveyModel;
   List<AnswerUserSurveyWithIndexModel> answerUser;
-  SurveyUserModel({
-    required this.surveyModel,
-    required this.answerUser,
-  });
+  SurveyUserModel({required this.surveyModel, required this.answerUser});
 }
 
 class AnswerUserSurveyModel {
@@ -45,11 +42,13 @@ class AnswerUserSurveyModel {
   String content;
   AnswerUserSurveyModel(this.id, this.answer_id, this.content);
 }
+
 class AnswerUserSurveyWithIndexModel {
-   List<AnswerUserSurveyModel> userAnswer;
+  List<String> userAnswer;
   int index;
-   AnswerUserSurveyWithIndexModel(this.userAnswer, this.index);
+  AnswerUserSurveyWithIndexModel(this.userAnswer, this.index);
 }
+
 class QuestionModel {
   int? id;
   String title;
@@ -146,6 +145,8 @@ class CreateSurveyModel {
 
   CreateSurveyModel(this.id, this.title);
 }
+
+
 
 class MainSurveyModel {
   int id;

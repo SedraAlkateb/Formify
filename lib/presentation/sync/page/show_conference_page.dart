@@ -253,42 +253,50 @@ class ShowConferencePage extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              Stack(
-                                alignment: Alignment.bottomCenter,
+                              Column(
                                 children: [
-                                  LottieBuilder.asset(
-                                    ShowConferenceJsonAssets.bubbles,
-                                    width: 200,
-                                    fit: BoxFit.cover,
-                                  ),
-                                  Column(
-                                    children: [
-                                      animatedButton(context, () {
-                                        Navigator.pushReplacementNamed(
+                                  animatedButton(context, () {
+                                    Navigator.pushReplacementNamed(
+                                      context,
+                                      Routes.insertUser,
+                                    );
+                                  }, "ابدأ الاستبيانات"),
+                                  SizedBox(height: 10),
+                                  animatedButton(context, () {
+                                    showConfirmDialog(
+                                      context: context,
+                                      title: "offline conference",
+                                      message:
+                                          "Are you sure you want to save conference offline",
+                                      onConfirm: () {
+                                        BlocProvider.of<SyncBloc>(
                                           context,
-                                          Routes.insertUser,
+                                        ).add(
+                                          GetDataEvent(conferenceModel.id),
                                         );
-                                      }, "ابدأ الاستبيانات"),
-                                      SizedBox(height: 10),
-                                      animatedButton(context, () {
-                                        showConfirmDialog(
-                                          context: context,
-                                          title: "offline conference",
-                                          message:
-                                              "Are you sure you want to save conference offline",
-                                          onConfirm: () {
-                                            BlocProvider.of<SyncBloc>(
-                                              context,
-                                            ).add(
-                                              GetDataEvent(conferenceModel.id),
-                                            );
 
-                                            //    BlocProvider.of<ConferenceBloc>(context).add(SelectEndedConferenceEvent( allConference[index].id));
-                                          },
+                                        //    BlocProvider.of<ConferenceBloc>(context).add(SelectEndedConferenceEvent( allConference[index].id));
+                                      },
+                                    );
+                                  }, "رفع الاستبيان"),
+                                  SizedBox(height: 10),
+                                  animatedButton(context, () {
+                                    showConfirmDialog(
+                                      context: context,
+                                      title: "offline conference",
+                                      message:
+                                      "Are you sure you want to save conference offline",
+                                      onConfirm: () {
+                                        BlocProvider.of<SyncBloc>(
+                                          context,
+                                        ).add(
+                                          GetDataEvent(conferenceModel.id),
                                         );
-                                      }, "رفع الاستبيان"),
-                                    ],
-                                  ),
+
+                                        //    BlocProvider.of<ConferenceBloc>(context).add(SelectEndedConferenceEvent( allConference[index].id));
+                                      },
+                                    );
+                                  }, "رفع الاستبيان"),
                                 ],
                               ),
                             ],

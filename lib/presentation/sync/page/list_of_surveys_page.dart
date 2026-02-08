@@ -67,63 +67,104 @@ class ListOfSurveysPage extends StatelessWidget {
             ),
             BlocBuilder<SyncBloc, SyncState>(
               buildWhen: (previous, current) =>
-              current is GetSurveyAsyncErrorState
-                  || current is GetSurveyAsyncLoadingState
-                  || current is GetSurveyAsyncState,
+                  current is GetSurveyAsyncErrorState ||
+                  current is GetSurveyAsyncLoadingState ||
+                  current is GetSurveyAsyncState ||
+                  current is SurveySubmitSuccessState,
               builder: (context, state) {
                 if (state is GetSurveyAsyncErrorState) {
                   return errorFullScreen(context);
                 } else if (state is GetSurveyAsyncLoadingState) {
                   return loadingFullScreen(context);
-                }
-                else if (state is GetSurveyAsyncState) {
-                  List<MainSurveyModel> surveys = state.surveys;
+                } else if (state is GetSurveyAsyncState ||
+                    state is SurveySubmitSuccessState) {
+                  List<IsActiveMainSurveyModel> surveys =[];
+                  if(state is SurveySubmitSuccessState ){
+                    surveys=state.surveys;
+                  }
+                  if(state is GetSurveyAsyncState ){
+                    surveys=state.surveys;
+                  }
                   return Expanded(
-                    child: ListView.builder(
-                      itemBuilder: (context, index) => Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(color: ColorManager.primary),
-                          color: ColorManager.white,
-                          //.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        padding: EdgeInsets.all(20),
-                        margin: EdgeInsets.symmetric(
-                          horizontal: 30,
-                          vertical: 20,
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            CardListUpDown(),
-                            SizedBox(height: 10),
-                            Text(
-                              surveys[index].title,
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ListView.builder(
+                    
+                            itemBuilder: (context, index) => Container(
+                              decoration: BoxDecoration(
+                                border: Border.all(color: ColorManager.primary),
+                                color: ColorManager.white,
+                                //.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              padding: EdgeInsets.all(20),
+                              margin: EdgeInsets.symmetric(
+                                horizontal: 30,
+                                vertical: 20,
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  CardListUpDown(),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    surveys[index].title,
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    surveys[index].description,
+                                    style: TextStyle(fontSize: 15),
+                                  ),
+                                  SizedBox(height: 30),
+                                  animatedButton(context,
+                                          surveys[index].isActive==true?null:
+                                          () {
+                                    BlocProvider.of<SyncBloc>(context).add(
+                                      GetQuestionAnswersEvent(
+                                        surveys[index].id,
+                                        surveys[index].title,
+                                        index,
+                                      ),
+                                    );
+                                    Navigator.pushNamed(context, Routes.surveyInput);
+                                  }, "ابدأ الاستبيانات"),
+                                ],
                               ),
                             ),
-                            Text(
-                              surveys[index].description,
-                              style: TextStyle(fontSize: 15),
+                            itemCount: surveys.length,
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 30,bottom: 30),
+                            child: ElevatedButton.icon(
+                              onPressed: () {
+                                Navigator.pushNamedAndRemoveUntil(context, Routes.showConference, (route) => false,);
+                              },
+
+                              icon: const Icon(Icons.arrow_back),
+
+                              iconAlignment: IconAlignment.start,
+                              label: const Text(' الرجوع الى المؤتمر '),
+                              style: ElevatedButton.styleFrom(
+
+                                padding: const EdgeInsets.symmetric(vertical: 14,horizontal: 20),
+
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+
+                              ),
                             ),
-                            SizedBox(height: 30),
-                            animatedButton(context, () {
-                              BlocProvider.of<SyncBloc>(
-                                context,
-                              ).add(GetQuestionAnswersEvent(surveys[index].id,surveys[index].title));
-                              Navigator.pushNamed(
-                                context,
-                                Routes.surveyInput,
-                              );
-                            }, "ابدأ الاستبيانات"),
-                        
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                      itemCount: surveys.length,
                     ),
                   );
                 } else

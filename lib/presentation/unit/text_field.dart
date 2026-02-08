@@ -52,52 +52,35 @@ class _GlowTextFieldState extends State<GlowTextField> {
         Text(widget.label),
 
         Padding(
-          padding: const EdgeInsets.only(bottom: 16,top: 10),
+          padding: const EdgeInsets.only(bottom: 16, top: 10),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 180),
             curve: Curves.easeOut,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: _isFocused
-                  ? [
-                BoxShadow(
-
-                  color: ColorManager.primary.withOpacity(0.45),
-                  blurRadius: 2,   // نعومة اللمعة
-                  spreadRadius: 1.5,  // بدون تمدد قاسي
-                  offset: Offset.zero, // مهم جداً
-                  blurStyle: BlurStyle.inner
-                ),
-              ]
-                  : [],
-
-            ),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
             child: TextFormField(
               focusNode: _focusNode,
               controller: widget.controller,
               keyboardType: widget.keyboardType,
               validator: widget.validator,
               cursorColor: ColorManager.primary,
-textAlign: TextAlign.end,
+              textAlign: TextAlign.end,
               decoration: InputDecoration(
                 contentPadding: EdgeInsets.all(15),
-              //  hintText: "  ${widget.hint}   ",
+                //  hintText: "  ${widget.hint}   ",
                 hint: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    SizedBox(
-                      width: 8,
+                    SizedBox(width: 8),
+                    Text(
+                      widget.hint,
+                      style: TextStyle(color: ColorManager.textHint),
                     ),
-                    Text(widget.hint,style: TextStyle(color: ColorManager.textHint),)
                   ],
                 ),
                 filled: true,
                 fillColor: ColorManager.white,
-                prefixIcon: Icon(
-                  widget.icon,
-                  color:ColorManager.primary ,
-                ),
+                prefixIcon: Icon(widget.icon, color: ColorManager.primary),
 
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -108,10 +91,7 @@ textAlign: TextAlign.end,
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                    color: ColorManager.primary,
-                    width: 2,
-                  ),
+                  borderSide: BorderSide(color: ColorManager.primary, width: 2),
                 ),
               ),
             ),
@@ -120,4 +100,30 @@ textAlign: TextAlign.end,
       ],
     );
   }
+}
+
+Widget buildTextField({
+  required TextEditingController controller,
+  required String label,
+  required IconData icon,
+  TextInputType keyboardType = TextInputType.text,
+  String? Function(String?)? validator,
+}) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 16),
+    child: TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      validator: validator,
+      cursorColor: ColorManager.primary, // لون المؤشر
+
+      decoration: InputDecoration(
+        hintText: label,
+        filled: true,
+        fillColor: ColorManager.white,
+
+        prefixIcon: Icon(icon, color: Colors.grey.shade600),
+      ),
+    ),
+  );
 }
