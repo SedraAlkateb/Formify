@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
+import 'package:dartz/dartz_unsafe.dart';
+import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:formify/data/network/failure.dart';
@@ -9,6 +13,7 @@ import 'package:formify/domain/usecase/create_survey_question_usecase.dart';
 import 'package:formify/domain/usecase/create_survey_usecase.dart';
 import 'package:formify/domain/usecase/get_all_survey_usecase.dart';
 import 'package:formify/domain/usecase/get_survey_question_id_usecase.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:meta/meta.dart';
 
 part 'survey_event.dart';
@@ -30,8 +35,22 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
     this.getAllSurveyUsecase,
     this.getSurveyQuestionIdUsecase,
   ) : super(SurveyInitial()) {
+
     on<SurveyEvent>((event, emit) async {
-      if (event is CreateSurveyEvent) {
+      if(event is PickAnswerImageEvent){
+        final s = state;
+        if (s is! ViewQuestionState) return;
+
+        final picker = ImagePicker();
+        final XFile? file = await picker.pickImage(source: ImageSource.gallery);
+        if (file == null) return;
+        final newImages = Map<int, XFile>.from(s.images);
+        newImages[event.index] = file;
+        s.questionModel.answers[event.index].imgName=file.name;
+        s.questionModel.answers[event.index].img=file;
+        emit(ViewQuestionState(s.questionModel, images: newImages));
+      }
+     else if (event is CreateSurveyEvent) {
         surveyModel.description = event.description;
         surveyModel.title = event.title;
         surveyModel.color = event.color;
@@ -106,8 +125,17 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
         emit(ViewQuestionState(question1));
       } else if (event is CreateSurveyWithQuestionEvent) {
         emit(CreateSurveyWithQuestionLoadingState());
+        List<File> files= [];
+        for (final q in questions) {
+          for (final answer in q.answers) {
+            if (answer.img != null) {
+              answer.imgName = answer.img!.path;
+              files.add(File(answer.img!.path));
+            }
+          }
+        }
         (await createSurveyQuestionUsecase.execute(
-          SurveyQuestionAndAnswersModel(id, questions),[]
+          SurveyQuestionAndAnswersModel(id, questions),files
         )).fold(
           (failure) {
             emit(CreateSurveyWithQuestionErrorState(failure: failure));

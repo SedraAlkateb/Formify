@@ -250,7 +250,7 @@ class GetQuestionAndAnswerForUserResponse {
   String? type;
   @JsonKey(name: "answers")
   List<GetAnswerResponse>? answers;
-  @JsonKey(name: "user_answer")
+  @JsonKey(name: "user_answers")
   List<GetAnswerUserResponse>? answersUser;
 
   GetQuestionAndAnswerForUserResponse(

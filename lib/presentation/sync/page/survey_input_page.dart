@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:formify/domain/models/model_q.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
 import 'package:formify/presentation/sync/widget/answer_card_widget.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
@@ -188,7 +189,11 @@ class _SurveyInputPageState extends State<SurveyInputPage> {
                         ),
                         itemBuilder: (context, i) {
                           final q = state.questions[i];
-                          final savedAnswer = state.answers[i]?.first.content;
+                          final initValue = q.type.buildInitialValue(
+                            question: q,
+                            savedAnswers: state.answers[i],
+                          );
+                       //   final savedAnswer = state.answers[i]?.first.content;
 
                           return Padding(
                             padding: const EdgeInsets.symmetric(
@@ -202,7 +207,7 @@ class _SurveyInputPageState extends State<SurveyInputPage> {
                               isLast: i == total - 1,
                               formKey: _formKeys[i],
                               initialValue:
-                                  savedAnswer, // passing saved answer as initial value
+                              initValue, // passing saved answer as initial value
                               onPrev: () => _prev(state, i),
                               onNext: () => _next(state, i),
                             ),

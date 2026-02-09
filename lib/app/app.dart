@@ -24,6 +24,10 @@ class MyApp extends StatelessWidget {
         startRoute=Routes.onboarding;
       }else if(appPreferences.isLoggedIn()==1){
         startRoute= Routes.home;
+      }else if(appPreferences.isLoggedIn()==2){
+        startRoute=Routes.showConference;
+      }else if(appPreferences.isLoggedIn()==3){
+        startRoute=Routes.showConference;
       }
 
     return MultiBlocProvider(

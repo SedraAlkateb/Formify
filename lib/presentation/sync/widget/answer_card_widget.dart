@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:formify/domain/models/model_q.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/question/page/view_question.dart';
 
@@ -12,7 +13,7 @@ class QuestionCard extends StatelessWidget {
   final VoidCallback onNext;
 
   final GlobalKey<FormBuilderState> formKey;
-  final String? initialValue;  // إضافة initialValue لتعيين القيمة المحفوظة
+  final Object? initialValue; // إضافة initialValue لتعيين القيمة المحفوظة
 
   const QuestionCard({
     super.key,
@@ -47,7 +48,8 @@ class QuestionCard extends StatelessWidget {
           child: FormBuilder(
             key: formKey,
             initialValue: {
-              "q_${questionModel.order}": initialValue,  // تخصيص القيمة المخزنة في الـForm
+              "q_${questionModel.order}":
+                  initialValue, // تخصيص القيمة المخزنة في الـForm
             },
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -55,7 +57,10 @@ class QuestionCard extends StatelessWidget {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 10,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF2F4F6A),
                       borderRadius: BorderRadius.circular(999),
@@ -69,7 +74,10 @@ class QuestionCard extends StatelessWidget {
                     ),
                     child: Text(
                       "سؤال $number",
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
@@ -80,12 +88,18 @@ class QuestionCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         questionModel.title,
-                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 6),
                     if (questionModel.isRequired == true)
-                      const Text("•", style: TextStyle(color: Colors.red, fontSize: 22)),
+                      const Text(
+                        "•",
+                        style: TextStyle(color: Colors.red, fontSize: 22),
+                      ),
                   ],
                 ),
                 const SizedBox(height: 12),

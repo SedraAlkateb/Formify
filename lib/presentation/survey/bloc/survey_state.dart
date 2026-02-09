@@ -29,10 +29,12 @@ class ViewSurveyState extends SurveyState {
 
 class ViewQuestionState extends SurveyState {
   final QuestionModel questionModel;
-  ViewQuestionState(this.questionModel) ;
+  final Map<int, XFile> images; // key = answer index
+
+   ViewQuestionState(this.questionModel, {this.images = const {}});
 
   @override
-  List<Object?> get props => [questionModel];
+  List<Object?> get props => [questionModel, images];
 }
 
 

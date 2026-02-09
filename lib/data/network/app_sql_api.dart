@@ -305,7 +305,7 @@ class AppSqlApi extends AppSqlApiAbs {
   Future<void> insertUserWithAnswer(UserSqlModel user) async {
     final db = await databaseHelper.database;
     await db.transaction((txn) async {
-      int userId = await txn.insert('users', user.toJson());
+      int userId = await txn.insert('users', user.toJsonSql());
       for (var answer in user.answerModel) {
         await txn.insert('users_answers', answer.toJsonSql(userId));
       }

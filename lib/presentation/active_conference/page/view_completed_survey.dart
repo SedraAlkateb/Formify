@@ -5,6 +5,7 @@ import 'package:formify/domain/models/model_q.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/active_conference/bloc/active_conference_bloc.dart';
 import 'package:formify/presentation/question/page/view_Question.dart';
+import 'package:formify/presentation/question/page/view_answer_question.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
@@ -130,7 +131,7 @@ class ViewCompletedSurvey extends StatelessWidget {
                             physics: const NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
                             itemCount: surveyModel.questions.length,
-                            separatorBuilder: (_, __) =>
+                            separatorBuilder: (_, _) =>
                                 const SizedBox(height: 12),
                             itemBuilder: (context, index) {
                               final q = surveyModel.questions[index];
@@ -147,22 +148,21 @@ class ViewCompletedSurvey extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Row(
+                                      children: [
+                                        Text(
+                                          "${q.order}#",
+                                          style: TextStyle(
+                                            color: colors.primary,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        q.type.typeAnswerEnglish
+                                      ],
+                                    ),
+                                    Row(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        CircleAvatar(
-                                          radius: 16,
-                                          backgroundColor: colors.primary
-                                              .withOpacity(0.1),
-                                          child: Text(
-                                            "${q.order}",
-                                            style: TextStyle(
-                                              color: colors.primary,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 10),
                                         q.type.title == "Switch"
                                             ? SizedBox()
                                             : Expanded(
@@ -179,11 +179,11 @@ class ViewCompletedSurvey extends StatelessWidget {
                                     ),
                                     const SizedBox(height: 10),
                                     answer.containsKey(index)
-                                        ? QuestionPreviewBuilder(
+                                        ? QuestionAnswerPreviewBuilder(
                                             question: q,
                                             initValue: answer[index],
                                           )
-                                        : QuestionPreviewBuilder(
+                                        : QuestionAnswerPreviewBuilder(
                                       question: q),
                                     const SizedBox(height: 10),
                                   ],
