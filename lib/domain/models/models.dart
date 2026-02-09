@@ -44,7 +44,7 @@ class AnswerUserSurveyModel {
 }
 
 class AnswerUserSurveyWithIndexModel {
-  List<String> userAnswer;
+  List<String>? userAnswer;
   int index;
   AnswerUserSurveyWithIndexModel(this.userAnswer, this.index);
 }

@@ -241,11 +241,13 @@ _$GetQuestionAndAnswerForUserResponseFromJson(Map<String, dynamic> json) =>
       (json['question_order'] as num?)?.toInt(),
       json['is_required'] as bool?,
       json['type'] as String?,
-      (json['answers'] as List<dynamic>)
-          .map((e) => GetAnswerResponse.fromJson(e as Map<String, dynamic>))
+      (json['answers'] as List<dynamic>?)
+          ?.map((e) => GetAnswerResponse.fromJson(e as Map<String, dynamic>))
           .toList(),
-      (json['user_answer'] as List<dynamic>)
-          .map((e) => GetAnswerUserResponse.fromJson(e as Map<String, dynamic>))
+      (json['user_answer'] as List<dynamic>?)
+          ?.map(
+            (e) => GetAnswerUserResponse.fromJson(e as Map<String, dynamic>),
+          )
           .toList(),
     );
 

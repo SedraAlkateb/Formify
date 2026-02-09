@@ -249,9 +249,9 @@ class GetQuestionAndAnswerForUserResponse {
   @JsonKey(name: "type")
   String? type;
   @JsonKey(name: "answers")
-  List<GetAnswerResponse> answers;
+  List<GetAnswerResponse>? answers;
   @JsonKey(name: "user_answer")
-  List<GetAnswerUserResponse> answersUser;
+  List<GetAnswerUserResponse>? answersUser;
 
   GetQuestionAndAnswerForUserResponse(
     this.id,

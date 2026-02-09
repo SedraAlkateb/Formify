@@ -78,7 +78,7 @@ abstract class AppServiceClient {
   Future<Message1Response> synchronizeUsersAnswers(
     @Body() AllUserModel userRequest,
   );
-  @POST("synchronize/get_userAnswersFor_specificSurvey.php")
+  @POST("users-crud/get_userAnswersFor_specificSurvey.php")
   Future<GetSurveyWithQuestionAndAnswerForUserBaseResponse> getUserAnswersForSpecificSurvey(
   @Part(name: "id") int id,
       @Part(name: "user_id") int user_id
