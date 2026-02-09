@@ -36,13 +36,15 @@ class ViewCompletedSurvey extends StatelessWidget {
           key: _formKey,
           child: BlocBuilder<ActiveConferenceBloc, ActiveConferenceState>(
             buildWhen: (previous, current) =>
-            current is GetCompletedSurveyLoadingState ||
+                current is GetCompletedSurveyLoadingState ||
                 current is GetCompletedSurveyErrorState ||
                 current is GetCompletedSurveyState,
             builder: (context, state) {
               if (state is GetCompletedSurveyState) {
-                final SurveyModel surveyModel = state.surveyUserModel.surveyModel;
-               final List<AnswerUserSurveyWithIndexModel> answer=   state.surveyUserModel.answerUser;
+                final SurveyModel surveyModel =
+                    state.surveyUserModel.surveyModel;
+                final Map<int, List<String>> answer =
+                    state.surveyUserModel.answerUser;
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -129,7 +131,7 @@ class ViewCompletedSurvey extends StatelessWidget {
                             shrinkWrap: true,
                             itemCount: surveyModel.questions.length,
                             separatorBuilder: (_, __) =>
-                            const SizedBox(height: 12),
+                                const SizedBox(height: 12),
                             itemBuilder: (context, index) {
                               final q = surveyModel.questions[index];
                               return Container(
@@ -146,7 +148,7 @@ class ViewCompletedSurvey extends StatelessWidget {
                                   children: [
                                     Row(
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                       children: [
                                         CircleAvatar(
                                           radius: 16,
@@ -164,20 +166,25 @@ class ViewCompletedSurvey extends StatelessWidget {
                                         q.type.title == "Switch"
                                             ? SizedBox()
                                             : Expanded(
-                                          child: Text(
-                                            q.title,
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              color: colors.onSurface,
-                                              fontSize: 15,
-                                            ),
-                                          ),
-                                        ),
+                                                child: Text(
+                                                  q.title,
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.w600,
+                                                    color: colors.onSurface,
+                                                    fontSize: 15,
+                                                  ),
+                                                ),
+                                              ),
                                       ],
                                     ),
                                     const SizedBox(height: 10),
-                                    answer[index].index==index?
-                                      QuestionPreviewBuilder(question: q,initValue:answer[index].userAnswer ,):SizedBox(),
+                                    answer.containsKey(index)
+                                        ? QuestionPreviewBuilder(
+                                            question: q,
+                                            initValue: answer[index],
+                                          )
+                                        : QuestionPreviewBuilder(
+                                      question: q),
                                     const SizedBox(height: 10),
                                   ],
                                 ),
@@ -188,7 +195,6 @@ class ViewCompletedSurvey extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 20),
-
                   ],
                 );
               } else if (state is GetCompletedSurveyErrorState) {

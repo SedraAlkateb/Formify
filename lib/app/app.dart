@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:formify/app/app_preferences.dart';
 import 'package:formify/app/di.dart';
 import 'package:formify/presentation/active_conference/bloc/active_conference_bloc.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
@@ -17,6 +18,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+      final appPreferences = instance<AppPreferences>();
+       String startRoute=Routes.onboarding;
+      if(appPreferences.isLoggedIn()==0){
+        startRoute=Routes.onboarding;
+      }else if(appPreferences.isLoggedIn()==1){
+        startRoute= Routes.home;
+      }
 
     return MultiBlocProvider(
       providers: [
@@ -59,7 +67,7 @@ class MyApp extends StatelessWidget {
                   GlobalCupertinoLocalizations.delegate,
                 ],
                 onGenerateRoute: RouteGenerator.getRoute,
-                initialRoute:Routes.onboarding,
+                initialRoute:startRoute,
                // Routes.onboarding,
               );
             },

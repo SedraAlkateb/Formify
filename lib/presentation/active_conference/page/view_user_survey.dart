@@ -83,10 +83,6 @@ class ViewUserSurveyPage extends StatelessWidget {
                                 return InkWell(
                                   onTap: () {
 
-                                    Navigator.pushNamed(
-                                      context,
-                                      Routes.viewCompletedSurvey,
-                                    );
                                     BlocProvider.of<ThemeBloc>(context).add(
                                       ChangeThemeColorEvent(
                                         Color(
@@ -109,6 +105,12 @@ class ViewUserSurveyPage extends StatelessWidget {
                                         state.userModel.id
                                       ),
                                     );
+
+                                    Navigator.pushNamed(
+                                      context,
+                                      Routes.viewCompletedSurvey,
+                                    );
+
                                   },
                                   child: surveyListWidget(
                                     state.surveys[index]

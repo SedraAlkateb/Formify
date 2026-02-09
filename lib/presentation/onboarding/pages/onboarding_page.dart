@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:formify/app/app_preferences.dart';
+import 'package:formify/app/di.dart';
 import 'package:formify/presentation/onboarding/bloc/onboarding_bloc.dart';
 import 'package:formify/presentation/onboarding/widget/onboarding_widget.dart';
 import 'package:formify/presentation/resources/assets_manager.dart';
@@ -76,6 +78,7 @@ class OnBoardingPage extends StatelessWidget {
                         : "التالي",
                     onPressed: () {
                       if (BlocProvider.of<OnboardingBloc>(context).isLastPage) {
+                        instance<AppPreferences>().setLoggedIn(1);
                         Navigator.pushReplacementNamed(
                           context,
                         Routes.home
