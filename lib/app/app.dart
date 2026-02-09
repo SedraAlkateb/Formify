@@ -38,13 +38,6 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => instance<ThemeBloc>()),
         BlocProvider(create: (_) => instance<ConferenceBloc>()),
         BlocProvider(create: (_) => instance<SurveyBloc>()),
-        BlocProvider<ConferenceBloc>(
-          create: (context) {
-            final bloc = instance<ConferenceBloc>();
-         //   bloc.add(GetAllNotActiveConferenceEvent());
-            return bloc;
-          },
-        ),
       ],
       child: DynamicColorBuilder(
         builder: (lightDynamic, darkDynamic) {
