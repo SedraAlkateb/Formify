@@ -120,19 +120,14 @@ extension GetAllAnswerUserModelMapper on List<GetAnswerUserResponse>? {
 extension GetAllQuestionForUserMapper
     on GetSurveyWithQuestionAndAnswerForUserBaseResponse? {
   SurveyUserModel toDomain() {
-    List<AnswerUserSurveyWithIndexModel> answerUser = [];
+    Map<int, List<String>> answerUser = {};
 
     List<QuestionModel> allQuestion =
         (this!.data.questions?.asMap().entries.map((entry) {
                   final int index = entry.key;
                   final response = entry.value;
-                  if (response.answersUser.isNotEmpty) {
-                    answerUser.add(
-                      AnswerUserSurveyWithIndexModel(
-                        response.answersUser.toDomain(),
-                        index,
-                      ),
-                    );
+                  if ((response.answersUser!=null)&&(response.answersUser!.isNotEmpty)) {
+                    answerUser[index]=response.answersUser.toDomain();
                   }
                   return response.toDomain(); // مهم ترجع القيمة
                 }) ??
