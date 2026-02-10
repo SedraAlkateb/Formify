@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:formify/app/app_preferences.dart';
 import 'package:formify/app/constants.dart';
 import 'package:formify/app/di.dart';
 import 'package:formify/presentation/active_conference/bloc/active_conference_bloc.dart';
@@ -27,7 +25,6 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => instance<ConferenceBloc>()),
         BlocProvider(create: (_) => instance<SurveyBloc>()),
         BlocProvider(create: (_) => instance<ThemeBloc>()),
-
       ],
       child: BlocBuilder<ThemeBloc, ThemeState>(
         builder: (context, state) {

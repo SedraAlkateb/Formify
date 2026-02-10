@@ -4,10 +4,8 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:formify/domain/models/model_q.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/active_conference/bloc/active_conference_bloc.dart';
-import 'package:formify/presentation/question/page/view_Question.dart';
 import 'package:formify/presentation/question/page/view_answer_question.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
-import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
 class ViewCompletedSurvey extends StatelessWidget {
@@ -21,12 +19,12 @@ class ViewCompletedSurvey extends StatelessWidget {
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
-        title: const Text("add other question"),
+        title: const Text("Survey Detail"),
         backgroundColor: colors.primary,
         leading: IconButton(
-          icon: const Icon(Icons.add),
-          onPressed: () async {
-            Navigator.pushNamed(context, Routes.createQuesSurvey);
+          icon: const Icon(Icons.arrow_back),
+          onPressed: ()  {
+            Navigator.pop(context);
           },
         ),
       ),

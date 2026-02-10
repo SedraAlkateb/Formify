@@ -189,3 +189,6 @@ final class InsertUserErrorState extends SyncState {
 final class InsertUserLoadingState extends SyncState {
   const InsertUserLoadingState();
 }
+final class FinishedSurveyState extends SyncState {
+  const FinishedSurveyState();
+}
