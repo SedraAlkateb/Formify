@@ -1,18 +1,17 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:formify/app/constants.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/models/model_q.dart';
 import 'package:form_builder_extra_fields/form_builder_extra_fields.dart';
+import 'package:formify/presentation/question/widgets/image_answer.dart';
 
 class QuestionPreviewBuilder extends StatelessWidget {
   final QuestionModel question;
-  final List<String>? initValue;
-  const QuestionPreviewBuilder({
-    super.key,
-    required this.question,
-    this.initValue,
-  });
+  const QuestionPreviewBuilder({super.key, required this.question});
 
   String get _name => "q_${question.order}";
 
@@ -30,7 +29,6 @@ class QuestionPreviewBuilder extends StatelessWidget {
     switch (question.type) {
       case QuestionType.text:
         return FormBuilderTextField(
-          initialValue: initValue?[0],
           name: _name,
           maxLines: 5,
           decoration: InputDecoration(
@@ -42,7 +40,6 @@ class QuestionPreviewBuilder extends StatelessWidget {
 
       case QuestionType.email:
         return FormBuilderTextField(
-          initialValue: initValue?[0],
           name: _name,
           keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
@@ -60,7 +57,6 @@ class QuestionPreviewBuilder extends StatelessWidget {
 
       case QuestionType.password:
         return FormBuilderTextField(
-          initialValue:initValue?[0],
           name: _name,
           obscureText: true,
           decoration: InputDecoration(
@@ -73,7 +69,7 @@ class QuestionPreviewBuilder extends StatelessWidget {
       case QuestionType.phone:
         return FormBuilderTextField(
           name: _name,
-          initialValue: initValue?[0],
+
           keyboardType: TextInputType.phone,
           decoration: InputDecoration(
             hintText: "Phone number",
@@ -91,7 +87,6 @@ class QuestionPreviewBuilder extends StatelessWidget {
 
       case QuestionType.number:
         return FormBuilderTextField(
-          initialValue: initValue?[0],
           name: _name,
           keyboardType: TextInputType.number,
           decoration: InputDecoration(
@@ -110,8 +105,6 @@ class QuestionPreviewBuilder extends StatelessWidget {
       case QuestionType.dropdown:
         return FormBuilderDropdown<AnswerModel>(
           name: _name,
-          //enabled: false,
-          initialValue: AnswerModel(0, initValue![0], ""),
           decoration: InputDecoration(
             hintText: "Select an answer",
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -124,11 +117,22 @@ class QuestionPreviewBuilder extends StatelessWidget {
 
       case QuestionType.multipleChoice:
         return FormBuilderRadioGroup<AnswerModel>(
+          orientation: OptionsOrientation.vertical,
           name: _name,
-          initialValue: AnswerModel(0, initValue![0], ""),
+
           options: question.answers
               .map(
-                (a) => FormBuilderFieldOption(value: a, child: Text(a.title)),
+                (a) => FormBuilderFieldOption(
+                  value: a,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      imageAnswer(a),
+                      Text("${a.title}"),
+                    ],
+                  ),
+                ),
               )
               .toList(),
           validator: _requiredIfNeeded(),
@@ -137,10 +141,18 @@ class QuestionPreviewBuilder extends StatelessWidget {
       case QuestionType.checkbox:
         return FormBuilderCheckboxGroup<AnswerModel>(
           name: _name,
-          initialValue:initValue?.map((e) =>AnswerModel(0, initValue![0], "") ,).toList() ,
+          orientation: OptionsOrientation.vertical,
           options: question.answers
               .map(
-                (a) => FormBuilderFieldOption(value: a, child: Text(a.title)),
+                (a) => FormBuilderFieldOption(value: a,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        imageAnswer(a),
+                        Text("${a.title}"),
+                      ],
+                    ),),
               )
               .toList(),
           validator: question.isRequired == true
@@ -170,7 +182,7 @@ class QuestionPreviewBuilder extends StatelessWidget {
       case QuestionType.autocomplete:
         return FormBuilderField<String>(
           name: _name,
-          initialValue: initValue?[0],
+
           validator: _requiredIfNeeded(),
           builder: (field) {
             return Autocomplete<String>(
@@ -181,7 +193,7 @@ class QuestionPreviewBuilder extends StatelessWidget {
                     .where((a) => a.title.toLowerCase().contains(q))
                     .map((a) => a.title);
               },
-         //     initialValue:TextEditingValue(text: initValue?[0] ??""),
+              //     initialValue:TextEditingValue(text: initValue?[0] ??""),
               onSelected: field.didChange,
               fieldViewBuilder: (context, controller, focusNode, onSubmit) {
                 controller.text = field.value ?? controller.text;
@@ -206,7 +218,7 @@ class QuestionPreviewBuilder extends StatelessWidget {
       case QuestionType.switchField:
         return FormBuilderSwitch(
           name: _name,
-        //  initialValue: initValue?[0],
+          //
           title: Text(question.title),
           validator: (value) {
             if (question.isRequired == true && value != true) {
@@ -219,7 +231,7 @@ class QuestionPreviewBuilder extends StatelessWidget {
       case QuestionType.date:
         return FormBuilderDateTimePicker(
           name: _name,
-        //  initialValue: initValue[0],
+          //  initialValue: initValue[0],
           inputType: InputType.date,
           decoration: InputDecoration(
             labelText: "Select date",
@@ -231,7 +243,7 @@ class QuestionPreviewBuilder extends StatelessWidget {
       case QuestionType.time:
         return FormBuilderDateTimePicker(
           name: _name,
-     //     initialValue: initValue[0],
+          //     initialValue: initValue[0],
           inputType: InputType.time,
           decoration: InputDecoration(
             labelText: "Select time",
@@ -243,7 +255,7 @@ class QuestionPreviewBuilder extends StatelessWidget {
       case QuestionType.dateTime:
         return FormBuilderDateTimePicker(
           name: _name,
-        //  initialValue: initValue[0],
+          //  initialValue: initValue[0],
           inputType: InputType.both,
           decoration: InputDecoration(
             labelText: "Select date & time",
@@ -257,7 +269,7 @@ class QuestionPreviewBuilder extends StatelessWidget {
           name: _name,
           min: 0,
           max: 100,
-         initialValue: double.parse(initValue?[0]??"0"),
+          initialValue: 0,
           divisions: 50,
           validator: _requiredIfNeeded(),
         );
@@ -265,7 +277,7 @@ class QuestionPreviewBuilder extends StatelessWidget {
       case QuestionType.rating:
         return FormBuilderRatingBar(
           name: _name,
-      //    initialValue: initValue[0],
+          //    initialValue: initValue[0],
           maxRating: 5,
           allowHalfRating: true,
           validator: question.isRequired == true

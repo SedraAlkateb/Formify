@@ -3,6 +3,15 @@ part of 'survey_bloc.dart';
 @immutable
 abstract class SurveyEvent extends Equatable {}
 
+
+class PickAnswerImageEvent extends SurveyEvent {
+  final int index;
+  PickAnswerImageEvent(this.index);
+
+  @override
+  List<Object?> get props => [index];
+}
+
 class CreateSurveyEvent extends SurveyEvent {
   final String color;
   final String title;
@@ -113,3 +122,4 @@ class AddQuestionEvent extends SurveyEvent {
   @override
   List<Object?> get props => [];
 }
+

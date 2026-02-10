@@ -184,7 +184,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   ) async {
     final s = state;
     if (s is! SurveyReadyState) return;
-
+//
     final mapped = _mapToAnswers(event.question, event.rawValue);
 
     final newAnswers = Map<int, List<AnswerUserModel>>.from(s.answers);

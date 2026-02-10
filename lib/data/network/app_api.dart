@@ -21,8 +21,8 @@ abstract class AppServiceClient {
   @MultiPart()
   @POST("survey-crud/create_survey_questionsAndAnswers.php")
   Future<CreateSurveyQuestionsBaseResponse> createSurveyQuestionsAndAnswers(
-      @Part(name: "data")  String surveyQ,
-      @Part(name: "img_1") List<File> images
+    @Part(name: "data") String surveyQ,
+    @Part(name: "img_1") List<File> images,
   );
   @GET("survey-crud/get_all_survey.php")
   Future<GetAllSurveyBaseResponse> getAllSurvey();
@@ -79,10 +79,11 @@ abstract class AppServiceClient {
     @Body() AllUserModel userRequest,
   );
   @POST("users-crud/get_userAnswersFor_specificSurvey.php")
-  Future<GetSurveyWithQuestionAndAnswerForUserBaseResponse> getUserAnswersForSpecificSurvey(
-  @Part(name: "id") int id,
-      @Part(name: "user_id") int user_id
-      );
+  Future<GetSurveyWithQuestionAndAnswerForUserBaseResponse>
+  getUserAnswersForSpecificSurvey(
+    @Part(name: "id") int id,
+    @Part(name: "user_id") int user_id,
+  );
   /////////////update_survey
   /////////update_conference
 }

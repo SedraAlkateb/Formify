@@ -24,6 +24,10 @@ class MyApp extends StatelessWidget {
         startRoute=Routes.onboarding;
       }else if(appPreferences.isLoggedIn()==1){
         startRoute= Routes.home;
+      }else if(appPreferences.isLoggedIn()==2){
+        startRoute=Routes.showConference;
+      }else if(appPreferences.isLoggedIn()==3){
+        startRoute=Routes.showConference;
       }
 
     return MultiBlocProvider(
@@ -34,13 +38,6 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => instance<ThemeBloc>()),
         BlocProvider(create: (_) => instance<ConferenceBloc>()),
         BlocProvider(create: (_) => instance<SurveyBloc>()),
-        BlocProvider<ConferenceBloc>(
-          create: (context) {
-            final bloc = instance<ConferenceBloc>();
-         //   bloc.add(GetAllNotActiveConferenceEvent());
-            return bloc;
-          },
-        ),
       ],
       child: DynamicColorBuilder(
         builder: (lightDynamic, darkDynamic) {

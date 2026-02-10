@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:formify/app/app_preferences.dart';
+import 'package:formify/app/di.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/conference/widget/conferm_dialog.dart';
 import 'package:formify/presentation/resources/assets_manager.dart';
@@ -12,310 +14,317 @@ import 'package:formify/presentation/sync/widget/press_scale.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 import 'package:lottie/lottie.dart';
 
-class ShowConferencePage extends StatelessWidget {
+class ShowConferencePage extends StatefulWidget {
   const ShowConferencePage({super.key});
 
   @override
+  State<ShowConferencePage> createState() => _ShowConferencePageState();
+}
+
+class _ShowConferencePageState extends State<ShowConferencePage> {
+
+  @override
+  void initState() {
+    BlocProvider.of<SyncBloc>(context).add(GetConferenceAsyncEvent());
+
+    instance<AppPreferences>().setLoggedIn(2);
+
+    super.initState();
+  }
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              ColorManager.firstScreenBackground2,
-              ColorManager.firstScreenBackground1,
-              ColorManager.firstScreenBackground1,
-            ],
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: Scaffold(
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                ColorManager.firstScreenBackground2,
+                ColorManager.firstScreenBackground1,
+                ColorManager.firstScreenBackground1,
+              ],
+            ),
           ),
-        ),
-        child: SafeArea(
-          child: BlocConsumer<SyncBloc, SyncState>(
-            listener: (context, state) {
+          child: SafeArea(
+            child: BlocConsumer<SyncBloc, SyncState>(
+              listener: (context, state) {
 
-              if (state is GetDataState) {
-                BlocProvider.of<SyncBloc>(
-                  context,
-                ).add(UploadDataEvent(state.users, state.conference_id));
-              }
-              else if (state is UploadDataState) {
-                BlocProvider.of<SyncBloc>(context).add(DeleteDataEvent());
-              }
-              else if (state is DeleteDataState) {
-                Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  Routes.home,
-                      (route) => false,
-                );
-              }
-            },
-            builder: (context, state) {
+                if (state is GetDataState) {
+                  BlocProvider.of<SyncBloc>(
+                    context,
+                  ).add(UploadDataEvent(state.users, state.conference_id));
+                }
+                else if (state is UploadDataState) {
+                  BlocProvider.of<SyncBloc>(context).add(DeleteDataEvent());
+                }
+                else if (state is DeleteDataState) {
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    Routes.home,
+                        (route) => false,
+                  );
+                }
+              },
+              builder: (context, state) {
 
-              if (state is GetConferenceAsyncLoadingState) {
-                return loadingFullScreen(context);
-              } else if (state is AsyncConferenceErrorState) {
-                return errorFullScreen(context);
-              } else if (state is GetConferenceAsyncState) {
-                GetAllConferenceModel conferenceModel = state.conferenceModel;
-                return SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      FloatingContainer(),
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(20),
-                        margin: const EdgeInsets.all(25),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: ColorManager.border),
-                          color: ColorManager.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: ColorManager.black.withOpacity(0.2),
-                              blurRadius: 3,
-                              offset: Offset(0, 1),
-                            ),
-                          ],
-                          //.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                        child: Padding(
+                if (state is GetConferenceAsyncLoadingState) {
+                  return loadingFullScreen(context);
+                } else if (state is AsyncConferenceErrorState) {
+                  return errorFullScreen(context);
+                } else if (state is GetConferenceAsyncState) {
+                  GetAllConferenceModel conferenceModel = state.conferenceModel;
+                  return SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        FloatingContainer(),
+                        Container(
+                          width: double.infinity,
                           padding: const EdgeInsets.all(20),
-                          child: Column(
-                            children: [
-                              Text(
-                                conferenceModel.name,
-                                textAlign: TextAlign.start,
-                                style: TextStyle(
-                                  color: ColorManager.primary,
-                                  fontSize: 35,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(height: 5),
-                              Text(
-                                conferenceModel.description,
-                                textAlign: TextAlign.start,
-                                style: TextStyle(
-                                  color: ColorManager.black,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                              //   SizedBox(height: 8),
-                              InteractiveAddressCard(
-                                child: Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.all(12),
-                                  margin: const EdgeInsets.symmetric(
-                                    vertical: 12,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: ColorManager.border,
-                                    ),
-                                    color: ColorManager.primaryShadow
-                                        .withOpacity(0.2),
-                                    //.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(25),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Card(
-                                        margin: const EdgeInsets.all(5),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
-                                        ),
-                                        // elevation: 4,
-                                        color: ColorManager.primary,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(10),
-                                          child: Icon(
-                                            Icons.location_on_outlined,
-                                            color: Color(0xffffffff),
-                                            size: 30,
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                "العنوان",
-                                                textAlign: TextAlign.start,
-                                                style: TextStyle(
-                                                  color: ColorManager
-                                                      .textSecondary,
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                              ),
-                                              Text(
-                                                conferenceModel.address,
-                                                textAlign: TextAlign.start,
-                                                style: TextStyle(
-                                                  color: ColorManager.black,
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(width: 20),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              InteractiveAddressCard(
-                                child: Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.all(12),
-                                  margin: const EdgeInsets.symmetric(
-                                    vertical: 12,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: ColorManager.border,
-                                    ),
-                                    color: ColorManager.primaryShadow
-                                        .withOpacity(0.2),
-                                    //.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(25),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Card(
-                                        margin: const EdgeInsets.all(5),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
-                                        ),
-                                        // elevation: 4,
-                                        color: ColorManager.primary,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(10),
-                                          child: Icon(
-                                            Icons.date_range_sharp,
-                                            color: Color(0xffffffff),
-                                            size: 30,
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                "التاريخ",
-                                                textAlign: TextAlign.start,
-                                                style: TextStyle(
-                                                  color: ColorManager
-                                                      .textSecondary,
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.w500,
-                                                ),
-                                              ),
-                                              Text(
-                                                conferenceModel.startDate,
-
-                                                textAlign: TextAlign.start,
-                                                style: TextStyle(
-                                                  color: ColorManager.black,
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              Text(
-                                                conferenceModel.endDate,
-                                                textAlign: TextAlign.start,
-                                                style: TextStyle(
-                                                  color: ColorManager.black,
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      SizedBox(width: 20),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Column(
-                                children: [
-                                  animatedButton(context, () {
-                                    Navigator.pushReplacementNamed(
-                                      context,
-                                      Routes.insertUser,
-                                    );
-                                  }, "ابدأ الاستبيانات"),
-                                  SizedBox(height: 10),
-                                  animatedButton(context, () {
-                                    showConfirmDialog(
-                                      context: context,
-                                      title: "offline conference",
-                                      message:
-                                          "Are you sure you want to save conference offline",
-                                      onConfirm: () {
-                                        BlocProvider.of<SyncBloc>(
-                                          context,
-                                        ).add(
-                                          GetDataEvent(conferenceModel.id),
-                                        );
-
-                                        //    BlocProvider.of<ConferenceBloc>(context).add(SelectEndedConferenceEvent( allConference[index].id));
-                                      },
-                                    );
-                                  }, "رفع الاستبيان"),
-                                  SizedBox(height: 10),
-                                  animatedButton(context, () {
-                                    showConfirmDialog(
-                                      context: context,
-                                      title: "offline conference",
-                                      message:
-                                      "Are you sure you want to save conference offline",
-                                      onConfirm: () {
-                                        BlocProvider.of<SyncBloc>(
-                                          context,
-                                        ).add(
-                                          GetDataEvent(conferenceModel.id),
-                                        );
-
-                                        //    BlocProvider.of<ConferenceBloc>(context).add(SelectEndedConferenceEvent( allConference[index].id));
-                                      },
-                                    );
-                                  }, "رفع الاستبيان"),
-                                ],
+                          margin: const EdgeInsets.all(25),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: ColorManager.border),
+                            color: ColorManager.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: ColorManager.black.withOpacity(0.2),
+                                blurRadius: 3,
+                                offset: Offset(0, 1),
                               ),
                             ],
+                            //.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Column(
+                              children: [
+                                Text(
+                                  conferenceModel.name,
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    color: ColorManager.primary,
+                                    fontSize: 35,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(height: 5),
+                                Text(
+                                  conferenceModel.description,
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    color: ColorManager.black,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                                //   SizedBox(height: 8),
+                                InteractiveAddressCard(
+                                  child: Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.all(12),
+                                    margin: const EdgeInsets.symmetric(
+                                      vertical: 12,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: ColorManager.border,
+                                      ),
+                                      color: ColorManager.primaryShadow
+                                          .withOpacity(0.2),
+                                      //.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(25),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Card(
+                                          margin: const EdgeInsets.all(5),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                          // elevation: 4,
+                                          color: ColorManager.primary,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(10),
+                                            child: Icon(
+                                              Icons.location_on_outlined,
+                                              color: Color(0xffffffff),
+                                              size: 30,
+                                            ),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  "العنوان",
+                                                  textAlign: TextAlign.start,
+                                                  style: TextStyle(
+                                                    color: ColorManager
+                                                        .textSecondary,
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  conferenceModel.address,
+                                                  textAlign: TextAlign.start,
+                                                  style: TextStyle(
+                                                    color: ColorManager.black,
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(width: 20),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                InteractiveAddressCard(
+                                  child: Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.all(12),
+                                    margin: const EdgeInsets.symmetric(
+                                      vertical: 12,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: ColorManager.border,
+                                      ),
+                                      color: ColorManager.primaryShadow
+                                          .withOpacity(0.2),
+                                      //.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(25),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Card(
+                                          margin: const EdgeInsets.all(5),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                          // elevation: 4,
+                                          color: ColorManager.primary,
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(10),
+                                            child: Icon(
+                                              Icons.date_range_sharp,
+                                              color: Color(0xffffffff),
+                                              size: 30,
+                                            ),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  "التاريخ",
+                                                  textAlign: TextAlign.start,
+                                                  style: TextStyle(
+                                                    color: ColorManager
+                                                        .textSecondary,
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  conferenceModel.startDate,
+
+                                                  textAlign: TextAlign.start,
+                                                  style: TextStyle(
+                                                    color: ColorManager.black,
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  conferenceModel.endDate,
+                                                  textAlign: TextAlign.start,
+                                                  style: TextStyle(
+                                                    color: ColorManager.black,
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(width: 20),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Column(
+                                  children: [
+                                    animatedButton(context, () {
+                                      Navigator.pushReplacementNamed(
+                                        context,
+                                        Routes.insertUser,
+                                      );
+                                    }, "ابدأ الاستبيانات"),
+                                    SizedBox(height: 10),
+                                    animatedButton(context, () {
+                                      showConfirmDialog(
+                                        context: context,
+                                        title: "offline conference",
+                                        message:
+                                            "Are you sure you want to save conference offline",
+                                        onConfirm: () {
+                                          BlocProvider.of<SyncBloc>(
+                                            context,
+                                          ).add(
+                                            GetDataEvent(conferenceModel.id),
+                                          );
+
+                                          //    BlocProvider.of<ConferenceBloc>(context).add(SelectEndedConferenceEvent( allConference[index].id));
+                                        },
+                                      );
+                                    }, "رفع الاستبيان"),
+                                    SizedBox(height: 10),
+                                    animatedButton(context, () {
+                                      instance<AppPreferences>().setLoggedIn(1);
+                                      Navigator.pushNamedAndRemoveUntil(context, Routes.home, (route) => false,);
+
+                                    }, "الخروج من المؤتمر"),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                );
-              }
-              else if(state is GetConferenceAsyncEmptyState){
-                return emptyFullScreen(context);
-              }
+                      ],
+                    ),
+                  );
+                }
+                else if(state is GetConferenceAsyncEmptyState){
+                  return emptyFullScreen(context);
+                }
 
 
-              else {
-                return SizedBox();
-              }
-            },
+                else {
+                  return SizedBox();
+                }
+              },
+            ),
           ),
         ),
       ),

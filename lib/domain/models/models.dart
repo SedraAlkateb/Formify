@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:formify/domain/models/model_q.dart';
+import 'package:image_picker/image_picker.dart';
 
 class SurveyModel {
   int? id;
@@ -466,7 +467,7 @@ class AnswerModel {
   int? questionId;
   String title;
   String? imgName;
-  File? img;
+  XFile? img;
   AnswerModel(this.id, this.title, this.imgName, {this.questionId, this.img});
   Map<String, dynamic> toMap() {
     return {'id': id, 'title': title, 'question_id': questionId};
@@ -544,7 +545,14 @@ class UserSqlModel {
       'answers': answerModel.map((user) => user.toJson()).toList(),
     };
   }
-
+  Map<String, dynamic> toJsonSql() {
+    return {
+      'fullname': fullName,
+      'email': email,
+      'phone': phone,
+      'address': address,
+    };
+  }
   // دالة لتحويل خريطة إلى كائن UserSqlModel
   factory UserSqlModel.fromMap(Map<String, dynamic> map) {
     return UserSqlModel(

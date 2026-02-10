@@ -244,7 +244,7 @@ _$GetQuestionAndAnswerForUserResponseFromJson(Map<String, dynamic> json) =>
       (json['answers'] as List<dynamic>?)
           ?.map((e) => GetAnswerResponse.fromJson(e as Map<String, dynamic>))
           .toList(),
-      (json['user_answer'] as List<dynamic>?)
+      (json['user_answers'] as List<dynamic>?)
           ?.map(
             (e) => GetAnswerUserResponse.fromJson(e as Map<String, dynamic>),
           )
@@ -260,7 +260,7 @@ Map<String, dynamic> _$GetQuestionAndAnswerForUserResponseToJson(
   'is_required': instance.is_required,
   'type': instance.type,
   'answers': instance.answers,
-  'user_answer': instance.answersUser,
+  'user_answers': instance.answersUser,
 };
 
 GetAnswerUserResponse _$GetAnswerUserResponseFromJson(

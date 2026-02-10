@@ -39,136 +39,141 @@ class _InsertUserPageState extends State<InsertUserPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: ColorManager.primary,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 40,left: 30),
-              child: Icon(
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: Scaffold(
+        backgroundColor: ColorManager.primary,
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 40,left: 30),
+                child: Icon(
 
-                  Icons.arrow_back,color: ColorManager.white,size: 30),
-            ),
-            Container(
-              width: double.infinity,
-
-
-              margin: const EdgeInsets.all(25),
-              decoration: BoxDecoration(
-                border: Border.all(color: ColorManager.border),
-                color: ColorManager.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: ColorManager.black.withOpacity(0.2),
-                    blurRadius: 3,
-                    offset: Offset(0, 1),
-                  ),
-                ],
-                //.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(25),
+                    Icons.arrow_back,color: ColorManager.white,size: 30),
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(40),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      Card(
-                        margin: const EdgeInsets.all(5),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        // elevation: 4,
-                        color: ColorManager.primary,
-                        child: Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: Icon(
-                            Icons.person_outline,
-                            color: Color(0xffffffff),
-                            size: 45,
+              Container(
+                width: double.infinity,
+
+
+                margin: const EdgeInsets.all(25),
+                decoration: BoxDecoration(
+                  border: Border.all(color: ColorManager.border),
+                  color: ColorManager.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: ColorManager.black.withOpacity(0.2),
+                      blurRadius: 3,
+                      offset: Offset(0, 1),
+                    ),
+                  ],
+                  //.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(40),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        Card(
+                          margin: const EdgeInsets.all(5),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                        ),
-                      ),
-                      Text(
-                        "معلومات الحضور",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
+                          // elevation: 4,
                           color: ColorManager.primary,
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 5),
-                      Text(
-                        "يرجى إدخال بياناتك للمتابعة إلى الاستبيانات",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: ColorManager.black,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                      ListView(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        children: [
-                          GlowTextField(
-
-                            hint: " ادخل اسمك الكامل ",
-                            label: 'الاسم الكامل',
-                            controller: fullNameController,
-
-                            icon: Icons.person_outline,
-                            validator: (v) => v!.isEmpty ? 'الاسم مطلوب' : null,
-                          ),
-                          GlowTextField(
-                            controller: emailController,
-                            hint: "example@gmail.com",
-                            label: 'البريد الإلكتروني *',
-                            icon: Icons.email_outlined,
-                            keyboardType: TextInputType.emailAddress,
-                            validator: (v) =>
-                                v!.contains('@') ? null : 'إيميل غير صالح',
-                          ),
-                          GlowTextField(
-                            controller: phoneController,
-                            label: 'رقم الهاتف *',
-                            hint: "09xxxxxxxx",
-                            icon: Icons.phone_outlined,
-                            keyboardType: TextInputType.phone,
-                            validator: (v) => v!.length < 8 ? 'رقم غير صحيح' : null,
-                          ),
-                          GlowTextField(
-                            controller: addressController,
-                            label: 'العنوان',
-                            hint: "أدخل عنوانك الكامل",
-                            icon: Icons.location_on_outlined,
-                            validator: (v) => v!.isEmpty ? 'العنوان مطلوب' : null,
-                          ),
-                          const SizedBox(height: 30),
-                          ElevatedButton.icon(
-                            onPressed: _submit,
-                            icon: const Icon(Icons.arrow_forward),
-                            iconAlignment: IconAlignment.end,
-                            label: const Text('متابعة الى الاستبيان'),
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Icon(
+                              Icons.person_outline,
+                              color: Color(0xffffffff),
+                              size: 45,
                             ),
                           ),
+                        ),
+                        Text(
+                          "معلومات الحضور",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: ColorManager.primary,
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 5),
+                        Text(
+                          "يرجى إدخال بياناتك للمتابعة إلى الاستبيانات",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: ColorManager.black,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                        ListView(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          children: [
+                            GlowTextField(
 
-                        ],
-                      ),
-                    ],
+                              hint: " ادخل اسمك الكامل ",
+                              label: 'الاسم الكامل',
+                              controller: fullNameController,
+
+                              icon: Icons.person_outline,
+                              validator: (v) => v!.isEmpty ? 'الاسم مطلوب' : null,
+                            ),
+                            GlowTextField(
+                              controller: emailController,
+                              hint: "example@gmail.com",
+                              label: 'البريد الإلكتروني *',
+                              icon: Icons.email_outlined,
+                              keyboardType: TextInputType.emailAddress,
+                              validator: (v) =>
+                                  v!.contains('@') ? null : 'إيميل غير صالح',
+                            ),
+                            GlowTextField(
+                              controller: phoneController,
+                              label: 'رقم الهاتف *',
+                              hint: "09xxxxxxxx",
+                              icon: Icons.phone_outlined,
+                              keyboardType: TextInputType.phone,
+                              validator: (v) => v!.length < 8 ? 'رقم غير صحيح' : null,
+                            ),
+                            GlowTextField(
+                              controller: addressController,
+                              label: 'العنوان',
+                              hint: "أدخل عنوانك الكامل",
+                              icon: Icons.location_on_outlined,
+                              validator: (v) => v!.isEmpty ? 'العنوان مطلوب' : null,
+                            ),
+                            const SizedBox(height: 30),
+                            ElevatedButton.icon(
+                              onPressed: _submit,
+                              icon: const Icon(Icons.arrow_forward),
+                              iconAlignment: IconAlignment.end,
+                              label: const Text('متابعة الى الاستبيان'),
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
+
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
