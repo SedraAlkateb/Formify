@@ -1,4 +1,4 @@
 class UserInfo{
- // static int percentage = 0;
+ static int isLogin = 0;
 
 }

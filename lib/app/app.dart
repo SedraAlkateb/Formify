@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:formify/app/app_preferences.dart';
+import 'package:formify/app/constants.dart';
 import 'package:formify/app/di.dart';
 import 'package:formify/presentation/active_conference/bloc/active_conference_bloc.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
@@ -18,55 +19,47 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-      final appPreferences = instance<AppPreferences>();
-       String startRoute=Routes.onboarding;
-      if(appPreferences.isLoggedIn()==0){
-        startRoute=Routes.onboarding;
-      }else if(appPreferences.isLoggedIn()==1){
-        startRoute= Routes.home;
-      }else if(appPreferences.isLoggedIn()==2){
-        startRoute=Routes.showConference;
-      }else if(appPreferences.isLoggedIn()==3){
-        startRoute=Routes.showConference;
-      }
-
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => instance<OnboardingBloc>()),
-      BlocProvider(create: (_) => instance<ActiveConferenceBloc>()),
+        BlocProvider(create: (_) => instance<ActiveConferenceBloc>()),
         BlocProvider(create: (_) => instance<SyncBloc>()),
-        BlocProvider(create: (_) => instance<ThemeBloc>()),
         BlocProvider(create: (_) => instance<ConferenceBloc>()),
         BlocProvider(create: (_) => instance<SurveyBloc>()),
+        BlocProvider(create: (_) => instance<ThemeBloc>()),
+
       ],
-      child: DynamicColorBuilder(
-        builder: (lightDynamic, darkDynamic) {
-          return BlocBuilder<ThemeBloc, ThemeState>(
-            builder: (context, state) {
-              return MaterialApp(
-                debugShowCheckedModeBanner: false,
-                theme: getApplicationTheme(
-                  dynamicScheme: lightDynamic,
-                  isLight: true,
-                  seedColor: BlocProvider.of<ThemeBloc>(context).seedColor,
-                ),
-                darkTheme: getApplicationTheme(
-                  dynamicScheme: darkDynamic,
-                  isLight: false,
-                  seedColor: BlocProvider.of<ThemeBloc>(context).seedColor,
-                ),
-                themeMode: ThemeMode.system,
-                locale: const Locale('en'),
-                supportedLocales: const [Locale('en'), Locale('ar')],
-                localizationsDelegates: const [
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                ],
-                onGenerateRoute: RouteGenerator.getRoute,
-                initialRoute:startRoute,
-               // Routes.onboarding,
-              );
+      child: BlocBuilder<ThemeBloc, ThemeState>(
+        builder: (context, state) {
+          return DynamicColorBuilder(
+            builder: (lightDynamic, darkDynamic) {
+              return
+                MaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  theme: getApplicationTheme(
+                    dynamicScheme: lightDynamic,
+                    isLight: true,
+                    seedColor: state.seedColor,
+                  ),
+                  darkTheme: getApplicationTheme(
+                    dynamicScheme: darkDynamic,
+                    isLight: false,
+                    seedColor: state.seedColor,
+                  ),
+                  themeMode: ThemeMode.system,
+                  locale: const Locale('en'),
+                  // supportedLocales: const [Locale('en'), Locale('ar')],
+                  // localizationsDelegates: const [
+                  //   GlobalMaterialLocalizations.delegate,
+                  //   GlobalWidgetsLocalizations.delegate,
+                  //   GlobalCupertinoLocalizations.delegate,
+                  // ],
+                  onGenerateRoute: RouteGenerator.getRoute,
+                  initialRoute: Constants.isLogin,
+                  // Routes.onboarding,
+                );
+
+
             },
           );
         },
@@ -74,5 +67,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-

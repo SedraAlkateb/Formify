@@ -8,20 +8,14 @@ part 'theme_event.dart';
 part 'theme_state.dart';
 
 class ThemeBloc extends Bloc<ThemeEvent, ThemeState> {
-  Color seedColor=ColorManager.primary;
-  String colorName = "0xFF3A5A75";
   ThemeBloc() : super(ThemeInitial()) {
-
-    on<ThemeEvent>((event, emit) {
-
-
-      if(event is ChangeThemeColorEvent){
-        seedColor=event.newColor;
-        colorName=event.colorName;
-        print("objectss");
-        emit(ThemeChangedState(event.newColor)); // تحديث اللون
-      }
-
+    on<ChangeThemeColorEvent>((event, emit) {
+      emit(
+        ThemeChangedState(
+          seedColor: event.newColor,
+          colorName: event.colorName,
+        ),
+      );
     });
   }
 }

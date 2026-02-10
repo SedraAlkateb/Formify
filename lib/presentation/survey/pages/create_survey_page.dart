@@ -171,7 +171,7 @@ class CreateSurveyPage extends StatelessWidget {
   },
   child: ElevatedButton(
               onPressed: () {
-                final selectedColor = BlocProvider.of<ThemeBloc>(context).colorName;
+                final selectedColor = BlocProvider.of<ThemeBloc>(context).state.colorName;
                 BlocProvider.of<SurveyBloc>(context).add(CreateSurveyEvent(selectedColor.toString()
                   , titleController.text,
                   descriptionController.text,));

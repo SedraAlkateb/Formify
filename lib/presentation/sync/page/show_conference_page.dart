@@ -22,15 +22,13 @@ class ShowConferencePage extends StatefulWidget {
 }
 
 class _ShowConferencePageState extends State<ShowConferencePage> {
-
   @override
   void initState() {
     BlocProvider.of<SyncBloc>(context).add(GetConferenceAsyncEvent());
 
-    instance<AppPreferences>().setLoggedIn(2);
-
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -49,32 +47,15 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
             ),
           ),
           child: SafeArea(
-            child: BlocConsumer<SyncBloc, SyncState>(
-              listener: (context, state) {
+            child: BlocBuilder<SyncBloc, SyncState>(
 
-                if (state is GetDataState) {
-                  BlocProvider.of<SyncBloc>(
-                    context,
-                  ).add(UploadDataEvent(state.users, state.conference_id));
-                }
-                else if (state is UploadDataState) {
-                  BlocProvider.of<SyncBloc>(context).add(DeleteDataEvent());
-                }
-                else if (state is DeleteDataState) {
-                  Navigator.pushNamedAndRemoveUntil(
-                    context,
-                    Routes.home,
-                        (route) => false,
-                  );
-                }
-              },
               builder: (context, state) {
-
                 if (state is GetConferenceAsyncLoadingState) {
                   return loadingFullScreen(context);
                 } else if (state is AsyncConferenceErrorState) {
                   return errorFullScreen(context);
                 } else if (state is GetConferenceAsyncState) {
+                  instance<AppPreferences>().setLoggedIn(2);
                   GetAllConferenceModel conferenceModel = state.conferenceModel;
                   return SingleChildScrollView(
                     child: Column(
@@ -282,29 +263,16 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                       );
                                     }, "ابدأ الاستبيانات"),
                                     SizedBox(height: 10),
-                                    animatedButton(context, () {
-                                      showConfirmDialog(
-                                        context: context,
-                                        title: "offline conference",
-                                        message:
-                                            "Are you sure you want to save conference offline",
-                                        onConfirm: () {
-                                          BlocProvider.of<SyncBloc>(
-                                            context,
-                                          ).add(
-                                            GetDataEvent(conferenceModel.id),
-                                          );
+                                    animatedButton(
 
-                                          //    BlocProvider.of<ConferenceBloc>(context).add(SelectEndedConferenceEvent( allConference[index].id));
-                                        },
+                                        context, () {
+                                      Navigator.pushNamed(
+                                        context,
+                                        Routes.settingPage,
+                                        arguments: conferenceModel.id,
                                       );
-                                    }, "رفع الاستبيان"),
-                                    SizedBox(height: 10),
-                                    animatedButton(context, () {
-                                      instance<AppPreferences>().setLoggedIn(1);
-                                      Navigator.pushNamedAndRemoveUntil(context, Routes.home, (route) => false,);
+                                    }, "اعدادات المؤتمر"),
 
-                                    }, "الخروج من المؤتمر"),
                                   ],
                                 ),
                               ],
@@ -314,13 +282,26 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                       ],
                     ),
                   );
-                }
-                else if(state is GetConferenceAsyncEmptyState){
-                  return emptyFullScreen(context);
-                }
-
-
-                else {
+                } else if (state is GetConferenceAsyncEmptyState) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      emptyFullScreen(context),
+                      SizedBox(height: 100,),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            Routes.home,
+                                (route) => false,
+                          );
+                        },
+                        child: Text("Back To Home"),
+                      ),
+                    ],
+                  );
+                } else {
                   return SizedBox();
                 }
               },

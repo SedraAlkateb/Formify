@@ -1,24 +1,33 @@
 part of 'theme_bloc.dart';
 
 @immutable
-abstract class ThemeState extends Equatable{
+abstract class ThemeState extends Equatable {
+  final Color seedColor;
+  final String colorName;
 
-  const ThemeState();
+  const ThemeState({
+    required this.seedColor,
+    required this.colorName,
+  });
+
+  @override
+  List<Object> get props => [seedColor, colorName];
 }
 
-/// الحالة الافتراضية (لون أساسي أولّي)
 class ThemeInitial extends ThemeState {
-  ThemeInitial() : super();
-
-  @override
-  List<Object?> get props => [];
+  ThemeInitial()
+      : super(
+    seedColor: ColorManager.primary,
+    colorName: "0xFF3A5A75",
+  );
 }
 
-/// عند تغيير اللون
 class ThemeChangedState extends ThemeState {
-  final Color color;
-  const ThemeChangedState(this.color) ;
-
-  @override
-  List<Object?> get props => [color];
+  const ThemeChangedState({
+    required Color seedColor,
+    required String colorName,
+  }) : super(
+    seedColor: seedColor,
+    colorName: colorName,
+  );
 }

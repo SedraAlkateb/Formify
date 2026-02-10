@@ -1,3 +1,5 @@
+import 'package:formify/presentation/resources/routes_manager.dart';
+
 class Constants {
   static const baseUrl = "https://dominapharm.com/domina-survey/";
   static const imageUrl = "https://dominapharm.com/domina-survey/";
@@ -6,4 +8,5 @@ class Constants {
   static  int type = 0;
   static const int zero = 0;
   static const int apiTimeOut = 50000;
+  static String isLogin=Routes.onboarding;
 }
