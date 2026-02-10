@@ -11,7 +11,6 @@ class AllActiveConferencePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // استدعاء الـ Bloc مرة واحدة
     final bloc = BlocProvider.of<ActiveConferenceBloc>(context);
 
     return Scaffold(

@@ -392,20 +392,6 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                                 ),
                               ],
                             ),
-                            // Row(
-                            //   children: [
-                            //     Icon(Icons.description_outlined),
-                            //     SizedBox(width: 8),
-                            //     Text(
-                            //       "Surveys",
-                            //       style: TextStyle(
-                            //         fontSize: 18,
-                            //         fontWeight: FontWeight.bold,
-                            //         color: Colors.black87,
-                            //       ),
-                            //     ),
-                            //   ],
-                            // ),
                             Row(
                               children: [
                                 Text(state.users.length.toString()),

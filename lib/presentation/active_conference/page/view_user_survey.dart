@@ -14,6 +14,7 @@ class ViewUserSurveyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ActiveConferenceBloc, ActiveConferenceState>(
+      buildWhen: (previous, current) => current is GetUserSurveyState,
       builder: (context, state) {
         if (state is GetUserSurveyState) {
           return Scaffold(
@@ -82,7 +83,16 @@ class ViewUserSurveyPage extends StatelessWidget {
                               itemBuilder: (context, index) {
                                 return InkWell(
                                   onTap: () {
-
+                                    BlocProvider.of<ActiveConferenceBloc>(context).add(
+                                      GetCompletedSurveyEvent(
+                                          state.surveys[index].id,
+                                          state.userModel.id
+                                      ),
+                                    );
+                                    Navigator.pushNamed(
+                                      context,
+                                      Routes.viewCompletedSurvey,
+                                    );
                                     BlocProvider.of<ThemeBloc>(context).add(
                                       ChangeThemeColorEvent(
                                         Color(
@@ -99,17 +109,7 @@ class ViewUserSurveyPage extends StatelessWidget {
                                             .color,
                                       ),
                                     );
-                                    BlocProvider.of<ActiveConferenceBloc>(context).add(
-                                      GetCompletedSurveyEvent(
-                                        state.surveys[index].id,
-                                        state.userModel.id
-                                      ),
-                                    );
 
-                                    Navigator.pushNamed(
-                                      context,
-                                      Routes.viewCompletedSurvey,
-                                    );
 
                                   },
                                   child: surveyListWidget(

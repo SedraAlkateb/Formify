@@ -1,8 +1,5 @@
 import 'dart:io';
-
 import 'package:bloc/bloc.dart';
-import 'package:dartz/dartz_unsafe.dart';
-import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:formify/data/network/failure.dart';
@@ -14,7 +11,7 @@ import 'package:formify/domain/usecase/create_survey_usecase.dart';
 import 'package:formify/domain/usecase/get_all_survey_usecase.dart';
 import 'package:formify/domain/usecase/get_survey_question_id_usecase.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:meta/meta.dart';
+import  'package:meta/meta.dart';
 
 part 'survey_event.dart';
 part 'survey_state.dart';
@@ -35,9 +32,8 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
     this.getAllSurveyUsecase,
     this.getSurveyQuestionIdUsecase,
   ) : super(SurveyInitial()) {
-
     on<SurveyEvent>((event, emit) async {
-      if(event is PickAnswerImageEvent){
+      if (event is PickAnswerImageEvent) {
         final s = state;
         if (s is! ViewQuestionState) return;
 
@@ -46,11 +42,10 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
         if (file == null) return;
         final newImages = Map<int, XFile>.from(s.images);
         newImages[event.index] = file;
-        s.questionModel.answers[event.index].imgName=file.name;
-        s.questionModel.answers[event.index].img=file;
+        s.questionModel.answers[event.index].imgName = file.name;
+        s.questionModel.answers[event.index].img = file;
         emit(ViewQuestionState(s.questionModel, images: newImages));
-      }
-     else if (event is CreateSurveyEvent) {
+      } else if (event is CreateSurveyEvent) {
         surveyModel.description = event.description;
         surveyModel.title = event.title;
         surveyModel.color = event.color;
@@ -94,11 +89,11 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
         QuestionModel question1 = question.instanceQuestion();
         emit(ViewQuestionState(question1));
       } else if (event is CreateEmptyAnswerSurveyEvent) {
-        question.answers.add(AnswerModel(0, "",""));
+        question.answers.add(AnswerModel(0, "", ""));
         QuestionModel question1 = question.instanceQuestion();
         emit(ViewQuestionState(question1));
       } else if (event is CreateBoolAnswerSurveyEvent) {
-        question.answers.add(AnswerModel(0, "",""));
+        question.answers.add(AnswerModel(0, "", ""));
         QuestionModel question1 = question.instanceQuestion();
         emit(ViewQuestionState(question1));
       } else if (event is CreateEmptyQuesNameSurveyEvent) {
@@ -120,12 +115,13 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
         QuestionModel question1 = question.instanceQuestion();
         emit(ViewQuestionState(question1));
       } else if (event is CreateAnswerSurveyEvent) {
-        question.answers[event.index] = AnswerModel(0, event.value,"");
+        question.answers[event.index] = AnswerModel(0, event.value, "");
         QuestionModel question1 = question.instanceQuestion();
         emit(ViewQuestionState(question1));
       } else if (event is CreateSurveyWithQuestionEvent) {
         emit(CreateSurveyWithQuestionLoadingState());
-        List<File> files= [];
+        List<File> files = [];
+
         for (final q in questions) {
           for (final answer in q.answers) {
             if (answer.img != null) {
@@ -135,7 +131,8 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
           }
         }
         (await createSurveyQuestionUsecase.execute(
-          SurveyQuestionAndAnswersModel(id, questions),files
+          SurveyQuestionAndAnswersModel(id, questions),
+          files,
         )).fold(
           (failure) {
             emit(CreateSurveyWithQuestionErrorState(failure: failure));

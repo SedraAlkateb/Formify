@@ -69,13 +69,19 @@ class ListOfSurveysPage extends StatelessWidget {
                   ),
                 ),
               ),
-              BlocBuilder<SyncBloc, SyncState>(
+              BlocConsumer<SyncBloc, SyncState>(
+                listener: (context, state) {
+                  if(state is FinishedSurveyState){
+                    Navigator.pushNamedAndRemoveUntil(context, Routes.finishedSurvey, (route) => false,);
+                  }
+                },
                 buildWhen: (previous, current) =>
                     current is GetSurveyAsyncErrorState ||
                     current is GetSurveyAsyncLoadingState ||
                     current is GetSurveyAsyncState ||
                     current is SurveySubmitSuccessState,
                 builder: (context, state) {
+
                   if (state is GetSurveyAsyncErrorState) {
                     return errorFullScreen(context);
                   } else if (state is GetSurveyAsyncLoadingState) {
@@ -145,28 +151,34 @@ class ListOfSurveysPage extends StatelessWidget {
                               shrinkWrap: true,
                               physics: NeverScrollableScrollPhysics(),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 30,bottom: 30),
-                              child: ElevatedButton.icon(
-                                onPressed: () {
-                                  Navigator.pushNamedAndRemoveUntil(context, Routes.showConference, (route) => false,);
-                                },
-
-                                icon: const Icon(Icons.arrow_back),
-
-                                iconAlignment: IconAlignment.start,
-                                label: const Text(' الرجوع الى المؤتمر '),
-                                style: ElevatedButton.styleFrom(
-
-                                  padding: const EdgeInsets.symmetric(vertical: 14,horizontal: 20),
-
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-
-                                ),
-                              ),
-                            ),
+                           // (( BlocProvider.of<SyncBloc>(context).finished)==(surveys.length))?
+                           //  Align(
+                           //
+                           //    child: Padding(
+                           //      padding: const EdgeInsets.only(right: 30,bottom: 30),
+                           //      child: ElevatedButton.icon(
+                           //
+                           //        onPressed: () {
+                           //
+                           //        },
+                           //
+                           //        icon: const Icon(Icons.arrow_forward),
+                           //
+                           //        iconAlignment: IconAlignment.end,
+                           //        label: const Text('تم انهاء العملية بنجاح'),
+                           //        style: ElevatedButton.styleFrom(
+                           //
+                           //          padding: const EdgeInsets.symmetric(vertical: 14,horizontal: 20),
+                           //
+                           //          shape: RoundedRectangleBorder(
+                           //            borderRadius: BorderRadius.circular(12),
+                           //          ),
+                           //
+                           //        ),
+                           //      ),
+                           //    ),
+                           //    alignment: Alignment.topRight,
+                           //  ):SizedBox(),
                           ],
                         ),
                       ),

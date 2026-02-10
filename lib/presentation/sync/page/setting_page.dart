@@ -5,6 +5,7 @@ import 'package:formify/app/di.dart';
 import 'package:formify/presentation/conference/widget/conferm_dialog.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
+import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
 import '../widget/button_widget.dart';
 
@@ -25,6 +26,9 @@ class SettingPage extends StatelessWidget {
             const SizedBox(height: 10),
             BlocListener<SyncBloc, SyncState>(
               listener: (context, state) {
+                if(state is DataLoadingState){
+                  loading(context);
+                }
                 if (state is GetDataState) {
                   BlocProvider.of<SyncBloc>(
                     context,
@@ -32,6 +36,8 @@ class SettingPage extends StatelessWidget {
                 } else if (state is UploadDataState) {
                   BlocProvider.of<SyncBloc>(context).add(DeleteDataEvent());
                 } else if (state is DeleteDataState) {
+                  success(context);
+                  instance<AppPreferences>().setLoggedIn(1);
                   Navigator.pushNamedAndRemoveUntil(
                     context,
                     Routes.home,
@@ -59,12 +65,13 @@ class SettingPage extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             animatedButton(context, () {
-              instance<AppPreferences>().setLoggedIn(1);
+
               Navigator.pushNamedAndRemoveUntil(
                 context,
                 Routes.home,
                     (route) => false,
               );
+              instance<AppPreferences>().setLoggedIn(1);
             }, "الخروج من المؤتمر"),
           ],
         ),

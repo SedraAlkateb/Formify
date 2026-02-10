@@ -195,6 +195,50 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
           initialValue: double.parse(initValue?[0] ?? "0"),
           maxRating: 5,
           allowHalfRating: true,
+
+          unratedColor: const Color(0xFFFFD54F),
+          // const Color(0xFFFFC107), // أصفر ذهبي
+          glow: true,
+          glowColor: ColorManager.textHint,
+          glowRadius:2,
+          itemSize: 36,
+          ratingWidget: RatingWidget(
+            full: Icon(
+              Icons.star,
+              size: 36,
+              color: const Color(0xFFFAC115), // أصفر ذهبي
+              shadows: [
+                Shadow(
+                  color: Color(0xFFFFC107).withOpacity(0.6),
+                  blurRadius: 6,
+                  offset: Offset(0, 1),
+                ),
+              ],
+            ),
+            half: Icon(
+              Icons.star_half,
+              size: 36,
+              color: const Color(0xFFFFC107),
+              shadows: [
+                Shadow(
+                  color: Color(0xFFFFC107).withOpacity(0.5),
+                  blurRadius: 5,
+                  offset: Offset(0, 1),
+                ),
+              ],
+            ),
+
+            empty: Icon(
+              Icons.star_border_outlined,
+              size: 36,
+              color: const Color(0xFF837659),
+            ),
+          ),
+          validator: question.isRequired == true
+              ? (value) => (value == null || value == 0)
+              ? "This question is required"
+              : null
+              : null,
         );
 
       case QuestionType.generic:

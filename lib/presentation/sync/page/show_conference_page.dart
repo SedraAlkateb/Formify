@@ -257,7 +257,7 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                 Column(
                                   children: [
                                     animatedButton(context, () {
-                                      Navigator.pushReplacementNamed(
+                                      Navigator.pushNamed(
                                         context,
                                         Routes.insertUser,
                                       );

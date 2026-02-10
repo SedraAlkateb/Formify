@@ -31,7 +31,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   List<IsActiveMainSurveyModel> surveys=[];
   UserSqlModel? userSqlModel;
   int? conferenceId;
-
+  int finished=0;
   SyncBloc(
     this.getAllAsyncInfoUsecase,
     this.addAsyncDataSqlUsecase,
@@ -51,7 +51,10 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     on<UploadDataEvent>(_onUpload);
     on<GetConferenceAsyncEvent>(_onGetConference);
     on<GetSurveyAsyncEvent>(_onGetSurveys);
-    on<InputUserSqlEvent>((e, emit) async => userSqlModel = e.userSqlModel);
+    on<InputUserSqlEvent>((e, emit) async{
+      userSqlModel = e.userSqlModel;
+      finished=0;
+    });
 
     // ===== Survey flow =====
     on<GetQuestionAnswersEvent>(_onGetQuestionAnswers);
@@ -244,16 +247,23 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
         }
       });
 
-      emit(const InsertUserLoadingState());
 
-      (await insertUserAndAnswerUsecase.execute(userSqlModel!)).fold(
-        (failure) => emit(InsertUserErrorState(failure: failure)),
-        (questions) {
-          emit(InsertUserSuccessState());
-        },
-      );
       surveys[s.index].isActive=true;
-      emit( SurveySubmitSuccessState(surveys));
+       finished=finished+1;
+       if(finished==surveys.length){
+         emit(const InsertUserLoadingState());
+
+         (await insertUserAndAnswerUsecase.execute(userSqlModel!)).fold(
+               (failure) => emit(InsertUserErrorState(failure: failure)),
+               (questions) {
+             emit(InsertUserSuccessState());
+           },
+         );
+         emit(FinishedSurveyState());
+       }else{
+         emit( SurveySubmitSuccessState(surveys));
+       }
+
     } catch (e) {
       emit(SurveySubmitErrorState(failure: Failure(0, e.toString())));
     }

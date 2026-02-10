@@ -8,6 +8,7 @@ import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/models/model_q.dart';
 import 'package:form_builder_extra_fields/form_builder_extra_fields.dart';
 import 'package:formify/presentation/question/widgets/image_answer.dart';
+import 'package:formify/presentation/resources/color_manager.dart';
 
 class QuestionPreviewBuilder extends StatelessWidget {
   final QuestionModel question;
@@ -127,10 +128,7 @@ class QuestionPreviewBuilder extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      imageAnswer(a),
-                      Text("${a.title}"),
-                    ],
+                    children: [imageAnswer(a), Text("${a.title}")],
                   ),
                 ),
               )
@@ -144,15 +142,14 @@ class QuestionPreviewBuilder extends StatelessWidget {
           orientation: OptionsOrientation.vertical,
           options: question.answers
               .map(
-                (a) => FormBuilderFieldOption(value: a,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        imageAnswer(a),
-                        Text("${a.title}"),
-                      ],
-                    ),),
+                (a) => FormBuilderFieldOption(
+                  value: a,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [imageAnswer(a), Text("${a.title}")],
+                  ),
+                ),
               )
               .toList(),
           validator: question.isRequired == true
@@ -277,9 +274,47 @@ class QuestionPreviewBuilder extends StatelessWidget {
       case QuestionType.rating:
         return FormBuilderRatingBar(
           name: _name,
-          //    initialValue: initValue[0],
           maxRating: 5,
           allowHalfRating: true,
+
+          unratedColor: const Color(0xFFFFD54F),
+          // const Color(0xFFFFC107), // أصفر ذهبي
+          glow: true,
+          glowColor: ColorManager.textHint,
+          glowRadius:2,
+          itemSize: 36,
+          ratingWidget: RatingWidget(
+            full: Icon(
+              Icons.star,
+              size: 36,
+              color: const Color(0xFFFFC107), // أصفر ذهبي
+              shadows: [
+                Shadow(
+                  color: Color(0xFFFFC107).withOpacity(0.6),
+                  blurRadius: 6,
+                  offset: Offset(0, 1),
+                ),
+              ],
+            ),
+            half: Icon(
+              Icons.star_half,
+              size: 36,
+              color: const Color(0xFFFFC107),
+              shadows: [
+                Shadow(
+                  color: Color(0xFFFFC107).withOpacity(0.5),
+                  blurRadius: 5,
+                  offset: Offset(0, 1),
+                ),
+              ],
+            ),
+
+            empty: Icon(
+              Icons.star_border_outlined,
+              size: 36,
+              color: const Color(0xFF837659),
+            ),
+          ),
           validator: question.isRequired == true
               ? (value) => (value == null || value == 0)
                     ? "This question is required"
