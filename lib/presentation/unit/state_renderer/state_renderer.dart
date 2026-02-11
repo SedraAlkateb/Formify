@@ -112,9 +112,19 @@ Widget _getRetryButton(String buttonTitle,BuildContext context){
       width: double.infinity,
 
     child:  ElevatedButton(
-        style: ButtonStyle(
-          backgroundColor:
-          MaterialStateProperty.all(ColorManager.primary),
+        // style: ButtonStyle(
+        //   //
+        //   // backgroundColor:
+        //   // MaterialStateProperty.all(ColorManager.primary),
+        // ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: ColorManager.primary, // لون الخلفية
+          foregroundColor: Colors.white,          // لون النص
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 4,
         ),
         onPressed: (){
       if(stateRendererType==StateRendererType.fullScreenErrorState){

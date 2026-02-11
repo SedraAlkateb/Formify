@@ -27,12 +27,14 @@ Widget surveyButton(BuildContext context){
                 style: TextStyle(fontWeight: FontWeight.w800),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: ColorManager.primary,
-                foregroundColor: Colors.white,
-                elevation: 0,
+                backgroundColor: ColorManager.primary, // لون الخلفية
+                foregroundColor: Colors.white,          // لون النص
+                padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(12),
                 ),
+                elevation: 4,
+
               ),
             ),
           ),

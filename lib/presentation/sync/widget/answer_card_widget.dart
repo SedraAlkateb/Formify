@@ -127,7 +127,6 @@ class QuestionCard extends StatelessWidget {
                         icon: const Icon(Icons.check_circle_outline),
                         label: Text(isLast ? "إرسال الإجابات" : "التالي"),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF2F4F6A),
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),

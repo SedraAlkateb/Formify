@@ -163,7 +163,18 @@ class _HomePageState extends State<HomePage> {
             ),
             Padding(
               padding: const EdgeInsets.all(30),
-              child: ElevatedButton(onPressed: (){
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: ColorManager.primary, // لون الخلفية
+                    foregroundColor: Colors.white,          // لون النص
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 4,
+                  ),
+                  onPressed: (){
+
                 Navigator.pushNamedAndRemoveUntil(context,
                 Routes.showConference,(route) => false,);
               }, child:Text("start") ),

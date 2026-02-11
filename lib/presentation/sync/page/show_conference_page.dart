@@ -290,6 +290,15 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                       emptyFullScreen(context),
                       SizedBox(height: 100,),
                       ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: ColorManager.primary, // لون الخلفية
+                          foregroundColor: Colors.white,          // لون النص
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 4,
+                        ),
                         onPressed: () {
                           Navigator.pushNamedAndRemoveUntil(
                             context,

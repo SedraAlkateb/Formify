@@ -22,7 +22,7 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
     switch (question.type) {
       case QuestionType.text:
         return FormBuilderTextField(
-          initialValue: initValue?[0],
+          initialValue:initValue!=null? initValue![0]:null,
           name: _name,
           maxLines: 5,
           minLines: 1,
@@ -34,7 +34,7 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
 
       case QuestionType.email:
         return FormBuilderTextField(
-          initialValue: initValue?[0],
+          initialValue:initValue!=null? initValue![0]:null,
           name: _name,
           maxLines: 5,
           minLines: 1,
@@ -48,7 +48,7 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
 
       case QuestionType.password:
         return FormBuilderTextField(
-          initialValue: initValue?[0],
+          initialValue:initValue!=null? initValue![0]:null,
           name: _name,
           enabled: false,
 
@@ -60,7 +60,7 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
       case QuestionType.phone:
         return FormBuilderTextField(
           name: _name,
-          initialValue: initValue?[0],
+          initialValue:initValue!=null? initValue![0]:null,
           enabled: false,
 
           decoration: InputDecoration(
@@ -71,7 +71,7 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
       case QuestionType.number:
         return FormBuilderTextField(
           enabled: false,
-          initialValue: initValue?[0],
+          initialValue:initValue!=null? initValue![0]:null,
           name: _name,
           decoration: InputDecoration(
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(11)),
@@ -82,7 +82,7 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
         return FormBuilderTextField(
           name: _name,
           enabled: false,
-          initialValue: initValue![0],
+          initialValue:initValue!=null? initValue![0]:null,
           decoration: InputDecoration(
             icon: Icon(Icons.check_circle, color: ColorManager.success),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(11)),
@@ -93,7 +93,7 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
         return FormBuilderTextField(
           name: _name,
           enabled: false,
-          initialValue: initValue![0],
+          initialValue:initValue!=null? initValue![0]:null,
           decoration: InputDecoration(
             icon: Icon(Icons.check_circle, color: ColorManager.success),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(11)),
@@ -104,8 +104,8 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
         return FormBuilderCheckboxGroup<AnswerModel>(
           name: _name,
           orientation: OptionsOrientation.vertical,
-          initialValue: initValue
-              ?.map((e) => AnswerModel(0, initValue![0], ""))
+          initialValue:
+       initValue?.map((e) => AnswerModel(0, initValue![0]))
               .toList(),
           options: question.answers
               .map(
@@ -122,7 +122,7 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
 
       case QuestionType.autocomplete:
         return FormBuilderTextField(
-          initialValue: initValue?[0],
+          initialValue:initValue!=null? initValue![0]:null,
           name: _name,
           maxLines: 5,
           minLines: 1,
@@ -145,7 +145,7 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
 
       case QuestionType.date:
         return FormBuilderTextField(
-          initialValue: initValue?[0],
+          initialValue:initValue!=null? initValue![0]:null,
           name: _name,
           maxLines: 5,
           minLines: 1,
@@ -157,7 +157,7 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
 
       case QuestionType.time:
         return FormBuilderTextField(
-          initialValue: initValue?[0],
+          initialValue:initValue!=null? initValue![0]:null,
           name: _name,
           maxLines: 5,
           minLines: 1,
@@ -168,7 +168,7 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
         );
       case QuestionType.dateTime:
         return FormBuilderTextField(
-          initialValue: initValue?[0],
+          initialValue:initValue!=null? initValue![0]:null,
           name: _name,
           maxLines: 5,
           minLines: 1,

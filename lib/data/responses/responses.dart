@@ -289,7 +289,9 @@ class GetAnswerResponse {
   int? id;
   @JsonKey(name: "title")
   String? title;
-  GetAnswerResponse(this.id, this.title);
+  @JsonKey(name: "img")
+  String? img;
+  GetAnswerResponse(this.id, this.title,this.img);
   // from json
   factory GetAnswerResponse.fromJson(Map<String, dynamic> json) =>
       _$GetAnswerResponseFromJson(json);
@@ -591,9 +593,13 @@ class GetAnswerForAsyncResponse {
   int? id;
   @JsonKey(name: "title")
   String? title;
+
   @JsonKey(name: "question_id")
   int? question_id;
-  GetAnswerForAsyncResponse(this.id, this.title, this.question_id);
+  @JsonKey(name: "img")
+  String? img;
+
+  GetAnswerForAsyncResponse(this.id, this.title, this.question_id,this.img);
   // from json
   factory GetAnswerForAsyncResponse.fromJson(Map<String, dynamic> json) =>
       _$GetAnswerForAsyncResponseFromJson(json);

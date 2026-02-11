@@ -68,7 +68,7 @@ class _AppServiceClient implements AppServiceClient {
     _data.files.addAll(
       images.map(
         (i) => MapEntry(
-          'img_1',
+          'files[]',
           MultipartFile.fromFileSync(
             i.path,
             filename: i.path.split(Platform.pathSeparator).last,

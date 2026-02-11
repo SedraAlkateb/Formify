@@ -22,6 +22,7 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
   CreateSurveyQuestionUsecase createSurveyQuestionUsecase;
   GetAllSurveyUsecase getAllSurveyUsecase;
   int id = 0;
+  List<File> files = [];
   /////////////////////////////////////////////
   QuestionModel question = QuestionModel.create();
   List<QuestionModel> questions = [];
@@ -72,14 +73,6 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
           },
         );
       }
-      // else if (event is CreateQuesSurveyEvent) {
-      //   question=QuestionModel.create();
-      //   event.questionModel.order = surveyModel.questions.length + 2;
-      //   question=event.questionModel;
-      //  // surveyModel.questions.add(event.questionModel);
-      //   emit(ViewSurveyState(surveyModel));
-      // }
-      //
       else if (event is CreateQuesNameSurveyEvent) {
         question.title = event.questionName;
         QuestionModel question1 = question.instanceQuestion();
@@ -89,11 +82,11 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
         QuestionModel question1 = question.instanceQuestion();
         emit(ViewQuestionState(question1));
       } else if (event is CreateEmptyAnswerSurveyEvent) {
-        question.answers.add(AnswerModel(0, "", ""));
+        question.answers.add(AnswerModel(0, ""));
         QuestionModel question1 = question.instanceQuestion();
         emit(ViewQuestionState(question1));
       } else if (event is CreateBoolAnswerSurveyEvent) {
-        question.answers.add(AnswerModel(0, "", ""));
+        question.answers.add(AnswerModel(0, ""));
         QuestionModel question1 = question.instanceQuestion();
         emit(ViewQuestionState(question1));
       } else if (event is CreateEmptyQuesNameSurveyEvent) {
@@ -115,18 +108,17 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
         QuestionModel question1 = question.instanceQuestion();
         emit(ViewQuestionState(question1));
       } else if (event is CreateAnswerSurveyEvent) {
-        question.answers[event.index] = AnswerModel(0, event.value, "");
+        question.answers[event.index] = AnswerModel(0, event.value);
         QuestionModel question1 = question.instanceQuestion();
         emit(ViewQuestionState(question1));
       } else if (event is CreateSurveyWithQuestionEvent) {
         emit(CreateSurveyWithQuestionLoadingState());
-        List<File> files = [];
 
         for (final q in questions) {
           for (final answer in q.answers) {
             if (answer.img != null) {
-              answer.imgName = answer.img!.path;
-              files.add(File(answer.img!.path));
+              answer.imgName = answer.img!.name;
+              files.add(File(answer.img!.path,));
             }
           }
         }
@@ -138,7 +130,8 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
             emit(CreateSurveyWithQuestionErrorState(failure: failure));
           },
           (data) async {
-            //updateRecipes(data);
+            files=[];
+            questions=[];
             emit(CreateSurveyWithQuestionState());
           },
         );

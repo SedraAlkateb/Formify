@@ -19,7 +19,7 @@ extension GetAnswerModelMapper on GetAnswerResponse? {
     return AnswerModel(
       this?.id ?? Constants.zero,
       this?.title ?? Constants.empty,
-      "",
+    imgName:  this?.img
     );
   }
 }
@@ -317,7 +317,7 @@ extension GetAsyncAnswerMapper on GetAnswerForAsyncResponse? {
     return AnswerModel(
       this?.id ?? Constants.zero,
       this?.title ?? Constants.empty,
-      "",
+    imgName: this?.img ,
       questionId: this?.question_id ?? Constants.zero,
     );
   }

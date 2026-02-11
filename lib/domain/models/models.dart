@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:formify/domain/models/model_q.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -468,9 +466,9 @@ class AnswerModel {
   String title;
   String? imgName;
   XFile? img;
-  AnswerModel(this.id, this.title, this.imgName, {this.questionId, this.img});
+  AnswerModel(this.id, this.title, {this.questionId, this.img ,this.imgName,});
   Map<String, dynamic> toMap() {
-    return {'id': id, 'title': title, 'question_id': questionId};
+    return {'id': id, 'title': title, 'question_id': questionId,'img':imgName};
   }
 
   Map<String, dynamic> toJson() {
@@ -485,7 +483,7 @@ class AnswerModel {
     return AnswerModel(
       map['id'],
       map['title'],
-      map['img'],
+    imgName:  map['img'],
       questionId: map['question_id'],
     );
   }

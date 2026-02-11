@@ -280,10 +280,18 @@ Map<String, dynamic> _$GetAnswerUserResponseToJson(
 };
 
 GetAnswerResponse _$GetAnswerResponseFromJson(Map<String, dynamic> json) =>
-    GetAnswerResponse((json['id'] as num?)?.toInt(), json['title'] as String?);
+    GetAnswerResponse(
+      (json['id'] as num?)?.toInt(),
+      json['title'] as String?,
+      json['img'] as String?,
+    );
 
 Map<String, dynamic> _$GetAnswerResponseToJson(GetAnswerResponse instance) =>
-    <String, dynamic>{'id': instance.id, 'title': instance.title};
+    <String, dynamic>{
+      'id': instance.id,
+      'title': instance.title,
+      'img': instance.img,
+    };
 
 GetSurveyWithQuestionAndAnswerBaseResponse
 _$GetSurveyWithQuestionAndAnswerBaseResponseFromJson(
@@ -593,6 +601,7 @@ GetAnswerForAsyncResponse _$GetAnswerForAsyncResponseFromJson(
   (json['id'] as num?)?.toInt(),
   json['title'] as String?,
   (json['question_id'] as num?)?.toInt(),
+  json['img'] as String?,
 );
 
 Map<String, dynamic> _$GetAnswerForAsyncResponseToJson(
@@ -601,6 +610,7 @@ Map<String, dynamic> _$GetAnswerForAsyncResponseToJson(
   'id': instance.id,
   'title': instance.title,
   'question_id': instance.question_id,
+  'img': instance.img,
 };
 
 SurveyConferenceForAsyncResponse _$SurveyConferenceForAsyncResponseFromJson(
