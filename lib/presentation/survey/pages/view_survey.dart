@@ -9,9 +9,19 @@ import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
-class ViewSurvey extends StatelessWidget {
-  ViewSurvey({super.key});
+class ViewSurvey extends StatefulWidget {
+  const ViewSurvey({super.key});
 
+  @override
+  State<ViewSurvey> createState() => _ViewSurveyState();
+}
+
+class _ViewSurveyState extends State<ViewSurvey> {
+  @override
+  void initState() {
+
+    super.initState();
+  }
   final _formKey = GlobalKey<FormBuilderState>();
 
   @override
@@ -193,6 +203,8 @@ class ViewSurvey extends StatelessWidget {
                       child: BlocListener<SurveyBloc, SurveyState>(
                         listener: (context, state) {
                           if (state is CreateSurveyWithQuestionErrorState) {
+                            ////////////////////////TODO
+                            success(context);
                             error(
                               context,
                               state.failure.massage,
@@ -212,21 +224,6 @@ class ViewSurvey extends StatelessWidget {
                         },
                         child: ElevatedButton(
                           onPressed: () {
-                            // final isValid =
-                            //     _formKey.currentState?.saveAndValidate() ?? false;
-                            //
-                            // if (!isValid) {
-                            //   ScaffoldMessenger.of(context).showSnackBar(
-                            //     const SnackBar(
-                            //       content: Text(
-                            //         "Please fix validation errors before submitting.",
-                            //       ),
-                            //     ),
-                            //   );
-                            //   return;
-                            // }
-                            //    final values = _formKey.currentState!.value;
-
                             BlocProvider.of<SurveyBloc>(
                               context,
                             ).add(CreateSurveyWithQuestionEvent());

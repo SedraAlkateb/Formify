@@ -41,6 +41,7 @@ class AppSqlApi extends AppSqlApiAbs {
 
       a.id              AS a_id,
       a.title           AS a_title
+      a.img             AS a_img
     FROM questions q
     LEFT JOIN answers a ON a.question_id = q.id
     WHERE q.survey_id = ?
@@ -68,7 +69,7 @@ class AppSqlApi extends AppSqlApiAbs {
       final aId = r['a_id'];
       if (aId != null) {
         aMap.putIfAbsent(qId, () => []);
-        aMap[qId]!.add(AnswerModel(aId as int, r['a_title'] as String,""));
+        aMap[qId]!.add(AnswerModel(aId as int, r['a_title'] as String,imgName: r['a_img'] as String));
       }
     }
     final result = <QuestionModel>[];

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:formify/presentation/resources/color_manager.dart';
 
 class AnimatedButton extends StatefulWidget {
   final String text;
@@ -46,6 +47,13 @@ class _AnimatedButtonState extends State<AnimatedButton> {
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(
             minimumSize: Size(MediaQuery.of(context).size.width * 0.7, 45),
+            backgroundColor: ColorManager.primary, // لون الخلفية
+            foregroundColor: Colors.white,          // لون النص
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            elevation: 4,
           ),
           onPressed: widget.onPressed,
           child: Text(widget.text, style: const TextStyle(fontSize: 18)),

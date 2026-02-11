@@ -23,9 +23,15 @@ Future<void> showConfirmDialog({
             child: const Text("إلغاء"),
           ),
           ElevatedButton(
+
             style: ElevatedButton.styleFrom(
-             backgroundColor: ColorManager.primary,
-              foregroundColor: Colors.white,
+              backgroundColor: ColorManager.primary, // لون الخلفية
+              foregroundColor: Colors.white,          // لون النص
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              elevation: 4,
             ),
             onPressed: () {
               Navigator.of(context).pop();

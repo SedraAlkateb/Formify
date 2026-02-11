@@ -22,7 +22,7 @@ abstract class AppServiceClient {
   @POST("survey-crud/create_survey_questionsAndAnswers.php")
   Future<CreateSurveyQuestionsBaseResponse> createSurveyQuestionsAndAnswers(
     @Part(name: "data") String surveyQ,
-    @Part(name: "img_1") List<File> images,
+    @Part(name: "files[]") List<File> images,
   );
   @GET("survey-crud/get_all_survey.php")
   Future<GetAllSurveyBaseResponse> getAllSurvey();

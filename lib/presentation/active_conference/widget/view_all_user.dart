@@ -201,12 +201,6 @@ Widget userWidget(UserModel user) {
                   ),
                 ],
               ),
-
-              Icon(
-                Icons.arrow_forward_ios,
-                color: ColorManager.black.withOpacity(0.5),
-                size: 20,
-              ),
             ],
           ),
           const SizedBox(width: 8),

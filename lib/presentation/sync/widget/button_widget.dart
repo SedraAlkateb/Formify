@@ -50,14 +50,16 @@ class _AnimatedButtonState extends State<_AnimatedButton> {
             child: ElevatedButton(
               onPressed: widget.onPressed,
               style: ElevatedButton.styleFrom(
-                backgroundColor: ColorManager.primary,
-                minimumSize: const Size(double.infinity, 48),
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                elevation: elev,
-                shadowColor: ColorManager.primary.withOpacity(glowOpacity),
+                backgroundColor: ColorManager.primary, // لون الخلفية
+                foregroundColor: Colors.white,          // لون النص
+                padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(12),
                 ),
+                elevation: 4,
+                minimumSize: const Size(double.infinity, 48),
+                shadowColor: ColorManager.primary.withOpacity(glowOpacity),
+
               ),
               child: child!,
             ),

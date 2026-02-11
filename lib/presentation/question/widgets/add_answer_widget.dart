@@ -10,6 +10,7 @@ Widget addAnswerWidget(BuildContext context ){
           onPressed: () {
             context.read<SurveyBloc>().add(CreateEmptyAnswerSurveyEvent());
           },
+
           icon: const Icon(Icons.add),
           label: const Text("Add Answer"),
         ),

@@ -153,11 +153,15 @@ class _InsertUserPageState extends State<InsertUserPage> {
                             icon: const Icon(Icons.arrow_forward),
                             iconAlignment: IconAlignment.end,
                             label: const Text('متابعة الى الاستبيان'),
+
                             style: ElevatedButton.styleFrom(
+                              backgroundColor: ColorManager.primary, // لون الخلفية
+                              foregroundColor: Colors.white,          // لون النص
                               padding: const EdgeInsets.symmetric(vertical: 14),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
+                              elevation: 4,
                             ),
                           ),
 

@@ -328,7 +328,7 @@ extension QuestionTypeX on QuestionType {
       final id = savedAnswers.first.answer_id;
       return question.answers.firstWhere((a) => a.id == id);
     } else if (question.type case QuestionType.checkbox) {
-      final ids = savedAnswers.map((e) => e.answer_id).toSet();
+      final ids = savedAnswers.map((e) =>AnswerModel( e.answer_id??0, e.content)).toSet();
       return question.answers.where((a) => ids.contains(a.id)).toList();
     } else if (question.type case QuestionType.switchField) {
       return savedAnswers.first.content == "1" ?true:false;

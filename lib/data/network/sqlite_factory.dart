@@ -98,7 +98,7 @@ class DatabaseHelper {
       CREATE TABLE IF NOT EXISTS answers (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT,
-        image BLOB,
+        image TEXT,
         question_id INTEGER,
         FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE
       );
