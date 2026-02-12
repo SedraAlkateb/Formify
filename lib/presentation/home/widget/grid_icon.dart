@@ -147,15 +147,15 @@ class _AnimatedGridItemState extends State<AnimatedGridItem> {
                      fontWeight: FontWeight.bold,
                    ),
                  ),
-                 widget.type==null?
-                 Text(
-                   "num of ${widget.type} : 30",
-                   style: const TextStyle(
-                     color: ColorManager.accent,
-                     fontSize: 14,
-                     fontWeight: FontWeight.w500,
-                   ),
-                 ):SizedBox(),
+                 // widget.type==null?
+                 // Text(
+                 //   "num of ${widget.type} : 30",
+                 //   style: const TextStyle(
+                 //     color: ColorManager.accent,
+                 //     fontSize: 14,
+                 //     fontWeight: FontWeight.w500,
+                 //   ),
+                 // ):SizedBox(),
                ],
              ),
               if (widget.image != null)

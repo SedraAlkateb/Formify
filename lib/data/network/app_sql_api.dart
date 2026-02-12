@@ -40,12 +40,12 @@ class AppSqlApi extends AppSqlApiAbs {
       q.type            AS q_type,
 
       a.id              AS a_id,
-      a.title           AS a_title
+      a.title           AS a_title,
       a.img             AS a_img
     FROM questions q
     LEFT JOIN answers a ON a.question_id = q.id
     WHERE q.survey_id = ?
-    ORDER BY q.question_order ASC, a.id ASC
+    ORDER BY q.question_order ASC, a.id ASC;
   ''',
       [surveyId],
     );
@@ -69,7 +69,7 @@ class AppSqlApi extends AppSqlApiAbs {
       final aId = r['a_id'];
       if (aId != null) {
         aMap.putIfAbsent(qId, () => []);
-        aMap[qId]!.add(AnswerModel(aId as int, r['a_title'] as String,imgName: r['a_img'] as String));
+        aMap[qId]!.add(AnswerModel(aId as int, r['a_title'] as String,imgName: r['a_img']as String?));
       }
     }
     final result = <QuestionModel>[];

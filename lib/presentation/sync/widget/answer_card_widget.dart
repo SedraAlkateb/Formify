@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:formify/domain/models/model_q.dart';
 import 'package:formify/domain/models/models.dart';
+import 'package:formify/presentation/question/page/view_Question_network.dart';
 import 'package:formify/presentation/question/page/view_question.dart';
 
 class QuestionCard extends StatelessWidget {
@@ -103,7 +104,7 @@ class QuestionCard extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 12),
-                QuestionPreviewBuilder(question: questionModel),
+                QuestionPreviewNetworkBuilder(question: questionModel),
                 const SizedBox(height: 14),
                 Row(
                   children: [

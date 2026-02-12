@@ -4,6 +4,7 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/models/model_q.dart';
 import 'package:form_builder_extra_fields/form_builder_extra_fields.dart';
+import 'package:formify/presentation/question/widgets/image_answer.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 
 class QuestionAnswerPreviewBuilder extends StatelessWidget {
@@ -82,7 +83,7 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
         return FormBuilderTextField(
           name: _name,
           enabled: false,
-          initialValue:initValue!=null? initValue![0]:null,
+          initialValue:(initValue!=null)? (initValue![0] as String):null ,
           decoration: InputDecoration(
             icon: Icon(Icons.check_circle, color: ColorManager.success),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(11)),
@@ -93,9 +94,14 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
         return FormBuilderTextField(
           name: _name,
           enabled: false,
-          initialValue:initValue!=null? initValue![0]:null,
+          initialValue:initValue!=null? (initValue![0] as AnswerModel) .title :null,
+
           decoration: InputDecoration(
-            icon: Icon(Icons.check_circle, color: ColorManager.success),
+            icon: Row(
+              children: [
+                Icon(Icons.check_circle, color: ColorManager.success),
+              ],
+            ),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(11)),
           ),
         );
@@ -103,14 +109,23 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
       case QuestionType.checkbox:
         return FormBuilderCheckboxGroup<AnswerModel>(
           name: _name,
+          enabled: false,
           orientation: OptionsOrientation.vertical,
           initialValue:
        initValue?.map((e) => AnswerModel(0, initValue![0]))
               .toList(),
+
           options: question.answers
               .map(
-                (a) => FormBuilderFieldOption(value: a, child: Text(a.title)),
-              )
+                (a) => FormBuilderFieldOption(
+              value: a,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [imageAnswerNetwork(a), Text("${a.title}")],
+              ),
+            ),
+          )
               .toList(),
           validator: question.isRequired == true
               ? FormBuilderValidators.minLength(
