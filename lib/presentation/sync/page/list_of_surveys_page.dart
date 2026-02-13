@@ -1,14 +1,99 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/domain/models/models.dart';
-import 'package:formify/presentation/conference/widget/conferm_dialog.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
-import 'package:formify/presentation/sync/widget/bouncing_icon_card.dart';
-import 'package:formify/presentation/sync/widget/button_widget.dart';
-import 'package:formify/presentation/sync/widget/card_list_up_down.dart';
+import 'package:formify/presentation/sync/widget/header_section_widget.dart';
+import 'package:formify/presentation/sync/widget/survey_card_widget.dart';
+import 'package:formify/presentation/unit/blur_focus_item.dart';
+import 'package:formify/presentation/unit/parallax_scroll_effect.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
+class ListOfSurveysPage extends StatefulWidget {
+  const ListOfSurveysPage({super.key});
+
+  @override
+  State<ListOfSurveysPage> createState() => _ListOfSurveysPageState();
+}
+
+class _ListOfSurveysPageState extends State<ListOfSurveysPage> {
+  final ScrollController _controller = ScrollController();
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                ColorManager.firstScreenBackground2,
+                ColorManager.firstScreenBackground1,
+                ColorManager.firstScreenBackground1,
+              ],
+            ),
+          ),
+          child: Column(
+            children: [
+               HeaderSection(),
+
+              Expanded(
+                child: BlocConsumer<SyncBloc, SyncState>(
+                  listener: (context, state) {
+                    if (state is FinishedSurveyState) {
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        Routes.finishedSurvey,
+                            (route) => false,
+                      );
+                    }
+                  },
+                  builder: (context, state) {
+                    if (state is GetSurveyAsyncLoadingState) {
+                      return loadingFullScreen(context);
+                    }
+
+                    if (state is GetSurveyAsyncErrorState) {
+                      return errorFullScreen(context);
+                    }
+
+                    if (state is GetSurveyAsyncState ||
+                        state is SurveySubmitSuccessState) {
+
+                      List<IsActiveMainSurveyModel> surveys =
+                      (state is SurveySubmitSuccessState)
+                          ? state.surveys
+                          : (state as GetSurveyAsyncState).surveys;
+
+                      return ListView.builder(
+                        controller: _controller,
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        itemCount: surveys.length,
+                        itemBuilder: (context, index) {
+                          return
+                             SurveyCard(
+                              survey: surveys[index],
+                              index: index,
+
+                          );
+                        },
+                      );
+                    }
+
+                    return const SizedBox();
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/*
 
 class ListOfSurveysPage extends StatelessWidget {
   const ListOfSurveysPage({super.key});
@@ -194,3 +279,5 @@ class ListOfSurveysPage extends StatelessWidget {
     );
   }
 }
+
+ */

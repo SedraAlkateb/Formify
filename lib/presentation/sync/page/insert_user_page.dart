@@ -4,6 +4,7 @@ import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
+import 'package:formify/presentation/unit/animation-in_list.dart';
 import 'package:formify/presentation/unit/text_field.dart';
 
 class InsertUserPage extends StatefulWidget {
@@ -13,14 +14,31 @@ class InsertUserPage extends StatefulWidget {
   State<InsertUserPage> createState() => _InsertUserPageState();
 }
 
-class _InsertUserPageState extends State<InsertUserPage> {
+class _InsertUserPageState extends State<InsertUserPage>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
+  late final AnimationController _controller;
 
   final TextEditingController fullNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200), // مدة الحركة كاملة
+    );
+    _controller.forward(); // تشغيل الأنيميشن مباشرة
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
   void _submit() {
       if (_formKey.currentState!.validate()) {
         final user = UserSqlModel(
@@ -30,6 +48,7 @@ class _InsertUserPageState extends State<InsertUserPage> {
           address: addressController.text,
           answerModel: [], // تُملأ لاحقًا
         );
+
 
         BlocProvider.of<SyncBloc>(context).add(InputUserSqlEvent(user));
         BlocProvider.of<SyncBloc>(context).add(GetSurveyAsyncEvent());
@@ -45,12 +64,7 @@ class _InsertUserPageState extends State<InsertUserPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 40,left: 30),
-              child: Icon(
-
-                  Icons.arrow_back,color: ColorManager.white,size: 30),
-            ),
+            SizedBox(height: 50,),
             Container(
               width: double.infinity,
 
@@ -75,93 +89,125 @@ class _InsertUserPageState extends State<InsertUserPage> {
                   key: _formKey,
                   child: Column(
                     children: [
-                      Card(
-                        margin: const EdgeInsets.all(5),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        // elevation: 4,
-                        color: ColorManager.primary,
-                        child: Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: Icon(
-                            Icons.person_outline,
-                            color: Color(0xffffffff),
-                            size: 45,
+                      buildAnimatedField(
+                        controller: _controller,
+                        index: 1,
+                        child: Card(
+                          margin: const EdgeInsets.all(5),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          // elevation: 4,
+                          color: ColorManager.primary,
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Icon(
+                              Icons.person_outline,
+                              color: Color(0xffffffff),
+                              size: 45,
+                            ),
                           ),
                         ),
                       ),
-                      Text(
-                        "معلومات الحضور",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: ColorManager.primary,
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
+                      buildAnimatedField(
+                        controller: _controller,
+                        index: 1,
+                        child: Text(
+                          "معلومات الحضور",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: ColorManager.primary,
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                       SizedBox(height: 5),
-                      Text(
-                        "يرجى إدخال بياناتك للمتابعة إلى الاستبيانات",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: ColorManager.black,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w400,
+                      buildAnimatedField(
+                        controller: _controller,
+                        index: 2,
+                        child: Text(
+                          "يرجى إدخال بياناتك للمتابعة إلى الاستبيانات",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: ColorManager.black,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
                       ),
                       ListView(
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
                         children: [
-                          GlowTextField(
+                          buildAnimatedField(
+                            controller: _controller,
+                            index: 3,
+                            child: GlowTextField(
 
-                            hint: " ادخل اسمك الكامل ",
-                            label: 'الاسم الكامل',
-                            controller: fullNameController,
+                              hint: " ادخل اسمك الكامل ",
+                              label: 'الاسم الكامل',
+                              controller: fullNameController,
 
-                            icon: Icons.person_outline,
-                            validator: (v) => v!.isEmpty ? 'الاسم مطلوب' : null,
+                              icon: Icons.person_outline,
+                              validator: (v) => v!.isEmpty ? 'الاسم مطلوب' : null,
+                            ),
                           ),
-                          GlowTextField(
-                            controller: emailController,
-                            hint: "example@gmail.com",
-                            label: 'البريد الإلكتروني *',
-                            icon: Icons.email_outlined,
-                            keyboardType: TextInputType.emailAddress,
-                            validator: (v) =>
-                                v!.contains('@') ? null : 'إيميل غير صالح',
+                          buildAnimatedField(
+                            controller: _controller,
+                            index: 4,
+                            child: GlowTextField(
+                              controller: emailController,
+                              hint: "example@gmail.com",
+                              label: 'البريد الإلكتروني *',
+                              icon: Icons.email_outlined,
+                              keyboardType: TextInputType.emailAddress,
+                              validator: (v) =>
+                                  v!.contains('@') ? null : 'إيميل غير صالح',
+                            ),
                           ),
-                          GlowTextField(
-                            controller: phoneController,
-                            label: 'رقم الهاتف *',
-                            hint: "09xxxxxxxx",
-                            icon: Icons.phone_outlined,
-                            keyboardType: TextInputType.phone,
-                            validator: (v) => v!.length < 8 ? 'رقم غير صحيح' : null,
+                          buildAnimatedField(
+                            controller: _controller,
+                            index: 5,
+                            child: GlowTextField(
+                              controller: phoneController,
+                              label: 'رقم الهاتف *',
+                              hint: "09xxxxxxxx",
+                              icon: Icons.phone_outlined,
+                              keyboardType: TextInputType.phone,
+                              validator: (v) => v!.length < 8 ? 'رقم غير صحيح' : null,
+                            ),
                           ),
-                          GlowTextField(
-                            controller: addressController,
-                            label: 'العنوان',
-                            hint: "أدخل عنوانك الكامل",
-                            icon: Icons.location_on_outlined,
-                            validator: (v) => v!.isEmpty ? 'العنوان مطلوب' : null,
+                          buildAnimatedField(
+                            controller: _controller,
+                            index: 6,
+                            child: GlowTextField(
+                              controller: addressController,
+                              label: 'العنوان',
+                              hint: "أدخل عنوانك الكامل",
+                              icon: Icons.location_on_outlined,
+                              validator: (v) => v!.isEmpty ? 'العنوان مطلوب' : null,
+                            ),
                           ),
                           const SizedBox(height: 30),
-                          ElevatedButton.icon(
-                            onPressed: _submit,
-                            icon: const Icon(Icons.arrow_forward),
-                            iconAlignment: IconAlignment.end,
-                            label: const Text('متابعة الى الاستبيان'),
+                          buildAnimatedField(
+                            controller: _controller,
+                            index: 7,
+                            child: ElevatedButton.icon(
+                              onPressed: _submit,
+                              icon: const Icon(Icons.arrow_forward),
+                              iconAlignment: IconAlignment.end,
+                              label: const Text('متابعة الى الاستبيان'),
 
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: ColorManager.primary, // لون الخلفية
-                              foregroundColor: Colors.white,          // لون النص
-                              padding: const EdgeInsets.symmetric(vertical: 14),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: ColorManager.primary, // لون الخلفية
+                                foregroundColor: Colors.white,          // لون النص
+                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                elevation: 4,
                               ),
-                              elevation: 4,
                             ),
                           ),
 

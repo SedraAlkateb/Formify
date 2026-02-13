@@ -63,7 +63,7 @@ class QuestionCard extends StatelessWidget {
                       vertical: 10,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF2F4F6A),
+                      color: Theme.of(context).primaryColor,
                       borderRadius: BorderRadius.circular(999),
                       boxShadow: [
                         BoxShadow(

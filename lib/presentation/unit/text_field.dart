@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 
-class GlowTextField extends StatefulWidget {
+class GlowTextField extends StatelessWidget {
   const GlowTextField({
     super.key,
     required this.controller,
@@ -21,35 +21,12 @@ class GlowTextField extends StatefulWidget {
   final String? Function(String?)? validator;
 
   @override
-  State<GlowTextField> createState() => _GlowTextFieldState();
-}
-
-class _GlowTextFieldState extends State<GlowTextField> {
-  late final FocusNode _focusNode;
-  bool _isFocused = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _focusNode = FocusNode();
-    _focusNode.addListener(() {
-      setState(() => _isFocused = _focusNode.hasFocus);
-    });
-  }
-
-  @override
-  void dispose() {
-    _focusNode.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Text(widget.label),
+        Text(label),
 
         Padding(
           padding: const EdgeInsets.only(bottom: 16, top: 10),
@@ -58,10 +35,9 @@ class _GlowTextFieldState extends State<GlowTextField> {
             curve: Curves.easeOut,
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
             child: TextFormField(
-              focusNode: _focusNode,
-              controller: widget.controller,
-              keyboardType: widget.keyboardType,
-              validator: widget.validator,
+              controller: controller,
+              keyboardType: keyboardType,
+              validator: validator,
               cursorColor: ColorManager.primary,
               textAlign: TextAlign.end,
               decoration: InputDecoration(
@@ -73,14 +49,14 @@ class _GlowTextFieldState extends State<GlowTextField> {
                   children: [
                     SizedBox(width: 8),
                     Text(
-                      widget.hint,
+                      hint,
                       style: TextStyle(color: ColorManager.textHint),
                     ),
                   ],
                 ),
                 filled: true,
                 fillColor: ColorManager.white,
-                prefixIcon: Icon(widget.icon, color: ColorManager.primary),
+                prefixIcon: Icon(icon, color: ColorManager.primary),
 
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
