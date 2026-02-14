@@ -16,53 +16,49 @@ class OnBoardingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async {
-        return false;
-      },
+      onWillPop: () async => false,
       child: Scaffold(
         backgroundColor: ColorManager.white,
         body: Column(
           children: [
             Expanded(
               child: PageView(
-                //   reverse: true,
+                // ✅ Arabic natural swipe (right -> left)
+                reverse: true,
                 controller: BlocProvider.of<OnboardingBloc>(context).controller,
                 onPageChanged: (index) {
                   BlocProvider.of<OnboardingBloc>(context).isLastPageFun(index);
                 },
                 children: [
-                  buildPageLottie(
+                  BuildPageLottie(
                     image: OnBoardingJsonAssets.survey,
-                    title: "Create Your Surveys Easily ",
-                    //    "📋",
+                    title: "أنشئ استبياناتك بسهولة",
                     subtitle:
-                        "Build any dynamic survey and let users fill them directly through the app.",
+                    "أنشئ أي استبيان بشكل ديناميكي ودع المستخدمين يملؤونه مباشرةً عبر التطبيق.",
                   ),
-                  buildPageLottie(
+                  BuildPageLottie(
+
                     image: OnBoardingJsonAssets.conference,
-                    title: "Create Your Event ",
-                    //  "🎤",
+                    title: "أنشئ مؤتمرك أو فعاليتك",
                     subtitle:
-                        "Set up your conference or event and generate surveys for participants to fill directly through the app.",
+                    "قم بإعداد المؤتمر أو الفعالية وإنشاء استبيانات للمشاركين ليقوموا بتعبئتها مباشرةً عبر التطبيق.",
                   ),
-                  buildPageLottie(
+                  BuildPageLottie(
                     image: OnBoardingJsonAssets.analyses,
-                    title: "Analyze Results Instantly",
+                    title: "حلّل النتائج فوراً",
                     subtitle:
-                        "Track responses and analyze surveys fast to make better decisions.",
+                    "تابع الردود وحلّل الاستبيانات بسرعة لاتخاذ قرارات أفضل.",
                   ),
                 ],
               ),
             ),
-
             Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
                   SmoothPageIndicator(
-                    controller: BlocProvider.of<OnboardingBloc>(
-                      context,
-                    ).controller,
+                    controller:
+                    BlocProvider.of<OnboardingBloc>(context).controller,
                     count: 3,
                     effect: WormEffect(
                       spacing: 12,
@@ -71,7 +67,7 @@ class OnBoardingPage extends StatelessWidget {
                       dotWidth: 10,
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   AnimatedButton(
                     text: BlocProvider.of<OnboardingBloc>(context).isLastPage
                         ? "ابدأ"
@@ -79,21 +75,18 @@ class OnBoardingPage extends StatelessWidget {
                     onPressed: () {
                       if (BlocProvider.of<OnboardingBloc>(context).isLastPage) {
                         instance<AppPreferences>().setLoggedIn(1);
-                        Navigator.pushReplacementNamed(
-                          context,
-                        Routes.home
-                        );
+                        Navigator.pushReplacementNamed(context, Routes.home);
                       } else {
-                        BlocProvider.of<OnboardingBloc>(
-                          context,
-                        ).controller.nextPage(
+                        BlocProvider.of<OnboardingBloc>(context)
+                            .controller
+                            .nextPage(
                           duration: const Duration(milliseconds: 500),
                           curve: Curves.easeInOut,
                         );
                       }
                     },
                   ),
-                  SizedBox(height: 18),
+                  const SizedBox(height: 18),
                 ],
               ),
             ),

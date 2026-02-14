@@ -24,7 +24,7 @@ class CustomGridPage extends StatelessWidget {
             crossAxisCellCount: 1,
             mainAxisCellCount: 1,
             child: AnimatedGridItem(
-              text: "get all conference",
+              text: "عرض المؤتمرات",
               onTap: () {
                 initActiveConferenceModule();
                 BlocProvider.of<ActiveConferenceBloc>(context).add(GetAllActiveConferenceEvent());
@@ -38,7 +38,7 @@ class CustomGridPage extends StatelessWidget {
             crossAxisCellCount: 1,
             mainAxisCellCount: 1.6, // أكبر من الباقي
             child: AnimatedGridItem(
-              text: "create Survey dynamic",
+              text: "انشاء استبيان ديناميكي",
               onTap: () {
                Navigator.pushNamed(context, Routes.createSurvey);
               },
@@ -51,7 +51,8 @@ class CustomGridPage extends StatelessWidget {
             crossAxisCellCount: 1,
             mainAxisCellCount: 1.6,
             child: AnimatedGridItem(
-              text: "create conference dynamic",
+
+              text: "انشاء مؤتمر ديناميكي",
               onTap: () {
                 Navigator.pushNamed(context, Routes.createConference);
               },
@@ -63,7 +64,7 @@ class CustomGridPage extends StatelessWidget {
             crossAxisCellCount: 1,
             mainAxisCellCount: 1,
             child: AnimatedGridItem(
-              text: "get all Survey",
+              text: "عرض الاستبيانات",
               onTap: () {
                 Navigator.pushNamed(context, Routes.getAllSurvey);
 
@@ -120,8 +121,8 @@ class _AnimatedGridItemState extends State<AnimatedGridItem> {
           alignment: Alignment.bottomCenter,
           decoration: BoxDecoration(
             color: widget.image != null
-                ? ColorManager.primary.withOpacity(0.2)
-                : ColorManager.white.withOpacity(0.8),
+                ? ColorManager.primary.withOpacity(0.4)
+                : ColorManager.white.withOpacity(0.5),
             borderRadius: BorderRadius.circular(18),
             boxShadow: [
               BoxShadow(

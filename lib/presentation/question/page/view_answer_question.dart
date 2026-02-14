@@ -94,7 +94,7 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
         return FormBuilderTextField(
           name: _name,
           enabled: false,
-          initialValue:initValue!=null? (initValue![0] as AnswerModel) .title :null,
+          initialValue:initValue!=null? initValue![0] :null,
 
           decoration: InputDecoration(
             icon: Row(

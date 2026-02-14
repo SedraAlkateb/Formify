@@ -49,6 +49,11 @@ class _ListOfSurveysPageState extends State<ListOfSurveysPage> {
                       );
                     }
                   },
+                  buildWhen: (previous, current) => current is GetSurveyAsyncLoadingState
+                  ||current is GetSurveyAsyncErrorState
+                      ||current is GetSurveyAsyncState
+                      ||current is SurveySubmitSuccessState
+                  ,
                   builder: (context, state) {
                     if (state is GetSurveyAsyncLoadingState) {
                       return loadingFullScreen(context);

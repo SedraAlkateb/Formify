@@ -24,7 +24,7 @@ class GlowTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label),
 
@@ -39,20 +39,13 @@ class GlowTextField extends StatelessWidget {
               keyboardType: keyboardType,
               validator: validator,
               cursorColor: ColorManager.primary,
-              textAlign: TextAlign.end,
+              textAlign: TextAlign.start,
               decoration: InputDecoration(
                 contentPadding: EdgeInsets.all(15),
                 //  hintText: "  ${widget.hint}   ",
-                hint: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    SizedBox(width: 8),
-                    Text(
-                      hint,
-                      style: TextStyle(color: ColorManager.textHint),
-                    ),
-                  ],
+                hint:   Text(
+                  hint,
+                  style: TextStyle(color: ColorManager.textHint),
                 ),
                 filled: true,
                 fillColor: ColorManager.white,

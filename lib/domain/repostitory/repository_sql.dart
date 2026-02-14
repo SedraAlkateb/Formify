@@ -11,5 +11,5 @@ abstract class RepositorySql {
   Future<Either<Failure, List<MainSurveyModel>>>getSurveys();
   Future<Either<Failure, List<QuestionModel>>>getSurveyQuestionsWithAnswers(int surveyId);
   Future<Either<Failure, void>>  insertUserWithAnswer(UserSqlModel user);
-
+  Future<Either<Failure, InfoConference>>  getConferenceInfo();
 }

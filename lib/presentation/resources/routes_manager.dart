@@ -109,7 +109,7 @@ class RouteGenerator {
       case Routes.viewUserSurvey:
         return _animatedRoute(ViewUserSurveyPage());
       case Routes.finishedSurvey:
-        return _animatedRoute(FinishedInputSurveys());
+        return _animatedRoute(FinishedInputSurveysPage());
       // case Routes.getAllConference:
       //   initConferenceModule();
       //   return _animatedRoute(AllConferencePage());

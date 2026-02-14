@@ -1,9 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
-import 'package:formify/app/constants.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/models/model_q.dart';
 import 'package:form_builder_extra_fields/form_builder_extra_fields.dart';
@@ -19,7 +16,7 @@ class QuestionPreviewBuilder extends StatelessWidget {
   FormFieldValidator<dynamic>? _requiredIfNeeded({String? message}) {
     if (question.isRequired == true) {
       return FormBuilderValidators.required(
-        errorText: message ?? "This question is required",
+        errorText: message ?? "هذا السؤال مطلوب",
       );
     }
     return null;
@@ -32,8 +29,9 @@ class QuestionPreviewBuilder extends StatelessWidget {
         return FormBuilderTextField(
           name: _name,
           maxLines: 5,
+          textDirection: TextDirection.rtl,
           decoration: InputDecoration(
-            hintText: "Answer...",
+            hintText: "الإجابة...",
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           ),
           validator: _requiredIfNeeded(),
@@ -50,9 +48,9 @@ class QuestionPreviewBuilder extends StatelessWidget {
           validator: FormBuilderValidators.compose([
             if (question.isRequired == true)
               FormBuilderValidators.required(
-                errorText: "This question is required",
+                errorText: "هذا السؤال مطلوب",
               ),
-            FormBuilderValidators.email(errorText: "Invalid email"),
+            FormBuilderValidators.email(errorText: "البريد الإلكتروني غير صالح"),
           ]),
         );
 
@@ -60,8 +58,9 @@ class QuestionPreviewBuilder extends StatelessWidget {
         return FormBuilderTextField(
           name: _name,
           obscureText: true,
+          textDirection: TextDirection.rtl,
           decoration: InputDecoration(
-            hintText: "Password",
+            hintText: "كلمة المرور",
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           ),
           validator: _requiredIfNeeded(),
@@ -70,19 +69,18 @@ class QuestionPreviewBuilder extends StatelessWidget {
       case QuestionType.phone:
         return FormBuilderTextField(
           name: _name,
-
           keyboardType: TextInputType.phone,
           decoration: InputDecoration(
-            hintText: "Phone number",
+            hintText: "رقم الهاتف",
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           ),
           validator: FormBuilderValidators.compose([
             if (question.isRequired == true)
               FormBuilderValidators.required(
-                errorText: "This question is required",
+                errorText: "هذا السؤال مطلوب",
               ),
-            FormBuilderValidators.numeric(errorText: "Numbers only"),
-            FormBuilderValidators.minLength(7, errorText: "Too short"),
+            FormBuilderValidators.numeric(errorText: "أرقام فقط"),
+            FormBuilderValidators.minLength(7, errorText: "قصير جداً"),
           ]),
         );
 
@@ -97,9 +95,9 @@ class QuestionPreviewBuilder extends StatelessWidget {
           validator: FormBuilderValidators.compose([
             if (question.isRequired == true)
               FormBuilderValidators.required(
-                errorText: "This question is required",
+                errorText: "هذا السؤال مطلوب",
               ),
-            FormBuilderValidators.numeric(errorText: "Invalid number"),
+            FormBuilderValidators.numeric(errorText: "رقم غير صالح"),
           ]),
         );
 
@@ -107,7 +105,7 @@ class QuestionPreviewBuilder extends StatelessWidget {
         return FormBuilderDropdown<AnswerModel>(
           name: _name,
           decoration: InputDecoration(
-            hintText: "Select an answer",
+            hintText: "اختر إجابة",
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           ),
           items: question.answers
@@ -120,18 +118,17 @@ class QuestionPreviewBuilder extends StatelessWidget {
         return FormBuilderRadioGroup<AnswerModel>(
           orientation: OptionsOrientation.vertical,
           name: _name,
-
           options: question.answers
               .map(
                 (a) => FormBuilderFieldOption(
-                  value: a,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [imageAnswer(a), Text("${a.title}")],
-                  ),
-                ),
-              )
+              value: a,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [imageAnswer(a), Text("${a.title}")],
+              ),
+            ),
+          )
               .toList(),
           validator: _requiredIfNeeded(),
         );
@@ -143,43 +140,26 @@ class QuestionPreviewBuilder extends StatelessWidget {
           options: question.answers
               .map(
                 (a) => FormBuilderFieldOption(
-                  value: a,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [imageAnswer(a), Text("${a.title}")],
-                  ),
-                ),
-              )
+              value: a,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [imageAnswer(a), Text("${a.title}")],
+              ),
+            ),
+          )
               .toList(),
           validator: question.isRequired == true
               ? FormBuilderValidators.minLength(
-                  1,
-                  errorText: "Select at least one option",
-                )
+            1,
+            errorText: "اختر خياراً واحداً على الأقل",
+          )
               : null,
         );
-
-      // case QuestionType.chips:
-      //   return FormBuilderChoiceChips<String>(
-      //     name: _name,
-      //     spacing: 8,
-      //     runSpacing: 8,
-      //     options: question.answers
-      //         .map((a) => FormBuilderChipOption<String>(value: a.title, child: Text(a.title)))
-      //         .toList(),
-      //     validator: question.isRequired == true
-      //         ? (value) {
-      //       if (value == null || value.isEmpty) return "Select at least one option";
-      //       return null;
-      //     }
-      //         : null,
-      //   );
 
       case QuestionType.autocomplete:
         return FormBuilderField<String>(
           name: _name,
-
           validator: _requiredIfNeeded(),
           builder: (field) {
             return Autocomplete<String>(
@@ -190,22 +170,21 @@ class QuestionPreviewBuilder extends StatelessWidget {
                     .where((a) => a.title.toLowerCase().contains(q))
                     .map((a) => a.title);
               },
-              //     initialValue:TextEditingValue(text: initValue?[0] ??""),
               onSelected: field.didChange,
               fieldViewBuilder: (context, controller, focusNode, onSubmit) {
                 controller.text = field.value ?? controller.text;
                 return TextField(
                   controller: controller,
                   focusNode: focusNode,
+                  textDirection: TextDirection.rtl,
                   decoration: InputDecoration(
-                    hintText: "Start typing...",
+                    hintText: "ابدأ بالكتابة...",
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     errorText: field.errorText,
                   ),
-                  onChanged: field
-                      .didChange, // هذا فقط لربط قيمة الحقل داخل FormBuilderField
+                  onChanged: field.didChange,
                 );
               },
             );
@@ -215,11 +194,10 @@ class QuestionPreviewBuilder extends StatelessWidget {
       case QuestionType.switchField:
         return FormBuilderSwitch(
           name: _name,
-          //
           title: Text(question.title),
           validator: (value) {
             if (question.isRequired == true && value != true) {
-              return "This question is required";
+              return "هذا السؤال مطلوب";
             }
             return null;
           },
@@ -228,10 +206,9 @@ class QuestionPreviewBuilder extends StatelessWidget {
       case QuestionType.date:
         return FormBuilderDateTimePicker(
           name: _name,
-          //  initialValue: initValue[0],
           inputType: InputType.date,
           decoration: InputDecoration(
-            labelText: "Select date",
+            labelText: "اختر التاريخ",
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           ),
           validator: _requiredIfNeeded(),
@@ -240,10 +217,9 @@ class QuestionPreviewBuilder extends StatelessWidget {
       case QuestionType.time:
         return FormBuilderDateTimePicker(
           name: _name,
-          //     initialValue: initValue[0],
           inputType: InputType.time,
           decoration: InputDecoration(
-            labelText: "Select time",
+            labelText: "اختر الوقت",
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           ),
           validator: _requiredIfNeeded(),
@@ -252,10 +228,9 @@ class QuestionPreviewBuilder extends StatelessWidget {
       case QuestionType.dateTime:
         return FormBuilderDateTimePicker(
           name: _name,
-          //  initialValue: initValue[0],
           inputType: InputType.both,
           decoration: InputDecoration(
-            labelText: "Select date & time",
+            labelText: "اختر التاريخ والوقت",
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           ),
           validator: _requiredIfNeeded(),
@@ -276,23 +251,21 @@ class QuestionPreviewBuilder extends StatelessWidget {
           name: _name,
           maxRating: 5,
           allowHalfRating: true,
-
           unratedColor: const Color(0xFFFFD54F),
-          // const Color(0xFFFFC107), // أصفر ذهبي
           glow: true,
           glowColor: ColorManager.textHint,
-          glowRadius:2,
+          glowRadius: 2,
           itemSize: 36,
           ratingWidget: RatingWidget(
             full: Icon(
               Icons.star,
               size: 36,
-              color: const Color(0xFFFFC107), // أصفر ذهبي
+              color: const Color(0xFFFFC107),
               shadows: [
                 Shadow(
-                  color: Color(0xFFFFC107).withOpacity(0.6),
+                  color: const Color(0xFFFFC107).withOpacity(0.6),
                   blurRadius: 6,
-                  offset: Offset(0, 1),
+                  offset: const Offset(0, 1),
                 ),
               ],
             ),
@@ -302,23 +275,22 @@ class QuestionPreviewBuilder extends StatelessWidget {
               color: const Color(0xFFFFC107),
               shadows: [
                 Shadow(
-                  color: Color(0xFFFFC107).withOpacity(0.5),
+                  color: const Color(0xFFFFC107).withOpacity(0.5),
                   blurRadius: 5,
-                  offset: Offset(0, 1),
+                  offset: const Offset(0, 1),
                 ),
               ],
             ),
-
-            empty: Icon(
+            empty: const Icon(
               Icons.star_border_outlined,
               size: 36,
-              color: const Color(0xFF837659),
+              color: Color(0xFF837659),
             ),
           ),
           validator: question.isRequired == true
               ? (value) => (value == null || value == 0)
-                    ? "This question is required"
-                    : null
+              ? "هذا السؤال مطلوب"
+              : null
               : null,
         );
 

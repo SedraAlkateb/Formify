@@ -29,7 +29,7 @@ class ConferenceSurveyById extends StatelessWidget {
           surfaceTintColor: Colors.white,
           foregroundColor: Colors.black87,
           title: const Text(
-            "Link Surveys",
+            "ربط الاستبيانات",
             style: TextStyle(
               fontWeight: FontWeight.w800,
               color: ColorManager.black,

@@ -41,7 +41,7 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
           icon: Icon(Icons.arrow_back_ios_new, color: ColorManager.black),
         ),
         title: Text(
-          "Conference Participants",
+          "مشاركو المؤتمر",
           style: TextStyle(color: ColorManager.black),
         ),
         backgroundColor: ColorManager.white,
@@ -158,7 +158,7 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                                           children: [
                                             TextSpan(
                                               text:
-                                                  "From: ", // النص الثابت "From:"
+                                                  "تاريخ البدء: ", // النص الثابت "From:"
                                               style: TextStyle(
                                                 fontSize: 18, // حجم الخط
                                                 fontWeight:
@@ -186,7 +186,7 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                                         text: TextSpan(
                                           children: [
                                             TextSpan(
-                                              text: "To: ", // النص الثابت "To:"
+                                              text: "تاريخ الانتهاء: ", // النص الثابت "To:"
                                               style: TextStyle(
                                                 fontSize: 18, // حجم الخط
                                                 fontWeight:
@@ -268,7 +268,7 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                                 Icon(Icons.sticky_note_2_outlined, size: 30),
                                 SizedBox(width: 8),
                                 Text(
-                                  "Surveys",
+                                  "الاستبيانات",
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -297,7 +297,7 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                                   state.conferenceModel.surveys.length
                                       .toString(),
                                 ),
-                                Text(" surveys "),
+                                Text(" استبيان "),
                               ],
                             ),
                           ],
@@ -383,7 +383,7 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                                 Icon(Icons.group_outlined, size: 30),
                                 SizedBox(width: 8),
                                 Text(
-                                  "Participants",
+                                  "المشاركون",
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -395,7 +395,7 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                             Row(
                               children: [
                                 Text(state.users.length.toString()),
-                                Text(" Participants "),
+                                Text(" مشارك "),
                               ],
                             ),
                           ],

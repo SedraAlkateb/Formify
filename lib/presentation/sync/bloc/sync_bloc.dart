@@ -7,6 +7,7 @@ import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/usecase/add_async_data_sql_usecase.dart';
 import 'package:formify/domain/usecase/delete_data_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_all_async_info_usecase.dart';
+import 'package:formify/domain/usecase/get_conference_info_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_question_answers_usecase.dart';
 import 'package:formify/domain/usecase/get_surveys_sql_usecase.dart';
@@ -28,10 +29,11 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   final GetSurveysSqlUsecase getSurveysSqlUsecase;
   final GetQuestionAnswersUsecase getQuestionAnswersUsecase;
   final InsertUserAndAnswerUsecase insertUserAndAnswerUsecase;
-  List<IsActiveMainSurveyModel> surveys=[];
+  GetConferenceInfoSqlUsecase getConferenceInfoSqlUsecase;
+  List<IsActiveMainSurveyModel> surveys = [];
   UserSqlModel? userSqlModel;
   int? conferenceId;
-  int finished=0;
+  int finished = 0;
   SyncBloc(
     this.getAllAsyncInfoUsecase,
     this.addAsyncDataSqlUsecase,
@@ -42,18 +44,21 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     this.getSurveysSqlUsecase,
     this.getQuestionAnswersUsecase,
     this.insertUserAndAnswerUsecase,
+    this.getConferenceInfoSqlUsecase,
   ) : super(const SyncInitial()) {
     // ===== Existing =====
     on<AsyncDataEvent>(_onAsyncData);
     on<InsertDataSqlEvent>(_onInsertSql);
     on<DeleteDataEvent>(_onDeleteData);
     on<GetDataEvent>(_onGetData);
+    on<GetInfoConferenceEvent>(_infoConference);
+
     on<UploadDataEvent>(_onUpload);
     on<GetConferenceAsyncEvent>(_onGetConference);
     on<GetSurveyAsyncEvent>(_onGetSurveys);
-    on<InputUserSqlEvent>((e, emit) async{
+    on<InputUserSqlEvent>((e, emit) async {
       userSqlModel = e.userSqlModel;
-      finished=0;
+      finished = 0;
     });
 
     // ===== Survey flow =====
@@ -105,17 +110,26 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   }
 
   Future<void> _onUpload(UploadDataEvent event, Emitter<SyncState> emit) async {
-    if(event.userRequest.isNotEmpty){
+    if (event.userRequest.isNotEmpty) {
       (await synchronizeUsersAnswersUsecase.execute(
         AllUserModel(event.userRequest, event.conference_id),
       )).fold(
-            (failure) => emit(DataErrorState(failure: failure)),
-            (_) => emit(const UploadDataState()),
+        (failure) => emit(DataErrorState(failure: failure)),
+        (_) => emit(const UploadDataState()),
       );
-    }else{
+    } else {
       emit(DeleteDataState());
     }
+  }
 
+  Future<void> _infoConference(
+    GetInfoConferenceEvent event,
+    Emitter<SyncState> emit,
+  ) async {
+    (await getConferenceInfoSqlUsecase.execute()).fold(
+      (failure) => emit(GetInfoConferenceErrorState(failure: failure)),
+      (data) => emit( GetInfoConferenceSuccessState(data)),
+    );
   }
 
   Future<void> _onGetConference(
@@ -142,11 +156,10 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     emit(const GetSurveyAsyncLoadingState());
     (await getSurveysSqlUsecase.execute()).fold(
       (failure) => emit(GetSurveyAsyncErrorState(failure: failure)),
-      (data)  {
-        surveys=data.toDomain();
+      (data) {
+        surveys = data.toDomain();
         emit(GetSurveyAsyncState(surveys));
-
-        },
+      },
     );
   }
 
@@ -187,7 +200,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   ) async {
     final s = state;
     if (s is! SurveyReadyState) return;
-//
+    //
     final mapped = _mapToAnswers(event.question, event.rawValue);
 
     final newAnswers = Map<int, List<AnswerUserModel>>.from(s.answers);
@@ -247,23 +260,21 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
         }
       });
 
+      surveys[s.index].isActive = true;
+      finished = finished + 1;
+      if (finished == surveys.length) {
+        emit(const InsertUserLoadingState());
 
-      surveys[s.index].isActive=true;
-       finished=finished+1;
-       if(finished==surveys.length){
-         emit(const InsertUserLoadingState());
-
-         (await insertUserAndAnswerUsecase.execute(userSqlModel!)).fold(
-               (failure) => emit(InsertUserErrorState(failure: failure)),
-               (questions) {
-             emit(InsertUserSuccessState());
-           },
-         );
-         emit(FinishedSurveyState());
-       }else{
-         emit( SurveySubmitSuccessState(surveys));
-       }
-
+        (await insertUserAndAnswerUsecase.execute(userSqlModel!)).fold(
+          (failure) => emit(InsertUserErrorState(failure: failure)),
+          (questions) {
+            emit(InsertUserSuccessState());
+          },
+        );
+        emit(FinishedSurveyState());
+      } else {
+        emit(SurveySubmitSuccessState(surveys));
+      }
     } catch (e) {
       emit(SurveySubmitErrorState(failure: Failure(0, e.toString())));
     }

@@ -44,7 +44,7 @@ class StateRenderer extends StatelessWidget {
         return _getPopupDialog(context,[_getAnimatedImage(JsonAssets.loading1)]);
       case StateRendererType.popupSuccess:
         return _getPopupDialog(context,[
-          _getAnimatedImage(JsonAssets.suc2),
+          _getAnimatedImage(JsonAssets.suc),
           _getMessage(message),
           _getRetryButton("موافق",context)
         ]);

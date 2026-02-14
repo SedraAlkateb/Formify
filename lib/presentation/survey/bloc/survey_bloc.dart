@@ -21,12 +21,21 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
   GetSurveyQuestionIdUsecase getSurveyQuestionIdUsecase;
   CreateSurveyQuestionUsecase createSurveyQuestionUsecase;
   GetAllSurveyUsecase getAllSurveyUsecase;
-  int id = 0;
-  List<File> files = [];
+
   /////////////////////////////////////////////
   QuestionModel question = QuestionModel.create();
   List<QuestionModel> questions = [];
+
   SurveyModel surveyModel = SurveyModel.create();
+  int id = 0;
+  List<File> files = [];
+ void initSurveyBloc(){
+    questions=[];
+    question=QuestionModel.create();
+    surveyModel = SurveyModel.create();
+    id=0;
+    files=[];
+  }
   SurveyBloc(
     this.createSurveyUsecase,
     this.createSurveyQuestionUsecase,

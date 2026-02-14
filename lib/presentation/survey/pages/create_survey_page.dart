@@ -6,10 +6,24 @@ import 'package:formify/presentation/resources/theme_bloc/theme_bloc.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
-class CreateSurveyPage extends StatelessWidget {
+class CreateSurveyPage extends StatefulWidget {
    CreateSurveyPage({super.key});
+
+  @override
+  State<CreateSurveyPage> createState() => _CreateSurveyPageState();
+}
+
+class _CreateSurveyPageState extends State<CreateSurveyPage> {
+  @override
+  void initState() {
+    BlocProvider.of<SurveyBloc>(context).initSurveyBloc();
+
+    super.initState();
+  }
   final TextEditingController titleController = TextEditingController();
+
   final TextEditingController descriptionController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     titleController.text=BlocProvider.of<SurveyBloc>(context).surveyModel.title;
@@ -24,9 +38,10 @@ class CreateSurveyPage extends StatelessWidget {
           icon: Icon(Icons.arrow_back_ios_new, color: ColorManager.black),
         ),
         title: Text(
-          'Dynamic FormBuilder Example',
+          'انشاء فورمات ديناميكية',
           style: TextStyle(color: ColorManager.black),
         ),
+        centerTitle: false,
         backgroundColor: ColorManager.white,
       ),
 
@@ -58,7 +73,7 @@ class CreateSurveyPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        "Survey Title", // 🔹 عنوان فوق الحقل
+                        "عنوان الاستبيان", // 🔹 عنوان فوق الحقل
                         style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
@@ -66,7 +81,7 @@ class CreateSurveyPage extends StatelessWidget {
                         onChanged:(value) => BlocProvider.of<SurveyBloc>(context).surveyModel.title= value,
                         controller: titleController,
                         decoration: InputDecoration(
-                          hintText: "entre survey title",
+                          hintText: "ادخل عنوان الاستبيان",
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(15),
                           ),
@@ -74,7 +89,7 @@ class CreateSurveyPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 20),
                       const Text(
-                        "Survey Description", // 🔹 عنوان فوق الحقل
+                        "وصف الاستبيان", // 🔹 عنوان فوق الحقل
                         style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
@@ -83,7 +98,7 @@ class CreateSurveyPage extends StatelessWidget {
                         controller: descriptionController,
                         maxLines: 4,
                         decoration: InputDecoration(
-                          hintText: "entre survey description",
+                          hintText: "ادخل وصف الاستبيان",
                           alignLabelWithHint: true,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(15),
@@ -176,7 +191,7 @@ class CreateSurveyPage extends StatelessWidget {
                   , titleController.text,
                   descriptionController.text,));
                                },
-              child: const Text('Next'),
+              child: const Text('التالي'),
             ),
 ),
 

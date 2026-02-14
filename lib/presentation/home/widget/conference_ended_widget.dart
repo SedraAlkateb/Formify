@@ -54,12 +54,14 @@ class ConferenceEndedWidget extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  "Started at: ${allConference[index].startDate}",
+                  "تاريخ البدء: ${allConference[index].startDate}",
                   style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
+                  textAlign: TextAlign.right,
                 ),
                 Text(
-                  "Ended at:  ${allConference[index].endDate}",
+                  "تاريخ الانتهاء: ${allConference[index].endDate}",
                   style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
+                  textAlign: TextAlign.right,
                 ),
               ],
             ),
@@ -83,7 +85,6 @@ class ConferenceEndedWidget extends StatelessWidget {
                     title: "offline conference",
                     message: "Are you sure you want to save conference offline",
                     onConfirm: () {
-
                       BlocProvider.of<SyncBloc>(
                         context,
                       ).add(GetDataEvent(allConference[index].id));

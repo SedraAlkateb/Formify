@@ -19,7 +19,7 @@ class ViewCompletedSurvey extends StatelessWidget {
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
-        title: const Text("Survey Detail"),
+        title: const Text("معلومات الاستبيان"),
         backgroundColor: colors.primary,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -68,7 +68,7 @@ class ViewCompletedSurvey extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            "Survey Title",
+                            "عنوان الاستبيان",
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -81,7 +81,7 @@ class ViewCompletedSurvey extends StatelessWidget {
                           ),
                           const SizedBox(height: 20),
                           const Text(
-                            "Survey Description",
+                            "وصف الاستبيان",
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -117,7 +117,7 @@ class ViewCompletedSurvey extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            "Questions",
+                            "الأسئلة",
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,

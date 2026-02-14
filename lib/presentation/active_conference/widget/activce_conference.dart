@@ -46,11 +46,11 @@ class ActiveConferenceWidget extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  "Started at: ${conference.startDate}",
+                  "تاريخ البدء: ${conference.startDate}",
                   style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
                 ),
                 Text(
-                  "Ended at:  ${conference.endDate}",
+                  "تاريخ الانتهاء:  ${conference.endDate}",
                   style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
                 ),
               ],
