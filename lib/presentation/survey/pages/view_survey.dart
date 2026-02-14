@@ -9,19 +9,9 @@ import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
-class ViewSurvey extends StatefulWidget {
-  const ViewSurvey({super.key});
+class ViewSurvey extends StatelessWidget {
+   ViewSurvey({super.key});
 
-  @override
-  State<ViewSurvey> createState() => _ViewSurveyState();
-}
-
-class _ViewSurveyState extends State<ViewSurvey> {
-  @override
-  void initState() {
-
-    super.initState();
-  }
   final _formKey = GlobalKey<FormBuilderState>();
 
   @override
@@ -30,7 +20,7 @@ class _ViewSurveyState extends State<ViewSurvey> {
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
-        title: const Text("add other question"),
+        title: const Text("اضافة اسئلة جديدة"),
         backgroundColor: colors.primary,
         leading: IconButton(
           icon: const Icon(Icons.add),
@@ -76,7 +66,7 @@ class _ViewSurveyState extends State<ViewSurvey> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            "Survey Title",
+                            "عنوان الاستبيان",
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -89,7 +79,7 @@ class _ViewSurveyState extends State<ViewSurvey> {
                           ),
                           const SizedBox(height: 20),
                           const Text(
-                            "Survey Description",
+                            "وصف الاستبيان",
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -127,7 +117,7 @@ class _ViewSurveyState extends State<ViewSurvey> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            "Questions",
+                            "الأسئلة",
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -228,7 +218,7 @@ class _ViewSurveyState extends State<ViewSurvey> {
                               context,
                             ).add(CreateSurveyWithQuestionEvent());
                           },
-                          child: const Text("Submit"),
+                          child: const Text("إرسال"),
                         ),
                       ),
                     ),

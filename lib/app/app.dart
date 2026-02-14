@@ -11,6 +11,7 @@ import 'package:dynamic_color/dynamic_color.dart';
 import 'package:formify/presentation/resources/theme_bloc/theme_bloc.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -44,13 +45,13 @@ class MyApp extends StatelessWidget {
                     seedColor: state.seedColor,
                   ),
                   themeMode: ThemeMode.system,
-                  locale: const Locale('en'),
-                  // supportedLocales: const [Locale('en'), Locale('ar')],
-                  // localizationsDelegates: const [
-                  //   GlobalMaterialLocalizations.delegate,
-                  //   GlobalWidgetsLocalizations.delegate,
-                  //   GlobalCupertinoLocalizations.delegate,
-                  // ],
+                  locale: const Locale('ar'),
+                  supportedLocales: const [Locale('ar'),Locale('en')],
+                  localizationsDelegates: const [
+                    GlobalMaterialLocalizations.delegate,
+                    GlobalWidgetsLocalizations.delegate,
+                    GlobalCupertinoLocalizations.delegate,
+                  ],
                   onGenerateRoute: RouteGenerator.getRoute,
                   initialRoute: Constants.isLogin,
                   // Routes.onboarding,

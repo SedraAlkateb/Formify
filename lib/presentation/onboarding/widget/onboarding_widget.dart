@@ -5,12 +5,12 @@ import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/unit/text_animation.dart';
 import 'package:lottie/lottie.dart';
 
-class buildPageLottie extends StatelessWidget {
+class BuildPageLottie extends StatelessWidget {
   final String image;
   final String title;
   final String subtitle;
 
-  const buildPageLottie({
+  const BuildPageLottie({
     super.key,
     required this.image,
     required this.title,
@@ -24,56 +24,60 @@ class buildPageLottie extends StatelessWidget {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(height: 40),
-            InkWell(
-              onTap: () {
-                instance<AppPreferences>().setLoggedIn(1);
-                Navigator.pushReplacementNamed(
-                    context,
-                    Routes.home
-                );
-              },
-              child: Align(
-                alignment: Alignment.topRight,
-                child: TextButton(
-                  onPressed: () {
-                    instance<AppPreferences>().setLoggedIn(1);
-                    Navigator.pushReplacementNamed(
-                        context,
-                        Routes.home
-                    );
-                  },
-                  child:Text("Skip",
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w400,
-                    ),) ,
-                  
+            const SizedBox(height: 40),
+
+            // ✅ Arabic: "تخطي" aligned to the left in RTL layout
+            Align(
+              alignment: Alignment.topLeft,
+              child: TextButton(
+                onPressed: () {
+                  instance<AppPreferences>().setLoggedIn(1);
+                  Navigator.pushReplacementNamed(context, Routes.home);
+                },
+                child: const Text(
+                  "تخطي",
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
               ),
             ),
 
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch, // ✅ full width
               children: [
                 const SizedBox(height: 40),
-                SmoothBottomText(
-                  text: title,
-                  fontSize: 20,
-                  color: Colors.black,
-                  // fontWeight: FontWeight.w400,
-                  delay: Duration(milliseconds: 200), // أول نص
+
+                // ✅ Arabic alignment (right)
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: SmoothBottomText(
+                    text: title,
+                    fontSize: 20,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600,
+                    delay: Duration(milliseconds: 200),
+                  ),
                 ),
-                SizedBox(height: 10),
-                SmoothBottomText(
-                  text: subtitle,
-                  fontSize: 20,
-                  color: Colors.black,
-                  delay: Duration(milliseconds: 300), // يظهر بعده بقليل
+
+                const SizedBox(height: 10),
+
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: SmoothBottomText(
+                    text: subtitle,
+                    fontSize: 18,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w300,
+                    delay: Duration(milliseconds: 300),
+                  ),
                 ),
+
                 const SizedBox(height: 30),
+
                 Lottie.asset(
                   image,
                   fit: BoxFit.fill,

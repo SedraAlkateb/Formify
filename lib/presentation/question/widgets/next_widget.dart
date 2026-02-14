@@ -11,7 +11,7 @@ Widget nextWidget(BuildContext context){
         BlocProvider.of<SurveyBloc>(context).add(AddQuestionEvent());
         Navigator.pushReplacementNamed(context, Routes.viewSurvey);
       },
-      child: const Text("Next"),
+      child: const Text("التالي"),
     ),
   );
 }

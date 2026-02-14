@@ -21,7 +21,7 @@ class AllActiveConferencePage extends StatelessWidget {
           icon: Icon(Icons.arrow_back_ios_new, color: ColorManager.black),
         ),
         title: Text(
-          "Active Conference",
+          "المؤتمرات المنتهية",
           style: TextStyle(color: ColorManager.black),
         ),
         backgroundColor: ColorManager.white,

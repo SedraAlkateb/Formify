@@ -40,6 +40,10 @@ final class UploadDataEvent extends SyncEvent {
   @override
   List<Object?> get props => [userRequest,conference_id];
 }
+final class GetInfoConferenceEvent extends SyncEvent {
+  @override
+  List<Object?> get props => [];
+}
 
 final class GetDataEvent extends SyncEvent {
   final int conferenceId;

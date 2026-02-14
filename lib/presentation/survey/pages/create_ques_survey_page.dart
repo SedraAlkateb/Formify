@@ -6,7 +6,6 @@ import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 class CreateQuesSurveyPage extends StatelessWidget {
   const CreateQuesSurveyPage({super.key});
 
-
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -14,7 +13,6 @@ class CreateQuesSurveyPage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: colorScheme.background,
-
       appBar: AppBar(
         toolbarHeight: 100,
         backgroundColor: colorScheme.primary,
@@ -28,14 +26,14 @@ class CreateQuesSurveyPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Formify",
+                    "DoForma",
                     style: textTheme.titleLarge?.copyWith(
                       color: colorScheme.onPrimary,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
-                    "Smart Survey Builder",
+                    "منشئ الاستبيانات الذكي",
                     style: textTheme.bodyMedium?.copyWith(
                       color: colorScheme.onPrimary.withOpacity(0.9),
                     ),
@@ -53,32 +51,30 @@ class CreateQuesSurveyPage extends StatelessWidget {
           ),
         ],
       ),
-
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Choose Question Type",
+              "اختر نوع السؤال",
               style: textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: colorScheme.onBackground,
               ),
             ),
             const SizedBox(height: 16),
-
             Expanded(
               child: ListView.separated(
                 itemCount: questionTypes.length,
                 separatorBuilder: (_, __) => const SizedBox(height: 8),
                 itemBuilder: (context, index) {
                   final item = questionTypes[index];
+
                   return InkWell(
                     onTap: () {
-                      BlocProvider.of<SurveyBloc>(context).add(CreateEmptyQuesNameSurveyEvent(
-                          item
-                      ));
+                      BlocProvider.of<SurveyBloc>(context)
+                          .add(CreateEmptyQuesNameSurveyEvent(item));
 
                       final String routeName = item.route;
                       Navigator.pushReplacementNamed(
@@ -90,7 +86,6 @@ class CreateQuesSurveyPage extends StatelessWidget {
                         },
                       );
                     },
-
                     borderRadius: BorderRadius.circular(14),
                     child: Container(
                       padding: const EdgeInsets.symmetric(
@@ -114,13 +109,13 @@ class CreateQuesSurveyPage extends StatelessWidget {
                       child: Row(
                         children: [
                           Icon(
-                            item.icon ,
+                            item.icon,
                             size: 26,
                             color: colorScheme.primary,
                           ),
                           const SizedBox(width: 14),
                           Text(
-                            item.title ,
+                            item.title,
                             style: textTheme.bodyMedium?.copyWith(
                               fontSize: 16,
                               color: colorScheme.onSurface,

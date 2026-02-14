@@ -192,3 +192,17 @@ final class InsertUserLoadingState extends SyncState {
 final class FinishedSurveyState extends SyncState {
   const FinishedSurveyState();
 }
+final class GetInfoConferenceSuccessState extends SyncState {
+final  InfoConference infoConference;
+  const GetInfoConferenceSuccessState(this.infoConference);
+@override
+List<Object?> get props => [infoConference];
+}
+
+final class GetInfoConferenceErrorState extends SyncState {
+  final Failure failure;
+  const GetInfoConferenceErrorState({required this.failure});
+
+  @override
+  List<Object?> get props => [failure];
+}

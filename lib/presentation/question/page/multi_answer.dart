@@ -13,13 +13,16 @@ import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 class MultiAnswerPage extends StatelessWidget {
   MultiAnswerPage({super.key});
   final _formKey = GlobalKey<FormBuilderState>();
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return  Scaffold(
+    return Scaffold(
       backgroundColor: colorScheme.background,
-      appBar: AppBar(title:  Text("${BlocProvider.of<SurveyBloc>(context).question.type.title} Question")),
+      appBar: AppBar(
+        title: Text("${BlocProvider.of<SurveyBloc>(context).question.type.title} سؤال"),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: FormBuilder(
@@ -28,14 +31,16 @@ class MultiAnswerPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ================= لوحة التحكم =================
+                // ================= Control Panel =================
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: colorScheme.surface,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: colorScheme.outline.withOpacity(0.25)),
+                    border: Border.all(
+                      color: colorScheme.outline.withOpacity(0.25),
+                    ),
                     boxShadow: const [
                       BoxShadow(
                         color: Colors.black12,
@@ -48,71 +53,72 @@ class MultiAnswerPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       questionWidget(context),
-                      addAnswerWidget(context)
+                      addAnswerWidget(context),
                     ],
                   ),
                 ),
 
                 const SizedBox(height: 14),
 
-                // ================= قسم الإجابات =================
+                // ================= Answers Section =================
                 viewAnswerWidget(context),
 
                 const SizedBox(height: 14),
 
                 // ================= Preview =================
                 const Text(
-                  "Preview",
+                  "معاينة",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  textAlign: TextAlign.right,
                 ),
                 const SizedBox(height: 8),
 
-                // ضع هنا preview تبعك (FilterChips / Dropdown ...)
-
                 const SizedBox(height: 14),
                 BlocBuilder<SurveyBloc, SurveyState>(
+                  builder: (context, state) {
+                    if (state is ViewQuestionState) {
+                      print("RemoveAnswerAtEvent");
+                      QuestionModel questionModel = state.questionModel;
 
-                    builder: (context, state) {
-                      if (state is ViewQuestionState) {
-                        print("RemoveAnswerAtEvent");
-                        QuestionModel  questionModel = state.questionModel;
-
-                        return      questionModel.title.isEmpty?
-                        Text("No question to preview yet."):
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: colorScheme.surface,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: colorScheme.outline.withOpacity(0.25)),
+                      return questionModel.title.isEmpty
+                          ? const Text("لا يوجد سؤال للمعاينة بعد.")
+                          : Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: colorScheme.surface,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: colorScheme.outline.withOpacity(0.25),
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // ===== السؤال بالأعلى =====
-                              Text(
-                                questionModel.title.isEmpty
-                                    ? "Question will appear here"
-                                    : questionModel.title,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // ===== Question title =====
+                            Text(
+                              questionModel.title.isEmpty
+                                  ? "سيظهر السؤال هنا"
+                                  : questionModel.title,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
                               ),
-                              const SizedBox(height: 12),
-                              QuestionPreviewBuilder(question: questionModel),
-                            ],
-                          ),
-                        );
-                      }
-                      else {
-                        return SizedBox();
-                      }
-                    }),
+                              textAlign: TextAlign.right,
+                            ),
+                            const SizedBox(height: 12),
+                            QuestionPreviewBuilder(question: questionModel),
+                          ],
+                        ),
+                      );
+                    } else {
+                      return const SizedBox();
+                    }
+                  },
+                ),
 
                 const SizedBox(height: 20),
-                nextWidget(context)
+                nextWidget(context),
               ],
             ),
           ),

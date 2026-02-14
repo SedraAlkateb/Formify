@@ -14,7 +14,7 @@ class JsonAssets {
   static const String empty1 = "$jsonPath/empty1.json";
   static const String loading1 = "$jsonPath/loading1.json";
   static const String loading2 = "$jsonPath/loading2.json";
-  static const String suc2 = "$jsonPath/suc2.json";
+  static const String suc = "$jsonPath/suc.json";
 }
 class ShowConferenceJsonAssets {
 

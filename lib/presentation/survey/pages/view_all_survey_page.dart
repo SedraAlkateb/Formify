@@ -32,7 +32,7 @@ class _ViewAllSurveyPageState extends State<ViewAllSurveyPage> {
           icon: Icon(Icons.arrow_back_ios_new, color: ColorManager.black),
         ),
         title: Text(
-          "View Surveys",
+          "كل الاستبيانات",
           style: TextStyle(color: ColorManager.black),
         ),
         backgroundColor: ColorManager.white,

@@ -69,12 +69,15 @@ class _AnimatedButtonState extends State<_AnimatedButton> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+
             Text(
               widget.text,
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
             const SizedBox(width: 6),
             const Icon(Icons.arrow_forward_ios, size: 18),
+
+
           ],
         ),
       ),

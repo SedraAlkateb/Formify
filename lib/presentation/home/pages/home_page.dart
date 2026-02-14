@@ -59,8 +59,8 @@ class _HomePageState extends State<HomePage> {
                     ),
                     SizedBox(height: 500, child: CustomGridPage()),
                     Text(
-                      "Ended Conference",
-                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 30),
+                      "المؤتمرات قيد المعالجة",
+                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 25),
                     ),
                     MultiBlocListener(
                       listeners: [
@@ -128,31 +128,36 @@ class _HomePageState extends State<HomePage> {
                               .read<ConferenceBloc>()
                               .allNotActiveConference;
 
-                          return ListView.separated(
-                            physics: const NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            itemCount: items.length,
-                            separatorBuilder: (_, __) => const SizedBox(height: 10),
-                            itemBuilder: (context, index) {
-                              return InkWell(
-                                onTap: () {
-                                  Navigator.pushNamed(
-                                    context,
-                                    Routes.viewConference,
-                                    arguments: items[index].id,
-                                  );
-                                },
-                                child: ConferenceEndedWidget(
-                                  value:
-                                      context
-                                          .read<ConferenceBloc>()
-                                          .selectConferenceId ??
-                                      0,
-                                  index: index,
-                                  allConference: items,
-                                ),
-                              );
-                            },
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom:
+                            40
+                            ),
+                            child: ListView.separated(
+                              physics: const NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: items.length,
+                              separatorBuilder: (_, __) => const SizedBox(height: 10),
+                              itemBuilder: (context, index) {
+                                return InkWell(
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                      context,
+                                      Routes.viewConference,
+                                      arguments: items[index].id,
+                                    );
+                                  },
+                                  child: ConferenceEndedWidget(
+                                    value:
+                                        context
+                                            .read<ConferenceBloc>()
+                                            .selectConferenceId ??
+                                        0,
+                                    index: index,
+                                    allConference: items,
+                                  ),
+                                );
+                              },
+                            ),
                           );
                         },
                       ),

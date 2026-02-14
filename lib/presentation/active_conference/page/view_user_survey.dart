@@ -25,7 +25,7 @@ class ViewUserSurveyPage extends StatelessWidget {
                 icon: Icon(Icons.arrow_back_ios_new, color: ColorManager.black),
               ),
               title: Text(
-                "Participant Surveys",
+                "استبيانات المشارك",
                 style: TextStyle(color: ColorManager.black),
               ),
               backgroundColor: ColorManager.white,
@@ -50,7 +50,7 @@ class ViewUserSurveyPage extends StatelessWidget {
                                 Icon(Icons.sticky_note_2_outlined, size: 30),
                                 SizedBox(width: 8),
                                 Text(
-                                  "Surveys",
+                                  "الاستبيانات",
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -65,7 +65,7 @@ class ViewUserSurveyPage extends StatelessWidget {
                                   state.surveys.length
                                       .toString(),
                                 ),
-                                Text(" surveys "),
+                                Text(" استبيان "),
                               ],
                             ),
                           ],

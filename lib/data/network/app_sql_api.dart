@@ -14,6 +14,7 @@ abstract class AppSqlApiAbs {
   Future<List<QuestionModel>> getSurveyQuestionsWithAnswers(int surveyId);
   Future<void> insertUserWithAnswer(UserSqlModel user);
   //Future<List<AsyncQuestionModel>> getQuestions();
+  Future<InfoConference> getConferenceInfo();
 }
 
 class AppSqlApi extends AppSqlApiAbs {
@@ -22,7 +23,42 @@ class AppSqlApi extends AppSqlApiAbs {
   Future<void> initializeDatabase() async {
     await databaseFactory.debugSetLogLevel(sqfliteLogLevelVerbose);
   }
+  @override
+  Future<InfoConference> getConferenceInfo() async {
+    final db = await databaseHelper.database;
 
+    final usersResult =
+    await db.rawQuery('SELECT COUNT(*) AS count FROM users');
+    final totalUsers =
+        (usersResult.first['count'] as num?)?.toInt() ?? 0;
+
+    // Total Surveys
+    final surveysResult =
+    await db.rawQuery('SELECT COUNT(*) AS count FROM survey');
+    final totalSurveys =
+        (surveysResult.first['count'] as num?)?.toInt() ?? 0;
+
+    // Total filled surveys (each user + survey where user answered at least 1 question)
+    final filledResult = await db.rawQuery(r'''
+    SELECT COUNT(*) AS count
+    FROM (
+      SELECT ua.user_id, q.survey_id
+      FROM users_answers ua
+      JOIN answers a   ON a.id = ua.answer_id
+      JOIN questions q ON q.id = a.question_id
+      GROUP BY ua.user_id, q.survey_id
+    ) t;
+  ''');
+
+    final totalCompletedSurveys =
+        (filledResult.first['count'] as num?)?.toInt() ?? 0;
+
+    return InfoConference(
+      totalUsers,
+      totalSurveys,
+      totalCompletedSurveys,
+    );
+  }
   @override
   Future<List<QuestionModel>> getSurveyQuestionsWithAnswers(
     int surveyId,

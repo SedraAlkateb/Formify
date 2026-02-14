@@ -17,19 +17,21 @@ class TextQuestionPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return  Scaffold(
+    return Scaffold(
       backgroundColor: colorScheme.background,
-
-      appBar: AppBar(title: Text("${
-          BlocProvider.of<SurveyBloc>(context,listen: true).question.type.title
-      } Question")),
+      appBar: AppBar(
+        title: Text(
+          "${BlocProvider.of<SurveyBloc>(context, listen: true).question.type.title} سؤال",
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: BlocBuilder<SurveyBloc, SurveyState>(
           builder: (context, state) {
-            QuestionModel surveyModel=BlocProvider.of<SurveyBloc>(context,listen: true).question;
-            if(state is ViewQuestionState){
-              surveyModel=state.questionModel;
+            QuestionModel surveyModel =
+                BlocProvider.of<SurveyBloc>(context, listen: true).question;
+            if (state is ViewQuestionState) {
+              surveyModel = state.questionModel;
             }
             return FormBuilder(
               key: _formKey,
@@ -63,22 +65,23 @@ class TextQuestionPage extends StatelessWidget {
                                 questionWidget(context),
                                 Row(
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      "Required (Validation)",
+                                      "إلزامي (تحقق)",
                                       style: TextStyle(
                                         fontWeight: FontWeight.w600,
                                         color: colorScheme.onSurface,
                                       ),
                                     ),
                                     Switch(
-                                      value:
-                                      surveyModel.isRequired,
+                                      value: surveyModel.isRequired,
                                       activeColor: colorScheme.primary,
                                       onChanged: (val) {
                                         context.read<SurveyBloc>().add(
-                                          CreateQuesIsRequiredSurveyEvent(val),
+                                          CreateQuesIsRequiredSurveyEvent(
+                                            val,
+                                          ),
                                         );
                                       },
                                     ),
@@ -89,12 +92,13 @@ class TextQuestionPage extends StatelessWidget {
                           ),
                           const SizedBox(height: 24),
                           Text(
-                            "Preview",
+                            "معاينة",
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               color: colorScheme.onBackground,
                               fontSize: 16,
                             ),
+                            textAlign: TextAlign.right,
                           ),
                           const SizedBox(height: 8),
                           Container(
@@ -109,25 +113,24 @@ class TextQuestionPage extends StatelessWidget {
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
-
                               children: [
-                                surveyModel.type.title=="Switch"?
-                                SizedBox():
-                                Row(
+                                surveyModel.type.title == "Switch"
+                                    ? const SizedBox()
+                                    : Row(
                                   children: [
                                     Flexible(
                                       child: Text(
                                         surveyModel.title.isEmpty
-                                            ? "Question label will appear here"
-                                            :  surveyModel.title,
+                                            ? "سيظهر عنوان السؤال هنا"
+                                            : surveyModel.title,
                                         style: TextStyle(
                                           fontWeight: FontWeight.w600,
                                           color: colorScheme.onSurface,
                                         ),
+                                        textAlign: TextAlign.right,
                                       ),
                                     ),
-                                    if ( surveyModel
-                                        .isRequired) ...[
+                                    if (surveyModel.isRequired) ...[
                                       const SizedBox(width: 4),
                                       Text(
                                         "*",
@@ -140,28 +143,24 @@ class TextQuestionPage extends StatelessWidget {
                                   ],
                                 ),
                                 const SizedBox(height: 8),
-
                                 QuestionPreviewBuilder(question: surveyModel),
                                 const SizedBox(height: 16),
                                 ElevatedButton(
                                   onPressed: () {
                                     final isValid =
-                                        _formKey.currentState
-                                            ?.saveAndValidate() ??
-                                        false;
+                                        _formKey.currentState?.saveAndValidate() ??
+                                            false;
                                     if (!isValid) {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
+                                      ScaffoldMessenger.of(context).showSnackBar(
                                         const SnackBar(
                                           content: Text(
-                                            "Please fix validation errors before continuing.",
+                                            "يرجى إصلاح أخطاء التحقق قبل المتابعة.",
                                           ),
                                         ),
                                       );
                                     }
                                   },
-                                  child: const Text("Test"),
+                                  child: const Text("اختبار"),
                                 ),
                               ],
                             ),
@@ -171,7 +170,7 @@ class TextQuestionPage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  nextWidget(context)
+                  nextWidget(context),
                 ],
               ),
             );

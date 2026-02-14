@@ -42,7 +42,7 @@ class _ViewConferencePageState extends State<ViewConferencePage> {
               icon: Icon(Icons.arrow_back_ios_new, color: ColorManager.black),
             ),
             title: Text(
-              "Conference Details",
+              "تفاصيل المؤتمر",
               style: TextStyle(color: ColorManager.black),
             ),
             backgroundColor: ColorManager.white,
@@ -150,7 +150,7 @@ class _ViewConferencePageState extends State<ViewConferencePage> {
                                           children: [
                                             TextSpan(
                                               text:
-                                                  "From: ", // النص الثابت "From:"
+                                                  "تاريخ البدء: ", // النص الثابت "From:"
                                               style: TextStyle(
                                                 fontSize: 18, // حجم الخط
                                                 fontWeight:
@@ -177,7 +177,7 @@ class _ViewConferencePageState extends State<ViewConferencePage> {
                                         text: TextSpan(
                                           children: [
                                             TextSpan(
-                                              text: "To: ", // النص الثابت "To:"
+                                              text: "تاريخ الانتهاء: ", // النص الثابت "To:"
                                               style: TextStyle(
                                                 fontSize: 18, // حجم الخط
                                                 fontWeight:
@@ -289,7 +289,7 @@ class _ViewConferencePageState extends State<ViewConferencePage> {
                                   ),
                                   SizedBox(width: 8),
                                   Text(
-                                    "Add New Survey",
+                                    "اضافة استبيانات جديدة",
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
@@ -316,7 +316,7 @@ class _ViewConferencePageState extends State<ViewConferencePage> {
                             Row(
                               children: [
                                 Text(conference.surveys.length.toString()),
-                                Text(" surveys "),
+                                Text(" استبيان "),
                               ],
                             ),
                           ],

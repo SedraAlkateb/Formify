@@ -597,3 +597,10 @@ class AllUserModel {
     );
   }
 }
+class InfoConference{
+  int totalUser;
+  int totalSurvey;
+  int totalCompletedSurvey;
+
+  InfoConference(this.totalUser, this.totalSurvey, this.totalCompletedSurvey);
+}

@@ -27,7 +27,7 @@ class CreateConferencePage extends StatelessWidget {
           icon: Icon(Icons.arrow_back_ios_new, color: ColorManager.black),
         ),
         title: Text(
-          'Create Conference',
+          'انشاء مؤتمر',
           style: TextStyle(color: ColorManager.black),
         ),
         backgroundColor: ColorManager.white,
