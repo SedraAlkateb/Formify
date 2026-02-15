@@ -115,6 +115,8 @@ class GetSurveyResponse {
   String? description;
   @JsonKey(name: "color")
   String? color;
+  @JsonKey(name: "timer")
+  String? timer;
 
   GetSurveyResponse(this.id, this.title, this.description, this.color);
   // from json
@@ -444,6 +446,8 @@ class GetSurveyToConferenceResponse {
   String? description;
   @JsonKey(name: "color")
   String? color;
+  @JsonKey(name: "timer")
+  String? timer;
   @JsonKey(name: "survey_order")
   int? survey_order;
 
@@ -486,6 +490,8 @@ class GetSurveyWithActiveResponse {
   String? description;
   @JsonKey(name: "color")
   String? color;
+  @JsonKey(name: "timer")
+  String? timer;
   @JsonKey(name: "is_active")
   bool? isActive;
 

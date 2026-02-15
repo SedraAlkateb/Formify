@@ -119,6 +119,8 @@ final class SurveyErrorState extends SyncState {
 /// Ready survey (single source of truth for UI)
 final class SurveyReadyState extends SyncState {
   final String surveyName;
+  final String surveyDescription;
+
   final List<QuestionModel> questions;
 
   /// index -> answers
@@ -129,6 +131,7 @@ final class SurveyReadyState extends SyncState {
   final int index;
   const SurveyReadyState({
     required this.surveyName,
+    required this.surveyDescription,
     required this.questions,
     required this.answers,
     required this.currentIndex,
@@ -141,6 +144,7 @@ final class SurveyReadyState extends SyncState {
   }) {
     return SurveyReadyState(
       surveyName: surveyName,
+      surveyDescription: surveyDescription,
       questions: questions,
       answers: answers ?? this.answers,
       currentIndex: currentIndex ?? this.currentIndex,

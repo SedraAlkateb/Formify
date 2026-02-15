@@ -148,8 +148,9 @@ class MainSurveyModel {
   String title;
   String description;
   String color;
+  String timer;
 
-  MainSurveyModel(this.id, this.title, this.description, this.color);
+  MainSurveyModel(this.id, this.title, this.description, this.color,this.timer);
 
   Map<String, dynamic> toMap() {
     return {
@@ -157,6 +158,7 @@ class MainSurveyModel {
       'title': title,
       'description': description,
       'color': color,
+      'timer':timer
     };
   }
 
@@ -166,6 +168,7 @@ class MainSurveyModel {
       map['title'],
       map['description'],
       map['color'],
+      map['timer']
     );
   }
 }
@@ -176,12 +179,14 @@ class IsActiveMainSurveyModel {
   String description;
   String color;
   bool isActive;
+  String timer;
   IsActiveMainSurveyModel(
     this.id,
     this.title,
     this.description,
     this.color,
     this.isActive,
+      this.timer
   );
 }
 
@@ -391,12 +396,16 @@ class SurveyToConferenceModel {
   String title;
   String description;
   String color;
+  String timer;
+
   int survey_order;
+
   SurveyToConferenceModel(
     this.id,
     this.title,
     this.description,
     this.color,
+    this.timer,
     this.survey_order,
   );
 }

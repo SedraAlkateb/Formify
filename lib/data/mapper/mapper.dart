@@ -10,6 +10,7 @@ extension GetMainSurveyModelMapper on GetSurveyResponse? {
       this?.title ?? Constants.empty,
       this?.description ?? Constants.empty,
       this?.color ?? Constants.empty,
+      this?.timer ?? Constants.empty,
     );
   }
 }
@@ -165,6 +166,7 @@ extension GetSurveyModelMapper on SurveyToConferenceModel? {
       this?.title ?? Constants.empty,
       this?.description ?? Constants.empty,
       this?.color ?? Constants.empty,
+      this?.timer ?? Constants.empty,
     );
   }
 }
@@ -176,6 +178,8 @@ extension GetSurveyToConferenceMapper on GetSurveyToConferenceResponse? {
       this?.title ?? Constants.empty,
       this?.description ?? Constants.empty,
       this?.color ?? Constants.empty,
+      this?.timer ?? Constants.empty,
+
       this?.survey_order ?? Constants.zero,
     );
   }
@@ -277,7 +281,7 @@ extension GetConferenceByIdMapper on GetConferenceByIdBaseResponse? {
 
 extension IsActiveSurveyMapper on MainSurveyModel {
   IsActiveMainSurveyModel toDomain() {
-    return IsActiveMainSurveyModel(id, title, description, color, false);
+    return IsActiveMainSurveyModel(id, title, description, color, false,timer);
   }
 }
 
@@ -373,6 +377,7 @@ extension GetConferenceModelMapper on GetSurveyWithActiveResponse? {
       this?.description ?? Constants.empty,
       this?.color ?? Constants.empty,
       this?.isActive ?? false,
+      this?.timer ?? Constants.empty,
     );
   }
 }

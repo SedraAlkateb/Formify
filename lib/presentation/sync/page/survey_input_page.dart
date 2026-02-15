@@ -2,226 +2,241 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:formify/domain/models/model_q.dart';
+import 'package:formify/presentation/question/page/view_Question_network.dart';
+import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
-import 'package:formify/presentation/sync/widget/answer_card_widget.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
-class SurveyInputPage extends StatefulWidget {
-  const SurveyInputPage({super.key});
+class SurveyInputPage extends StatelessWidget {
+  SurveyInputPage({super.key});
 
-  @override
-  State<SurveyInputPage> createState() => _SurveyInputPageState();
-}
+  final _formKey = GlobalKey<FormBuilderState>();
 
-class _SurveyInputPageState extends State<SurveyInputPage> {
-  final _pageController = PageController();
-  List<GlobalKey<FormBuilderState>> _formKeys = [];
+  void _submit(BuildContext context, SurveyReadyState s) {
+    final fs = _formKey.currentState;
+    if (fs == null) return;
 
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  void _ensureKeys(int length) {
-    if (_formKeys.length == length) return;
-    _formKeys = List.generate(length, (_) => GlobalKey<FormBuilderState>());
-  }
-
-  dynamic _readRawValue(int index, SurveyReadyState s) {
-    final formState = _formKeys[index].currentState;
-    if (formState == null) return null;
-    final q = s.questions[index];
-    return formState.value["q_${q.order}"];
-  }
-
-  bool _saveAndValidate(int index) {
-    final fs = _formKeys[index].currentState;
-    if (fs == null) return true;
-    return fs.saveAndValidate();
-  }
-
-  void _saveOnly(int index) {
-    _formKeys[index].currentState?.save();
-  }
-
-  void _sendAnswerToBloc(int index, SurveyReadyState s) {
-    final q = s.questions[index];
-    final raw = _readRawValue(index, s);
-    context.read<SyncBloc>().add(
-      SurveySaveAnswerEvent(index: index, question: q, rawValue: raw),
-    );
-  }
-
-  void _next(SurveyReadyState s, int index) {
-    final ok = _saveAndValidate(index);
-    if (!ok) return;
-
-    _sendAnswerToBloc(index, s);
-
-    final isLast = index == s.questions.length - 1;
-    if (isLast) {
-      //
-      context.read<SyncBloc>().add(const SurveySubmitEvent());
+    final ok = fs.saveAndValidate(); // <-- validation + save
+    if (!ok) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("يرجى تعبئة الحقول المطلوبة")),
+      );
       return;
     }
 
-    _pageController.nextPage(
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeOut,
-    );
-    context.read<SyncBloc>().add(SurveyPageChangedEvent(index + 1));
-  }
+    // 1) اقرأ قيم الفورم لكل سؤال وارسله للـBloc (SurveySaveAnswerEvent)
+    for (int i = 0; i < s.questions.length; i++) {
+      final q = s.questions[i];
+      final raw = fs.value["q_${q.order}"]; // <-- نفس name داخل FormBuilderField
 
-  void _prev(SurveyReadyState s, int index) {
-    _saveOnly(index);
-    _sendAnswerToBloc(index, s);
+      context.read<SyncBloc>().add(
+        SurveySaveAnswerEvent(index: i, question: q, rawValue: raw),
+      );
+    }
 
-    if (index <= 0) return;
-
-    _pageController.previousPage(
-      duration: const Duration(milliseconds: 250),
-      curve: Curves.easeOut,
-    );
-    context.read<SyncBloc>().add(SurveyPageChangedEvent(index - 1));
+    // 2) بعد ما خزّنت الإجابات بالـ state.answers، اعمل Submit
+    context.read<SyncBloc>().add(const SurveySubmitEvent());
   }
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        backgroundColor: const Color(0xFFF3F7FF),
-        body: SafeArea(
-          child: BlocConsumer<SyncBloc, SyncState>(
-            listener: (context, state) {
-              if (state is SurveySubmitSuccessState) {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("تم إرسال الإجابات بنجاح")),
-                );
-              }
-              if (state is SurveySubmitErrorState) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("فشل الإرسال: ${state.failure}")),
-                );
-              }
-            },
-            builder: (context, state) {
-              if (state is SurveyLoadingState ||
-                  state is SurveySubmittingState) {
-                return loadingFullScreen(context);
-              }
-              if (state is SurveyErrorState) {
-                return errorFullScreen(context);
-              }
+    final colors = Theme.of(context).colorScheme;
 
-              if (state is SurveyReadyState) {
-                final total = state.questions.length;
-                _ensureKeys(total);
+    return Scaffold(
+      backgroundColor: colors.background,
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: BlocConsumer<SyncBloc, SyncState>(
+          listener: (context, state) {
+            if (state is SurveySubmitSuccessState) {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("تم إرسال الإجابات بنجاح")),
+              );
+            }
+            if (state is SurveySubmitErrorState) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("فشل الإرسال: ${state.failure}")),
+              );
+            }
+          },
+          builder: (context, state) {
+            if (state is SurveyLoadingState || state is SurveySubmittingState) {
+              return loadingFullScreen(context);
+            }
+            if (state is SurveyErrorState) {
+              return errorFullScreen(context);
+            }
 
-                final idx = state.currentIndex;
-                final progress = total == 0 ? 0.0 : (idx + 1) / total;
-
-                return Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 18,
-                        vertical: 10,
-                      ),
-                      child: Row(
-                        children: [
-                          TextButton.icon(
-                            onPressed: () => Navigator.pop(context),
-                            icon: const Icon(
-                              Icons.arrow_back_ios_new,
-                              size: 16,
+            if (state is SurveyReadyState) {
+              return SafeArea(
+                child: FormBuilder(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // ====== معلومات الاستبيان ======
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(16),
+                        margin: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: ColorManager.border),
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(25),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 8,
+                              offset: Offset(0, 3),
                             ),
-                            label: const Text("العودة"),
-                          ),
-                          Expanded(
-                            child: Text(
-                              state.surveyName,
-                              textAlign: TextAlign.end,
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 18,
-                        vertical: 18,
-                      ),
-                      child: Column(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(999),
-                            child: LinearProgressIndicator(
-                              value: progress,
-                              minHeight: 8,
-                              backgroundColor: Colors.black.withOpacity(0.06),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            "السؤال ${idx + 1} من $total",
-                            style: TextStyle(
-                              color: Colors.black.withOpacity(0.6),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    Expanded(
-                      child: PageView.builder(
-                        controller: _pageController,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: total,
-                        onPageChanged: (i) => context.read<SyncBloc>().add(
-                          SurveyPageChangedEvent(i),
+                          ],
                         ),
-                        itemBuilder: (context, i) {
-                          final q = state.questions[i];
-                          final initValue = q.type.buildInitialValue(
-                            question: q,
-                            savedAnswers: state.answers[i],
-                          );
-                       //   final savedAnswer = state.answers[i]?.first.content;
-
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 18,
-                              vertical: 12,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "عنوان الاستبيان",
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                             ),
-                            child: QuestionCard(
-                              number: i + 1,
-                              total: total,
-                              questionModel: q,
-                              isLast: i == total - 1,
-                              formKey: _formKeys[i],
-                              initialValue:
-                              initValue, // passing saved answer as initial value
-                              onPrev: () => _prev(state, i),
-                              onNext: () => _next(state, i),
+                            const SizedBox(height: 8),
+                            Text(state.surveyName, style: const TextStyle(fontSize: 16)),
+                            const SizedBox(height: 20),
+                            const Text(
+                              "وصف الاستبيان",
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                             ),
-                          );
-                        },
+                            const SizedBox(height: 8),
+                            Text(state.surveyDescription, style: const TextStyle(fontSize: 14)),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                );
-              }
 
-              return const SizedBox.shrink();
-            },
-          ),
+                      const SizedBox(height: 15),
+
+                      // ====== الأسئلة ======
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(16),
+                        margin: const EdgeInsets.only(top: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(25),
+                          border: Border.all(color: ColorManager.border),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Colors.black12,
+                              blurRadius: 8,
+                              offset: Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "الأسئلة",
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 12),
+                            ListView.separated(
+                              physics: const NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: state.questions.length,
+                              separatorBuilder: (_, __) => const SizedBox(height: 12),
+                              itemBuilder: (context, index) {
+                                final q = state.questions[index];
+
+                                return Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: colors.surface,
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                      color: colors.outline.withOpacity(0.2),
+                                    ),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          CircleAvatar(
+                                            radius: 16,
+                                            backgroundColor: colors.primary.withOpacity(0.1),
+                                            child: Text(
+                                              "${q.order}",
+                                              style: TextStyle(
+                                                color: colors.primary,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 10),
+                                          q.type.title == "Switch"
+                                              ? const SizedBox.shrink()
+                                              : Expanded(
+                                            child: Row(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Expanded(
+                                                  child: Text(
+                                                    q.title,
+                                                    style: const TextStyle(
+                                                      fontSize: 20,
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 6),
+                                                if (q.isRequired == true)
+                                                  const Text(
+                                                    "•",
+                                                    style: TextStyle(color: Colors.red, fontSize: 22),
+                                                  ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 10),
+
+                                      // مهم جداً: لازم يبني FormBuilderField
+                                      // وباسم: name: "q_${q.order}"
+                                      // ويفضل تمرير required لتطبيق validator داخل البيلدر
+                                      QuestionPreviewNetworkBuilder(
+                                        question: q,
+
+                                      ),
+
+                                      const SizedBox(height: 10),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () => _submit(context, state),
+                          child: const Text("إرسال"),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+
+            return const SizedBox.shrink();
+          },
         ),
       ),
     );

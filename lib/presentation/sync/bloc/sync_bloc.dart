@@ -176,6 +176,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
           SurveyReadyState(
             index: event.index,
             surveyName: event.surveyName,
+            surveyDescription: event.surveyDescription,
             questions: questions,
             answers: <int, List<AnswerUserModel>>{},
             currentIndex: 0,

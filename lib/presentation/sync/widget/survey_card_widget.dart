@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:formify/app/app_preferences.dart';
+import 'package:formify/app/di.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
@@ -12,11 +14,7 @@ class SurveyCard extends StatelessWidget {
   final IsActiveMainSurveyModel survey;
   final int index;
 
-  const SurveyCard({
-    super.key,
-    required this.survey,
-    required this.index,
-  });
+  const SurveyCard({super.key, required this.survey, required this.index});
 
   @override
   Widget build(BuildContext context) {
@@ -35,42 +33,28 @@ class SurveyCard extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             survey.title,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
-          Text(
-            survey.description,
-            style: const TextStyle(fontSize: 15),
-          ),
+          Text(survey.description, style: const TextStyle(fontSize: 15)),
           const SizedBox(height: 30),
           animatedButton(
             context,
             survey.isActive == true
                 ? null
                 : () {
-              BlocProvider.of<SyncBloc>(context).add(
-                GetQuestionAnswersEvent(
-                  survey.id,
-                  survey.title,
-                  index,
-                ),
-              );
-              BlocProvider.of<ThemeBloc>(context).add(
-                ChangeThemeColorEvent(
-                  Color(
-                    int.parse(
-                      survey
-                          .color,
-                    ),
-                  ),
-                  survey
-                      .color,
-                ),
-              );
-              Navigator.pushNamed(context, Routes.surveyInput);
-            },
+                    BlocProvider.of<SyncBloc>(context).add(
+                      GetQuestionAnswersEvent(survey.id, survey.title,survey.description, index),
+                    );
+                    BlocProvider.of<ThemeBloc>(context).add(
+                      ChangeThemeColorEvent(
+                        Color(int.parse(survey.color)),
+                        survey.color,
+                      ),
+                    );
+                    instance<AppPreferences>().isGame() == 1
+                        ? Navigator.pushNamed(context, Routes.gameInput)
+                        : Navigator.pushNamed(context, Routes.surveyInput);
+                  },
             "ابدأ الاستبيانات",
           ),
         ],
