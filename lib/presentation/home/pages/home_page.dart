@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/app/app_preferences.dart';
 import 'package:formify/app/di.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
+import 'package:formify/presentation/conference/widget/conferm_dialog.dart';
 import 'package:formify/presentation/home/widget/conference_ended_widget.dart';
+import 'package:formify/presentation/home/widget/dialog_game_survey_widget.dart';
 import 'package:formify/presentation/home/widget/grid_icon.dart';
 import 'package:formify/presentation/home/widget/isMorning.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
@@ -179,10 +181,14 @@ class _HomePageState extends State<HomePage> {
                     elevation: 4,
                   ),
                   onPressed: (){
+                    showDialogGameSurveyWidget(
+                      context: context,
+                      title: "طريقة عرض الاستبيان",
+                      message: "هل تريد ان تكون طريقة عرض الاستبيان لعبة ؟",
 
-                Navigator.pushNamedAndRemoveUntil(context,
-                Routes.showConference,(route) => false,);
-              }, child:Text("start") ),
+                    );
+
+              }, child:Text("   ابدأ المؤتمر   ") ),
             ),
 
           ],
