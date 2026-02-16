@@ -90,6 +90,7 @@ class DatabaseHelper {
         question_order INTEGER,
         is_required INTEGER DEFAULT 0,
         type TEXT,
+        value INTEGER,
         FOREIGN KEY (survey_id) REFERENCES survey(id) ON DELETE CASCADE
       );
     ''');

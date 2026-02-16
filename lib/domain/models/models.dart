@@ -6,6 +6,7 @@ class SurveyModel {
   String title;
   String description;
   String color;
+  String timer;
 
   List<QuestionModel> questions;
 
@@ -15,6 +16,7 @@ class SurveyModel {
     required this.description,
     required this.color,
     required this.questions,
+    required this.timer
   });
 
   /// إنشاء Survey فارغ مع قائمة أسئلة جاهزة
@@ -23,7 +25,7 @@ class SurveyModel {
       title: "",
       description: "",
       color: "",
-
+      timer:"00:10",
       questions: [], // أصبحت قائمة أسئلة وليس سؤال واحد
     );
   }
@@ -47,6 +49,7 @@ class AnswerUserSurveyModel {
 class QuestionModel {
   int? id;
   String title;
+  int value;
   int order;
   bool isRequired;
   QuestionType type;
@@ -55,6 +58,7 @@ class QuestionModel {
   QuestionModel({
     this.id,
     required this.title,
+    required this.value,
     required this.order,
     required this.isRequired,
     required this.type,
@@ -63,6 +67,7 @@ class QuestionModel {
   QuestionModel instanceQuestion() {
     return QuestionModel(
       title: title,
+      value:value,
       order: order,
       isRequired: isRequired,
       type: type,
@@ -75,6 +80,7 @@ class QuestionModel {
     return QuestionModel(
       title: "",
       order: 1,
+      value:0,
       isRequired: false,
       type: QuestionType.text,
       answers: [],
@@ -85,6 +91,7 @@ class QuestionModel {
     return {
       'id': id,
       'title': title,
+      'value':value,
       'order': order,
       'isRequired': isRequired,
       'Type': type.name,
@@ -100,6 +107,7 @@ class QuestionModel {
     return QuestionModel(
       id: map['id'],
       title: map['title'],
+      value:map['value'],
       order: map['order'],
       isRequired: map['isRequired'],
       type: map['Type'],
@@ -112,6 +120,7 @@ class QuestionModel {
   }) {
     return QuestionModel(
       id: qRow['id'] as int?,
+      value: (qRow['value'] as int?) ?? 0,
       title: qRow['question'] as String,
       order: (qRow['question_order'] as int?) ?? 0,
       isRequired: ((qRow['is_required'] as int?) ?? 0) == 1,
@@ -436,6 +445,7 @@ class AsyncQuestionModel {
   bool isRequired;
   QuestionType type;
   int survey_id;
+  int value;
   AsyncQuestionModel(
     this.id,
     this.title,
@@ -443,6 +453,7 @@ class AsyncQuestionModel {
     this.isRequired,
     this.type,
     this.survey_id,
+      this.value
   );
 
   Map<String, dynamic> toMap() {
@@ -453,6 +464,7 @@ class AsyncQuestionModel {
       'question_order': order,
       'is_required': isRequired ? 1 : 0,
       'type': type.name,
+      'value':value
     };
   }
 
@@ -461,9 +473,11 @@ class AsyncQuestionModel {
       map['id'],
       map['question'],
       map['question_order'],
+
       map['is_required'] == 1 ? true : false,
       convertToQuestionType(map['type']),
       map['survey_id'],
+      map['value']
     );
   }
 }

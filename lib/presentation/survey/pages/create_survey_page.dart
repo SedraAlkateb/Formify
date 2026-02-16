@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/resources/theme_bloc/theme_bloc.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
+import 'package:formify/presentation/unit/timer_widget.dart';
 
 class CreateSurveyPage extends StatefulWidget {
-  CreateSurveyPage({super.key});
+  const CreateSurveyPage({super.key});
 
   @override
   State<CreateSurveyPage> createState() => _CreateSurveyPageState();
@@ -25,17 +25,10 @@ class _CreateSurveyPageState extends State<CreateSurveyPage> {
   final TextEditingController titleController = TextEditingController();
 
   final TextEditingController descriptionController = TextEditingController();
+  final TextEditingController timerController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    titleController.text = BlocProvider.of<SurveyBloc>(
-      context,
-    ).surveyModel.title;
-    descriptionController.text = BlocProvider.of<SurveyBloc>(
-      context,
-    ).surveyModel.description;
-
-    final colors = Theme.of(context).colorScheme;
     return Scaffold(
       backgroundColor: ColorManager.background,
       appBar: AppBar(
@@ -307,15 +300,16 @@ class _CreateSurveyPageState extends State<CreateSurveyPage> {
                       const SizedBox(height: 8),
                       TimePickerField(
                         label: "الوقت المسموح للاستبيان",
-                        initialText:  "00:10",
+                        initialText: "00:10",
                         onChanged: (t) {
                           final hh = t.hour.toString().padLeft(2, '0');
                           final mm = t.minute.toString().padLeft(2, '0');
-                       //   BlocProvider.of<SurveyBloc>(context).surveyModel.allowedTime = "$hh:$mm";
+                          BlocProvider.of<SurveyBloc>(
+                            context,
+                          ).surveyModel.timer = "$hh:$mm";
                         },
+                        controller: timerController,
                       ),
-
-
                     ],
                   ),
                 ),
@@ -345,6 +339,7 @@ class _CreateSurveyPageState extends State<CreateSurveyPage> {
                       selectedColor.toString(),
                       titleController.text,
                       descriptionController.text,
+                      timerController.text,
                     ),
                   );
                 },
@@ -379,78 +374,3 @@ Widget buildColorOption(Color color, BuildContext context, String colorName) {
 }
 
 
-class TimePickerField extends StatefulWidget {
-  final String label;
-  final String? initialText;
-  final ValueChanged<TimeOfDay> onChanged;
-
-  const TimePickerField({
-    super.key,
-    this.label = "الوقت",
-    this.initialText,
-    required this.onChanged,
-  });
-
-  @override
-  State<TimePickerField> createState() => _TimePickerFieldState();
-}
-
-class _TimePickerFieldState extends State<TimePickerField> {
-  late final TextEditingController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController(text: widget.initialText ?? "");
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  String _format24(TimeOfDay t) {
-    final h = t.hour.toString().padLeft(2, '0');
-    final m = t.minute.toString().padLeft(2, '0');
-    return "$h:$m";
-  }
-
-  Future<void> _openPicker() async {
-    final picked = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-      builder: (context, child) {
-        return MediaQuery(
-          data: MediaQuery.of(context).copyWith(
-            alwaysUse24HourFormat: true, // بدون AM/PM
-          ),
-          child: child!,
-        );
-      },
-    );
-
-    if (picked == null) return;
-
-    final text = _format24(picked);
-    setState(() => _controller.text = text);
-    widget.onChanged(picked);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      controller: _controller,
-      readOnly: true,
-      onTap: _openPicker,
-      decoration: InputDecoration(
-        hintText: "اختر الوقت (HH:mm)",
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
-        suffixIcon: IconButton(
-          icon: const Icon(Icons.access_time),
-          onPressed: _openPicker,
-        ),
-      ),
-    );
-  }
-}

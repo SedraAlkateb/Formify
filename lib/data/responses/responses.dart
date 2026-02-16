@@ -118,7 +118,7 @@ class GetSurveyResponse {
   @JsonKey(name: "timer")
   String? timer;
 
-  GetSurveyResponse(this.id, this.title, this.description, this.color);
+  GetSurveyResponse(this.id, this.title, this.description, this.color, this.timer);
   // from json
   factory GetSurveyResponse.fromJson(Map<String, dynamic> json) =>
       _$GetSurveyResponseFromJson(json);
@@ -150,6 +150,8 @@ class GetSurveyWithQuestionAndAnswerResponse {
   String? description;
   @JsonKey(name: "color")
   String? color;
+  @JsonKey(name: "timer")
+  String? timer;
   @JsonKey(name: "questions")
   List<GetQuestionAndAnswerResponse>? questions;
 
@@ -158,6 +160,7 @@ class GetSurveyWithQuestionAndAnswerResponse {
     this.title,
     this.description,
     this.color,
+    this.timer,
     this.questions,
   ); // from json
   factory GetSurveyWithQuestionAndAnswerResponse.fromJson(
@@ -177,6 +180,8 @@ class GetSurveyWithQuestionAndAnswerForUserResponse {
   String? description;
   @JsonKey(name: "color")
   String? color;
+  @JsonKey(name: "timer")
+  String? timer;
   @JsonKey(name: "questions")
   List<GetQuestionAndAnswerForUserResponse>? questions;
 
@@ -221,6 +226,8 @@ class GetQuestionAndAnswerResponse {
   bool? is_required;
   @JsonKey(name: "type")
   String? type;
+  @JsonKey(name: "value")
+  int? value;
   @JsonKey(name: "answers")
   List<GetAnswerResponse> answers;
 
@@ -230,7 +237,9 @@ class GetQuestionAndAnswerResponse {
     this.question_order,
     this.is_required,
     this.type,
+    this.value,
     this.answers,
+
   ); // from json
   factory GetQuestionAndAnswerResponse.fromJson(Map<String, dynamic> json) =>
       _$GetQuestionAndAnswerResponseFromJson(json);
@@ -250,6 +259,8 @@ class GetQuestionAndAnswerForUserResponse {
   bool? is_required;
   @JsonKey(name: "type")
   String? type;
+  @JsonKey(name: "value")
+  int? value;
   @JsonKey(name: "answers")
   List<GetAnswerResponse>? answers;
   @JsonKey(name: "user_answers")
@@ -261,6 +272,7 @@ class GetQuestionAndAnswerForUserResponse {
     this.question_order,
     this.is_required,
     this.type,
+      this.value,
     this.answers,
       this.answersUser
   ); // from json
@@ -366,9 +378,9 @@ class GetAllConferenceResponse {
   String? description;
   @JsonKey(name: "address")
   String? address;
-  @JsonKey(name: "startDate")
+  @JsonKey(name: "start_date")
   String? start_date;
-  @JsonKey(name: "endDate")
+  @JsonKey(name: "end_date")
   String? end_date;
   @JsonKey(name: "is_active")
   bool? is_active;
@@ -579,12 +591,15 @@ class GetQuestionForAsyncResponse {
   String? type;
   @JsonKey(name: "survey_id")
   int? survey_id;
+  @JsonKey(name: "value")
+  int? value;
   GetQuestionForAsyncResponse(
     this.id,
     this.question,
     this.question_order,
     this.is_required,
     this.type,
+      this.value,
     this.survey_id,
   ); // from json
   factory GetQuestionForAsyncResponse.fromJson(Map<String, dynamic> json) =>

@@ -61,7 +61,7 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
         surveyModel.color = event.color;
         emit(CreateSurveyLoadingState());
         (await createSurveyUsecase.execute(
-          SurveyRequest(event.title, event.description, event.color),
+          SurveyRequest(event.title, event.description, event.color,event.timer),
         )).fold(
           (failure) {
             emit(CreateSurveyErrorState(failure: failure));
@@ -105,6 +105,7 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
           isRequired: true,
           answers: [],
           type: event.type,
+          value: 0
         );
 
         emit(ViewQuestionState(question));
@@ -166,6 +167,11 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
           emit(ViewSurveyState(surveyModel));
         }
       }
+      on<SelectValueAnswerEvent>((event, emit) {
+        final q = (state as ViewQuestionState).questionModel;
+        q.value = event.index;
+        emit(ViewQuestionState(q));
+      });
     });
   }
 }

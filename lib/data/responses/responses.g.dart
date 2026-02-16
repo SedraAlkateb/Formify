@@ -107,6 +107,7 @@ GetSurveyResponse _$GetSurveyResponseFromJson(Map<String, dynamic> json) =>
       json['title'] as String?,
       json['description'] as String?,
       json['color'] as String?,
+      json['timer'] as String?,
     );
 
 Map<String, dynamic> _$GetSurveyResponseToJson(GetSurveyResponse instance) =>
@@ -115,6 +116,7 @@ Map<String, dynamic> _$GetSurveyResponseToJson(GetSurveyResponse instance) =>
       'title': instance.title,
       'description': instance.description,
       'color': instance.color,
+      'timer': instance.timer,
     };
 
 GetAllSurveyBaseResponse _$GetAllSurveyBaseResponseFromJson(
@@ -143,6 +145,7 @@ _$GetSurveyWithQuestionAndAnswerResponseFromJson(Map<String, dynamic> json) =>
       json['title'] as String?,
       json['description'] as String?,
       json['color'] as String?,
+      json['timer'] as String?,
       (json['questions'] as List<dynamic>?)
           ?.map(
             (e) => GetQuestionAndAnswerResponse.fromJson(
@@ -159,6 +162,7 @@ Map<String, dynamic> _$GetSurveyWithQuestionAndAnswerResponseToJson(
   'title': instance.title,
   'description': instance.description,
   'color': instance.color,
+  'timer': instance.timer,
   'questions': instance.questions,
 };
 
@@ -177,7 +181,7 @@ _$GetSurveyWithQuestionAndAnswerForUserResponseFromJson(
         ),
       )
       .toList(),
-);
+)..timer = json['timer'] as String?;
 
 Map<String, dynamic> _$GetSurveyWithQuestionAndAnswerForUserResponseToJson(
   GetSurveyWithQuestionAndAnswerForUserResponse instance,
@@ -186,6 +190,7 @@ Map<String, dynamic> _$GetSurveyWithQuestionAndAnswerForUserResponseToJson(
   'title': instance.title,
   'description': instance.description,
   'color': instance.color,
+  'timer': instance.timer,
   'questions': instance.questions,
 };
 
@@ -217,6 +222,7 @@ GetQuestionAndAnswerResponse _$GetQuestionAndAnswerResponseFromJson(
   (json['question_order'] as num?)?.toInt(),
   json['is_required'] as bool?,
   json['type'] as String?,
+  (json['value'] as num?)?.toInt(),
   (json['answers'] as List<dynamic>)
       .map((e) => GetAnswerResponse.fromJson(e as Map<String, dynamic>))
       .toList(),
@@ -230,6 +236,7 @@ Map<String, dynamic> _$GetQuestionAndAnswerResponseToJson(
   'question_order': instance.question_order,
   'is_required': instance.is_required,
   'type': instance.type,
+  'value': instance.value,
   'answers': instance.answers,
 };
 
@@ -241,6 +248,7 @@ _$GetQuestionAndAnswerForUserResponseFromJson(Map<String, dynamic> json) =>
       (json['question_order'] as num?)?.toInt(),
       json['is_required'] as bool?,
       json['type'] as String?,
+      (json['value'] as num?)?.toInt(),
       (json['answers'] as List<dynamic>?)
           ?.map((e) => GetAnswerResponse.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -259,6 +267,7 @@ Map<String, dynamic> _$GetQuestionAndAnswerForUserResponseToJson(
   'question_order': instance.question_order,
   'is_required': instance.is_required,
   'type': instance.type,
+  'value': instance.value,
   'answers': instance.answers,
   'user_answers': instance.answersUser,
 };
@@ -369,8 +378,8 @@ GetAllConferenceResponse _$GetAllConferenceResponseFromJson(
   json['name'] as String?,
   json['description'] as String?,
   json['address'] as String?,
-  json['startDate'] as String?,
-  json['endDate'] as String?,
+  json['start_date'] as String?,
+  json['end_date'] as String?,
   json['is_active'] as bool?,
 );
 
@@ -381,8 +390,8 @@ Map<String, dynamic> _$GetAllConferenceResponseToJson(
   'name': instance.name,
   'description': instance.description,
   'address': instance.address,
-  'startDate': instance.start_date,
-  'endDate': instance.end_date,
+  'start_date': instance.start_date,
+  'end_date': instance.end_date,
   'is_active': instance.is_active,
 };
 
@@ -447,7 +456,7 @@ GetSurveyToConferenceResponse _$GetSurveyToConferenceResponseFromJson(
   json['description'] as String?,
   json['color'] as String?,
   (json['survey_order'] as num?)?.toInt(),
-);
+)..timer = json['timer'] as String?;
 
 Map<String, dynamic> _$GetSurveyToConferenceResponseToJson(
   GetSurveyToConferenceResponse instance,
@@ -456,6 +465,7 @@ Map<String, dynamic> _$GetSurveyToConferenceResponseToJson(
   'title': instance.title,
   'description': instance.description,
   'color': instance.color,
+  'timer': instance.timer,
   'survey_order': instance.survey_order,
 };
 
@@ -486,7 +496,7 @@ GetSurveyWithActiveResponse _$GetSurveyWithActiveResponseFromJson(
   json['description'] as String?,
   json['color'] as String?,
   json['is_active'] as bool?,
-);
+)..timer = json['timer'] as String?;
 
 Map<String, dynamic> _$GetSurveyWithActiveResponseToJson(
   GetSurveyWithActiveResponse instance,
@@ -495,6 +505,7 @@ Map<String, dynamic> _$GetSurveyWithActiveResponseToJson(
   'title': instance.title,
   'description': instance.description,
   'color': instance.color,
+  'timer': instance.timer,
   'is_active': instance.isActive,
 };
 
@@ -581,6 +592,7 @@ GetQuestionForAsyncResponse _$GetQuestionForAsyncResponseFromJson(
   (json['order'] as num?)?.toInt(),
   json['isRequired'] as bool?,
   json['type'] as String?,
+  (json['value'] as num?)?.toInt(),
   (json['survey_id'] as num?)?.toInt(),
 );
 
@@ -593,6 +605,7 @@ Map<String, dynamic> _$GetQuestionForAsyncResponseToJson(
   'isRequired': instance.is_required,
   'type': instance.type,
   'survey_id': instance.survey_id,
+  'value': instance.value,
 };
 
 GetAnswerForAsyncResponse _$GetAnswerForAsyncResponseFromJson(

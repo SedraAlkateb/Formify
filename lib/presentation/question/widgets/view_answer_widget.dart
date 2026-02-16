@@ -4,7 +4,6 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:formify/domain/models/model_q.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 
 Widget viewAnswerWidget(BuildContext context) {
   final colorScheme = Theme.of(context).colorScheme;
@@ -34,26 +33,48 @@ Widget viewAnswerWidget(BuildContext context) {
         BlocBuilder<SurveyBloc, SurveyState>(
           builder: (context, state) {
             if (state is ViewQuestionState) {
-              print("RemoveAnswerAtEvent");
               QuestionModel questionModel = state.questionModel;
+
               return questionModel.answers.isEmpty
-                  ? const Text("لا توجد إجابات بعد. اضغط على \"إضافة إجابة\" لإضافة واحدة.")
+                  ? const Text(
+                'لا توجد إجابات بعد. اضغط على "إضافة إجابة" لإضافة واحدة.',
+              )
                   : ListView.separated(
                 itemCount: questionModel.answers.length,
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 separatorBuilder: (_, __) => const SizedBox(height: 10),
                 itemBuilder: (context, index) {
-                  final String item = questionModel.answers[index].title;
+                  final answerModel = questionModel.answers[index];
 
                   return Column(
                     children: [
                       Row(
                         children: [
+                          // ✅ Radio لاختيار الإجابة
+                          Radio<int>(
+                            value: index,
+                            groupValue: questionModel.value,
+                            onChanged: (v) {
+                              if (v == null) return;
+
+                              // ✅ إرسال الإيفنت (أنت قلت إنك ضفته)
+                              context
+                                  .read<SurveyBloc>()
+                                  .add(SelectValueAnswerEvent(v));
+
+                              // ✅ هنا تحصل على AnswerModel المختار
+                              final selectedAnswerModel =
+                              questionModel.answers[v];
+                              // استخدمه كما تريد (تخزين/عرض/ارسال...)
+                              // print(selectedAnswerModel.title);
+                            },
+                          ),
+
                           Expanded(
                             child: FormBuilderTextField(
                               name: "answer_$index",
-                              initialValue: item,
+                              initialValue: answerModel.title,
                               textDirection: TextDirection.rtl,
                               decoration: InputDecoration(
                                 labelText: "الإجابة ${index + 1}",
@@ -72,17 +93,41 @@ Widget viewAnswerWidget(BuildContext context) {
                             ),
                           ),
                           const SizedBox(width: 8),
-                          IconButton(
-                            icon: const Icon(Icons.delete_outline),
-                            onPressed: () {
-                              context.read<SurveyBloc>().add(
-                                RemoveAnswerAtEvent(index),
-                              );
-                            },
+                          Row(
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.delete_outline),
+                                onPressed: () {
+                                  context.read<SurveyBloc>().add(
+                                    RemoveAnswerAtEvent(index),
+                                  );
+                                },
+                              ),
+
+                              // ✅ الزر الثاني صار "اختيار" بدل حذف
+                              IconButton(
+                                icon: Icon(
+                                  questionModel.value ==
+                                      index
+                                      ? Icons.radio_button_checked
+                                      : Icons.radio_button_unchecked,
+                                ),
+                                onPressed: () {
+                                  context
+                                      .read<SurveyBloc>()
+                                      .add(SelectValueAnswerEvent(index));
+
+                                  final selectedAnswerModel =
+                                  questionModel.answers[index];
+                                  // استخدمه كما تريد
+                                },
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                      ((questionModel.type == QuestionType.multipleChoice) ||
+                      ((questionModel.type ==
+                          QuestionType.multipleChoice) ||
                           questionModel.type == QuestionType.checkbox)
                           ? TextButton(
                         onPressed: () {
@@ -90,14 +135,15 @@ Widget viewAnswerWidget(BuildContext context) {
                             context,
                           ).add(PickAnswerImageEvent(index));
                         },
-                        child: Row(
-                          children: const [
+                        child: const Row(
+                          mainAxisAlignment:
+                          MainAxisAlignment.start,
+                          crossAxisAlignment:
+                          CrossAxisAlignment.center,
+                          children: [
                             Text("إضافة صورة"),
                             Icon(Icons.add),
                           ],
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment:
-                          CrossAxisAlignment.center,
                         ),
                       )
                           : const SizedBox(),

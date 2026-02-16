@@ -48,6 +48,7 @@ extension GetQuestionModelMapper on GetQuestionAndAnswerResponse? {
         orElse: () => QuestionType.text, // قيمة افتراضية
       ),
       answers: this!.answers.toDomain(),
+      value: this?.value ?? Constants.zero,
     );
   }
 }
@@ -58,9 +59,11 @@ extension GetAsyncQuestionModelMapper on GetQuestionForAsyncResponse? {
       this?.id ?? Constants.zero,
       this?.question ?? Constants.empty,
       this?.question_order ?? Constants.zero,
+
       this?.is_required ?? false,
       convertToQuestionType(this?.type ?? "TextField"),
       this?.survey_id ?? Constants.zero,
+      this?.value ?? Constants.zero,
     );
   }
 }
@@ -72,6 +75,7 @@ extension ViewSurveyModelMapper on GetSurveyWithQuestionAndAnswerResponse? {
       title: this?.title ?? Constants.empty,
       description: this?.description ?? Constants.empty,
       color: this?.color ?? Constants.empty,
+      timer: this?.timer ?? Constants.empty,
       questions: this!.questions.toDomain(),
     );
   }
@@ -86,6 +90,8 @@ extension GetSurveyWithQuestionAndAnswerByIdBaseResponseMapper
       description: this?.data.description ?? Constants.empty,
       color: this?.data.color ?? Constants.empty,
       questions: this!.data.questions.toDomain(),
+      timer: this?.data.color ?? Constants.empty,
+
     );
   }
 }
@@ -94,7 +100,7 @@ extension GetQuestionModelUserMapper on GetQuestionAndAnswerForUserResponse? {
   QuestionModel toDomain() {
     return QuestionModel(
       id: this?.id ?? Constants.zero,
-
+      value: this?.value ?? Constants.zero,
       title: this?.question ?? Constants.empty,
       order: this?.question_order ?? Constants.zero,
       isRequired: this?.is_required ?? false,
@@ -138,6 +144,7 @@ extension GetAllQuestionForUserMapper
       title: this?.data.title ?? Constants.empty,
       description: this?.data.description ?? Constants.empty,
       color: this?.data.color ?? Constants.empty,
+      timer:  this?.data.timer ?? Constants.empty,
       questions: allQuestion,
     );
     SurveyUserModel surveyUser = SurveyUserModel(
@@ -179,7 +186,6 @@ extension GetSurveyToConferenceMapper on GetSurveyToConferenceResponse? {
       this?.description ?? Constants.empty,
       this?.color ?? Constants.empty,
       this?.timer ?? Constants.empty,
-
       this?.survey_order ?? Constants.zero,
     );
   }

@@ -30,7 +30,6 @@ class ViewSurveyState extends SurveyState {
 class ViewQuestionState extends SurveyState {
   final QuestionModel questionModel;
   final Map<int, XFile> images; // key = answer index
-
    ViewQuestionState(this.questionModel, {this.images = const {}});
 
   @override

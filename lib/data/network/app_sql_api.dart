@@ -74,6 +74,8 @@ class AppSqlApi extends AppSqlApiAbs {
       q.question_order  AS q_order,
       q.is_required     AS q_required,
       q.type            AS q_type,
+      q.value            AS q_value,
+
 
       a.id              AS a_id,
       a.title           AS a_title,
@@ -99,6 +101,7 @@ class AppSqlApi extends AppSqlApiAbs {
           'question_order': r['q_order'],
           'is_required': r['q_required'],
           'type': r['q_type'],
+          'value': r['q_value'],
         };
       });
 
@@ -117,6 +120,7 @@ class AppSqlApi extends AppSqlApiAbs {
         QuestionModel(
           id: qRow['id'] as int,
           title: qRow['question'] as String,
+          value: (qRow['value'] as int?) ?? 0,
           order: (qRow['question_order'] as int?) ?? 0,
           isRequired: ((qRow['is_required'] as int?) ?? 0) == 1,
           type: convertToQuestionType((qRow['type'] as String?) ?? 'text'),
@@ -349,41 +353,3 @@ class AppSqlApi extends AppSqlApiAbs {
     });
   }
 }
-
-/*
-  @override
-  Future<List<AsyncQuestionModel>> getQuestions() async {
-    final db = await databaseHelper.database;
-    List<Map<String, dynamic>> maps;
-
-    maps = await db.query('questions');
-    return List.generate(maps.length, (i) {
-      return AsyncQuestionModel.fromMap(maps[i]);
-    });
-  }
-
-  @override
-  Future<List<AnswerModel>> getAnswers() async {
-    final db = await databaseHelper.database;
-    List<Map<String, dynamic>> maps;
-    maps = await db.rawQuery('''
-SELECT
-  q.id            AS question_id,
-  q.question      AS question_text,
-  q.question_order,
-  q.is_required,
-  q.type,
-
-  a.id            AS answer_id,
-  a.title         AS answer_title
-
-FROM questions q
-LEFT JOIN answers a ON a.question_id = q.id
-WHERE q.survey_id = ?
-ORDER BY q.question_order ASC, a.id ASC;
-''', []);
-    return List.generate(maps.length, (i) {
-      return AnswerModel.fromMap(maps[i]);
-    });
-  }
- */

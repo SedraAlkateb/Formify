@@ -83,7 +83,7 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
         return FormBuilderTextField(
           name: _name,
           enabled: false,
-          initialValue:(initValue!=null)? (initValue![0] as String):null ,
+          initialValue:(initValue!=null)? initValue![0]:null ,
           decoration: InputDecoration(
             icon: Icon(Icons.check_circle, color: ColorManager.success),
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(11)),

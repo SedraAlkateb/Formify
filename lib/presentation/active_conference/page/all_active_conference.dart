@@ -11,8 +11,6 @@ class AllActiveConferencePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bloc = BlocProvider.of<ActiveConferenceBloc>(context);
-
     return Scaffold(
       backgroundColor: ColorManager.background,
       appBar: AppBar(

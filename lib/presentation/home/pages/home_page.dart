@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:formify/app/app_preferences.dart';
-import 'package:formify/app/di.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
-import 'package:formify/presentation/conference/widget/conferm_dialog.dart';
 import 'package:formify/presentation/home/widget/conference_ended_widget.dart';
 import 'package:formify/presentation/home/widget/dialog_game_survey_widget.dart';
 import 'package:formify/presentation/home/widget/grid_icon.dart';

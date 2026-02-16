@@ -161,6 +161,7 @@ class RouteGenerator {
       },
     );
   }
+  // ignore: unused_element
   static Route<dynamic> _Route(Widget page) {
     return PageRouteBuilder(pageBuilder: (context, animation, secondaryAnimation) => page,);
   }

@@ -17,7 +17,9 @@ abstract class AppServiceClient {
     @Part(name: "title") String title,
     @Part(name: "description") String description,
     @Part(name: "color") String color,
-  );
+      @Part(name: "timer") String timer,
+
+      );
   @MultiPart()
   @POST("survey-crud/create_survey_questionsAndAnswers.php")
   Future<CreateSurveyQuestionsBaseResponse> createSurveyQuestionsAndAnswers(
