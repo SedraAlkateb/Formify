@@ -380,7 +380,7 @@ GetAllConferenceResponse _$GetAllConferenceResponseFromJson(
   json['address'] as String?,
   json['start_date'] as String?,
   json['end_date'] as String?,
-  json['is_active'] as bool?,
+  json['isActive'] as bool?,
 );
 
 Map<String, dynamic> _$GetAllConferenceResponseToJson(
@@ -392,7 +392,7 @@ Map<String, dynamic> _$GetAllConferenceResponseToJson(
   'address': instance.address,
   'start_date': instance.start_date,
   'end_date': instance.end_date,
-  'is_active': instance.is_active,
+  'isActive': instance.is_active,
 };
 
 GetAllConferenceByIdResponse _$GetAllConferenceByIdResponseFromJson(

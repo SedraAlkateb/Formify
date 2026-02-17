@@ -382,7 +382,7 @@ class GetAllConferenceResponse {
   String? start_date;
   @JsonKey(name: "end_date")
   String? end_date;
-  @JsonKey(name: "is_active")
+  @JsonKey(name: "isActive")
   bool? is_active;
 
   GetAllConferenceResponse(
