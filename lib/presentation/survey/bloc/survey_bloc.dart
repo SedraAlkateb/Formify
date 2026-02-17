@@ -59,9 +59,10 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
         surveyModel.description = event.description;
         surveyModel.title = event.title;
         surveyModel.color = event.color;
+        surveyModel.timer=event.timer;
         emit(CreateSurveyLoadingState());
         (await createSurveyUsecase.execute(
-          SurveyRequest(event.title, event.description, event.color),
+          SurveyRequest(event.title, event.description, event.color,event.timer),
         )).fold(
           (failure) {
             emit(CreateSurveyErrorState(failure: failure));
@@ -165,6 +166,13 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
           surveyModel.questions.add(question);
           emit(ViewSurveyState(surveyModel));
         }
+      }
+      if(event is SelectValueAnswerEvent ){
+        final q = (state as ViewQuestionState).questionModel;
+        q.answers[event.index].isCorrect =event.isCorrect ;
+        QuestionModel newAnswers =  q.instanceQuestion();
+
+        emit(ViewQuestionState(newAnswers));
       }
     });
   }

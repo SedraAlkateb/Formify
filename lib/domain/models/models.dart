@@ -6,6 +6,7 @@ class SurveyModel {
   String title;
   String description;
   String color;
+  String? timer;
 
   List<QuestionModel> questions;
 
@@ -15,6 +16,7 @@ class SurveyModel {
     required this.description,
     required this.color,
     required this.questions,
+    required this.timer,
   });
 
   /// إنشاء Survey فارغ مع قائمة أسئلة جاهزة
@@ -23,8 +25,8 @@ class SurveyModel {
       title: "",
       description: "",
       color: "",
-
-      questions: [], // أصبحت قائمة أسئلة وليس سؤال واحد
+      timer: "00:10",
+      questions: [],
     );
   }
 }
@@ -42,11 +44,10 @@ class AnswerUserSurveyModel {
   AnswerUserSurveyModel(this.id, this.answer_id, this.content);
 }
 
-
-
 class QuestionModel {
   int? id;
   String title;
+
   int order;
   bool isRequired;
   QuestionType type;
@@ -55,6 +56,7 @@ class QuestionModel {
   QuestionModel({
     this.id,
     required this.title,
+
     required this.order,
     required this.isRequired,
     required this.type,
@@ -63,6 +65,7 @@ class QuestionModel {
   QuestionModel instanceQuestion() {
     return QuestionModel(
       title: title,
+
       order: order,
       isRequired: isRequired,
       type: type,
@@ -75,6 +78,7 @@ class QuestionModel {
     return QuestionModel(
       title: "",
       order: 1,
+
       isRequired: false,
       type: QuestionType.text,
       answers: [],
@@ -90,7 +94,7 @@ class QuestionModel {
       'Type': type.name,
       'answer': answers.isEmpty
           ? [
-              {"title": type.answer, "img": ""},
+              {"title": type.answer, "img": "", 'isCorrect': false},
             ]
           : answers.map((e) => e.toJson()).toList(),
     };
@@ -121,8 +125,6 @@ class QuestionModel {
   }
 }
 
-class CreateAnswer {}
-
 ////createSurveyQuestionsAndAnswers
 class SurveyQuestionAndAnswersModel {
   int id;
@@ -141,16 +143,20 @@ class CreateSurveyModel {
   CreateSurveyModel(this.id, this.title);
 }
 
-
-
 class MainSurveyModel {
   int id;
   String title;
   String description;
   String color;
-  String timer;
+  String? timer;
 
-  MainSurveyModel(this.id, this.title, this.description, this.color,this.timer);
+  MainSurveyModel(
+    this.id,
+    this.title,
+    this.description,
+    this.color,
+    this.timer,
+  );
 
   Map<String, dynamic> toMap() {
     return {
@@ -158,7 +164,7 @@ class MainSurveyModel {
       'title': title,
       'description': description,
       'color': color,
-      'timer':timer
+      'timer': timer,
     };
   }
 
@@ -168,7 +174,7 @@ class MainSurveyModel {
       map['title'],
       map['description'],
       map['color'],
-      map['timer']
+      map['timer'],
     );
   }
 }
@@ -179,14 +185,14 @@ class IsActiveMainSurveyModel {
   String description;
   String color;
   bool isActive;
-  String timer;
+  String? timer;
   IsActiveMainSurveyModel(
     this.id,
     this.title,
     this.description,
     this.color,
     this.isActive,
-      this.timer
+    this.timer,
   );
 }
 
@@ -234,19 +240,25 @@ class ConferenceModel {
 class AnswerUserModel {
   int? answer_id;
   String content;
+  int isCorrect;
 
-  AnswerUserModel(this.answer_id, this.content);
+  AnswerUserModel(this.answer_id, this.content, this.isCorrect);
 
   Map<String, dynamic> toJson() {
-    return {'answer_id': answer_id, 'content': content};
+    return {'answer_id': answer_id, 'content': content, 'isCorrect': isCorrect};
   }
 
   Map<String, dynamic> toJsonSql(int userId) {
-    return {'user_id': userId, 'answer_id': answer_id, 'content': content};
+    return {
+      'user_id': userId,
+      'answer_id': answer_id,
+      'content': content,
+      'isCorrect': isCorrect,
+    };
   }
 
   factory AnswerUserModel.fromMap(Map<String, dynamic> map) {
-    return AnswerUserModel(map['answer_id'], map['content']);
+    return AnswerUserModel(map['answer_id'], map['content'], map['isCorrect']);
   }
 }
 
@@ -396,7 +408,7 @@ class SurveyToConferenceModel {
   String title;
   String description;
   String color;
-  String timer;
+  String? timer;
 
   int survey_order;
 
@@ -461,6 +473,7 @@ class AsyncQuestionModel {
       map['id'],
       map['question'],
       map['question_order'],
+
       map['is_required'] == 1 ? true : false,
       convertToQuestionType(map['type']),
       map['survey_id'],
@@ -475,13 +488,27 @@ class AnswerModel {
   String title;
   String? imgName;
   XFile? img;
-  AnswerModel(this.id, this.title, {this.questionId, this.img ,this.imgName,});
+  int isCorrect;
+  AnswerModel(
+    this.id,
+    this.title, {
+    this.questionId,
+    this.img,
+    this.imgName,
+    this.isCorrect = 0,
+  });
   Map<String, dynamic> toMap() {
-    return {'id': id, 'title': title, 'question_id': questionId,'img':imgName};
+    return {
+      'id': id,
+      'title': title,
+      'question_id': questionId,
+      'img': imgName,
+      'isCorrect': isCorrect,
+    };
   }
 
   Map<String, dynamic> toJson() {
-    return {'title': title, 'img': imgName};
+    return {'title': title, 'img': imgName, 'isCorrect': isCorrect};
   }
 
   String toMapString() {
@@ -492,8 +519,9 @@ class AnswerModel {
     return AnswerModel(
       map['id'],
       map['title'],
-    imgName:  map['img'],
+      imgName: map['img'],
       questionId: map['question_id'],
+      isCorrect: map['isCorrect'],
     );
   }
 }
@@ -552,6 +580,7 @@ class UserSqlModel {
       'answers': answerModel.map((user) => user.toJson()).toList(),
     };
   }
+
   Map<String, dynamic> toJsonSql() {
     return {
       'fullname': fullName,
@@ -560,6 +589,7 @@ class UserSqlModel {
       'address': address,
     };
   }
+
   // دالة لتحويل خريطة إلى كائن UserSqlModel
   factory UserSqlModel.fromMap(Map<String, dynamic> map) {
     return UserSqlModel(
@@ -568,14 +598,22 @@ class UserSqlModel {
       phone: map['phone'],
       address: map['address'],
       // تحويل الإجابات من الخريطة إلى قائمة من AnswerUserModel
-      answerModel: _mapAnswers(map['answer_id'], map['content']),
+      answerModel: _mapAnswers(
+        map['answer_id'],
+        map['content'],
+        map['isCorrect'],
+      ),
     );
   }
 
   // دالة لتحويل الإجابات من الخريطة إلى قائمة من AnswerUserModel
-  static List<AnswerUserModel> _mapAnswers(int answerId, String content) {
+  static List<AnswerUserModel> _mapAnswers(
+    int answerId,
+    String content,
+    int isCorrect,
+  ) {
     // إذا كان يوجد إجابة مرتبطة بالمستخدم، نقوم بإنشاء كائن من AnswerUserModel
-    return [AnswerUserModel(answerId, content)];
+    return [AnswerUserModel(answerId, content, isCorrect)];
   }
 }
 
@@ -606,7 +644,8 @@ class AllUserModel {
     );
   }
 }
-class InfoConference{
+
+class InfoConference {
   int totalUser;
   int totalSurvey;
   int totalCompletedSurvey;

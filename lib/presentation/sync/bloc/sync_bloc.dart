@@ -216,27 +216,27 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     // String / num -> content
     if (rawValue is String || rawValue is num) {
       final answerId = q.answers.isNotEmpty ? q.answers[0].id : null;
-      return [AnswerUserModel(answerId, rawValue.toString())];
+      return [AnswerUserModel(answerId, rawValue.toString(),q.answers[0].isCorrect)];
     }
 
     // AnswerModel (dropdown/radio)
     if (rawValue is AnswerModel) {
-      return [AnswerUserModel(rawValue.id, rawValue.title)];
+      return [AnswerUserModel(rawValue.id, rawValue.title,rawValue.isCorrect)];
     }
 
     // List<AnswerModel> (checkbox)
     if (rawValue is List<AnswerModel>) {
-      return rawValue.map((a) => AnswerUserModel(a.id, a.title)).toList();
+      return rawValue.map((a) => AnswerUserModel(a.id, a.title,a.isCorrect)).toList();
     }
 
     // DateTime / bool / double (optional support)
     if (rawValue is DateTime) {
       final answerId = q.answers.isNotEmpty ? q.answers[0].id : null;
-      return [AnswerUserModel(answerId, rawValue.toIso8601String())];
+      return [AnswerUserModel(answerId, rawValue.toIso8601String(),q.answers[0].isCorrect)];
     }
     if (rawValue is bool) {
       final answerId = q.answers.isNotEmpty ? q.answers[0].id : null;
-      return [AnswerUserModel(answerId, rawValue ? "1" : "0")];
+      return [AnswerUserModel(answerId, rawValue ? "1" : "0",q.answers[0].isCorrect)];
     }
 
     return [];

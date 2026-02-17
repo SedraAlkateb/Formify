@@ -16,11 +16,12 @@ class CreateSurveyEvent extends SurveyEvent {
   final String color;
   final String title;
   final String description;
+  final String timer;
 
-  CreateSurveyEvent(this.color, this.title, this.description);
+  CreateSurveyEvent(this.color, this.title, this.description,this.timer);
 
   @override
-  List<Object?> get props => [color, title, description];
+  List<Object?> get props => [color, title, description,timer];
 }
 class GetAllSurveyEvent extends SurveyEvent {
   GetAllSurveyEvent();
@@ -123,3 +124,13 @@ class AddQuestionEvent extends SurveyEvent {
   List<Object?> get props => [];
 }
 
+class SelectValueAnswerEvent extends SurveyEvent {
+  final int index;
+  final int isCorrect;
+
+  SelectValueAnswerEvent(this.index,this.isCorrect);
+
+  @override
+
+  List<Object?> get props =>[];
+}

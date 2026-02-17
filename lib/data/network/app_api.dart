@@ -17,7 +17,9 @@ abstract class AppServiceClient {
     @Part(name: "title") String title,
     @Part(name: "description") String description,
     @Part(name: "color") String color,
-  );
+      @Part(name: "timer") String? timer,
+
+      );
   @MultiPart()
   @POST("survey-crud/create_survey_questionsAndAnswers.php")
   Future<CreateSurveyQuestionsBaseResponse> createSurveyQuestionsAndAnswers(
@@ -30,9 +32,7 @@ abstract class AppServiceClient {
   Future<GetSurveyWithQuestionAndAnswerByIdBaseResponse>
   getSurveyWithQuestionById(@Part(name: "id") int id);
   @POST("conference-crud/create_conference.php")
-  Future<CreateConferenceBaseResponse> createConference(
-    @Body() ConferenceModel conference,
-  );
+  Future<CreateConferenceBaseResponse> createConference( @Body() ConferenceModel conference,);
   @POST("conference-crud/get_all_conference.php")
   Future<GetAllConferenceBaseResponse> getAllConference(
     @Part(name: "is_active") int isActive,
@@ -78,6 +78,7 @@ abstract class AppServiceClient {
   Future<Message1Response> synchronizeUsersAnswers(
     @Body() AllUserModel userRequest,
   );
+  /////////////////////////
   @POST("users-crud/get_userAnswersFor_specificSurvey.php")
   Future<GetSurveyWithQuestionAndAnswerForUserBaseResponse>
   getUserAnswersForSpecificSurvey(

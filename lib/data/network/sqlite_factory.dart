@@ -90,6 +90,7 @@ class DatabaseHelper {
         question_order INTEGER,
         is_required INTEGER DEFAULT 0,
         type TEXT,
+        value INTEGER,
         FOREIGN KEY (survey_id) REFERENCES survey(id) ON DELETE CASCADE
       );
     ''');
@@ -101,6 +102,7 @@ class DatabaseHelper {
         title TEXT,
         img TEXT NULL,
         question_id INTEGER,
+        isCorrect INTEGER NULL,
         FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE
       );
     ''');
@@ -112,6 +114,7 @@ class DatabaseHelper {
         user_id INTEGER,
         answer_id INTEGER,
         content TEXT,
+        isCorrect INTEGER NULL,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
         FOREIGN KEY (answer_id) REFERENCES answers(id) ON DELETE CASCADE
       );

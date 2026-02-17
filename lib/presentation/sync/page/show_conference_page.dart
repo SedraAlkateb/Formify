@@ -3,8 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/app/app_preferences.dart';
 import 'package:formify/app/di.dart';
 import 'package:formify/domain/models/models.dart';
-import 'package:formify/presentation/conference/widget/conferm_dialog.dart';
-import 'package:formify/presentation/resources/assets_manager.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
@@ -12,7 +10,6 @@ import 'package:formify/presentation/sync/widget/button_widget.dart';
 import 'package:formify/presentation/sync/widget/doforma_container_widget.dart';
 import 'package:formify/presentation/sync/widget/press_scale.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
-import 'package:lottie/lottie.dart';
 
 class ShowConferencePage extends StatefulWidget {
   const ShowConferencePage({super.key});

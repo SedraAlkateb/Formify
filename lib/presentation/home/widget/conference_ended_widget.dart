@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 import 'package:formify/presentation/conference/widget/conferm_dialog.dart';
+import 'package:formify/presentation/home/widget/data_widget.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
 
@@ -31,19 +32,22 @@ class ConferenceEndedWidget extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.event_available, color: ColorManager.primary, size: 30),
-
-          const SizedBox(width: 16),
-
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  maxLines: 2,
+          Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(20),
+                margin: EdgeInsets.all(8),
+                height: 20,
+                width: 2,
+                decoration: BoxDecoration(color: ColorManager.primary),
+              ),
+              Expanded(
+                child: Text(
+                  maxLines: 4,
                   overflow: TextOverflow.ellipsis,
                   " ${allConference[index].name} ${index + 1}",
                   style: const TextStyle(
@@ -52,48 +56,144 @@ class ConferenceEndedWidget extends StatelessWidget {
                     color: ColorManager.primary,
                   ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  "تاريخ البدء: ${allConference[index].startDate}",
-                  style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
-                  textAlign: TextAlign.right,
-                ),
-                Text(
-                  "تاريخ الانتهاء: ${allConference[index].endDate}",
-                  style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
-                  textAlign: TextAlign.right,
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-
-          Column(
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              IconButton(
-                onPressed: () => BlocProvider.of<ConferenceBloc>(
-                  context,
-                ).add(DeleteConferenceEvent(allConference[index].id, index)),
-                icon: Icon(Icons.delete, color: ColorManager.secondary),
+              dataWidget(
+                ColorManager.success,
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "البدء: ",
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade700,
+                      ),
+                      textAlign: TextAlign.right,
+                    ),
+                    Text(
+                      allConference[index].startDate,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade700,
+                      ),
+                      textAlign: TextAlign.right,
+                    ),
+                  ],
+                ),
               ),
-              Radio<int>(
-                value: allConference[index].id,
-                groupValue: value,
-                activeColor: ColorManager.primary,
-                onChanged: (v) {
-                  showConfirmDialog(
-                    context: context,
-                    title: "offline conference",
-                    message: "Are you sure you want to save conference offline",
-                    onConfirm: () {
-                      BlocProvider.of<SyncBloc>(
-                        context,
-                      ).add(GetDataEvent(allConference[index].id));
+              dataWidget(
+                ColorManager.error,
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "الانتهاء: ",
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade700,
+                      ),
+                      textAlign: TextAlign.right,
+                    ),
+                    Text(
+                      allConference[index].endDate,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade700,
+                      ),
+                      textAlign: TextAlign.right,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 10),
+          Divider(),
+          SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Card(
+                    elevation: 5,
+                    color: ColorManager.error.withOpacity(0.25),
+                    child: IconButton(
+                      color: ColorManager.white,
+                      autofocus: true,
+                      splashRadius: 200,
+                      onPressed: () => showConfirmDialog(
+                        context: context,
+                        title: "حذف المؤتمر",
+                        message: "هل تريد حقا حذف المؤتمر",
+                        onConfirm: () {
+                          BlocProvider.of<ConferenceBloc>(context).add(
+                            DeleteConferenceEvent(
+                              allConference[index].id,
+                              index,
+                            ),
+                          );
+                        },
+                      ),
 
-                      //    BlocProvider.of<ConferenceBloc>(context).add(SelectEndedConferenceEvent( allConference[index].id));
-                    },
-                  );
-                },
+                      icon: Icon(
+                        Icons.delete_outlined,
+                        color: ColorManager.error,
+                      ),
+                    ),
+                  ),
+                  Card(
+                    elevation: 5,
+                    color: ColorManager.success.withOpacity(0.25),
+                    child: Radio<int>(
+                      value: allConference[index].id,
+                      groupValue: value,
+
+                      fillColor: MaterialStateProperty.resolveWith<Color>((
+                        states,
+                      ) {
+                        // 🔥 عند لمس الإصبع
+                        if (states.contains(MaterialState.pressed)) {
+                          return Colors.white;
+                        }
+
+                        // عند التحديد
+                        if (states.contains(MaterialState.selected)) {
+                          return Colors.white;
+                        }
+
+                        // الوضع الطبيعي
+                        return Colors.green.shade800;
+                      }),
+
+                      splashRadius: 20,
+                      focusColor: Colors.white,
+
+                      onChanged: (v) {
+                        showConfirmDialog(
+                          context: context,
+                          title: "تخزين المؤتمر داخليا",
+                          message:
+                              "هل انت متاكد من تفعيل المؤتمر , وتخزينه داخليا لبدء العمل عليه ورفع المؤتمر السابق اذا كان موجود ",
+                          onConfirm: () {
+                            BlocProvider.of<SyncBloc>(
+                              context,
+                            ).add(GetDataEvent(allConference[index].id));
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
+              Icon(Icons.arrow_forward, color: ColorManager.primary),
             ],
           ),
         ],

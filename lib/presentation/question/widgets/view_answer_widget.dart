@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:formify/domain/models/model_q.dart';
-import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 
 Widget viewAnswerWidget(BuildContext context) {
   final colorScheme = Theme.of(context).colorScheme;
@@ -33,80 +30,88 @@ Widget viewAnswerWidget(BuildContext context) {
         const SizedBox(height: 10),
         BlocBuilder<SurveyBloc, SurveyState>(
           builder: (context, state) {
-            if (state is ViewQuestionState) {
-              print("RemoveAnswerAtEvent");
-              QuestionModel questionModel = state.questionModel;
-              return questionModel.answers.isEmpty
-                  ? const Text("لا توجد إجابات بعد. اضغط على \"إضافة إجابة\" لإضافة واحدة.")
-                  : ListView.separated(
-                itemCount: questionModel.answers.length,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                separatorBuilder: (_, __) => const SizedBox(height: 10),
-                itemBuilder: (context, index) {
-                  final String item = questionModel.answers[index].title;
+            if (state is! ViewQuestionState) return const SizedBox();
 
-                  return Column(
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: FormBuilderTextField(
-                              name: "answer_$index",
-                              initialValue: item,
-                              textDirection: TextDirection.rtl,
-                              decoration: InputDecoration(
-                                labelText: "الإجابة ${index + 1}",
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
+            final questionModel = state.questionModel;
+
+            if (questionModel.answers.isEmpty) {
+              return const Text(
+                'لا توجد إجابات بعد. اضغط على "إضافة إجابة" لإضافة واحدة.',
+                textDirection: TextDirection.rtl,
+              );
+            }
+
+            return ListView.separated(
+              itemCount: questionModel.answers.length,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              separatorBuilder: (_, __) => const SizedBox(height: 10),
+              itemBuilder: (context, index) {
+                final answerModel = questionModel.answers[index];
+
+                return Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: FormBuilderTextField(
+                            name: "answer_$index",
+                            initialValue: answerModel.title,
+                            textDirection: TextDirection.rtl,
+                            decoration: InputDecoration(
+                              labelText: "الإجابة ${index + 1}",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                              onChanged: (val) {
-                                context.read<SurveyBloc>().add(
-                                  CreateAnswerSurveyEvent(
-                                    index,
-                                    val ?? "",
-                                  ),
-                                );
-                              },
                             ),
-                          ),
-                          const SizedBox(width: 8),
-                          IconButton(
-                            icon: const Icon(Icons.delete_outline),
-                            onPressed: () {
+                            onChanged: (val) {
                               context.read<SurveyBloc>().add(
-                                RemoveAnswerAtEvent(index),
+                                CreateAnswerSurveyEvent(index, val ?? ""),
                               );
                             },
                           ),
+                        ),
+                        const SizedBox(width: 8),
+                        IconButton(
+                          icon: const Icon(Icons.delete_outline),
+                          onPressed: () {
+                            context.read<SurveyBloc>().add(
+                              RemoveAnswerAtEvent(index),
+                            );
+                          },
+                        ),
+                        Checkbox(
+                          value: answerModel.isCorrect == 1,
+                          onChanged: (checked) {
+                            context.read<SurveyBloc>().add(
+                              SelectValueAnswerEvent(
+                                index,
+                                checked == true ? 1 : 0,
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        context.read<SurveyBloc>().add(
+                          PickAnswerImageEvent(index),
+                        );
+                      },
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text("إضافة صورة"),
+                          SizedBox(width: 6),
+                          Icon(Icons.add),
                         ],
                       ),
-                      ((questionModel.type == QuestionType.multipleChoice) ||
-                          questionModel.type == QuestionType.checkbox)
-                          ? TextButton(
-                        onPressed: () {
-                          BlocProvider.of<SurveyBloc>(
-                            context,
-                          ).add(PickAnswerImageEvent(index));
-                        },
-                        child: Row(
-                          children: const [
-                            Text("إضافة صورة"),
-                            Icon(Icons.add),
-                          ],
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment:
-                          CrossAxisAlignment.center,
-                        ),
-                      )
-                          : const SizedBox(),
-                    ],
-                  );
-                },
-              );
-            }
-            return const SizedBox();
+                    ),
+                  ],
+                );
+              },
+            );
           },
         ),
       ],

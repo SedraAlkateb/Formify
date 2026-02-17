@@ -20,7 +20,8 @@ extension GetAnswerModelMapper on GetAnswerResponse? {
     return AnswerModel(
       this?.id ?? Constants.zero,
       this?.title ?? Constants.empty,
-    imgName:  this?.img
+      imgName: this?.img,
+      isCorrect: this?.isCorrect ?? Constants.zero,
     );
   }
 }
@@ -58,6 +59,7 @@ extension GetAsyncQuestionModelMapper on GetQuestionForAsyncResponse? {
       this?.id ?? Constants.zero,
       this?.question ?? Constants.empty,
       this?.question_order ?? Constants.zero,
+
       this?.is_required ?? false,
       convertToQuestionType(this?.type ?? "TextField"),
       this?.survey_id ?? Constants.zero,
@@ -73,6 +75,7 @@ extension ViewSurveyModelMapper on GetSurveyWithQuestionAndAnswerResponse? {
       description: this?.description ?? Constants.empty,
       color: this?.color ?? Constants.empty,
       questions: this!.questions.toDomain(),
+      timer: this?.timer ?? Constants.empty,
     );
   }
 }
@@ -86,6 +89,7 @@ extension GetSurveyWithQuestionAndAnswerByIdBaseResponseMapper
       description: this?.data.description ?? Constants.empty,
       color: this?.data.color ?? Constants.empty,
       questions: this!.data.questions.toDomain(),
+      timer: this?.data.timer ?? Constants.empty,
     );
   }
 }
@@ -94,7 +98,6 @@ extension GetQuestionModelUserMapper on GetQuestionAndAnswerForUserResponse? {
   QuestionModel toDomain() {
     return QuestionModel(
       id: this?.id ?? Constants.zero,
-
       title: this?.question ?? Constants.empty,
       order: this?.question_order ?? Constants.zero,
       isRequired: this?.is_required ?? false,
@@ -107,11 +110,11 @@ extension GetQuestionModelUserMapper on GetQuestionAndAnswerForUserResponse? {
   }
 }
 
-
 extension GetAllAnswerUserModelMapper on List<GetAnswerUserResponse>? {
   List<String> toDomain() {
     List<String> allAnswer =
-        (this?.map((response) => response.toDomain().content) ?? const Iterable.empty())
+        (this?.map((response) => response.toDomain().content) ??
+                const Iterable.empty())
             .cast<String>()
             .toList();
     return allAnswer;
@@ -127,8 +130,9 @@ extension GetAllQuestionForUserMapper
         (this!.data.questions?.asMap().entries.map((entry) {
                   final int index = entry.key;
                   final response = entry.value;
-                  if ((response.answersUser!=null)&&(response.answersUser!.isNotEmpty)) {
-                    answerUser[index]=response.answersUser.toDomain();
+                  if ((response.answersUser != null) &&
+                      (response.answersUser!.isNotEmpty)) {
+                    answerUser[index] = response.answersUser.toDomain();
                   }
                   return response.toDomain(); // مهم ترجع القيمة
                 }) ??
@@ -138,6 +142,7 @@ extension GetAllQuestionForUserMapper
       title: this?.data.title ?? Constants.empty,
       description: this?.data.description ?? Constants.empty,
       color: this?.data.color ?? Constants.empty,
+      timer: this?.data.timer ?? Constants.empty,
       questions: allQuestion,
     );
     SurveyUserModel surveyUser = SurveyUserModel(
@@ -179,7 +184,6 @@ extension GetSurveyToConferenceMapper on GetSurveyToConferenceResponse? {
       this?.description ?? Constants.empty,
       this?.color ?? Constants.empty,
       this?.timer ?? Constants.empty,
-
       this?.survey_order ?? Constants.zero,
     );
   }
@@ -281,7 +285,7 @@ extension GetConferenceByIdMapper on GetConferenceByIdBaseResponse? {
 
 extension IsActiveSurveyMapper on MainSurveyModel {
   IsActiveMainSurveyModel toDomain() {
-    return IsActiveMainSurveyModel(id, title, description, color, false,timer);
+    return IsActiveMainSurveyModel(id, title, description, color, false, timer);
   }
 }
 
@@ -321,8 +325,9 @@ extension GetAsyncAnswerMapper on GetAnswerForAsyncResponse? {
     return AnswerModel(
       this?.id ?? Constants.zero,
       this?.title ?? Constants.empty,
-    imgName: this?.img ,
+      imgName: this?.img,
       questionId: this?.question_id ?? Constants.zero,
+      isCorrect: this?.isCorrect ?? Constants.zero,
     );
   }
 }

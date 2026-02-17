@@ -90,6 +90,32 @@ class ViewSurvey extends StatelessWidget {
                             surveyModel.description,
                             style: const TextStyle(fontSize: 14),
                           ),
+                          surveyModel.timer!=null?
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 20),
+                                  const Text(
+                                    "الوقت المسموح",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    children: [
+                                      Icon(Icons.access_time_outlined,color: Colors.black.withOpacity(0.4),size: 20,),
+                                     SizedBox(width: 8,),
+                                      Text(
+                                        surveyModel.timer??"00:00",
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ):SizedBox()
                         ],
                       ),
                     ),

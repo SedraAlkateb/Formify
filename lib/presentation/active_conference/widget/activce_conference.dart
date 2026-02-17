@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:formify/domain/models/models.dart';
+import 'package:formify/presentation/home/widget/data_widget.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 
 class ActiveConferenceWidget extends StatelessWidget {
@@ -23,19 +24,22 @@ class ActiveConferenceWidget extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.event_available, color: ColorManager.primary, size: 30),
-
-          const SizedBox(width: 16),
-
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  maxLines: 2,
+          Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(20),
+                margin: EdgeInsets.all(8),
+                height: 20,
+                width: 2,
+                decoration: BoxDecoration(color: ColorManager.primary),
+              ),
+              Expanded(
+                child: Text(
+                  maxLines: 4,
                   overflow: TextOverflow.ellipsis,
                   " ${conference.name}",
                   style: const TextStyle(
@@ -44,19 +48,74 @@ class ActiveConferenceWidget extends StatelessWidget {
                     color: ColorManager.primary,
                   ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  "تاريخ البدء: ${conference.startDate}",
-                  style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
-                ),
-                Text(
-                  "تاريخ الانتهاء:  ${conference.endDate}",
-                  style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-          
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              dataWidget(
+                ColorManager.success,
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "البدء: ",
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade700,
+                      ),
+                      textAlign: TextAlign.right,
+                    ),
+                    Text(
+                      conference.startDate,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade700,
+                      ),
+                      textAlign: TextAlign.right,
+                    ),
+                  ],
+                ),
+              ),
+              dataWidget(
+                ColorManager.error,
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "الانتهاء: ",
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade700,
+                      ),
+                      textAlign: TextAlign.right,
+                    ),
+                    Text(
+                      conference.endDate,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade700,
+                      ),
+                      textAlign: TextAlign.right,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 10),
+          Divider(),
+          SizedBox(height: 10),
+          Align(
+              alignment: Alignment.bottomLeft,
+              child:
+              Icon(Icons.arrow_forward, color: ColorManager.primary),
+
+
+          ),
         ],
       ),
     );

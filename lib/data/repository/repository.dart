@@ -49,12 +49,13 @@ class RepositoryImp implements Repository {
 
   @override
   Future<Either<Failure, Null>> createSurveyQuestionsAndAnswers(
-    SurveyQuestionAndAnswersModel surveyQ,     List<File>images
+    SurveyQuestionAndAnswersModel surveyQ,
+    List<File> images,
   ) async {
     try {
       if (await _networkInfo.isConnected) {
         final response = await _remoteDataSource
-            .createSurveyQuestionsAndAnswers(surveyQ,images);
+            .createSurveyQuestionsAndAnswers(surveyQ, images);
 
         if (response.status == "200" ||
             response.status == ApiInternalStatus.SUCCESS) {
@@ -444,12 +445,14 @@ class RepositoryImp implements Repository {
   }
 
   @override
-  Future<Either<Failure, SurveyUserModel>> getUserAnswersForSpecificSurvey(int id, int user_id) async {
+  Future<Either<Failure, SurveyUserModel>> getUserAnswersForSpecificSurvey(
+    int id,
+    int user_id,
+  ) async {
     try {
       if (await _networkInfo.isConnected) {
-        final response = await _remoteDataSource.getUserAnswersForSpecificSurvey(
-          id,user_id
-        );
+        final response = await _remoteDataSource
+            .getUserAnswersForSpecificSurvey(id, user_id);
 
         if (response.status == "200" ||
             response.status == ApiInternalStatus.SUCCESS) {

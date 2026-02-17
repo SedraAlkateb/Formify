@@ -23,20 +23,21 @@ class AppSqlApi extends AppSqlApiAbs {
   Future<void> initializeDatabase() async {
     await databaseFactory.debugSetLogLevel(sqfliteLogLevelVerbose);
   }
+
   @override
   Future<InfoConference> getConferenceInfo() async {
     final db = await databaseHelper.database;
 
-    final usersResult =
-    await db.rawQuery('SELECT COUNT(*) AS count FROM users');
-    final totalUsers =
-        (usersResult.first['count'] as num?)?.toInt() ?? 0;
+    final usersResult = await db.rawQuery(
+      'SELECT COUNT(*) AS count FROM users',
+    );
+    final totalUsers = (usersResult.first['count'] as num?)?.toInt() ?? 0;
 
     // Total Surveys
-    final surveysResult =
-    await db.rawQuery('SELECT COUNT(*) AS count FROM survey');
-    final totalSurveys =
-        (surveysResult.first['count'] as num?)?.toInt() ?? 0;
+    final surveysResult = await db.rawQuery(
+      'SELECT COUNT(*) AS count FROM survey',
+    );
+    final totalSurveys = (surveysResult.first['count'] as num?)?.toInt() ?? 0;
 
     // Total filled surveys (each user + survey where user answered at least 1 question)
     final filledResult = await db.rawQuery(r'''
@@ -53,12 +54,9 @@ class AppSqlApi extends AppSqlApiAbs {
     final totalCompletedSurveys =
         (filledResult.first['count'] as num?)?.toInt() ?? 0;
 
-    return InfoConference(
-      totalUsers,
-      totalSurveys,
-      totalCompletedSurveys,
-    );
+    return InfoConference(totalUsers, totalSurveys, totalCompletedSurveys);
   }
+
   @override
   Future<List<QuestionModel>> getSurveyQuestionsWithAnswers(
     int surveyId,
@@ -67,7 +65,6 @@ class AppSqlApi extends AppSqlApiAbs {
 
     final rows = await db.rawQuery(
       '''
-      
     SELECT
       q.id              AS q_id,
       q.question        AS q_question,
@@ -77,7 +74,8 @@ class AppSqlApi extends AppSqlApiAbs {
 
       a.id              AS a_id,
       a.title           AS a_title,
-      a.img             AS a_img
+      a.img             AS a_img,
+      a.isCorrect       AS a_isCorrect
     FROM questions q
     LEFT JOIN answers a ON a.question_id = q.id
     WHERE q.survey_id = ?
@@ -105,7 +103,14 @@ class AppSqlApi extends AppSqlApiAbs {
       final aId = r['a_id'];
       if (aId != null) {
         aMap.putIfAbsent(qId, () => []);
-        aMap[qId]!.add(AnswerModel(aId as int, r['a_title'] as String,imgName: r['a_img']as String?));
+        aMap[qId]!.add(
+          AnswerModel(
+            aId as int,
+            r['a_title'] as String,
+            imgName: r['a_img'] as String?,
+           isCorrect:  r['a_isCorrect'] as int,
+          ),
+        );
       }
     }
     final result = <QuestionModel>[];
@@ -255,7 +260,9 @@ class AppSqlApi extends AppSqlApiAbs {
       users.phone         AS phone,
       users.address       AS address,
       users_answers.answer_id AS answer_id,
-      users_answers.content   AS content
+      users_answers.content   AS content,
+      users_answers.isCorrect   AS isCorrect
+
     FROM users
     JOIN users_answers ON users.id = users_answers.user_id;
   ''');
@@ -267,7 +274,7 @@ class AppSqlApi extends AppSqlApiAbs {
 
       usersMap.putIfAbsent(
         userId,
-            () => UserSqlModel(
+        () => UserSqlModel(
           fullName: row['fullname'] as String,
           email: row['email'] as String,
           phone: row['phone'] as String,
@@ -275,13 +282,10 @@ class AppSqlApi extends AppSqlApiAbs {
           answerModel: <AnswerUserModel>[],
         ),
       );
-//Image.memory(model.imageBlob)
+      //Image.memory(model.imageBlob)
       //final bytes = await File(imagePath).readAsBytes();
       usersMap[userId]!.answerModel.add(
-        AnswerUserModel(
-          row['answer_id'] as int,
-          row['content'] as String,
-        ),
+        AnswerUserModel(row['answer_id'] as int, row['content'] as String,row['isCorrect'] as int),
       );
     }
 
@@ -326,8 +330,6 @@ class AppSqlApi extends AppSqlApiAbs {
     return GetAllConferenceModel.fromMap(maps.first);
   }
 
-
-
   @override
   Future<List<MainSurveyModel>> getSurveys() async {
     final db = await databaseHelper.database;
@@ -349,41 +351,3 @@ class AppSqlApi extends AppSqlApiAbs {
     });
   }
 }
-
-/*
-  @override
-  Future<List<AsyncQuestionModel>> getQuestions() async {
-    final db = await databaseHelper.database;
-    List<Map<String, dynamic>> maps;
-
-    maps = await db.query('questions');
-    return List.generate(maps.length, (i) {
-      return AsyncQuestionModel.fromMap(maps[i]);
-    });
-  }
-
-  @override
-  Future<List<AnswerModel>> getAnswers() async {
-    final db = await databaseHelper.database;
-    List<Map<String, dynamic>> maps;
-    maps = await db.rawQuery('''
-SELECT
-  q.id            AS question_id,
-  q.question      AS question_text,
-  q.question_order,
-  q.is_required,
-  q.type,
-
-  a.id            AS answer_id,
-  a.title         AS answer_title
-
-FROM questions q
-LEFT JOIN answers a ON a.question_id = q.id
-WHERE q.survey_id = ?
-ORDER BY q.question_order ASC, a.id ASC;
-''', []);
-    return List.generate(maps.length, (i) {
-      return AnswerModel.fromMap(maps[i]);
-    });
-  }
- */

@@ -3,8 +3,9 @@ class SurveyRequest {
   String title;
   String description;
   String color;
+  String timer;
 
-  SurveyRequest(this.title, this.description, this.color);
+  SurveyRequest(this.title, this.description, this.color, this.timer);
 }
 class SurveyConference {
   int survey_id;

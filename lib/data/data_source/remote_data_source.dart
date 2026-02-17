@@ -52,6 +52,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       survey.title,
       survey.description,
       survey.color,
+      survey.timer,
     );
   }
 
