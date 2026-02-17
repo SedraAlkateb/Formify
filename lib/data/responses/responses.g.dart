@@ -222,7 +222,6 @@ GetQuestionAndAnswerResponse _$GetQuestionAndAnswerResponseFromJson(
   (json['question_order'] as num?)?.toInt(),
   json['is_required'] as bool?,
   json['type'] as String?,
-  (json['value'] as num?)?.toInt(),
   (json['answers'] as List<dynamic>)
       .map((e) => GetAnswerResponse.fromJson(e as Map<String, dynamic>))
       .toList(),
@@ -236,7 +235,6 @@ Map<String, dynamic> _$GetQuestionAndAnswerResponseToJson(
   'question_order': instance.question_order,
   'is_required': instance.is_required,
   'type': instance.type,
-  'value': instance.value,
   'answers': instance.answers,
 };
 
@@ -248,7 +246,6 @@ _$GetQuestionAndAnswerForUserResponseFromJson(Map<String, dynamic> json) =>
       (json['question_order'] as num?)?.toInt(),
       json['is_required'] as bool?,
       json['type'] as String?,
-      (json['value'] as num?)?.toInt(),
       (json['answers'] as List<dynamic>?)
           ?.map((e) => GetAnswerResponse.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -267,7 +264,6 @@ Map<String, dynamic> _$GetQuestionAndAnswerForUserResponseToJson(
   'question_order': instance.question_order,
   'is_required': instance.is_required,
   'type': instance.type,
-  'value': instance.value,
   'answers': instance.answers,
   'user_answers': instance.answersUser,
 };
@@ -278,6 +274,7 @@ GetAnswerUserResponse _$GetAnswerUserResponseFromJson(
   (json['id'] as num?)?.toInt(),
   (json['answer_id'] as num?)?.toInt(),
   json['content'] as String?,
+  (json['isCorrect'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$GetAnswerUserResponseToJson(
@@ -286,6 +283,7 @@ Map<String, dynamic> _$GetAnswerUserResponseToJson(
   'id': instance.id,
   'answer_id': instance.answer_id,
   'content': instance.content,
+  'isCorrect': instance.isCorrect,
 };
 
 GetAnswerResponse _$GetAnswerResponseFromJson(Map<String, dynamic> json) =>
@@ -293,6 +291,7 @@ GetAnswerResponse _$GetAnswerResponseFromJson(Map<String, dynamic> json) =>
       (json['id'] as num?)?.toInt(),
       json['title'] as String?,
       json['img'] as String?,
+      (json['isCorrect'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$GetAnswerResponseToJson(GetAnswerResponse instance) =>
@@ -300,6 +299,7 @@ Map<String, dynamic> _$GetAnswerResponseToJson(GetAnswerResponse instance) =>
       'id': instance.id,
       'title': instance.title,
       'img': instance.img,
+      'isCorrect': instance.isCorrect,
     };
 
 GetSurveyWithQuestionAndAnswerBaseResponse
@@ -592,7 +592,6 @@ GetQuestionForAsyncResponse _$GetQuestionForAsyncResponseFromJson(
   (json['order'] as num?)?.toInt(),
   json['isRequired'] as bool?,
   json['type'] as String?,
-  (json['value'] as num?)?.toInt(),
   (json['survey_id'] as num?)?.toInt(),
 );
 
@@ -605,7 +604,6 @@ Map<String, dynamic> _$GetQuestionForAsyncResponseToJson(
   'isRequired': instance.is_required,
   'type': instance.type,
   'survey_id': instance.survey_id,
-  'value': instance.value,
 };
 
 GetAnswerForAsyncResponse _$GetAnswerForAsyncResponseFromJson(
@@ -615,6 +613,7 @@ GetAnswerForAsyncResponse _$GetAnswerForAsyncResponseFromJson(
   json['title'] as String?,
   (json['question_id'] as num?)?.toInt(),
   json['img'] as String?,
+  (json['isCorrect'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$GetAnswerForAsyncResponseToJson(
@@ -624,6 +623,7 @@ Map<String, dynamic> _$GetAnswerForAsyncResponseToJson(
   'title': instance.title,
   'question_id': instance.question_id,
   'img': instance.img,
+  'isCorrect': instance.isCorrect,
 };
 
 SurveyConferenceForAsyncResponse _$SurveyConferenceForAsyncResponseFromJson(

@@ -226,8 +226,7 @@ class GetQuestionAndAnswerResponse {
   bool? is_required;
   @JsonKey(name: "type")
   String? type;
-  @JsonKey(name: "value")
-  int? value;
+
   @JsonKey(name: "answers")
   List<GetAnswerResponse> answers;
 
@@ -237,7 +236,6 @@ class GetQuestionAndAnswerResponse {
     this.question_order,
     this.is_required,
     this.type,
-    this.value,
     this.answers,
 
   ); // from json
@@ -259,8 +257,7 @@ class GetQuestionAndAnswerForUserResponse {
   bool? is_required;
   @JsonKey(name: "type")
   String? type;
-  @JsonKey(name: "value")
-  int? value;
+
   @JsonKey(name: "answers")
   List<GetAnswerResponse>? answers;
   @JsonKey(name: "user_answers")
@@ -272,7 +269,6 @@ class GetQuestionAndAnswerForUserResponse {
     this.question_order,
     this.is_required,
     this.type,
-      this.value,
     this.answers,
       this.answersUser
   ); // from json
@@ -289,7 +285,9 @@ class GetAnswerUserResponse {
   int? answer_id;
   @JsonKey(name: "content")
   String? content;
-  GetAnswerUserResponse(this.id, this.answer_id,this.content);
+  @JsonKey(name: "isCorrect")
+  int? isCorrect;
+  GetAnswerUserResponse(this.id, this.answer_id,this.content,this.isCorrect);
   // from json
   factory GetAnswerUserResponse.fromJson(Map<String, dynamic> json) =>
       _$GetAnswerUserResponseFromJson(json);
@@ -305,7 +303,9 @@ class GetAnswerResponse {
   String? title;
   @JsonKey(name: "img")
   String? img;
-  GetAnswerResponse(this.id, this.title,this.img);
+  @JsonKey(name: "isCorrect")
+  int? isCorrect;
+  GetAnswerResponse(this.id, this.title,this.img,this.isCorrect);
   // from json
   factory GetAnswerResponse.fromJson(Map<String, dynamic> json) =>
       _$GetAnswerResponseFromJson(json);
@@ -591,15 +591,12 @@ class GetQuestionForAsyncResponse {
   String? type;
   @JsonKey(name: "survey_id")
   int? survey_id;
-  @JsonKey(name: "value")
-  int? value;
   GetQuestionForAsyncResponse(
     this.id,
     this.question,
     this.question_order,
     this.is_required,
     this.type,
-      this.value,
     this.survey_id,
   ); // from json
   factory GetQuestionForAsyncResponse.fromJson(Map<String, dynamic> json) =>
@@ -619,8 +616,10 @@ class GetAnswerForAsyncResponse {
   int? question_id;
   @JsonKey(name: "img")
   String? img;
+  @JsonKey(name: "isCorrect")
+  int? isCorrect;
 
-  GetAnswerForAsyncResponse(this.id, this.title, this.question_id,this.img);
+  GetAnswerForAsyncResponse(this.id, this.title, this.question_id,this.img,this.isCorrect);
   // from json
   factory GetAnswerForAsyncResponse.fromJson(Map<String, dynamic> json) =>
       _$GetAnswerForAsyncResponseFromJson(json);

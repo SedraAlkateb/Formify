@@ -77,9 +77,7 @@ class MultiAnswerPage extends StatelessWidget {
                 BlocBuilder<SurveyBloc, SurveyState>(
                   builder: (context, state) {
                     if (state is ViewQuestionState) {
-                      print("RemoveAnswerAtEvent");
                       QuestionModel questionModel = state.questionModel;
-
                       return questionModel.title.isEmpty
                           ? const Text("لا يوجد سؤال للمعاينة بعد.")
                           : Container(

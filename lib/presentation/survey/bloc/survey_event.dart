@@ -126,7 +126,9 @@ class AddQuestionEvent extends SurveyEvent {
 
 class SelectValueAnswerEvent extends SurveyEvent {
   final int index;
-  SelectValueAnswerEvent(this.index);
+  final int isCorrect;
+
+  SelectValueAnswerEvent(this.index,this.isCorrect);
 
   @override
 

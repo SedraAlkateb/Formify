@@ -26,16 +26,19 @@ class _AppServiceClient implements AppServiceClient {
     String title,
     String description,
     String color,
-    String timer,
+    String? timer,
   ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     final _data = FormData();
     _data.fields.add(MapEntry('title', title));
     _data.fields.add(MapEntry('description', description));
     _data.fields.add(MapEntry('color', color));
-    _data.fields.add(MapEntry('timer', timer));
+    if (timer != null) {
+      _data.fields.add(MapEntry('timer', timer));
+    }
     final _options = _setStreamType<CreateSurveyBaseResponse>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
