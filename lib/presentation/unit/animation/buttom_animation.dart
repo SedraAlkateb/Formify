@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 
-Widget animatedButton(
+Widget bottomAnimation(
     BuildContext context,
     void Function()? onPressed,
-    String text,
+    Widget widgetButton
     ) {
-  return _AnimatedButton(onPressed: onPressed, text: text);
+  return _BottomAnimation(onPressed: onPressed,widgetButton: widgetButton,);
 }
 
-class _AnimatedButton extends StatefulWidget {
+class _BottomAnimation extends StatefulWidget {
   final VoidCallback? onPressed;
-  final String text;
-  const _AnimatedButton({this.onPressed, required this.text});
+  final Widget widgetButton;
+
+  const _BottomAnimation({this.onPressed,required this.widgetButton});
 
   @override
-  State<_AnimatedButton> createState() => _AnimatedButtonState();
+  State<_BottomAnimation> createState() => _BottomAnimationState();
 }
 
-class _AnimatedButtonState extends State<_AnimatedButton> {
+class _BottomAnimationState extends State<_BottomAnimation> {
   bool _pressed = false;
 
   void _setPressed(bool v) {
@@ -42,7 +43,6 @@ class _AnimatedButtonState extends State<_AnimatedButton> {
         curve: Curves.easeOut,
         builder: (context, t, child) {
           final scale = 1.0 + (0.06 * t); // بدل 1.1 (أخف)
-          final elev = 2.0 + (6.0 * t);
           final glowOpacity = 0.15 + (0.35 * t);
 
           return Transform.scale(
@@ -66,20 +66,7 @@ class _AnimatedButtonState extends State<_AnimatedButton> {
           );
         },
         // child ثابت لا يعاد بناؤه كل فريم (أهم نقطة للأداء)
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-
-            Text(
-              widget.text,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-            ),
-            const SizedBox(width: 6),
-            const Icon(Icons.arrow_forward_ios, size: 18),
-
-
-          ],
-        ),
+        child:widget.widgetButton
       ),
     );
   }

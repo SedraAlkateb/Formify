@@ -6,6 +6,7 @@ import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
 import 'package:formify/presentation/sync/widget/header_section_widget.dart';
 import 'package:formify/presentation/sync/widget/survey_card_widget.dart';
+import 'package:formify/presentation/unit/animation/animation_container_widget.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 class ListOfSurveysPage extends StatefulWidget {
   const ListOfSurveysPage({super.key});
@@ -75,11 +76,13 @@ class _ListOfSurveysPageState extends State<ListOfSurveysPage> {
                         itemCount: surveys.length,
                         itemBuilder: (context, index) {
                           return
-                             SurveyCard(
-                              survey: surveys[index],
-                              index: index,
+                            AnimationContainerWidget(
+                               child: SurveyCard(
+                                survey: surveys[index],
+                                index: index,
 
-                          );
+                                                         ),
+                             );
                         },
                       );
                     }

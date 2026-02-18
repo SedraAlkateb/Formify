@@ -5,6 +5,7 @@ import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
 import 'package:formify/presentation/unit/animation-in_list.dart';
+import 'package:formify/presentation/unit/animation/buttom_animation.dart';
 import 'package:formify/presentation/unit/text_field.dart';
 
 class InsertUserPage extends StatefulWidget {
@@ -39,21 +40,25 @@ class _InsertUserPageState extends State<InsertUserPage>
     _controller.dispose();
     super.dispose();
   }
+
   void _submit() {
-      if (_formKey.currentState!.validate()) {
-        final user = UserSqlModel(
-          fullName: fullNameController.text,
-          email: emailController.text,
-          phone: phoneController.text,
-          address: addressController.text,
-          answerModel: [], // تُملأ لاحقًا
-        );
+    if (_formKey.currentState!.validate()) {
+      final user = UserSqlModel(
+        fullName: fullNameController.text,
+        email: emailController.text,
+        phone: phoneController.text,
+        address: addressController.text,
+        answerModel: [], // تُملأ لاحقًا
+      );
 
-
-        BlocProvider.of<SyncBloc>(context).add(InputUserSqlEvent(user));
-        BlocProvider.of<SyncBloc>(context).add(GetSurveyAsyncEvent());
-        Navigator.pushNamedAndRemoveUntil(context, Routes.listOfSurveys,(route) => false,);
-      }
+      BlocProvider.of<SyncBloc>(context).add(InputUserSqlEvent(user));
+      BlocProvider.of<SyncBloc>(context).add(GetSurveyAsyncEvent());
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        Routes.listOfSurveys,
+        (route) => false,
+      );
+    }
   }
 
   @override
@@ -64,10 +69,9 @@ class _InsertUserPageState extends State<InsertUserPage>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 50,),
+            SizedBox(height: 50),
             Container(
               width: double.infinity,
-
 
               margin: const EdgeInsets.all(25),
               decoration: BoxDecoration(
@@ -144,13 +148,13 @@ class _InsertUserPageState extends State<InsertUserPage>
                             controller: _controller,
                             index: 3,
                             child: GlowTextField(
-
                               hint: " ادخل اسمك الكامل ",
                               label: 'الاسم الكامل',
                               controller: fullNameController,
 
                               icon: Icons.person_outline,
-                              validator: (v) => v!.isEmpty ? 'الاسم مطلوب' : null,
+                              validator: (v) =>
+                                  v!.isEmpty ? 'الاسم مطلوب' : null,
                             ),
                           ),
                           buildAnimatedField(
@@ -175,7 +179,8 @@ class _InsertUserPageState extends State<InsertUserPage>
                               hint: "09xxxxxxxx",
                               icon: Icons.phone_outlined,
                               keyboardType: TextInputType.phone,
-                              validator: (v) => v!.length < 8 ? 'رقم غير صحيح' : null,
+                              validator: (v) =>
+                                  v!.length < 8 ? 'رقم غير صحيح' : null,
                             ),
                           ),
                           buildAnimatedField(
@@ -186,31 +191,29 @@ class _InsertUserPageState extends State<InsertUserPage>
                               label: 'العنوان',
                               hint: "أدخل عنوانك الكامل",
                               icon: Icons.location_on_outlined,
-                              validator: (v) => v!.isEmpty ? 'العنوان مطلوب' : null,
+                              validator: (v) =>
+                                  v!.isEmpty ? 'العنوان مطلوب' : null,
                             ),
                           ),
                           const SizedBox(height: 30),
                           buildAnimatedField(
                             controller: _controller,
                             index: 7,
-                            child: ElevatedButton.icon(
-                              onPressed: _submit,
-                              icon: const Icon(Icons.arrow_forward),
-                              iconAlignment: IconAlignment.end,
-                              label: const Text('متابعة الى الاستبيان'),
+                            child: bottomAnimation(
+                              context,
+                              _submit,
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                               crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
 
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: ColorManager.primary, // لون الخلفية
-                                foregroundColor: Colors.white,          // لون النص
-                                padding: const EdgeInsets.symmetric(vertical: 14),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                elevation: 4,
+                                  Text('متابعة الى الاستبيان'),
+                                  SizedBox(width: 9,),
+                                  Icon(Icons.arrow_forward),
+                                ],
                               ),
                             ),
                           ),
-
                         ],
                       ),
                     ],
@@ -223,6 +226,4 @@ class _InsertUserPageState extends State<InsertUserPage>
       ),
     );
   }
-
-
 }

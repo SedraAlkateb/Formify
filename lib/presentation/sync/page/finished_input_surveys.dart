@@ -5,8 +5,8 @@ import 'package:formify/presentation/resources/assets_manager.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/resources/strings_manager.dart';
-import 'package:formify/presentation/sync/widget/button_widget.dart';
-import 'package:formify/presentation/sync/widget/press_scale.dart';
+import 'package:formify/presentation/unit/animation/animation_container_widget.dart';
+import 'package:formify/presentation/unit/animation/button_animation_with_text.dart';
 import 'package:lottie/lottie.dart';
 
 class FinishedInputSurveysPage extends StatelessWidget {
@@ -78,7 +78,7 @@ class FinishedInputSurveysPage extends StatelessWidget {
                             ),
                           ),
                              SizedBox(height: 8),
-                          InteractiveAddressCard(
+                          AnimationContainerWidget(
                             child: Container(
                               width: double.infinity,
                               padding: const EdgeInsets.all(12),
@@ -124,7 +124,7 @@ class FinishedInputSurveysPage extends StatelessWidget {
                             ),
                           ),
                           SizedBox(height: 8),
-                          animatedButton(
+                          buttonAnimationWithText(
 
                               context
 

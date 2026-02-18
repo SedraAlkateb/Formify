@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:formify/domain/models/model_q.dart';
+import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
 import 'package:formify/presentation/sync/widget/answer_card_widget.dart';
+import 'package:formify/presentation/sync/widget/timer_widget.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
 class GameInputPage extends StatefulWidget {
@@ -32,6 +34,7 @@ class _GameInputPageState extends State<GameInputPage> {
     final formState = _formKeys[index].currentState;
     if (formState == null) return null;
     final q = s.questions[index];
+
     return formState.value["q_${q.order}"];
   }
 
@@ -117,9 +120,9 @@ class _GameInputPageState extends State<GameInputPage> {
               }
 
               if (state is SurveyReadyState) {
+
                 final total = state.questions.length;
                 _ensureKeys(total);
-
                 final idx = state.currentIndex;
                 final progress = total == 0 ? 0.0 : (idx + 1) / total;
 
@@ -131,6 +134,7 @@ class _GameInputPageState extends State<GameInputPage> {
                         vertical: 10,
                       ),
                       child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           TextButton.icon(
                             onPressed: () => Navigator.pop(context),
@@ -140,13 +144,28 @@ class _GameInputPageState extends State<GameInputPage> {
                             ),
                             label: const Text("العودة"),
                           ),
+                          (state.time != null) && (state.time!.isNotEmpty)
+                              ? Expanded(
+                                  child: CountdownTimerWidget(
+                                    time: state.time ?? "00:00",
+                                    onFinished: () {
+                                      context.read<SyncBloc>().add(
+                                        const SurveySubmitEvent(),
+                                      );
+                                    },
+                                  ),
+                                )
+                              : SizedBox(),
                           Expanded(
-                            child: Text(
-                              state.surveyName,
-                              textAlign: TextAlign.end,
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 4),
+                              child: Text(
+                                state.surveyName,
+                                textAlign: TextAlign.end,
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),
@@ -193,7 +212,7 @@ class _GameInputPageState extends State<GameInputPage> {
                             question: q,
                             savedAnswers: state.answers[i],
                           );
-                       //   final savedAnswer = state.answers[i]?.first.content;
+                          //   final savedAnswer = state.answers[i]?.first.content;
 
                           return Padding(
                             padding: const EdgeInsets.symmetric(
@@ -201,13 +220,14 @@ class _GameInputPageState extends State<GameInputPage> {
                               vertical: 12,
                             ),
                             child: QuestionCard(
+                             // correctValue: ,
                               number: i + 1,
                               total: total,
                               questionModel: q,
                               isLast: i == total - 1,
                               formKey: _formKeys[i],
                               initialValue:
-                              initValue, // passing saved answer as initial value
+                                  initValue, // passing saved answer as initial value
                               onPrev: () => _prev(state, i),
                               onNext: () => _next(state, i),
                             ),

@@ -7,7 +7,7 @@ import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/resources/strings_manager.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
-import 'package:formify/presentation/sync/widget/press_scale.dart';
+import 'package:formify/presentation/unit/animation/animation_container_widget.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
 class SettingPage extends StatelessWidget {
@@ -158,7 +158,7 @@ class SettingPage extends StatelessWidget {
                                       },
                                     );
                                   },
-                                  child: InteractiveAddressCard(
+                                  child: AnimationContainerWidget(
                                     child: Container(
                                       width: double.infinity,
                                       padding: const EdgeInsets.all(20),
@@ -250,7 +250,7 @@ class SettingPage extends StatelessWidget {
                                     (route) => false,
                                   );
                                 },
-                                child: InteractiveAddressCard(
+                                child: AnimationContainerWidget(
                                   child: Container(
                                     width: double.infinity,
                                     padding: const EdgeInsets.all(20),
@@ -446,7 +446,7 @@ class SettingPage extends StatelessWidget {
                                       ],
                                     ),
                                     const SizedBox(height: 10),
-                                    InteractiveAddressCard(
+                                    AnimationContainerWidget(
                                       child: Container(
                                         width: double.infinity,
                                         padding: const EdgeInsets.all(30),
@@ -492,7 +492,7 @@ class SettingPage extends StatelessWidget {
                                       ),
                                     ),
                                     const SizedBox(height: 10),
-                                    InteractiveAddressCard(
+                                    AnimationContainerWidget(
                                       child: Container(
                                         width: double.infinity,
                                         padding: const EdgeInsets.all(30),
@@ -538,7 +538,7 @@ class SettingPage extends StatelessWidget {
                                       ),
                                     ),
                                     const SizedBox(height: 10),
-                                    InteractiveAddressCard(
+                                    AnimationContainerWidget(
                                       child: Container(
                                         width: double.infinity,
                                         padding: const EdgeInsets.all(30),

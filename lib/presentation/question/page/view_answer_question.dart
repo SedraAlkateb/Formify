@@ -40,7 +40,6 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
           maxLines: 5,
           minLines: 1,
           enabled: false,
-
           keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(11)),

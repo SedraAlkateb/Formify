@@ -7,8 +7,8 @@ import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/resources/theme_bloc/theme_bloc.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
-import 'package:formify/presentation/sync/widget/button_widget.dart';
 import 'package:formify/presentation/sync/widget/card_list_up_down.dart';
+import 'package:formify/presentation/unit/animation/button_animation_with_text.dart';
 
 class SurveyCard extends StatelessWidget {
   final IsActiveMainSurveyModel survey;
@@ -37,13 +37,13 @@ class SurveyCard extends StatelessWidget {
           ),
           Text(survey.description, style: const TextStyle(fontSize: 15)),
           const SizedBox(height: 30),
-          animatedButton(
+          buttonAnimationWithText(
             context,
             survey.isActive == true
                 ? null
                 : () {
                     BlocProvider.of<SyncBloc>(context).add(
-                      GetQuestionAnswersEvent(survey.id, survey.title,survey.description, index),
+                      GetQuestionAnswersEvent(survey.id, survey.title,survey.description, index,survey.timer),
                     );
                     BlocProvider.of<ThemeBloc>(context).add(
                       ChangeThemeColorEvent(
