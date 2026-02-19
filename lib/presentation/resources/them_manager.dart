@@ -68,15 +68,20 @@ ThemeData getApplicationTheme({
         ),
       ),
     ),
-
     cardTheme: CardThemeData(
       color: colorScheme.surface,
-      shadowColor: Colors.black12,
-      elevation: 3,
+
+      elevation: 4,
+
+      shadowColor: Colors.grey.withOpacity(0.04),
+
+      surfaceTintColor: Colors.transparent, // مهم لمنع dark overlay
 
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSize.s18),
       ),
+
+      clipBehavior: Clip.antiAlias,
     ),
 
     textTheme: TextTheme(
@@ -110,9 +115,7 @@ ThemeData getApplicationTheme({
       contentPadding: const EdgeInsets.all(AppPadding.p12),
       labelStyle: getMediumStyle(color: colorScheme.primary),
       hintStyle: getRegularStyle(
-        color: isLight
-            ? ColorManager.textHint
-            : ColorManager.darkTextSecondary,
+        color: isLight ? ColorManager.textHint : ColorManager.darkTextSecondary,
       ),
       enabledBorder: OutlineInputBorder(
         borderSide: BorderSide(
@@ -131,8 +134,7 @@ ThemeData getApplicationTheme({
       ),
     ),
     dropdownMenuTheme: DropdownMenuThemeData(
-
-      textStyle: TextStyle(color: ColorManager.black)
+      textStyle: TextStyle(color: ColorManager.black),
     ),
 
     // dropdownButtonTheme: DropdownButtonThemeData(
@@ -141,7 +143,6 @@ ThemeData getApplicationTheme({
     //     fontSize: FontSize.s14,
     //   ),
     // ),
-
     textSelectionTheme: TextSelectionThemeData(
       cursorColor: colorScheme.primary,
     ),
