@@ -71,7 +71,7 @@ class _SurveyListPressCardState extends State<_SurveyListPressCard> {
               color: ColorManager.black.withOpacity(0.08),
               width: 1,
             ),
-            borderRadius: BorderRadius.circular(32),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Padding(
             padding: const EdgeInsets.all(16),
