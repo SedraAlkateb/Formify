@@ -111,11 +111,11 @@ extension GetQuestionModelUserMapper on GetQuestionAndAnswerForUserResponse? {
 }
 
 extension GetAllAnswerUserModelMapper on List<GetAnswerUserResponse>? {
-  List<String> toDomain() {
-    List<String> allAnswer =
-        (this?.map((response) => response.toDomain().content) ??
+  List<AnswerUserSurveyModel> toDomain() {
+    List<AnswerUserSurveyModel> allAnswer =
+        (this?.map((response) => response.toDomain()) ??
                 const Iterable.empty())
-            .cast<String>()
+            .cast<AnswerUserSurveyModel>()
             .toList();
     return allAnswer;
   }
@@ -124,7 +124,8 @@ extension GetAllAnswerUserModelMapper on List<GetAnswerUserResponse>? {
 extension GetAllQuestionForUserMapper
     on GetSurveyWithQuestionAndAnswerForUserBaseResponse? {
   SurveyUserModel toDomain() {
-    Map<int, List<String>> answerUser = {};
+    Map<int, List<AnswerUserSurveyModel>> answerUser = {};
+    Map<int, List<AnswerUserSurveyModel>> correctAnswerUser = {};
 
     List<QuestionModel> allQuestion =
         (this!.data.questions?.asMap().entries.map((entry) {
@@ -133,6 +134,7 @@ extension GetAllQuestionForUserMapper
                   if ((response.answersUser != null) &&
                       (response.answersUser!.isNotEmpty)) {
                     answerUser[index] = response.answersUser.toDomain();
+                    correctAnswerUser[index]=response.answersUser.toDomain();
                   }
                   return response.toDomain(); // مهم ترجع القيمة
                 }) ??
@@ -159,6 +161,7 @@ extension GetAnswerUserModelMapper on GetAnswerUserResponse? {
       this?.id ?? Constants.zero,
       this?.answer_id ?? Constants.zero,
       this?.content ?? Constants.empty,
+      this?.isCorrect ?? Constants.zero,
     );
   }
 }

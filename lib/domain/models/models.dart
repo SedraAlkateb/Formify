@@ -33,7 +33,7 @@ class SurveyModel {
 
 class SurveyUserModel {
   SurveyModel surveyModel;
-  Map<int, List<String>> answerUser;
+  Map<int, List<AnswerUserSurveyModel>> answerUser;
   SurveyUserModel({required this.surveyModel, required this.answerUser});
 }
 
@@ -41,7 +41,8 @@ class AnswerUserSurveyModel {
   int id;
   int answer_id;
   String content;
-  AnswerUserSurveyModel(this.id, this.answer_id, this.content);
+  int isCorrect;
+  AnswerUserSurveyModel(this.id, this.answer_id, this.content,this.isCorrect);
 }
 
 class QuestionModel {
