@@ -119,6 +119,7 @@ final class SurveyErrorState extends SyncState {
 /// Ready survey (single source of truth for UI)
 final class SurveyReadyState extends SyncState {
   final String surveyName;
+
   final String surveyDescription;
 
   final List<QuestionModel> questions;
@@ -129,13 +130,17 @@ final class SurveyReadyState extends SyncState {
   /// for UI header/progress only
   final int currentIndex;
   final int index;
+  final String ? time;
+
   const SurveyReadyState({
     required this.surveyName,
     required this.surveyDescription,
     required this.questions,
     required this.answers,
     required this.currentIndex,
-    required this.index
+    required this.index,
+    required this.time
+
   });
 
   SurveyReadyState copyWith({
@@ -148,12 +153,13 @@ final class SurveyReadyState extends SyncState {
       questions: questions,
       answers: answers ?? this.answers,
       currentIndex: currentIndex ?? this.currentIndex,
-      index: index
+      index: index,
+        time: time
     );
   }
 
   @override
-  List<Object?> get props => [surveyName, questions, answers, currentIndex];
+  List<Object?> get props => [surveyName, questions, answers, currentIndex,time];
 }
 
 final class SurveySubmittingState extends SyncState {

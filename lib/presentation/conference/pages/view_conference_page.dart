@@ -331,8 +331,9 @@ class _ViewConferencePageState extends State<ViewConferencePage> {
                                   .surveys
                                   .length, // Number of surveys
                               itemBuilder: (context, index) {
-                                return InkWell(
-                                  onTap: () {
+                                return surveyListWidget(
+                                  conference.surveys[index].toDomain(),
+                                      () {
                                     Navigator.pushNamed(
 
                                       context,
@@ -353,9 +354,6 @@ class _ViewConferencePageState extends State<ViewConferencePage> {
                                     );
 
                                   },
-                                  child: surveyListWidget(
-                                    conference.surveys[index].toDomain(),
-                                  ),
                                 );
                               },
                             )

@@ -10,7 +10,7 @@ class QuestionCard extends StatelessWidget {
   final bool isLast;
   final VoidCallback onPrev;
   final VoidCallback onNext;
-
+  final String? correctValue;
   final GlobalKey<FormBuilderState> formKey;
   final Object? initialValue; // إضافة initialValue لتعيين القيمة المحفوظة
 
@@ -24,6 +24,7 @@ class QuestionCard extends StatelessWidget {
     required this.onNext,
     required this.formKey,
     this.initialValue,
+    this.correctValue
   });
 
   @override
@@ -104,6 +105,13 @@ class QuestionCard extends StatelessWidget {
                 const SizedBox(height: 12),
                 QuestionPreviewNetworkBuilder(question: questionModel),
                 const SizedBox(height: 14),
+                correctValue!=null?
+                Text(
+                  "الاجابة الصحيحة هي ${correctValue}",
+                  style: TextStyle(color: Colors.red, fontSize: 22),
+                ):SizedBox(),
+                const SizedBox(height: 14),
+
                 Row(
                   children: [
                     Expanded(

@@ -313,8 +313,10 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                                   .surveys
                                   .length, // Number of surveys
                               itemBuilder: (context, index) {
-                                return InkWell(
-                                  onTap: () {
+                                return surveyListWidget(
+                                  state.conferenceModel.surveys[index]
+                                      .toDomain(),
+                                      () {
                                     Navigator.pushNamed(
                                       context,
                                       Routes.viewSurvey,
@@ -341,10 +343,6 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                                       ),
                                     );
                                   },
-                                  child: surveyListWidget(
-                                    state.conferenceModel.surveys[index]
-                                        .toDomain(),
-                                  ),
                                 );
                               },
                             )

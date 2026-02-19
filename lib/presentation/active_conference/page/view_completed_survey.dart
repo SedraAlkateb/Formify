@@ -23,7 +23,7 @@ class ViewCompletedSurvey extends StatelessWidget {
         backgroundColor: colors.primary,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: ()  {
+          onPressed: () {
             Navigator.pop(context);
           },
         ),
@@ -42,7 +42,7 @@ class ViewCompletedSurvey extends StatelessWidget {
               if (state is GetCompletedSurveyState) {
                 final SurveyModel surveyModel =
                     state.surveyUserModel.surveyModel;
-                final Map<int, List<String>> answer =
+                final Map<int, List<AnswerUserSurveyModel>> answer =
                     state.surveyUserModel.answerUser;
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -97,100 +97,111 @@ class ViewCompletedSurvey extends StatelessWidget {
                     ),
                     const SizedBox(height: 15),
                     // ============ بلوك الأسئلة داخل Container أبيض =============
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      margin: const EdgeInsets.only(top: 8),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(25),
-                        border: Border.all(color: ColorManager.border),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.black12,
-                            blurRadius: 8,
-                            offset: Offset(0, 3),
-                          ),
-                        ],
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 4,
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "الأسئلة",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                      child: const Text(
+                        "الأسئلة",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                    ),
+                    ListView.separated(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: surveyModel.questions.length,
+                      separatorBuilder: (_, _) => const SizedBox(height: 20),
+                      itemBuilder: (context, index) {
+                        final q = surveyModel.questions[index];
+                        return Container(
+                          padding: const EdgeInsets.all(18),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: colors.outline.withOpacity(0.1),
                             ),
                           ),
-                          const SizedBox(height: 12),
-
-                          ListView.separated(
-                            physics: const NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            itemCount: surveyModel.questions.length,
-                            separatorBuilder: (_, _) =>
-                                const SizedBox(height: 12),
-                            itemBuilder: (context, index) {
-                              final q = surveyModel.questions[index];
-                              return Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: colors.surface,
-                                  borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(
-                                    color: colors.outline.withOpacity(0.2),
-                                  ),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Row(
-                                      children: [
-                                        Text(
-                                          "${q.order}#",
-                                          style: TextStyle(
-                                            color: colors.primary,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        q.type.typeAnswerEnglish
-                                      ],
+                                    q.type.typeAnswerEnglish,
+                                    Text(
+                                      "${q.order}#",
+                                      style: TextStyle(
+                                        color: colors.primary,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        q.type.title == "Switch"
-                                            ? SizedBox()
-                                            : Expanded(
-                                                child: Text(
-                                                  q.title,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w600,
-                                                    color: colors.onSurface,
-                                                    fontSize: 15,
-                                                  ),
-                                                ),
-                                              ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 10),
-                                    answer.containsKey(index)
-                                        ? QuestionAnswerPreviewBuilder(
-                                            question: q,
-                                            initValue: answer[index],
-                                          )
-                                        : QuestionAnswerPreviewBuilder(
-                                      question: q),
-                                    const SizedBox(height: 10),
                                   ],
                                 ),
-                              );
-                            },
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(10),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    q.type.title == "Switch"
+                                        ? SizedBox()
+                                        : Expanded(
+                                            child: Text(
+                                              q.title,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                color: colors.onSurface,
+                                                fontSize: 18,
+                                              ),
+                                            ),
+                                          ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              answer.containsKey(index)
+                                  ? Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                      ),
+                                      child: QuestionAnswerPreviewBuilder(
+                                        question: q,
+                                        initValue: answer[index],
+                                      ),
+                                    )
+                                  : Padding(
+                                      padding: const EdgeInsets.only(right: 10),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.block_outlined,
+                                            color: ColorManager.success,
+                                          ),
+                                          SizedBox(width: 12),
+                                          Text(
+                                            "لا يوجد إجابة",
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                              const SizedBox(height: 10),
+                            ],
                           ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
                     const SizedBox(height: 20),
                   ],

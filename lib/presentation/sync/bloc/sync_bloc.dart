@@ -118,7 +118,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
         (_) => emit(const UploadDataState()),
       );
     } else {
-      emit(DeleteDataState());
+      emit(const UploadDataState());
     }
   }
 
@@ -180,6 +180,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
             questions: questions,
             answers: <int, List<AnswerUserModel>>{},
             currentIndex: 0,
+            time: event.time
           ),
         );
       },
@@ -211,6 +212,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   }
 
   List<AnswerUserModel> _mapToAnswers(QuestionModel q, dynamic rawValue) {
+    String correctIs="";
     if (rawValue == null) return [];
 
     // String / num -> content
@@ -221,11 +223,15 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
 
     // AnswerModel (dropdown/radio)
     if (rawValue is AnswerModel) {
+      if(rawValue.isCorrect==0){
+        correctIs="الاجابة خاطئة";
+      }
       return [AnswerUserModel(rawValue.id, rawValue.title,rawValue.isCorrect)];
     }
 
     // List<AnswerModel> (checkbox)
     if (rawValue is List<AnswerModel>) {
+
       return rawValue.map((a) => AnswerUserModel(a.id, a.title,a.isCorrect)).toList();
     }
 

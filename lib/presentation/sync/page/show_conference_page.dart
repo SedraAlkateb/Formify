@@ -6,9 +6,9 @@ import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
-import 'package:formify/presentation/sync/widget/button_widget.dart';
 import 'package:formify/presentation/sync/widget/doforma_container_widget.dart';
-import 'package:formify/presentation/sync/widget/press_scale.dart';
+import 'package:formify/presentation/unit/animation/button_animation_with_text.dart';
+import 'package:formify/presentation/unit/animation/animation_container_widget.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
 class ShowConferencePage extends StatefulWidget {
@@ -103,7 +103,7 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                 ),
 
                                 // Address
-                                InteractiveAddressCard(
+                                AnimationContainerWidget(
                                   child: Container(
                                     width: double.infinity,
                                     padding: const EdgeInsets.all(12),
@@ -165,7 +165,7 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                 ),
 
                                 // Date
-                                InteractiveAddressCard(
+                                AnimationContainerWidget(
                                   child: Container(
                                     width: double.infinity,
                                     padding: const EdgeInsets.all(12),
@@ -237,7 +237,7 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
 
                                 Column(
                                   children: [
-                                    animatedButton(
+                                    buttonAnimationWithText(
                                       context,
                                           () {
                                         Navigator.pushNamed(context, Routes.insertUser);
@@ -245,7 +245,7 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                       "ابدأ الاستبيانات",
                                     ),
                                     const SizedBox(height: 10),
-                                    animatedButton(
+                                    buttonAnimationWithText(
                                       context,
                                           () {
                                         BlocProvider.of<SyncBloc>(context)

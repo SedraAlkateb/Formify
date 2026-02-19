@@ -20,11 +20,10 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   void initState() {
-    context.read<ConferenceBloc>().add(
-      GetAllNotActiveConferenceEvent(),
-    );
+    context.read<ConferenceBloc>().add(GetAllNotActiveConferenceEvent());
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -46,7 +45,10 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     Text(
                       getGreeting(),
-                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 30),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 30,
+                      ),
                     ),
                     Text(
                       "Domina",
@@ -59,7 +61,10 @@ class _HomePageState extends State<HomePage> {
                     SizedBox(height: 500, child: CustomGridPage()),
                     Text(
                       "المؤتمرات قيد المعالجة",
-                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 25),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 25,
+                      ),
                     ),
                     MultiBlocListener(
                       listeners: [
@@ -67,16 +72,21 @@ class _HomePageState extends State<HomePage> {
                           listener: (context, state) {
                             if (state is DataLoadingState) {
                               loading(context);
-                            }  if (state is DataErrorState) {
+                            }
+                            if (state is DataErrorState) {
                               error(
                                 context,
                                 state.failure.massage,
                                 state.failure.code,
                               );
-                            }  if (state is GetDataState) {
-                              BlocProvider.of<SyncBloc>(
-                                context,
-                              ).add(UploadDataEvent(state.users,state.conference_id));
+                            }
+                            if (state is GetDataState) {
+                              BlocProvider.of<SyncBloc>(context).add(
+                                UploadDataEvent(
+                                  state.users,
+                                  state.conference_id,
+                                ),
+                              );
                             } else if (state is UploadDataState) {
                               BlocProvider.of<SyncBloc>(
                                 context,
@@ -128,14 +138,13 @@ class _HomePageState extends State<HomePage> {
                               .allNotActiveConference;
 
                           return Padding(
-                            padding: const EdgeInsets.only(bottom:
-                            40
-                            ),
+                            padding: const EdgeInsets.only(bottom: 40),
                             child: ListView.separated(
                               physics: const NeverScrollableScrollPhysics(),
                               shrinkWrap: true,
                               itemCount: items.length,
-                              separatorBuilder: (_, __) => const SizedBox(height: 10),
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(height: 10),
                               itemBuilder: (context, index) {
                                 return InkWell(
                                   onTap: () {
@@ -168,26 +177,25 @@ class _HomePageState extends State<HomePage> {
             Padding(
               padding: const EdgeInsets.all(30),
               child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: ColorManager.primary, // لون الخلفية
-                    foregroundColor: Colors.white,          // لون النص
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 4,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: ColorManager.primary, // لون الخلفية
+                  foregroundColor: Colors.white, // لون النص
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  onPressed: (){
-                    showDialogGameSurveyWidget(
-                      context: context,
-                      title: "طريقة عرض الاستبيان",
-                      message: "هل تريد ان تكون طريقة عرض الاستبيان لعبة ؟",
-
-                    );
-
-              }, child:Text("   ابدأ المؤتمر   ") ),
+                  elevation: 4,
+                ),
+                onPressed: () {
+                  showDialogGameSurveyWidget(
+                    context: context,
+                    title: "طريقة عرض الاستبيان",
+                    message: "هل تريد ان تكون طريقة عرض الاستبيان لعبة ؟",
+                  );
+                },
+                child: Text("   ابدأ المؤتمر   "),
+              ),
             ),
-
           ],
         ),
       ),

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
-class InteractiveAddressCard extends StatefulWidget {
-  const InteractiveAddressCard({super.key, required this.child});
+class AnimationContainerWidget extends StatefulWidget {
+  const AnimationContainerWidget({super.key, required this.child});
   final Widget child;
 
   @override
-  State<InteractiveAddressCard> createState() => _InteractiveAddressCardState();
+  State<AnimationContainerWidget> createState() => _InteractiveAddressCardState();
 }
 
-class _InteractiveAddressCardState extends State<InteractiveAddressCard> {
+class _InteractiveAddressCardState extends State<AnimationContainerWidget> {
   bool _pressed = false;
 
   void _setPressed(bool v) {
@@ -18,6 +18,7 @@ class _InteractiveAddressCardState extends State<InteractiveAddressCard> {
 
   @override
   Widget build(BuildContext context) {
+
     return Listener(
       behavior: HitTestBehavior.translucent,
       onPointerDown: (_) => _setPressed(true),

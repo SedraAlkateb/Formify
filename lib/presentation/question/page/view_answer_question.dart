@@ -9,7 +9,7 @@ import 'package:formify/presentation/resources/color_manager.dart';
 
 class QuestionAnswerPreviewBuilder extends StatelessWidget {
   final QuestionModel question;
-  final List<String>? initValue;
+  final List<AnswerUserSurveyModel>? initValue;
   const QuestionAnswerPreviewBuilder({
     super.key,
     required this.question,
@@ -23,11 +23,16 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
     switch (question.type) {
       case QuestionType.text:
         return FormBuilderTextField(
-          initialValue:initValue!=null? initValue![0]:null,
+          initialValue: initValue != null ? initValue![0].content : null,
           name: _name,
           maxLines: 5,
           minLines: 1,
           enabled: false,
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w600,
+            fontSize: 20,
+          ),
           decoration: InputDecoration(
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(11)),
           ),
@@ -35,12 +40,18 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
 
       case QuestionType.email:
         return FormBuilderTextField(
-          initialValue:initValue!=null? initValue![0]:null,
+          initialValue: initValue != null ? initValue![0].content : null,
           name: _name,
           maxLines: 5,
           minLines: 1,
-          enabled: false,
 
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w500,
+            fontSize: 20,
+          ),
+
+          enabled: false,
           keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(11)),
@@ -49,9 +60,14 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
 
       case QuestionType.password:
         return FormBuilderTextField(
-          initialValue:initValue!=null? initValue![0]:null,
+          initialValue: initValue != null ? initValue![0].content : null,
           name: _name,
           enabled: false,
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w500,
+            fontSize: 20,
+          ),
 
           decoration: InputDecoration(
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(11)),
@@ -61,8 +77,13 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
       case QuestionType.phone:
         return FormBuilderTextField(
           name: _name,
-          initialValue:initValue!=null? initValue![0]:null,
+          initialValue: initValue != null ? initValue![0].content : null,
           enabled: false,
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w500,
+            fontSize: 20,
+          ),
 
           decoration: InputDecoration(
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(11)),
@@ -72,76 +93,289 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
       case QuestionType.number:
         return FormBuilderTextField(
           enabled: false,
-          initialValue:initValue!=null? initValue![0]:null,
+          initialValue: initValue != null ? initValue![0].content : null,
           name: _name,
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w500,
+            fontSize: 20,
+          ),
+
           decoration: InputDecoration(
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(11)),
           ),
         );
 
       case QuestionType.dropdown:
-        return FormBuilderTextField(
-          name: _name,
-          enabled: false,
-          initialValue:(initValue!=null)? initValue![0]:null ,
-          decoration: InputDecoration(
-            icon: Icon(Icons.check_circle, color: ColorManager.success),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(11)),
-          ),
+        AnswerModel? selectedAnswer = question.answers
+            .where((a) => a.isCorrect == 1)
+            .cast<AnswerModel?>()
+            .firstOrNull;
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            FormBuilderTextField(
+              name: _name,
+              enabled: false,
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w500,
+                fontSize: 20,
+              ),
+
+              initialValue: initValue![0].content,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(11),
+                ),
+              ),
+            ),
+            SizedBox(height: 10),
+            initValue![0].isCorrect == 1
+                ? Row(
+                    children: [
+                      Icon(Icons.check_circle, color: ColorManager.success),
+                      SizedBox(width: 12),
+                      Text(
+                        "اجابتك صحيحة",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  )
+                : Column(
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.block_outlined,
+                            color: ColorManager.success,
+                          ),
+                          SizedBox(width: 12),
+                          Text(
+                            "اجابتك خاطئة الاجابة الصحيحة هي",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                      FormBuilderTextField(
+                        initialValue: selectedAnswer!.title,
+                        name: _name,
+                        maxLines: 5,
+                        minLines: 1,
+                        enabled: false,
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 20,
+                        ),
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(11),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+          ],
         );
 
       case QuestionType.multipleChoice:
-        return FormBuilderTextField(
-          name: _name,
-          enabled: false,
-          initialValue:initValue!=null? initValue![0] :null,
+        AnswerModel? selectedAnswer = question.answers
+            .where((a) => a.isCorrect == 1)
+            .cast<AnswerModel?>()
+            .firstOrNull;
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            FormBuilderTextField(
+              enabled: false,
+              initialValue: initValue != null ? initValue![0].content : null,
+              name: _name,
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w500,
+                fontSize: 20,
+              ),
 
-          decoration: InputDecoration(
-            icon: Row(
-              children: [
-                Icon(Icons.check_circle, color: ColorManager.success),
-              ],
-            ),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(11)),
-          ),
-        );
-
-      case QuestionType.checkbox:
-        return FormBuilderCheckboxGroup<AnswerModel>(
-          name: _name,
-          enabled: false,
-          orientation: OptionsOrientation.vertical,
-          initialValue:
-       initValue?.map((e) => AnswerModel(0, initValue![0]))
-              .toList(),
-
-          options: question.answers
-              .map(
-                (a) => FormBuilderFieldOption(
-              value: a,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [imageAnswerNetwork(a), Text("${a.title}")],
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(11),
+                ),
               ),
             ),
-          )
-              .toList(),
-          validator: question.isRequired == true
-              ? FormBuilderValidators.minLength(
-                  1,
-                  errorText: "Select at least one option",
-                )
-              : null,
+            SizedBox(height: 10),
+            initValue![0].isCorrect == 1
+                ? Row(
+                    children: [
+                      Icon(Icons.check_circle, color: ColorManager.success),
+                      SizedBox(width: 12),
+                      Text(
+                        "اجابتك صحيحة",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  )
+                : Row(
+                    children: [
+                      Icon(Icons.block_outlined, color: ColorManager.success),
+                      SizedBox(width: 12),
+                      Text(
+                        "اجابتك خاطئة الاجابة الصحيحة هي",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
+                  ),
+            SizedBox(height: 20),
+            FormBuilderRadioGroup<AnswerModel>(
+              initialValue: selectedAnswer,
+              orientation: OptionsOrientation.vertical,
+              name: "${_name}multi",
+              enabled: false,
+              options: question.answers
+                  .map(
+                    (a) => FormBuilderFieldOption(
+                      value: a,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [imageAnswerNetwork(a), Text(a.title)],
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
+          ],
+        );
+      case QuestionType.checkbox:
+        List<AnswerModel> selectedAnswer = question.answers
+            .where((a) => a.isCorrect == 1)
+            .toList();
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: initValue!.length,
+              itemBuilder: (context, index) =>
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      FormBuilderTextField(
+                        enabled: false,
+                        initialValue: initValue != null ? initValue![index].content : null,
+                        name: "${_name}${index}",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 20,
+                        ),
+
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(11),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      initValue![index].isCorrect == 1
+                          ? Row(
+                        children: [
+                          Icon(Icons.check_circle, color: ColorManager.success),
+                          SizedBox(width: 12),
+                          Text(
+                            "اجابتك صحيحة",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      )
+                          : Row(
+                        children: [
+                          Icon(Icons.block_outlined, color: ColorManager.success),
+                          SizedBox(width: 12),
+                          Text(
+                            "اجابتك خاطئة ",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 10),
+                    ],
+                  ),
+            ),
+            Text(
+              "الاجابات الصحيحة هي :",
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.w500,
+                fontSize: 16,
+              ),
+            ),
+            SizedBox(height: 20),
+            FormBuilderCheckboxGroup<AnswerModel>(
+              name: _name,
+              enabled: false,
+              orientation: OptionsOrientation.vertical,
+              initialValue: selectedAnswer,
+              options: question.answers
+                  .map(
+                    (a) => FormBuilderFieldOption(
+                      value: a,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [imageAnswerNetwork(a), Text("${a.title}")],
+                      ),
+                    ),
+                  )
+                  .toList(),
+
+            ),
+
+          ],
         );
 
       case QuestionType.autocomplete:
         return FormBuilderTextField(
-          initialValue:initValue!=null? initValue![0]:null,
+          initialValue: initValue != null ? initValue![0].content : null,
           name: _name,
           maxLines: 5,
           minLines: 1,
           enabled: false,
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w500,
+            fontSize: 20,
+          ),
           decoration: InputDecoration(
             hintText: "Answer...",
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(11)),
@@ -152,16 +386,29 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
         return FormBuilderSwitch(
           name: _name,
           enabled: false,
+
           initialValue: initValue != null
               ? (initValue?[0] == "0" ? false : true)
               : null,
-          title: Text(question.title),
+          title: Text(
+            question.title,
+            style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.w500,
+              fontSize: 20,
+            ),
+          ),
         );
 
       case QuestionType.date:
         return FormBuilderTextField(
-          initialValue:initValue!=null? initValue![0]:null,
+          initialValue: initValue != null ? initValue![0].content : null,
           name: _name,
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w500,
+            fontSize: 20,
+          ),
           maxLines: 5,
           minLines: 1,
           enabled: false,
@@ -172,7 +419,12 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
 
       case QuestionType.time:
         return FormBuilderTextField(
-          initialValue:initValue!=null? initValue![0]:null,
+          initialValue: initValue != null ? initValue![0].content : null,
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w500,
+            fontSize: 20,
+          ),
           name: _name,
           maxLines: 5,
           minLines: 1,
@@ -183,7 +435,12 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
         );
       case QuestionType.dateTime:
         return FormBuilderTextField(
-          initialValue:initValue!=null? initValue![0]:null,
+          initialValue: initValue != null ? initValue![0].content : null,
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.w500,
+            fontSize: 20,
+          ),
           name: _name,
           maxLines: 5,
           minLines: 1,
@@ -199,7 +456,7 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
           enabled: false,
           min: 0,
           max: 100,
-          initialValue: double.parse(initValue?[0] ?? "0"),
+          initialValue: double.parse(initValue?[0].content ?? "0"),
           divisions: 50,
         );
 
@@ -207,7 +464,7 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
         return FormBuilderRatingBar(
           enabled: false,
           name: _name,
-          initialValue: double.parse(initValue?[0] ?? "0"),
+          initialValue: double.parse(initValue?[0].content ?? "0"),
           maxRating: 5,
           allowHalfRating: true,
 
@@ -215,7 +472,7 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
           // const Color(0xFFFFC107), // أصفر ذهبي
           glow: true,
           glowColor: ColorManager.textHint,
-          glowRadius:2,
+          glowRadius: 2,
           itemSize: 36,
           ratingWidget: RatingWidget(
             full: Icon(
@@ -230,8 +487,9 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
                 ),
               ],
             ),
+
             half: Icon(
-              Icons.star_half,
+              Icons.star_half_outlined,
               size: 36,
               color: const Color(0xFFFFC107),
               shadows: [
@@ -251,8 +509,8 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
           ),
           validator: question.isRequired == true
               ? (value) => (value == null || value == 0)
-              ? "This question is required"
-              : null
+                    ? "This question is required"
+                    : null
               : null,
         );
 

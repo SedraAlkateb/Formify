@@ -82,39 +82,40 @@ class ViewUserSurveyPage extends StatelessWidget {
                                   .length, // Number of surveys
                               itemBuilder: (context, index) {
                                 return InkWell(
-                                  onTap: () {
-                                    BlocProvider.of<ActiveConferenceBloc>(context).add(
-                                      GetCompletedSurveyEvent(
-                                          state.surveys[index].id,
-                                          state.userModel.id
-                                      ),
-                                    );
-                                    Navigator.pushNamed(
-                                      context,
-                                      Routes.viewCompletedSurvey,
-                                    );
-                                    BlocProvider.of<ThemeBloc>(context).add(
-                                      ChangeThemeColorEvent(
-                                        Color(
-                                          int.parse(
-                                            state
 
-                                                .surveys[index]
-                                                .color,
-                                          ),
-                                        ),
-                                        state
-
-                                            .surveys[index]
-                                            .color,
-                                      ),
-                                    );
-
-
-                                  },
                                   child: surveyListWidget(
                                     state.surveys[index]
                                         .toDomain(),
+                                        () {
+                                      BlocProvider.of<ActiveConferenceBloc>(context).add(
+                                        GetCompletedSurveyEvent(
+                                            state.surveys[index].id,
+                                            state.userModel.id
+                                        ),
+                                      );
+                                      Navigator.pushNamed(
+                                        context,
+                                        Routes.viewCompletedSurvey,
+                                      );
+                                      BlocProvider.of<ThemeBloc>(context).add(
+                                        ChangeThemeColorEvent(
+                                          Color(
+                                            int.parse(
+                                              state
+
+                                                  .surveys[index]
+                                                  .color,
+                                            ),
+                                          ),
+                                          state
+
+                                              .surveys[index]
+                                              .color,
+                                        ),
+                                      );
+
+
+                                    },
                                   ),
                                 );
                               },
