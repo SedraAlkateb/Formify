@@ -6,7 +6,7 @@ import 'package:formify/domain/models/model_q.dart';
 import 'package:form_builder_extra_fields/form_builder_extra_fields.dart';
 import 'package:formify/presentation/question/widgets/image_answer.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
-import 'package:formify/presentation/sync/page/correct_widget.dart';
+import 'package:formify/presentation/question/widgets/checkbox_widget.dart';
 
 class QuestionPreviewNetworkBuilder extends StatelessWidget {
   final QuestionModel question;

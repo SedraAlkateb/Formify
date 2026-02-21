@@ -37,7 +37,6 @@ class _CheckboxQuestionWidgetState extends State<CheckboxQuestionWidget> {
 
               Color? bgColor;
               Color borderColor = Colors.grey.shade300;
-
               if (isSubmitted) {
                 if (isCorrect) {
                   bgColor = Colors.green.withOpacity(0.15);
@@ -70,34 +69,44 @@ class _CheckboxQuestionWidgetState extends State<CheckboxQuestionWidget> {
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(color: borderColor),
                   ),
-                  child: Row(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Checkbox(
-                        value: isSelected,
-                        onChanged: isSubmitted
-                            ? null
-                            : (val) {
-                          setState(() {
-                            if (val == true) {
-                              selected.add(a);
-                            } else {
-                              selected.remove(a);
-                            }
-                            field.didChange(selected);
-                          });
-                        },
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: isSelected,
+                            onChanged: isSubmitted
+                                ? null
+                                : (val) {
+                              setState(() {
+                                if (val == true) {
+                                  selected.add(a);
+                                } else {
+                                  selected.remove(a);
+                                }
+                                field.didChange(selected);
+                              });
+                            },
+                          ),
+                          const SizedBox(width: 8),
+                          imageAnswerNetwork(a),
+                          const SizedBox(width: 8),
+
+                          if (isSubmitted)
+                            Icon(
+                              isCorrect
+                                  ? Icons.check_circle
+                                  : (isSelected ? Icons.cancel : Icons.radio_button_unchecked),
+                              color: isCorrect ? Colors.green : (isSelected ? Colors.red : Colors.grey),
+                            ),
+                        ],
                       ),
-                      const SizedBox(width: 8),
-                      imageAnswerNetwork(a),
-                      const SizedBox(width: 8),
-                      Expanded(child: Text(a.title)),
-                      if (isSubmitted)
-                        Icon(
-                          isCorrect
-                              ? Icons.check_circle
-                              : (isSelected ? Icons.cancel : Icons.radio_button_unchecked),
-                          color: isCorrect ? Colors.green : (isSelected ? Colors.red : Colors.grey),
-                        ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 60),
+                        child: Text(a.title),
+                      ),
                     ],
                   ),
                 ),
