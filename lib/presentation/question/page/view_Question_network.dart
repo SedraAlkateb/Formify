@@ -6,6 +6,7 @@ import 'package:formify/domain/models/model_q.dart';
 import 'package:form_builder_extra_fields/form_builder_extra_fields.dart';
 import 'package:formify/presentation/question/widgets/image_answer.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
+import 'package:formify/presentation/sync/page/correct_widget.dart';
 
 class QuestionPreviewNetworkBuilder extends StatelessWidget {
   final QuestionModel question;
@@ -115,48 +116,80 @@ class QuestionPreviewNetworkBuilder extends StatelessWidget {
         );
 
       case QuestionType.multipleChoice:
-        return FormBuilderRadioGroup<AnswerModel>(
-          orientation: OptionsOrientation.vertical,
+        return FormBuilderField<AnswerModel>(
           name: _name,
-          options: question.answers
-              .map(
-                (a) => FormBuilderFieldOption(
-              value: a,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [imageAnswerNetwork(a), Text(a.title)],
-              ),
-            ),
-          )
-              .toList(),
           validator: _requiredIfNeeded(),
-        );
+          builder: (field) {
+            final selected = field.value;
 
+            return Column(
+              children: question.answers.map((a) {
+                final isSelected = selected == a;
+                final isCorrect = a.isCorrect == 1;
+
+                Color? bgColor;
+                Color borderColor = Colors.grey.shade300;
+
+                if (selected != null) {
+                  if (isCorrect) {
+                    bgColor = Colors.green.withOpacity(0.15);
+                    borderColor = Colors.green;
+                  } else if (isSelected && !isCorrect) {
+                    bgColor = Colors.red.withOpacity(0.15);
+                    borderColor = Colors.red;
+                  }
+                }
+
+                return GestureDetector(
+                  onTap: () {
+                    if (selected != null) return; // 🔒 يمنع التغيير بعد الاختيار
+                    field.didChange(a);
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 250),
+                    margin: const EdgeInsets.symmetric(vertical: 6),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: bgColor,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: borderColor),
+                    ),
+                    child: Row(
+                      children: [
+                        Radio<AnswerModel>(
+                          value: a,
+                          groupValue: selected,
+                          onChanged: selected != null
+                              ? null
+                              : (val) => field.didChange(val),
+                        ),
+                        const SizedBox(width: 8),
+                        imageAnswerNetwork(a),
+                        const SizedBox(width: 8),
+                        Expanded(child: Text(a.title)),
+                        if (selected != null)
+                          Icon(
+                            isCorrect
+                                ? Icons.check_circle
+                                : isSelected
+                                ? Icons.cancel
+                                : null,
+                            color: isCorrect
+                                ? Colors.green
+                                : isSelected
+                                ? Colors.red
+                                : null,
+                          ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
+            );
+          },
+        );
       case QuestionType.checkbox:
-        return FormBuilderCheckboxGroup<AnswerModel>(
-          name: _name,
-          orientation: OptionsOrientation.vertical,
-          options: question.answers
-              .map(
-                (a) => FormBuilderFieldOption(
-              value: a,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [imageAnswerNetwork(a), Text(a.title)],
-              ),
-            ),
-          )
-              .toList(),
-          validator: question.isRequired == true
-              ? FormBuilderValidators.minLength(
-            1,
-            errorText: "اختر خياراً واحداً على الأقل",
-          )
-              : null,
-        );
-
+        return CheckboxQuestionWidget(question: question, name: _name);
       case QuestionType.autocomplete:
         return FormBuilderField<String>(
           name: _name,

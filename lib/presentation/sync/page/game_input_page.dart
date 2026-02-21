@@ -108,18 +108,6 @@ class _GameInputPageState extends State<GameInputPage> {
                   SnackBar(content: Text("فشل الإرسال: ${state.failure}")),
                 );
               }
-              if((state is SurveyReadyState)&&(state.answers[state.index]!=null) ){
-
-                for (final a in state.answers[state.index]!) {
-                 if( a.isCorrect==0){
-                   ScaffoldMessenger.of(context).showSnackBar(
-                     SnackBar(content: Text("اجابتك خاطئة")),
-                   );
-                   break;
-                 }
-                }
-
-              }
             },
             builder: (context, state) {
               if (state is SurveyLoadingState ||
