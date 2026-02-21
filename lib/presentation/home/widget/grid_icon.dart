@@ -22,7 +22,7 @@ class CustomGridPage extends StatelessWidget {
         children: [
           StaggeredGridTile.count(
             crossAxisCellCount: 1,
-            mainAxisCellCount: 1,
+            mainAxisCellCount: 0.7,
             child: AnimatedGridItem(
               text: "عرض المؤتمرات",
               onTap: () {
@@ -36,7 +36,7 @@ class CustomGridPage extends StatelessWidget {
 
           StaggeredGridTile.count(
             crossAxisCellCount: 1,
-            mainAxisCellCount: 1.6, // أكبر من الباقي
+            mainAxisCellCount: 1.1, // أكبر من الباقي
             child: AnimatedGridItem(
               text: "انشاء استبيان ديناميكي",
               onTap: () {
@@ -49,7 +49,7 @@ class CustomGridPage extends StatelessWidget {
 
           StaggeredGridTile.count(
             crossAxisCellCount: 1,
-            mainAxisCellCount: 1.6,
+            mainAxisCellCount: 1.1,
             child: AnimatedGridItem(
 
               text: "انشاء مؤتمر ديناميكي",
@@ -62,7 +62,7 @@ class CustomGridPage extends StatelessWidget {
           ),
           StaggeredGridTile.count(
             crossAxisCellCount: 1,
-            mainAxisCellCount: 1,
+            mainAxisCellCount: 0.7,
             child: AnimatedGridItem(
               text: "عرض الاستبيانات",
               onTap: () {

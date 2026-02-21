@@ -69,7 +69,6 @@ class SettingPage extends StatelessWidget {
                 ),
               ),
 
-              // ✅ FIX: Make the body scrollable within available height
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(
@@ -148,9 +147,11 @@ class SettingPage extends StatelessWidget {
                                   onTap: () {
                                     showConfirmDialog(
                                       context: context,
-                                      title: "offline conference",
+
+                                      title: "رفع بيانات المؤتمر",
                                       message:
-                                          "Are you sure you want to save conference offline",
+                                          "هل انت متاكد من انك انتهيت من ملئ معلومات المؤتمر وتريد رفعه , تأكد من اتصالك بالانترنت لرفع البيانات",
+
                                       onConfirm: () {
                                         BlocProvider.of<SyncBloc>(
                                           context,

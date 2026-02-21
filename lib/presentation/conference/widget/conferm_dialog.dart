@@ -12,21 +12,20 @@ Future<void> showConfirmDialog({
     barrierDismissible: false,
     builder: (context) {
       return AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(title),
         content: Text(message),
+
+        //   icon: Icon(Icons.network_check),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
             child: const Text("إلغاء"),
           ),
           ElevatedButton(
-
             style: ElevatedButton.styleFrom(
               backgroundColor: ColorManager.primary, // لون الخلفية
-              foregroundColor: Colors.white,          // لون النص
+              foregroundColor: Colors.white, // لون النص
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
