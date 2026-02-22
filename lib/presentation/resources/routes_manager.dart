@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:formify/app/di.dart';
+import 'package:formify/login/page/login_page.dart';
 import 'package:formify/presentation/active_conference/page/all_active_conference.dart';
 import 'package:formify/presentation/active_conference/page/view_active_conference_page.dart';
 import 'package:formify/presentation/active_conference/page/view_completed_survey.dart';
@@ -50,6 +51,7 @@ class Routes {
 
   static const String gameInput = "/gameInput";
   static const String surveyInput = "/surveyInput";
+  static const String loginPage = "/LoginPage";
 
 }
 
@@ -59,7 +61,9 @@ class RouteGenerator {
       case Routes.onboarding:
         initOnBoardingModule();
         return _animatedRoute(OnBoardingPage());
-
+      case Routes.loginPage:
+        //initOnBoardingModule();
+        return _animatedRoute(LoginPage());
       case Routes.home:
         initConferenceModule();
         initSyncModule();

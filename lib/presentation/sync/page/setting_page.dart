@@ -139,7 +139,7 @@ class SettingPage extends StatelessWidget {
                                     Navigator.pushNamedAndRemoveUntil(
                                       context,
                                       Routes.home,
-                                      (route) => false,
+                                          (route) => false,
                                     );
                                   }
                                 },
@@ -148,9 +148,9 @@ class SettingPage extends StatelessWidget {
                                     showConfirmDialog(
                                       context: context,
 
-                                      title: "رفع بيانات المؤتمر",
+                                      title: "حفظ بيانات المؤتمر",
                                       message:
-                                          "هل انت متاكد من انك انتهيت من ملئ معلومات المؤتمر وتريد رفعه , تأكد من اتصالك بالانترنت لرفع البيانات",
+                                      "هل انت متاكد من انك انتهيت من ملئ معلومات المؤتمر وتريد رفعه , تأكد من اتصالك بالانترنت لرفع البيانات",
 
                                       onConfirm: () {
                                         BlocProvider.of<SyncBloc>(
@@ -175,9 +175,9 @@ class SettingPage extends StatelessWidget {
                                       ),
                                       child: Row(
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.center,
+                                        CrossAxisAlignment.center,
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                        MainAxisAlignment.center,
                                         children: [
                                           Card(
                                             margin: const EdgeInsets.only(
@@ -187,7 +187,7 @@ class SettingPage extends StatelessWidget {
                                             ),
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
-                                                  BorderRadius.circular(12),
+                                              BorderRadius.circular(12),
                                             ),
                                             color: ColorManager.accent,
                                             child: const Padding(
@@ -205,9 +205,139 @@ class SettingPage extends StatelessWidget {
                                           Flexible(
                                             child: Column(
                                               mainAxisAlignment:
-                                                  MainAxisAlignment.start,
+                                              MainAxisAlignment.start,
                                               crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
+                                              CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  StringsManager
+                                                      .uploadConference,
+                                                  textAlign: TextAlign.start,
+                                                  style: TextStyle(
+                                                    color: ColorManager.white,
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  StringsManager
+                                                      .uploadConferenceDesc,
+                                                  textAlign: TextAlign.start,
+                                                  style: TextStyle(
+                                                    color: ColorManager.white,
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Icon(
+                                            Icons.arrow_forward,
+                                            color: ColorManager.white,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+
+                              const SizedBox(height: 10),
+                              /////////////////////////tyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyh
+
+                              BlocListener<SyncBloc, SyncState>(
+                                listener: (context, state) {
+                                  if (state is DataLoadingState) {
+                                    loading(context);
+                                  }
+                                  if (state is GetDataState) {
+                                    BlocProvider.of<SyncBloc>(context).add(
+                                      UploadDataEvent(
+                                        state.users,
+                                        state.conference_id,
+                                      ),
+                                    );
+                                  } else if (state is UploadDataState) {
+                                    BlocProvider.of<SyncBloc>(
+                                      context,
+                                    ).add(DeleteDataEvent());
+                                  } else if (state is DeleteDataState) {
+                                    success(context);
+                                    instance<AppPreferences>().setLoggedIn(1);
+                                    Navigator.pushNamedAndRemoveUntil(
+                                      context,
+                                      Routes.home,
+                                          (route) => false,
+                                    );
+                                  }
+                                },
+                                child: InkWell(
+                                  onTap: () {
+                                    showConfirmDialog(
+                                      context: context,
+
+                                      title: "رفع بيانات المؤتمر",
+                                      message:
+                                      "هل انت متاكد من انك انتهيت من ملئ معلومات المؤتمر وتريد رفعه , تأكد من اتصالك بالانترنت لرفع البيانات",
+
+                                      onConfirm: () {
+                                        BlocProvider.of<SyncBloc>(
+                                          context,
+                                        ).add(GetDataEvent(id));
+                                      },
+                                    );
+                                  },
+                                  child: AnimationContainerWidget(
+                                    child: Container(
+                                      width: double.infinity,
+                                      padding: const EdgeInsets.all(20),
+                                      margin: const EdgeInsets.symmetric(
+                                        vertical: 12,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: ColorManager.border,
+                                        ),
+                                        color: ColorManager.primary,
+                                        borderRadius: BorderRadius.circular(25),
+                                      ),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.center,
+                                        children: [
+                                          Card(
+                                            margin: const EdgeInsets.only(
+                                              left: 15,
+                                              top: 15,
+                                              bottom: 15,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                              BorderRadius.circular(12),
+                                            ),
+                                            color: ColorManager.accent,
+                                            child: const Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                vertical: 15,
+                                                horizontal: 15,
+                                              ),
+                                              child: Icon(
+                                                Icons.cloud_upload_outlined,
+                                                color: Colors.white,
+                                                size: 30,
+                                              ),
+                                            ),
+                                          ),
+                                          Flexible(
+                                            child: Column(
+                                              mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                               children: [
                                                 Text(
                                                   StringsManager
