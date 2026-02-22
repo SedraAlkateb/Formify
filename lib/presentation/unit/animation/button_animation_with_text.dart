@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
+import 'package:formify/presentation/resources/responsive/font_responseve.dart';
+import 'package:formify/presentation/resources/responsive/sizer_responseve.dart';
 
 Widget buttonAnimationWithText(
     BuildContext context,
@@ -52,12 +54,12 @@ class _ButtonAnimationWithTextState extends State<_ButtonAnimationWithText> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: ColorManager.primary, // لون الخلفية
                 foregroundColor: Colors.white,          // لون النص
-                padding: const EdgeInsets.symmetric(vertical: 14),
+                padding:  EdgeInsets.symmetric(vertical: 14.sp),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
                 elevation: 4,
-                minimumSize: const Size(double.infinity, 48),
+                minimumSize:  Size(double.infinity, 48.sp),
                 shadowColor: ColorManager.primary.withOpacity(glowOpacity),
 
               ),
@@ -72,10 +74,19 @@ class _ButtonAnimationWithTextState extends State<_ButtonAnimationWithText> {
 
             Text(
               widget.text,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              style:  TextStyle(fontWeight: FontWeight.bold
+                  ,
+                fontSize: FontResponsive.font(
+                  context,
+                  mobile: 18,
+                  tablet: 24,
+                  desktop: 26,
+                ),
+
+              ),
             ),
-            const SizedBox(width: 6),
-            const Icon(Icons.arrow_forward_ios, size: 18),
+             SizedBox(width: 6.sp),
+             Icon(Icons.arrow_forward_ios, size: 18.sp),
 
 
           ],

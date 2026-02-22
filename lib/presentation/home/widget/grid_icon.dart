@@ -6,6 +6,7 @@ import 'package:formify/app/di.dart';
 import 'package:formify/presentation/active_conference/bloc/active_conference_bloc.dart';
 import 'package:formify/presentation/resources/assets_manager.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
+import 'package:formify/presentation/resources/responsive/font_responseve.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 
 class CustomGridPage extends StatelessWidget {
@@ -22,7 +23,7 @@ class CustomGridPage extends StatelessWidget {
         children: [
           StaggeredGridTile.count(
             crossAxisCellCount: 1,
-            mainAxisCellCount: 0.7,
+            mainAxisCellCount: 1,
             child: AnimatedGridItem(
               text: "عرض المؤتمرات",
               onTap: () {
@@ -36,7 +37,7 @@ class CustomGridPage extends StatelessWidget {
 
           StaggeredGridTile.count(
             crossAxisCellCount: 1,
-            mainAxisCellCount: 1.1, // أكبر من الباقي
+            mainAxisCellCount: 1.7, // أكبر من الباقي
             child: AnimatedGridItem(
               text: "انشاء استبيان ديناميكي",
               onTap: () {
@@ -49,7 +50,7 @@ class CustomGridPage extends StatelessWidget {
 
           StaggeredGridTile.count(
             crossAxisCellCount: 1,
-            mainAxisCellCount: 1.1,
+            mainAxisCellCount: 1.7,
             child: AnimatedGridItem(
 
               text: "انشاء مؤتمر ديناميكي",
@@ -62,7 +63,7 @@ class CustomGridPage extends StatelessWidget {
           ),
           StaggeredGridTile.count(
             crossAxisCellCount: 1,
-            mainAxisCellCount: 0.7,
+            mainAxisCellCount: 1,
             child: AnimatedGridItem(
               text: "عرض الاستبيانات",
               onTap: () {
@@ -142,9 +143,14 @@ class _AnimatedGridItemState extends State<AnimatedGridItem> {
                children: [
                  Text(
                    widget.text,
-                   style: const TextStyle(
+                   style: TextStyle(
                      color: ColorManager.primary,
-                     fontSize: 18,
+                     fontSize: FontResponsive.font(
+                       context,
+                       mobile: 18,
+                       tablet: 20,
+                       desktop: 24,
+                     ),
                      fontWeight: FontWeight.bold,
                    ),
                  ),

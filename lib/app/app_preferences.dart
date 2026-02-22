@@ -3,6 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 const String PREFS_KEY_LS_USER_LOGGED_IN = "PREFS_KEY_LS_USER_LOGGED_IN";
 const String PREFS_KEY_GAME_OR_SURVEY = "PREFS_KEY_GAME_OR_SURVEY";
+const String PREFS_KEY_PASSWORD = "PREFS_KEY_PASSWORD";
+const String PREFS_KEY_CONFERENCE_ID = "PREFS_KEY_CONFERENCE_ID";
 
 class AppPreferences {
   final SharedPreferences _sharedPreferences;
@@ -17,9 +19,9 @@ class AppPreferences {
   int  isLog=_sharedPreferences.getInt(
       PREFS_KEY_LS_USER_LOGGED_IN,
     )??0;
-  String startRoute=Routes.onboarding;
+  String startRoute=Routes.loginPage;
     if (isLog == 0) {
-      startRoute = Routes.onboarding;
+      startRoute = Routes.loginPage;
     } else if (isLog == 1) {
       startRoute = Routes.home;
     } else if (isLog == 2) {
@@ -33,6 +35,22 @@ class AppPreferences {
     await _sharedPreferences.setInt(PREFS_KEY_LS_USER_LOGGED_IN, log);
     // reload();
     return true;
+  }
+  Future<bool> setPassword(String password) async {
+    await _sharedPreferences.setString(PREFS_KEY_PASSWORD, password);
+    // reload();
+    return true;
+  }
+  String? getPassword()  {
+    return   _sharedPreferences.getString(PREFS_KEY_PASSWORD);
+
+  }
+  Future<bool> setConferenceId(int conferenceId) async {
+    await _sharedPreferences.setInt(PREFS_KEY_CONFERENCE_ID, conferenceId);
+    return true;
+  }
+  int? getConferenceId()  {
+    return   _sharedPreferences.getInt(PREFS_KEY_CONFERENCE_ID);
   }
   int isGame() {
     return _sharedPreferences.getInt(

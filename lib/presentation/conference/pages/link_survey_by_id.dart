@@ -5,6 +5,7 @@ import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 import 'package:formify/presentation/conference/widget/header_card_widget.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
+import 'package:formify/presentation/resources/theme_bloc/theme_bloc.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 import 'package:formify/presentation/unit/add_survey_button.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
@@ -96,6 +97,7 @@ class ConferenceSurveyById extends StatelessWidget {
                                 : Color(0xE5D796CE),
                             value: s.isActive,
                             onChanged: (v) {
+
                               BlocProvider.of<ConferenceBloc>(context).add(
                                 LinkSurveyConferenceEvent(
                                   s.id,
@@ -109,6 +111,12 @@ class ConferenceSurveyById extends StatelessWidget {
                               Navigator.pushNamed(
                                 context,
                                 Routes.viewSurvey,
+                              );
+                              BlocProvider.of<ThemeBloc>(context).add(
+                                ChangeThemeColorEvent(
+                                  Color(int.parse(s.color)),
+                                  s.color,
+                                ),
                               );
                               BlocProvider.of<SurveyBloc>(context).add(
                                 ViewSurveyByIdEvent(

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/models/model_q.dart';
 import 'package:form_builder_extra_fields/form_builder_extra_fields.dart';
@@ -153,7 +152,7 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
                         children: [
                           Icon(
                             Icons.block_outlined,
-                            color: ColorManager.success,
+                            color: ColorManager.error,
                           ),
                           SizedBox(width: 12),
                           selectedAnswer?.title != null
@@ -179,7 +178,7 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
                       selectedAnswer?.title != null
                           ? FormBuilderTextField(
                               initialValue: selectedAnswer!.title,
-                              name: _name,
+                              name: "${_name}${selectedAnswer.id}",
                               maxLines: 5,
                               minLines: 1,
                               enabled: false,
@@ -243,7 +242,7 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
                   )
                 : Row(
                     children: [
-                      Icon(Icons.block_outlined, color: ColorManager.success),
+                      Icon(Icons.block_outlined, color: ColorManager.error),
                       SizedBox(width: 12),
                       Text(
                         "اجابتك خاطئة الاجابة الصحيحة هي",
@@ -333,7 +332,7 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
                           children: [
                             Icon(
                               Icons.block_outlined,
-                              color: ColorManager.success,
+                              color: ColorManager.error,
                             ),
                             SizedBox(width: 12),
                             Text(

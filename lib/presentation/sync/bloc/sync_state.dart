@@ -37,7 +37,8 @@ final class DeleteDataState extends SyncState {
 }
 
 final class InsertSucState extends SyncState {
-  const InsertSucState();
+  final int conferenceId;
+  const InsertSucState(this.conferenceId);
 }
 
 final class UploadDataState extends SyncState {

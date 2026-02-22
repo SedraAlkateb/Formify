@@ -4,9 +4,12 @@ import 'package:formify/app/app_preferences.dart';
 import 'package:formify/app/di.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
+import 'package:formify/presentation/resources/responsive/font_responseve.dart';
+import 'package:formify/presentation/resources/responsive/sizer_responseve.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
 import 'package:formify/presentation/sync/widget/doforma_container_widget.dart';
+import 'package:formify/presentation/sync/widget/gialog_add_password.dart';
 import 'package:formify/presentation/unit/animation/button_animation_with_text.dart';
 import 'package:formify/presentation/unit/animation/animation_container_widget.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
@@ -43,7 +46,7 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
           child: SafeArea(
             child: BlocBuilder<SyncBloc, SyncState>(
               buildWhen: (previous, current) =>
-              current is GetConferenceAsyncLoadingState ||
+                  current is GetConferenceAsyncLoadingState ||
                   current is AsyncConferenceErrorState ||
                   current is GetConferenceAsyncState ||
                   current is GetConferenceAsyncEmptyState,
@@ -61,10 +64,9 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                       children: [
                         FloatingContainer(),
                         Container(
-
                           width: double.infinity,
-                          padding: const EdgeInsets.all(20),
-                          margin: const EdgeInsets.all(25),
+                          padding: EdgeInsets.all(20.sp),
+                          margin: EdgeInsets.all(25.sp),
                           decoration: BoxDecoration(
                             border: Border.all(color: ColorManager.border),
                             color: ColorManager.white,
@@ -78,7 +80,7 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                             borderRadius: BorderRadius.circular(25),
                           ),
                           child: Padding(
-                            padding: const EdgeInsets.all(20),
+                            padding: EdgeInsets.all(20.sp),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -87,17 +89,27 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                   textAlign: TextAlign.right,
                                   style: TextStyle(
                                     color: ColorManager.primary,
-                                    fontSize: 35,
+                                    fontSize: FontResponsive.font(
+                                      context,
+                                      mobile: 35,
+                                      tablet: 41,
+                                      desktop: 43,
+                                    ),
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                const SizedBox(height: 5),
+                                SizedBox(height: 5.sp),
                                 Text(
                                   conferenceModel.description,
                                   textAlign: TextAlign.right,
                                   style: TextStyle(
                                     color: ColorManager.black,
-                                    fontSize: 15,
+                                    fontSize: FontResponsive.font(
+                                      context,
+                                      mobile: 15,
+                                      tablet: 21,
+                                      desktop: 23,
+                                    ),
                                     fontWeight: FontWeight.w400,
                                   ),
                                 ),
@@ -106,42 +118,57 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                 AnimationContainerWidget(
                                   child: Container(
                                     width: double.infinity,
-                                    padding: const EdgeInsets.all(12),
-                                    margin: const EdgeInsets.symmetric(vertical: 12),
+                                    padding: EdgeInsets.all(12.sp),
+                                    margin: EdgeInsets.symmetric(
+                                      vertical: 12.sp,
+                                    ),
                                     decoration: BoxDecoration(
-                                      border: Border.all(color: ColorManager.border),
-                                      color: ColorManager.primaryShadow.withOpacity(0.2),
+                                      border: Border.all(
+                                        color: ColorManager.border,
+                                      ),
+                                      color: ColorManager.primaryShadow
+                                          .withOpacity(0.2),
                                       borderRadius: BorderRadius.circular(25),
                                     ),
                                     child: Row(
                                       children: [
                                         Card(
-                                          margin: const EdgeInsets.all(5),
+                                          margin: EdgeInsets.all(5.sp),
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(12),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
                                           ),
                                           color: ColorManager.primary,
-                                          child: const Padding(
-                                            padding: EdgeInsets.all(10),
+                                          child: Padding(
+                                            padding: EdgeInsets.all(10.sp),
                                             child: Icon(
                                               Icons.location_on_outlined,
                                               color: Color(0xffffffff),
-                                              size: 30,
+                                              size: 30.sp,
                                             ),
                                           ),
                                         ),
                                         Expanded(
                                           child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
+                                            padding: EdgeInsets.all(8.0.sp),
                                             child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
                                                 Text(
                                                   "العنوان",
                                                   textAlign: TextAlign.right,
                                                   style: TextStyle(
-                                                    color: ColorManager.textSecondary,
-                                                    fontSize: 15,
+                                                    color: ColorManager
+                                                        .textSecondary,
+                                                    fontSize:
+                                                        FontResponsive.font(
+                                                          context,
+                                                          mobile: 15,
+                                                          tablet: 21,
+                                                          desktop: 23,
+                                                        ),
                                                     fontWeight: FontWeight.w500,
                                                   ),
                                                 ),
@@ -150,7 +177,13 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                                   textAlign: TextAlign.right,
                                                   style: TextStyle(
                                                     color: ColorManager.black,
-                                                    fontSize: 18,
+                                                    fontSize:
+                                                        FontResponsive.font(
+                                                          context,
+                                                          mobile: 18,
+                                                          tablet: 24,
+                                                          desktop: 26,
+                                                        ),
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
@@ -158,52 +191,67 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                             ),
                                           ),
                                         ),
-                                        const SizedBox(width: 20),
+                                        SizedBox(width: 20.sp),
                                       ],
                                     ),
                                   ),
                                 ),
-
+                                SizedBox(height: 5.sp),
                                 // Date
                                 AnimationContainerWidget(
                                   child: Container(
                                     width: double.infinity,
-                                    padding: const EdgeInsets.all(12),
-                                    margin: const EdgeInsets.symmetric(vertical: 12),
+                                    padding: EdgeInsets.all(12.sp),
+                                    margin: EdgeInsets.symmetric(
+                                      vertical: 12.sp,
+                                    ),
                                     decoration: BoxDecoration(
-                                      border: Border.all(color: ColorManager.border),
-                                      color: ColorManager.primaryShadow.withOpacity(0.2),
+                                      border: Border.all(
+                                        color: ColorManager.border,
+                                      ),
+                                      color: ColorManager.primaryShadow
+                                          .withOpacity(0.2),
                                       borderRadius: BorderRadius.circular(25),
                                     ),
                                     child: Row(
                                       children: [
                                         Card(
-                                          margin: const EdgeInsets.all(5),
+                                          margin: EdgeInsets.all(5.sp),
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(12),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
                                           ),
                                           color: ColorManager.primary,
-                                          child: const Padding(
-                                            padding: EdgeInsets.all(10),
+                                          child: Padding(
+                                            padding: EdgeInsets.all(10.sp),
                                             child: Icon(
                                               Icons.date_range_sharp,
                                               color: Color(0xffffffff),
-                                              size: 30,
+                                              size: 30.sp,
                                             ),
                                           ),
                                         ),
                                         Expanded(
                                           child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
+                                            padding: EdgeInsets.all(8.0.sp),
                                             child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
                                                 Text(
                                                   "التاريخ",
                                                   textAlign: TextAlign.right,
                                                   style: TextStyle(
-                                                    color: ColorManager.textSecondary,
-                                                    fontSize: 15,
+                                                    color: ColorManager
+                                                        .textSecondary,
+                                                    fontSize:
+                                                        FontResponsive.font(
+                                                          context,
+                                                          mobile: 15,
+                                                          tablet: 21,
+                                                          desktop: 23,
+                                                        ),
                                                     fontWeight: FontWeight.w500,
                                                   ),
                                                 ),
@@ -212,7 +260,13 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                                   textAlign: TextAlign.right,
                                                   style: TextStyle(
                                                     color: ColorManager.black,
-                                                    fontSize: 18,
+                                                    fontSize:
+                                                        FontResponsive.font(
+                                                          context,
+                                                          mobile: 18,
+                                                          tablet: 24,
+                                                          desktop: 26,
+                                                        ),
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
@@ -221,7 +275,13 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                                   textAlign: TextAlign.right,
                                                   style: TextStyle(
                                                     color: ColorManager.black,
-                                                    fontSize: 18,
+                                                    fontSize:
+                                                        FontResponsive.font(
+                                                          context,
+                                                          mobile: 18,
+                                                          tablet: 24,
+                                                          desktop: 26,
+                                                        ),
                                                     fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
@@ -229,7 +289,7 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                             ),
                                           ),
                                         ),
-                                        const SizedBox(width: 20),
+                                        SizedBox(width: 20.sp),
                                       ],
                                     ),
                                   ),
@@ -237,27 +297,32 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
 
                                 Column(
                                   children: [
-                                    buttonAnimationWithText(
-                                      context,
-                                          () {
-                                        Navigator.pushNamed(context, Routes.insertUser);
-                                      },
-                                      "ابدأ الاستبيانات",
-                                    ),
+                                    buttonAnimationWithText(context, () {
+                                      Navigator.pushNamed(
+                                        context,
+                                        Routes.insertUser,
+                                      );
+                                    }, "ابدأ الاستبيانات"),
                                     const SizedBox(height: 10),
-                                    buttonAnimationWithText(
-                                      context,
-                                          () {
-                                        BlocProvider.of<SyncBloc>(context)
-                                            .add(GetInfoConferenceEvent());
-                                        Navigator.pushNamed(
-                                          context,
-                                          Routes.settingPage,
-                                          arguments: conferenceModel.id,
-                                        );
-                                      },
-                                      "إعدادات المؤتمر",
-                                    ),
+                                    buttonAnimationWithText(context, () {
+                                      showPasswordDialog(
+                                        context: context,
+                                        onSuccess: () {
+                                          BlocProvider.of<SyncBloc>(
+                                            context,
+                                          ).add(GetInfoConferenceEvent());
+                                          Navigator.pushNamed(
+                                            context,
+                                            Routes.settingPage,
+                                            arguments: conferenceModel.id,
+                                          );
+                                        },
+                                        correctPassword:
+                                            instance<AppPreferences>()
+                                                .getPassword() ??
+                                            "لا يوجد كلمة سر",
+                                      );
+                                    }, "إعدادات المؤتمر"),
                                   ],
                                 ),
                               ],
@@ -278,7 +343,10 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: ColorManager.primary,
                           foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 14,
+                            horizontal: 20,
+                          ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -288,7 +356,7 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                           Navigator.pushNamedAndRemoveUntil(
                             context,
                             Routes.home,
-                                (route) => false,
+                            (route) => false,
                           );
                         },
                         child: const Text("العودة إلى الرئيسية"),

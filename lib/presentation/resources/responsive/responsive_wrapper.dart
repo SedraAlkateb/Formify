@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'breakpoints.dart';
 
 class AdaptiveRowColumn extends StatelessWidget {
-  final Widget left;   // المحتوى (نصوص/حقول/قائمة...)
-  final Widget right;  // assets (صور/رسوم/إلخ)
+  final Widget left;
+  final Widget right;
   final double gap;
 
   const AdaptiveRowColumn({
@@ -17,7 +17,7 @@ class AdaptiveRowColumn extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (_, c) {
-        final isTablet = Breakpoints.isTablet(c.maxWidth) || Breakpoints.isDesktop(c.maxWidth);
+        final isTablet = Breakpoints.isTablet(context) || Breakpoints.isDesktop(context);
 
         if (!isTablet) {
           // Mobile: تحت بعض

@@ -76,13 +76,11 @@ class _ListOfSurveysPageState extends State<ListOfSurveysPage> {
                         itemCount: surveys.length,
                         itemBuilder: (context, index) {
                           return
-                            AnimationContainerWidget(
-                               child: SurveyCard(
-                                survey: surveys[index],
-                                index: index,
+                            SurveyCard(
+                             survey: surveys[index],
+                             index: index,
 
-                                                         ),
-                             );
+                                                      );
                         },
                       );
                     }

@@ -103,16 +103,23 @@ class QuestionPreviewNetworkBuilder extends StatelessWidget {
         );
 
       case QuestionType.dropdown:
-        return FormBuilderDropdown<AnswerModel>(
-          name: _name,
-          decoration: InputDecoration(
-            hintText: "اختر إجابة",
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-          ),
-          items: question.answers
-              .map((a) => DropdownMenuItem(value: a, child: Text(a.title)))
-              .toList(),
-          validator: _requiredIfNeeded(),
+
+        return Column(
+          children: [
+
+            FormBuilderDropdown<AnswerModel>(
+              name: _name,
+
+              decoration: InputDecoration(
+                hintText: "اختر إجابة",
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              items: question.answers
+                  .map((a) => DropdownMenuItem(value: a, child: Text(a.title)))
+                  .toList(),
+              validator: _requiredIfNeeded(),
+            ),
+          ],
         );
 
       case QuestionType.multipleChoice:
@@ -154,32 +161,37 @@ class QuestionPreviewNetworkBuilder extends StatelessWidget {
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(color: borderColor),
                     ),
-                    child: Row(
+                    child: Column(
                       children: [
-                        Radio<AnswerModel>(
-                          value: a,
-                          groupValue: selected,
-                          onChanged: selected != null
-                              ? null
-                              : (val) => field.didChange(val),
+                        Row(
+                          children: [
+                            Radio<AnswerModel>(
+                              value: a,
+                              groupValue: selected,
+                              onChanged: selected != null
+                                  ? null
+                                  : (val) => field.didChange(val),
+                            ),
+                            const SizedBox(width: 8),
+                            imageAnswerNetwork(a),
+                            const SizedBox(width: 8),
+
+                            if (selected != null)
+                              Icon(
+                                isCorrect
+                                    ? Icons.check_circle
+                                    : isSelected
+                                    ? Icons.cancel
+                                    : null,
+                                color: isCorrect
+                                    ? Colors.green
+                                    : isSelected
+                                    ? Colors.red
+                                    : null,
+                              ),
+                          ],
                         ),
-                        const SizedBox(width: 8),
-                        imageAnswerNetwork(a),
-                        const SizedBox(width: 8),
-                        Expanded(child: Text(a.title)),
-                        if (selected != null)
-                          Icon(
-                            isCorrect
-                                ? Icons.check_circle
-                                : isSelected
-                                ? Icons.cancel
-                                : null,
-                            color: isCorrect
-                                ? Colors.green
-                                : isSelected
-                                ? Colors.red
-                                : null,
-                          ),
+                        Text(a.title),
                       ],
                     ),
                   ),

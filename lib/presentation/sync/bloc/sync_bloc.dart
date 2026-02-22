@@ -84,7 +84,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   ) async {
     (await addAsyncDataSqlUsecase.execute(event.asyncModel)).fold(
       (failure) => emit(DataErrorState(failure: failure)),
-      (_) => emit(const InsertSucState()),
+      (_) => emit( InsertSucState(event.asyncModel.conferenceModel.id)),
     );
   }
 
