@@ -55,6 +55,7 @@ Widget viewAnswerWidget(BuildContext context) {
                       children: [
                         Expanded(
                           child: FormBuilderTextField(
+
                             name: "answer_$index",
                             initialValue: answerModel.title,
                             textDirection: TextDirection.rtl,
@@ -81,6 +82,7 @@ Widget viewAnswerWidget(BuildContext context) {
                           },
                         ),
                         Checkbox(
+
                           value: answerModel.isCorrect == 1,
                           onChanged: (checked) {
                             context.read<SurveyBloc>().add(

@@ -6,6 +6,7 @@ import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/question/page/view_Question.dart';
 import 'package:formify/presentation/question/widgets/next_widget.dart';
 import 'package:formify/presentation/question/widgets/question_widget.dart';
+import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 
 class TextQuestionPage extends StatelessWidget {
@@ -170,7 +171,10 @@ class TextQuestionPage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  nextWidget(context),
+                  nextWidget(context,(){
+                    context.read<SurveyBloc>().add(AddQuestionEvent());
+                    Navigator.pushReplacementNamed(context, Routes.viewSurvey);
+                  }),
                 ],
               ),
             );

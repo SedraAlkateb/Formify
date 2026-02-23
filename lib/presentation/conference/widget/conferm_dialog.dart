@@ -10,33 +10,75 @@ Future<void> showConfirmDialog({
   return showDialog(
     context: context,
     barrierDismissible: false,
+    useSafeArea: true,
     builder: (context) {
-      return AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(title),
-        content: Text(message),
 
-        //   icon: Icon(Icons.network_check),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text("إلغاء"),
+      return AlertDialog(
+        backgroundColor: Colors.white, // خلفية ثابتة بيضاء
+
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+
+
+        title: Text(
+          title,
+          style: const TextStyle(
+            color: ColorManager.primary, // أزرق ثابت
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
           ),
+        ),
+
+        content: Text(
+          message,
+          style: const TextStyle(
+            color: Colors.black87,
+            fontSize: 15,
+          ),
+        ),
+
+        actionsPadding:
+        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+
+        actions: [
+
+          /// زر إلغاء
+          TextButton(
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.grey[700],
+            ),
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text(
+              "إلغاء",
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+
+          /// زر تأكيد أزرق ثابت
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: ColorManager.primary, // لون الخلفية
-              foregroundColor: Colors.white, // لون النص
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+              backgroundColor: ColorManager.primary, // أزرق ثابت
+              foregroundColor: Colors.white,
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 12,
               ),
-              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
             onPressed: () {
               Navigator.of(context).pop();
               onConfirm();
             },
-            child: const Text("نعم"),
+            child: const Text(
+              "نعم",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       );

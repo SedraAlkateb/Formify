@@ -44,6 +44,9 @@ class SurveyInputPage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: colors.background,
+      appBar:AppBar(
+       title: Text("ملئ الاستبيان الأتي"), 
+      ) ,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: BlocConsumer<SyncBloc, SyncState>(

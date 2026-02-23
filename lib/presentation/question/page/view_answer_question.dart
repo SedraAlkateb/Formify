@@ -400,17 +400,23 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
       case QuestionType.switchField:
         return FormBuilderSwitch(
           name: _name,
-          enabled: false,
-
+          enabled: false, // الـ switch غير قابل للتغيير
+          // تحديد الألوان بناءً على القيمة
+          activeColor: (initValue != null && initValue?[0] != "0")
+              ? ColorManager.success // اللون الأخضر عندما تكون true
+              : ColorManager.error, // اللون الأحمر عندما تكون false
+          inactiveThumbColor: (initValue != null && initValue?[0] == "0")
+              ? ColorManager.error // اللون الأحمر عندما تكون false
+              : ColorManager.success, // اللون الأخضر عندما تكون true
           initialValue: initValue != null
               ? (initValue?[0] == "0" ? false : true)
               : null,
           title: Text(
-            question.title,
+            "",
             style: TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.w500,
-              fontSize: 20,
+              fontSize: 15,
             ),
           ),
         );

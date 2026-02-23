@@ -8,6 +8,7 @@ import 'package:formify/presentation/question/widgets/add_answer_widget.dart';
 import 'package:formify/presentation/question/widgets/next_widget.dart';
 import 'package:formify/presentation/question/widgets/question_widget.dart';
 import 'package:formify/presentation/question/widgets/view_answer_widget.dart';
+import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 
 class MultiAnswerPage extends StatelessWidget {
@@ -116,7 +117,29 @@ class MultiAnswerPage extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 20),
-                nextWidget(context),
+                nextWidget(context,
+                      () {
+                    // استدعاء التحقق أولاً
+                    final hasCorrect = context
+                        .read<SurveyBloc>()
+                        .question
+                        .answers
+                        .any((e) => e.isCorrect == 1);
+
+                    if (!hasCorrect) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("يجب اختيار إجابة صحيحة واحدة على الأقل"),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                      return; // منع الانتقال
+                    }else{
+                      context.read<SurveyBloc>().add(AddQuestionEvent());
+                      Navigator.pushReplacementNamed(context, Routes.viewSurvey);
+                    }
+                  },
+                ),
               ],
             ),
           ),

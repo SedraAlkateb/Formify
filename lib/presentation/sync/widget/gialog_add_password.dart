@@ -18,11 +18,17 @@ Future<void> showPasswordDialog({
       return StatefulBuilder(
         builder: (context, setState) {
           return AlertDialog(
+            backgroundColor: Colors.white, // خلفية ثابتة بيضاء
+
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
 
-            title: const Text("دخول الإعدادات"),
+            title: const Text("دخول الإعدادات", style: const TextStyle(
+              color: ColorManager.primary, // أزرق ثابت
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),),
 
             content: Column(
               mainAxisSize: MainAxisSize.min,
@@ -31,7 +37,10 @@ Future<void> showPasswordDialog({
 
                 const Text(
                   "أدخل كلمة السر للدخول إلى الإعدادات",
-                  style: TextStyle(fontSize: 14),
+                  style: const TextStyle(
+                    color: Colors.black87,
+                    fontSize: 15,
+                  ),
                 ),
 
                 const SizedBox(height: 16),
@@ -66,18 +75,24 @@ Future<void> showPasswordDialog({
             actions: [
 
               TextButton(
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.grey[700],
+                ),
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text("إلغاء"),
+                child: const Text("إلغاء", style: TextStyle(fontWeight: FontWeight.w600),),
               ),
 
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: ColorManager.primary,
+                  backgroundColor: ColorManager.primary, // أزرق ثابت
                   foregroundColor: Colors.white,
+                  elevation: 0,
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 12),
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
                 onPressed: () {

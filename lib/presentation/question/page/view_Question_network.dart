@@ -48,10 +48,10 @@ class QuestionPreviewNetworkBuilder extends StatelessWidget {
           ),
           validator: FormBuilderValidators.compose([
             if (question.isRequired == true)
-              FormBuilderValidators.required(
-                errorText: "هذا السؤال مطلوب",
-              ),
-            FormBuilderValidators.email(errorText: "البريد الإلكتروني غير صالح"),
+              FormBuilderValidators.required(errorText: "هذا السؤال مطلوب"),
+            FormBuilderValidators.email(
+              errorText: "البريد الإلكتروني غير صالح",
+            ),
           ]),
         );
 
@@ -77,9 +77,7 @@ class QuestionPreviewNetworkBuilder extends StatelessWidget {
           ),
           validator: FormBuilderValidators.compose([
             if (question.isRequired == true)
-              FormBuilderValidators.required(
-                errorText: "هذا السؤال مطلوب",
-              ),
+              FormBuilderValidators.required(errorText: "هذا السؤال مطلوب"),
             FormBuilderValidators.numeric(errorText: "أرقام فقط"),
             FormBuilderValidators.minLength(7, errorText: "قصير جداً"),
           ]),
@@ -95,31 +93,23 @@ class QuestionPreviewNetworkBuilder extends StatelessWidget {
           ),
           validator: FormBuilderValidators.compose([
             if (question.isRequired == true)
-              FormBuilderValidators.required(
-                errorText: "هذا السؤال مطلوب",
-              ),
+              FormBuilderValidators.required(errorText: "هذا السؤال مطلوب"),
             FormBuilderValidators.numeric(errorText: "رقم غير صالح"),
           ]),
         );
 
       case QuestionType.dropdown:
+        return FormBuilderDropdown<AnswerModel>(
+          name: _name,
 
-        return Column(
-          children: [
-
-            FormBuilderDropdown<AnswerModel>(
-              name: _name,
-
-              decoration: InputDecoration(
-                hintText: "اختر إجابة",
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              items: question.answers
-                  .map((a) => DropdownMenuItem(value: a, child: Text(a.title)))
-                  .toList(),
-              validator: _requiredIfNeeded(),
-            ),
-          ],
+          decoration: InputDecoration(
+            hintText: "اختر إجابة",
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+          items: question.answers
+              .map((a) => DropdownMenuItem(value: a, child: Text(a.title)))
+              .toList(),
+          validator: _requiredIfNeeded(),
         );
 
       case QuestionType.multipleChoice:
@@ -149,7 +139,8 @@ class QuestionPreviewNetworkBuilder extends StatelessWidget {
 
                 return GestureDetector(
                   onTap: () {
-                    if (selected != null) return; // 🔒 يمنع التغيير بعد الاختيار
+                    if (selected != null)
+                      return; // 🔒 يمنع التغيير بعد الاختيار
                     field.didChange(a);
                   },
                   child: AnimatedContainer(
@@ -240,12 +231,6 @@ class QuestionPreviewNetworkBuilder extends StatelessWidget {
         return FormBuilderSwitch(
           name: _name,
           title: Text(question.title),
-          validator: (value) {
-            if (question.isRequired == true && value != true) {
-              return "هذا السؤال مطلوب";
-            }
-            return null;
-          },
         );
 
       case QuestionType.date:
@@ -333,9 +318,8 @@ class QuestionPreviewNetworkBuilder extends StatelessWidget {
             ),
           ),
           validator: question.isRequired == true
-              ? (value) => (value == null || value == 0)
-              ? "هذا السؤال مطلوب"
-              : null
+              ? (value) =>
+                    (value == null || value == 0) ? "هذا السؤال مطلوب" : null
               : null,
         );
 
