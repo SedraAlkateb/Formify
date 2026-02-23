@@ -6,8 +6,8 @@ import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
 import 'package:formify/presentation/sync/widget/header_section_widget.dart';
 import 'package:formify/presentation/sync/widget/survey_card_widget.dart';
-import 'package:formify/presentation/unit/animation/animation_container_widget.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
+
 class ListOfSurveysPage extends StatefulWidget {
   const ListOfSurveysPage({super.key});
 
@@ -35,7 +35,7 @@ class _ListOfSurveysPageState extends State<ListOfSurveysPage> {
           ),
           child: Column(
             children: [
-               HeaderSection(),
+              HeaderSection(),
 
               Expanded(
                 child: BlocConsumer<SyncBloc, SyncState>(
@@ -44,15 +44,15 @@ class _ListOfSurveysPageState extends State<ListOfSurveysPage> {
                       Navigator.pushNamedAndRemoveUntil(
                         context,
                         Routes.finishedSurvey,
-                            (route) => false,
+                        (route) => false,
                       );
                     }
                   },
-                  buildWhen: (previous, current) => current is GetSurveyAsyncLoadingState
-                  ||current is GetSurveyAsyncErrorState
-                      ||current is GetSurveyAsyncState
-                      ||current is SurveySubmitSuccessState
-                  ,
+                  buildWhen: (previous, current) =>
+                      current is GetSurveyAsyncLoadingState ||
+                      current is GetSurveyAsyncErrorState ||
+                      current is GetSurveyAsyncState ||
+                      current is SurveySubmitSuccessState,
                   builder: (context, state) {
                     if (state is GetSurveyAsyncLoadingState) {
                       return loadingFullScreen(context);
@@ -64,9 +64,8 @@ class _ListOfSurveysPageState extends State<ListOfSurveysPage> {
 
                     if (state is GetSurveyAsyncState ||
                         state is SurveySubmitSuccessState) {
-
                       List<IsActiveMainSurveyModel> surveys =
-                      (state is SurveySubmitSuccessState)
+                          (state is SurveySubmitSuccessState)
                           ? state.surveys
                           : (state as GetSurveyAsyncState).surveys;
 
@@ -75,12 +74,10 @@ class _ListOfSurveysPageState extends State<ListOfSurveysPage> {
                         padding: const EdgeInsets.symmetric(vertical: 20),
                         itemCount: surveys.length,
                         itemBuilder: (context, index) {
-                          return
-                            SurveyCard(
-                             survey: surveys[index],
-                             index: index,
-
-                                                      );
+                          return SurveyCard(
+                            survey: surveys[index],
+                            index: index,
+                          );
                         },
                       );
                     }

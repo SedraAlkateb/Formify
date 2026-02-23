@@ -99,4 +99,14 @@ class RepositroySqlImp extends RepositorySql {
     }
   }
 
+  @override
+  Future<Either<Failure, void>> deleteUser()  async {
+    try {
+      final response =await _databaseHelper.deleteUser();
+      return Right(response);
+    } catch (e) {
+      Failure failure = ErrorHandler.handle(e).failure;
+      return Left(failure);
+    }
+  }
 }

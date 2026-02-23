@@ -23,5 +23,6 @@ abstract class Repository {
   Future<Either<Failure,List<UserModel>>>  getUsersByConferenceId(int conferenceId);
   Future<Either<Failure,Null>>  synchronizeUsersAnswers(AllUserModel userRequest,);
   Future<Either<Failure, SurveyUserModel>> getUserAnswersForSpecificSurvey(int id, int user_id) ;
+  Future<Either<Failure,Null>>  login(LoginRequest loginRequest);
 
 }

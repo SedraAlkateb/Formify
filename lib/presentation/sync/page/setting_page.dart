@@ -64,7 +64,6 @@ class SettingPage extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-
                   ],
                 ),
               ),
@@ -127,19 +126,33 @@ class SettingPage extends StatelessWidget {
                                       UploadDataEvent(
                                         state.users,
                                         state.conference_id,
+                                        state.isActive,
                                       ),
                                     );
                                   } else if (state is UploadDataState) {
-                                    BlocProvider.of<SyncBloc>(
-                                      context,
-                                    ).add(DeleteDataEvent());
+                                    if (state.isUpload == 0) {
+                                      BlocProvider.of<SyncBloc>(
+                                        context,
+                                      ).add(DeleteUserEvent());
+                                    } else {
+                                      BlocProvider.of<SyncBloc>(
+                                        context,
+                                      ).add(DeleteDataEvent());
+                                    }
                                   } else if (state is DeleteDataState) {
+                                    instance<AppPreferences>().setIConference(
+                                      state.isActive == 0 ? false : true,
+                                    );
+                                    instance<AppPreferences>().setLoggedIn(1);
+                                    Navigator.of(
+                                      context,
+                                    ).pushReplacementNamed(Routes.home);
                                     success(context);
                                     instance<AppPreferences>().setLoggedIn(1);
                                     Navigator.pushNamedAndRemoveUntil(
                                       context,
                                       Routes.home,
-                                          (route) => false,
+                                      (route) => false,
                                     );
                                   }
                                 },
@@ -150,12 +163,12 @@ class SettingPage extends StatelessWidget {
 
                                       title: "حفظ بيانات المؤتمر",
                                       message:
-                                      "هل انت متاكد من انك انتهيت من ملئ معلومات المؤتمر وتريد رفعه , تأكد من اتصالك بالانترنت لرفع البيانات",
+                                          "هل انت متاكد من انك انتهيت من ملئ معلومات المؤتمر وتريد رفعه , تأكد من اتصالك بالانترنت لرفع البيانات",
 
                                       onConfirm: () {
                                         BlocProvider.of<SyncBloc>(
                                           context,
-                                        ).add(GetDataEvent(id));
+                                        ).add(GetDataEvent(id, 0));
                                       },
                                     );
                                   },
@@ -175,9 +188,9 @@ class SettingPage extends StatelessWidget {
                                       ),
                                       child: Row(
                                         crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                            CrossAxisAlignment.center,
                                         mainAxisAlignment:
-                                        MainAxisAlignment.center,
+                                            MainAxisAlignment.center,
                                         children: [
                                           Card(
                                             margin: const EdgeInsets.only(
@@ -187,7 +200,7 @@ class SettingPage extends StatelessWidget {
                                             ),
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
-                                              BorderRadius.circular(12),
+                                                  BorderRadius.circular(12),
                                             ),
                                             color: ColorManager.accent,
                                             child: const Padding(
@@ -205,13 +218,12 @@ class SettingPage extends StatelessWidget {
                                           Flexible(
                                             child: Column(
                                               mainAxisAlignment:
-                                              MainAxisAlignment.start,
+                                                  MainAxisAlignment.start,
                                               crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                                  CrossAxisAlignment.start,
                                               children: [
                                                 Text(
-                                                  StringsManager
-                                                      .uploadConference,
+                                                  StringsManager.saveConference,
                                                   textAlign: TextAlign.start,
                                                   style: TextStyle(
                                                     color: ColorManager.white,
@@ -243,10 +255,9 @@ class SettingPage extends StatelessWidget {
                                 ),
                               ),
 
-
                               const SizedBox(height: 10),
-                              /////////////////////////tyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyh
 
+                              /////////////////////////tyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyh
                               BlocListener<SyncBloc, SyncState>(
                                 listener: (context, state) {
                                   if (state is DataLoadingState) {
@@ -257,19 +268,29 @@ class SettingPage extends StatelessWidget {
                                       UploadDataEvent(
                                         state.users,
                                         state.conference_id,
+                                        state.isActive,
                                       ),
                                     );
                                   } else if (state is UploadDataState) {
-                                    BlocProvider.of<SyncBloc>(
-                                      context,
-                                    ).add(DeleteDataEvent());
+                                    if (state.isUpload == 0) {
+                                      BlocProvider.of<SyncBloc>(
+                                        context,
+                                      ).add(DeleteUserEvent());
+                                    } else {
+                                      BlocProvider.of<SyncBloc>(
+                                        context,
+                                      ).add(DeleteDataEvent());
+                                    }
                                   } else if (state is DeleteDataState) {
                                     success(context);
+                                    instance<AppPreferences>().setIConference(
+                                      state.isActive == 0 ? false : true,
+                                    );
                                     instance<AppPreferences>().setLoggedIn(1);
                                     Navigator.pushNamedAndRemoveUntil(
                                       context,
                                       Routes.home,
-                                          (route) => false,
+                                      (route) => false,
                                     );
                                   }
                                 },
@@ -280,12 +301,12 @@ class SettingPage extends StatelessWidget {
 
                                       title: "رفع بيانات المؤتمر",
                                       message:
-                                      "هل انت متاكد من انك انتهيت من ملئ معلومات المؤتمر وتريد رفعه , تأكد من اتصالك بالانترنت لرفع البيانات",
+                                          "هل انت متاكد من انك انتهيت من ملئ معلومات المؤتمر وتريد رفعه , تأكد من اتصالك بالانترنت لرفع البيانات",
 
                                       onConfirm: () {
                                         BlocProvider.of<SyncBloc>(
                                           context,
-                                        ).add(GetDataEvent(id));
+                                        ).add(GetDataEvent(id, 1));
                                       },
                                     );
                                   },
@@ -305,9 +326,9 @@ class SettingPage extends StatelessWidget {
                                       ),
                                       child: Row(
                                         crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                            CrossAxisAlignment.center,
                                         mainAxisAlignment:
-                                        MainAxisAlignment.center,
+                                            MainAxisAlignment.center,
                                         children: [
                                           Card(
                                             margin: const EdgeInsets.only(
@@ -317,7 +338,7 @@ class SettingPage extends StatelessWidget {
                                             ),
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
-                                              BorderRadius.circular(12),
+                                                  BorderRadius.circular(12),
                                             ),
                                             color: ColorManager.accent,
                                             child: const Padding(
@@ -335,9 +356,9 @@ class SettingPage extends StatelessWidget {
                                           Flexible(
                                             child: Column(
                                               mainAxisAlignment:
-                                              MainAxisAlignment.start,
+                                                  MainAxisAlignment.start,
                                               crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                                  CrossAxisAlignment.start,
                                               children: [
                                                 Text(
                                                   StringsManager

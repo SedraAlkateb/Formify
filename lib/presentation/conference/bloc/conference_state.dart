@@ -61,8 +61,9 @@ final class LinkSurveyConferenceLoadingState extends ConferenceState {
 ///////////////////////////AllConference////////////////////
 final class GetAllConferenceState extends ConferenceState {
   final List<GetAllConferenceModel> allConference;
-  GetAllConferenceState(this.allConference);
-  List<Object?> get props => [allConference];
+  final int refreshId;
+  GetAllConferenceState(this.allConference,this.refreshId);
+  List<Object?> get props => [allConference,refreshId];
 }
 final class GetAllEmptyConferenceState extends ConferenceState {
 

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:formify/app/di.dart';
-import 'package:formify/login/page/login_page.dart';
 import 'package:formify/presentation/active_conference/page/all_active_conference.dart';
 import 'package:formify/presentation/active_conference/page/view_active_conference_page.dart';
 import 'package:formify/presentation/active_conference/page/view_completed_survey.dart';
@@ -9,6 +8,7 @@ import 'package:formify/presentation/conference/pages/create_conference_page.dar
 import 'package:formify/presentation/conference/pages/view_conference_page.dart';
 import 'package:formify/presentation/active_conference/page/view_user_survey.dart';
 import 'package:formify/presentation/home/pages/home_page.dart';
+import 'package:formify/presentation/onboarding/pages/login_page.dart';
 import 'package:formify/presentation/onboarding/pages/onboarding_page.dart';
 import 'package:formify/presentation/question/page/multi_answer.dart';
 import 'package:formify/presentation/question/page/text.dart';
@@ -62,7 +62,6 @@ class RouteGenerator {
         initOnBoardingModule();
         return _animatedRoute(OnBoardingPage());
       case Routes.loginPage:
-        //initOnBoardingModule();
         return _animatedRoute(LoginPage());
       case Routes.home:
         initConferenceModule();

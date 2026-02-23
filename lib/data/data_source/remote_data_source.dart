@@ -10,14 +10,14 @@ abstract class RemoteDataSource {
   Future<CreateSurveyBaseResponse> createSurvey(SurveyRequest survey);
 
   Future<CreateSurveyQuestionsBaseResponse> createSurveyQuestionsAndAnswers(
-    SurveyQuestionAndAnswersModel surveyQ,     List<File>images
+    SurveyQuestionAndAnswersModel surveyQ,
+    List<File> images,
   );
 
   Future<GetAllSurveyBaseResponse> getAllSurvey();
 
-  Future<GetSurveyWithQuestionAndAnswerByIdBaseResponse> getSurveyWithQuestionById(
-    int id,
-  );
+  Future<GetSurveyWithQuestionAndAnswerByIdBaseResponse>
+  getSurveyWithQuestionById(int id);
   Future<CreateConferenceBaseResponse> createConference(
     ConferenceModel conference,
   );
@@ -30,15 +30,17 @@ abstract class RemoteDataSource {
   Future<CreateUserResponse> createUserWithConferenceId(
     UserInputModel userInputModel,
   );
-  Future<GetAllAsyncByConferenceIdBaseResponse> getAllInformationConference(int conferenceId,
-      );
-  Future<GetAllSurveyWithActiveBaseResponse> getAllSurveyAndActiveSurvey(int conference_id,);
+  Future<GetAllAsyncByConferenceIdBaseResponse> getAllInformationConference(
+    int conferenceId,
+  );
+  Future<GetAllSurveyWithActiveBaseResponse> getAllSurveyAndActiveSurvey(
+    int conference_id,
+  );
   Future<GetAllUserBaseResponse> getUsersByConferenceId(int conferenceId);
-  Future<Message1Response> synchronizeUsersAnswers(AllUserModel userRequest,
-      );
-  Future<GetSurveyWithQuestionAndAnswerForUserBaseResponse> getUserAnswersForSpecificSurvey(
-   int id,int user_id
-      );
+  Future<Message1Response> synchronizeUsersAnswers(AllUserModel userRequest);
+  Future<GetSurveyWithQuestionAndAnswerForUserBaseResponse>
+  getUserAnswersForSpecificSurvey(int id, int user_id);
+  Future<Message1Response> login(LoginRequest loginRequest);
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -59,10 +61,13 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   @override
   Future<CreateSurveyQuestionsBaseResponse> createSurveyQuestionsAndAnswers(
     SurveyQuestionAndAnswersModel surveyQ,
-      List<File>images
+    List<File> images,
   ) async {
     final surveyJson = jsonEncode(surveyQ.toJson());
-    return await _appServiceClient.createSurveyQuestionsAndAnswers(surveyJson,images);
+    return await _appServiceClient.createSurveyQuestionsAndAnswers(
+      surveyJson,
+      images,
+    );
   }
 
   @override
@@ -71,9 +76,8 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<GetSurveyWithQuestionAndAnswerByIdBaseResponse> getSurveyWithQuestionById(
-    int id,
-  ) async {
+  Future<GetSurveyWithQuestionAndAnswerByIdBaseResponse>
+  getSurveyWithQuestionById(int id) async {
     return await _appServiceClient.getSurveyWithQuestionById(id);
   }
 
@@ -125,29 +129,42 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<GetAllAsyncByConferenceIdBaseResponse> getAllInformationConference(int conferenceId)  async {
+  Future<GetAllAsyncByConferenceIdBaseResponse> getAllInformationConference(
+    int conferenceId,
+  ) async {
     return await _appServiceClient.getAllInformationConference(conferenceId);
   }
 
   @override
-  Future<GetAllSurveyWithActiveBaseResponse> getAllSurveyAndActiveSurvey(int conference_id)  async {
+  Future<GetAllSurveyWithActiveBaseResponse> getAllSurveyAndActiveSurvey(
+    int conference_id,
+  ) async {
     return await _appServiceClient.getAllSurveyAndActiveSurvey(conference_id);
   }
 
   @override
-  Future<GetAllUserBaseResponse> getUsersByConferenceId(int conferenceId)  async {
+  Future<GetAllUserBaseResponse> getUsersByConferenceId(
+    int conferenceId,
+  ) async {
     return await _appServiceClient.getUsersByConferenceId(conferenceId);
   }
 
   @override
-  Future<Message1Response> synchronizeUsersAnswers(AllUserModel userRequest) async {
+  Future<Message1Response> synchronizeUsersAnswers(
+    AllUserModel userRequest,
+  ) async {
     return await _appServiceClient.synchronizeUsersAnswers(userRequest);
   }
 
   @override
-  Future<GetSurveyWithQuestionAndAnswerForUserBaseResponse> getUserAnswersForSpecificSurvey(int id, int user_id)  async {
-    return await _appServiceClient.getUserAnswersForSpecificSurvey(id,user_id);
+  Future<GetSurveyWithQuestionAndAnswerForUserBaseResponse>
+  getUserAnswersForSpecificSurvey(int id, int user_id) async {
+    return await _appServiceClient.getUserAnswersForSpecificSurvey(id, user_id);
   }
 
+  @override
+  Future<Message1Response> login(LoginRequest loginRequest) async {
+    return await _appServiceClient.login(loginRequest.username, loginRequest.password);
+  }
 
 }

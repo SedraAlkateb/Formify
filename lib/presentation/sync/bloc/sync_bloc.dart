@@ -6,6 +6,7 @@ import 'package:formify/data/network/failure.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/usecase/add_async_data_sql_usecase.dart';
 import 'package:formify/domain/usecase/delete_data_sql_usecase.dart';
+import 'package:formify/domain/usecase/delete_user_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_all_async_info_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_info_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_sql_usecase.dart';
@@ -24,7 +25,9 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   final AddAsyncDataSqlUsecase addAsyncDataSqlUsecase;
   final GetUserAnswerSqlUsecase getUserAnswerSqlUsecase;
   final DeleteDataSqlUsecase deleteDataSqlUsecase;
+  final  DeleteUserSqlUsecase deleteUserSqlUsecase;
   final SynchronizeUsersAnswersUsecase synchronizeUsersAnswersUsecase;
+  ///////////////////////////////////////////////////////////////////////////////
   final GetConferenceSqlUsecase getConferenceSqlUsecase;
   final GetSurveysSqlUsecase getSurveysSqlUsecase;
   final GetQuestionAnswersUsecase getQuestionAnswersUsecase;
@@ -45,11 +48,13 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     this.getQuestionAnswersUsecase,
     this.insertUserAndAnswerUsecase,
     this.getConferenceInfoSqlUsecase,
+      this.deleteUserSqlUsecase
   ) : super(const SyncInitial()) {
     // ===== Existing =====
     on<AsyncDataEvent>(_onAsyncData);
     on<InsertDataSqlEvent>(_onInsertSql);
     on<DeleteDataEvent>(_onDeleteData);
+    on<DeleteUserEvent>(_onDeleteUser);
     on<GetDataEvent>(_onGetData);
     on<GetInfoConferenceEvent>(_infoConference);
 
@@ -94,17 +99,25 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   ) async {
     (await deleteDataSqlUsecase.execute()).fold(
       (failure) => emit(DataErrorState(failure: failure)),
-      (_) => emit(const DeleteDataState()),
+      (_) => emit(const DeleteDataState(0)),
     );
   }
-
+  Future<void> _onDeleteUser(
+      DeleteUserEvent event,
+      Emitter<SyncState> emit,
+      ) async {
+    (await deleteUserSqlUsecase.execute()).fold(
+          (failure) => emit(DataErrorState(failure: failure)),
+          (_) => emit(const DeleteDataState(1)),
+    );
+  }
   Future<void> _onGetData(GetDataEvent event, Emitter<SyncState> emit) async {
     emit(const DataLoadingState());
     (await getUserAnswerSqlUsecase.execute()).fold(
       (failure) => emit(DataErrorState(failure: failure)),
       (data) {
         conferenceId = event.conferenceId;
-        emit(GetDataState(data, event.conferenceId));
+        emit(GetDataState(data, event.conferenceId,event.isActive));
       },
     );
   }
@@ -112,13 +125,13 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   Future<void> _onUpload(UploadDataEvent event, Emitter<SyncState> emit) async {
     if (event.userRequest.isNotEmpty) {
       (await synchronizeUsersAnswersUsecase.execute(
-        AllUserModel(event.userRequest, event.conference_id),
+        AllUserModel(event.userRequest, event.conference_id,event.isActive),
       )).fold(
         (failure) => emit(DataErrorState(failure: failure)),
-        (_) => emit(const UploadDataState()),
+        (_) => emit( UploadDataState(event.isActive)),
       );
     } else {
-      emit(const UploadDataState());
+      emit( UploadDataState(event.isActive));
     }
   }
 

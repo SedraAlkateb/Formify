@@ -17,7 +17,6 @@ final class ViewSurveyLoadingState extends SurveyState {
   @override
   List<Object?> get props => [];
 }
-/// عند تغيير اللون
 class ViewSurveyState extends SurveyState {
   final SurveyModel surveyModel;
    ViewSurveyState(this.surveyModel) ;

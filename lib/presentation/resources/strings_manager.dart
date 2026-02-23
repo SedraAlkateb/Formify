@@ -10,6 +10,8 @@ class StringsManager{
   static const goBackToHome ="  العودة الى الصفحة الرئيسية";
   static const manageConference ="ادارة المؤتمر";
   static const uploadConference ="رفع بيانات المؤتمر";
+  static const saveConference ="حفظ بيانات المؤتمر";
+
   static const uploadConferenceDesc ="حميل معلومات المؤتمر والاستبيانات في حال وجود انترنت";
   static const setting ="إعدادات التطبيق";
   static const logoutConference ="الخروج من التطبيق";

@@ -6,6 +6,8 @@ import 'package:sqflite/sqflite.dart';
 abstract class AppSqlApiAbs {
   Future<String> asyncData(GetAsyncModel asyncData);
   Future<void> deleteData();
+  Future<void> deleteUser();
+
   Future<List<UserSqlModel>> getDataSql();
   Future<GetAllConferenceModel?> getConference();
   Future<List<MainSurveyModel>> getSurveys();
@@ -199,6 +201,19 @@ class AppSqlApi extends AppSqlApiAbs {
       'answers',
       'users_answers',
       'survey_conference',
+    ];
+    Batch batch = db.batch();
+    for (var table in tables) {
+      batch.delete(table);
+    }
+    await batch.commit(noResult: true);
+  }
+  @override
+  Future<void> deleteUser() async {
+    final db = await databaseHelper.database;
+    final tables = [
+      'users',
+      'users_answers',
     ];
     Batch batch = db.batch();
     for (var table in tables) {

@@ -31,14 +31,17 @@ final class InputUserSqlEvent extends SyncEvent {
 final class DeleteDataEvent extends SyncEvent {
   const DeleteDataEvent();
 }
-
+final class DeleteUserEvent extends SyncEvent {
+  const DeleteUserEvent();
+}
 final class UploadDataEvent extends SyncEvent {
   final List<UserSqlModel> userRequest;
   final int conference_id;
-  const UploadDataEvent(this.userRequest,this.conference_id);
+  final int isActive;
+  const UploadDataEvent(this.userRequest,this.conference_id,this.isActive);
 
   @override
-  List<Object?> get props => [userRequest,conference_id];
+  List<Object?> get props => [userRequest,conference_id,this.isActive];
 }
 final class GetInfoConferenceEvent extends SyncEvent {
   @override
@@ -47,10 +50,11 @@ final class GetInfoConferenceEvent extends SyncEvent {
 
 final class GetDataEvent extends SyncEvent {
   final int conferenceId;
-  const GetDataEvent(this.conferenceId);
+  final int isActive;
+  const GetDataEvent(this.conferenceId,this.isActive);
 
   @override
-  List<Object?> get props => [conferenceId];
+  List<Object?> get props => [conferenceId,isActive];
 }
 
 final class GetConferenceAsyncEvent extends SyncEvent {

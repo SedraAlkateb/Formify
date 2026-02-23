@@ -85,6 +85,12 @@ abstract class AppServiceClient {
     @Part(name: "id") int id,
     @Part(name: "user_id") int user_id,
   );
+  @POST("users-crud/login.php")
+  Future<Message1Response> login(
+      @Part(name: "username") String username,
+      @Part(name: "password") String password,
+
+      );
   /////////////update_survey
   /////////update_conference
 }

@@ -19,7 +19,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Sizer.init(context);
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => instance<OnboardingBloc>()),
@@ -35,7 +34,10 @@ class MyApp extends StatelessWidget {
             builder: (lightDynamic, darkDynamic) {
               return
                 MaterialApp(
-
+                  builder: (context, child) {
+                    Sizer.init(context);
+                    return child ?? const SizedBox.shrink();
+                  },
                   debugShowCheckedModeBanner: false,
                   theme: getApplicationTheme(
                     dynamicScheme: lightDynamic,

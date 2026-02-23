@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/app/app_preferences.dart';
 import 'package:formify/app/di.dart';
+import 'package:formify/presentation/onboarding/bloc/onboarding_bloc.dart';
 import 'package:formify/presentation/resources/assets_manager.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/responsive/font_responseve.dart';
 import 'package:formify/presentation/resources/responsive/sizer_responseve.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/unit/animation/buttom_animation.dart';
+import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 import 'package:formify/presentation/unit/text_field.dart';
 
 class LoginPage extends StatelessWidget {
@@ -127,23 +130,48 @@ class LoginPage extends StatelessWidget {
                                   v!.isEmpty ? ' كلمة السر مطلوب' : null,
                             ),
                           ),
-                          bottomAnimation(
-                            context,
-                            () {
-                              if (_formKey.currentState!.validate()) {
-
-                                instance<AppPreferences>().setPassword(passwordController.text);
-                                Navigator.of(context).pushReplacementNamed(Routes.onboarding);
+                          BlocListener<OnboardingBloc, OnboardingState>(
+                            listener: (context, state) {
+                              if (state is LoginErrorState) {
+                                error(
+                                  context,
+                                  state.failure.massage,
+                                  state.failure.code,
+                                );
+                              } else if (state is LoginLoadingState) {
+                                loading(context);
+                              } else if (state is LoginSuccessState) {
+                                success(context);
+                                instance<AppPreferences>().setPassword(
+                                  passwordController.text,
+                                );
+                                instance<AppPreferences>().setLoggedIn(1);
+                                Navigator.of(
+                                  context,
+                                ).pushReplacementNamed(Routes.home);
                               }
                             },
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text('تسجيل الدخول'),
-                                SizedBox(width: 9),
-                                Icon(Icons.arrow_forward),
-                              ],
+                            child: bottomAnimation(
+                              context,
+                              () {
+                                if (_formKey.currentState!.validate()) {
+                                  BlocProvider.of<OnboardingBloc>(context).add(
+                                    LoginRequestEvent(
+                                      userNameController.text,
+                                      passwordController.text,
+                                    ),
+                                  );
+                                }
+                              },
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text('تسجيل الدخول'),
+                                  SizedBox(width: 9),
+                                  Icon(Icons.arrow_forward),
+                                ],
+                              ),
                             ),
                           ),
                         ],

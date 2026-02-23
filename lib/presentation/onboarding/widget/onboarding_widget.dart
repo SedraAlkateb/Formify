@@ -32,8 +32,8 @@ class BuildPageLottie extends StatelessWidget {
               alignment: Alignment.topLeft,
               child: TextButton(
                 onPressed: () {
-                  instance<AppPreferences>().setLoggedIn(1);
-                  Navigator.pushReplacementNamed(context, Routes.home);
+
+                  Navigator.pushReplacementNamed(context, Routes.loginPage);
                 },
                 child: const Text(
                   "تخطي",

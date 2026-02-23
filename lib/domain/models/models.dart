@@ -622,14 +622,18 @@ class UserSqlModel {
 class AllUserModel {
   List<UserSqlModel> users; // قائمة من المستخدمين (UserModel)
   int conference_id;
+  int is_active;
   AllUserModel(
     this.users,
     this.conference_id,
+      this.is_active
   ); // المُنشئ الذي يأخذ قائمة المستخدمين
 
   Map<String, dynamic> toJson() {
     return {
+
       "conference_id": conference_id,
+      "is_active": is_active,
       'users': users
           .map((user) => user.toJson())
           .toList(), // تحويل قائمة المستخدمين إلى JSON
@@ -642,6 +646,7 @@ class AllUserModel {
         map['users'].map((userMap) => UserModel.fromMap(userMap)),
       ),
       map['conference_id'],
+      map['is_active']
     );
   }
 }

@@ -143,9 +143,8 @@ class ConferenceEndedWidget extends StatelessWidget {
             ],
           ),
           SizedBox(height: 10),
-          ((instance<AppPreferences>().getConferenceId() == null) ||
-                  (instance<AppPreferences>().getConferenceId() !=
-                      allConference[index].id))
+          ((instance<AppPreferences>().getIsConference() == null) ||
+                  (instance<AppPreferences>().getIsConference() ==false))
               ? Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -226,7 +225,7 @@ class ConferenceEndedWidget extends StatelessWidget {
                                         "هل انت متاكد من تفعيل المؤتمر , وتخزينه داخليا لبدء العمل عليه ورفع المؤتمر السابق اذا كان موجود ",
                                     onConfirm: () {
                                       BlocProvider.of<SyncBloc>(context).add(
-                                        GetDataEvent(allConference[index].id),
+                                        GetDataEvent(allConference[index].id,0),
                                       );
                                     },
                                   );

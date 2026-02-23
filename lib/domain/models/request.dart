@@ -15,3 +15,8 @@ class SurveyConference {
   SurveyConference(this.survey_id, this.conference_id, this.survey_order,this.is_active);
 }
 
+class LoginRequest{
+  String password;
+  String username;
+  LoginRequest(this.username,this.password);
+}

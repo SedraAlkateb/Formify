@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/app/app_preferences.dart';
 import 'package:formify/app/di.dart';
+import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 import 'package:formify/presentation/home/widget/conference_ended_widget.dart';
 import 'package:formify/presentation/home/widget/dialog_game_survey_widget.dart';
@@ -147,6 +148,7 @@ class HomeMobilePage extends StatelessWidget {
                                 UploadDataEvent(
                                   state.users,
                                   state.conference_id,
+                                  0,
                                 ),
                               );
                             } else if (state is UploadDataState) {
@@ -162,10 +164,11 @@ class HomeMobilePage extends StatelessWidget {
                                 context,
                               ).add(InsertDataSqlEvent(state.asyncModel));
                             } else if (state is InsertSucState) {
-                              instance<AppPreferences>().setConferenceId(
-                                state.conferenceId,
-                              );
+                              BlocProvider.of<ConferenceBloc>(
+                                context,
+                              ).add(UpdateConferenceEvent(1));
                               success(context);
+                              instance<AppPreferences>().setIConference(true);
                             }
                           },
                         ),
@@ -198,10 +201,12 @@ class HomeMobilePage extends StatelessWidget {
                           //     ),
                           //   ),));
                           // }
-                          final items = context
+                          List<GetAllConferenceModel> items = context
                               .read<ConferenceBloc>()
                               .allNotActiveConference;
-
+                          if (state is GetAllConferenceState) {
+                            items = state.allConference;
+                          }
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 40),
                             child: ListView.separated(
@@ -322,42 +327,36 @@ class HomeTabletPage extends StatelessWidget {
                                         UploadDataEvent(
                                           state.users,
                                           state.conference_id,
+                                          0,
                                         ),
                                       );
-                                    }
-                                    else if (state is UploadDataState) {
+                                    } else if (state is UploadDataState) {
                                       context.read<SyncBloc>().add(
                                         DeleteDataEvent(),
                                       );
-                                    }
-                                    else if (state is DeleteDataState) {
+                                    } else if (state is DeleteDataState) {
                                       context.read<SyncBloc>().add(
                                         AsyncDataEvent(),
                                       );
-                                    }
-
-                                    else if (state is AsyncConferenceState) {
+                                    } else if (state is AsyncConferenceState) {
                                       context.read<SyncBloc>().add(
                                         InsertDataSqlEvent(state.asyncModel),
                                       );
-                                    }
-                                    else if (state is InsertSucState) {
-                                      WidgetsBinding.instance
-                                          .addPostFrameCallback((_) {
-                                            success(context);
-                                          });
-                                      BlocProvider.of<ConferenceBloc>(context).add(GetAllNotActiveConferenceEvent());
-                                      instance<AppPreferences>()
-                                          .setConferenceId(state.conferenceId);
+                                    } else if (state is InsertSucState) {
+                                      BlocProvider.of<ConferenceBloc>(
+                                        context,
+                                      ).add(UpdateConferenceEvent(1));
+                                      success(context);
+                                      instance<AppPreferences>().setIConference(
+                                        true,
+                                      );
                                     }
                                   },
                                 ),
                               ],
                               child:
                                   BlocBuilder<ConferenceBloc, ConferenceState>(
-                                    // نفس الكود عندك
                                     builder: (context, state) {
-                                      // المهم ListView داخل Expanded already
                                       final items = context
                                           .read<ConferenceBloc>()
                                           .allNotActiveConference;

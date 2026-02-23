@@ -16,6 +16,7 @@ import 'package:formify/domain/usecase/create_survey_question_usecase.dart';
 import 'package:formify/domain/usecase/create_survey_usecase.dart';
 import 'package:formify/domain/usecase/delete_conference_usecase.dart';
 import 'package:formify/domain/usecase/delete_data_sql_usecase.dart';
+import 'package:formify/domain/usecase/delete_user_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_all_async_info_usecase.dart';
 import 'package:formify/domain/usecase/get_all_conference_usecase.dart';
 import 'package:formify/domain/usecase/get_all_survey_and_active_usecase.dart';
@@ -31,6 +32,7 @@ import 'package:formify/domain/usecase/get_user_answer_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_user_answers_survey_usecase.dart';
 import 'package:formify/domain/usecase/insert_user_and_answer_usecase.dart';
 import 'package:formify/domain/usecase/link_survey_conference_usecase.dart';
+import 'package:formify/domain/usecase/login_usecase.dart';
 import 'package:formify/domain/usecase/synchronize_users_answers_usecase.dart';
 import 'package:formify/presentation/active_conference/bloc/active_conference_bloc.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
@@ -73,8 +75,9 @@ Future<void> initAppModule() async {
 }
 
 Future<void> initOnBoardingModule() async {
-  if (!GetIt.I.isRegistered<OnboardingBloc>()) {
-    instance.registerFactory<OnboardingBloc>(() => OnboardingBloc());
+  if (!GetIt.I.isRegistered<LoginUsecase>()) {
+    instance.registerFactory<LoginUsecase>(() => LoginUsecase(instance()));
+    instance.registerFactory<OnboardingBloc>(() => OnboardingBloc(instance()));
   }
 }
 
@@ -189,6 +192,9 @@ Future<void> initSyncModule() async {
     instance.registerFactory<DeleteDataSqlUsecase>(
       () => DeleteDataSqlUsecase(instance()),
     );
+    instance.registerFactory<DeleteUserSqlUsecase>(
+          () => DeleteUserSqlUsecase(instance()),
+    );
     instance.registerFactory<GetConferenceSqlUsecase>(
       () => GetConferenceSqlUsecase(instance()),
     );
@@ -202,10 +208,11 @@ Future<void> initSyncModule() async {
       () => InsertUserAndAnswerUsecase(instance()),
     );
     instance.registerFactory<GetConferenceInfoSqlUsecase>(
-          () => GetConferenceInfoSqlUsecase(instance()),
+      () => GetConferenceInfoSqlUsecase(instance()),
     );
     instance.registerFactory<SyncBloc>(
       () => SyncBloc(
+        instance(),
         instance(),
         instance(),
         instance(),
