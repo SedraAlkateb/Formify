@@ -69,7 +69,7 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
           },
           (data) async {
             id = data.id;
-            emit(CreateSurveyState());
+            emit(ViewSurveyState(surveyModel));
           },
         );
       } else if (event is GetAllSurveyEvent) {

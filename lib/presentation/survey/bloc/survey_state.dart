@@ -36,10 +36,7 @@ class ViewQuestionState extends SurveyState {
 }
 
 
-final class CreateSurveyState extends SurveyState {
-  CreateSurveyState();
-  List<Object?> get props => [];
-}
+
 final class CreateSurveyErrorState extends SurveyState {
   final Failure failure;
   CreateSurveyErrorState({required this.failure});

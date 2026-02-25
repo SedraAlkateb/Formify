@@ -321,11 +321,11 @@ class _CreateSurveyPageState extends State<CreateSurveyPage> {
                   loading(context);
                 } else if (state is CreateSurveyErrorState) {
                   error(context, state.failure.massage, state.failure.code);
-                } else if (state is CreateSurveyState) {
+                } else if (state is ViewSurveyState) {
                   success(context);
                   Navigator.pushReplacementNamed(
                     context,
-                    Routes.createQuesSurvey,
+                    Routes.viewSurvey,
                   );
                 }
               },

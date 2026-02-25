@@ -11,6 +11,7 @@ import 'package:formify/presentation/home/widget/isMorning.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/responsive/breakpoints.dart';
 import 'package:formify/presentation/resources/responsive/font_responseve.dart';
+import 'package:formify/presentation/resources/responsive/responsive_wrapper.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
@@ -43,8 +44,7 @@ class _HomePageState extends State<HomePage> {
             LayoutBuilder(
               builder: (_, c) {
                 final isTablet =
-                    Breakpoints.isTablet(context) ||
-                    Breakpoints.isDesktop(context);
+                    Breakpoints.isTabletPortrait(context) ;
                 if (!isTablet) {
                   return HomeMobilePage();
                 }
@@ -115,10 +115,8 @@ class HomeMobilePage extends StatelessWidget {
                 fontSize: 20,
               ),
             ),
-            Column(
-              children: [
-                CustomGridPage(),
-                Column(
+            AdaptiveRowColumn(left: CustomGridPage(),
+                right: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -176,7 +174,7 @@ class HomeMobilePage extends StatelessWidget {
 
                       child: BlocBuilder<ConferenceBloc, ConferenceState>(
                         buildWhen: (previous, current) =>
-                            current is GetAllConferenceState ||
+                        current is GetAllConferenceState ||
                             current is GetAllConferenceLoadingState ||
                             current is GetAllConferenceErrorState ||
                             current is GetAllEmptyConferenceState ||
@@ -214,7 +212,7 @@ class HomeMobilePage extends StatelessWidget {
                               shrinkWrap: true,
                               itemCount: items.length,
                               separatorBuilder: (_, __) =>
-                                  const SizedBox(height: 10),
+                              const SizedBox(height: 10),
                               itemBuilder: (context, index) {
                                 return InkWell(
                                   onTap: () {
@@ -226,9 +224,9 @@ class HomeMobilePage extends StatelessWidget {
                                   },
                                   child: ConferenceEndedWidget(
                                     value:
-                                        context
-                                            .read<ConferenceBloc>()
-                                            .selectConferenceId ??
+                                    context
+                                        .read<ConferenceBloc>()
+                                        .selectConferenceId ??
                                         0,
                                     index: index,
                                     allConference: items,
@@ -241,9 +239,7 @@ class HomeMobilePage extends StatelessWidget {
                       ),
                     ),
                   ],
-                ),
-              ],
-            ),
+                )),
           ],
         ),
       ),
@@ -258,7 +254,7 @@ class HomeTabletPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.only(top: 30, left: 24, right: 24),
+        padding: const EdgeInsets.only(top: 20, left: 24, right: 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -298,7 +294,7 @@ class HomeTabletPage extends StatelessWidget {
                               fontSize: 35,
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 40),
 
                           Expanded(
                             child: MultiBlocListener(
@@ -361,6 +357,7 @@ class HomeTabletPage extends StatelessWidget {
                                           .read<ConferenceBloc>()
                                           .allNotActiveConference;
                                       return ListView.separated(
+                                        padding: EdgeInsets.only(bottom: 40),
                                         itemCount: items.length,
                                         separatorBuilder: (_, __) =>
                                             const SizedBox(height: 10),
