@@ -43,9 +43,11 @@ class _HomePageState extends State<HomePage> {
           children: [
             LayoutBuilder(
               builder: (_, c) {
-                final isTablet =
+                final isTabletPortrait =
                     Breakpoints.isTabletPortrait(context) ;
-                if (!isTablet) {
+                final isMobilePortrait =
+                Breakpoints.isMobilePortrait(context) ;
+                if (isTabletPortrait||isMobilePortrait) {
                   return HomeMobilePage();
                 }
                 return HomeTabletPage();
@@ -115,8 +117,10 @@ class HomeMobilePage extends StatelessWidget {
                 fontSize: 20,
               ),
             ),
-            AdaptiveRowColumn(left: CustomGridPage(),
-                right: Column(
+            Column(
+              children: [
+                CustomGridPage(),
+                Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -239,7 +243,10 @@ class HomeMobilePage extends StatelessWidget {
                       ),
                     ),
                   ],
-                )),
+                )
+              ],
+            )
+
           ],
         ),
       ),
