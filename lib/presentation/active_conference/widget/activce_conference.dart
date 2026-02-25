@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/home/widget/data_widget.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
+import 'package:formify/presentation/resources/values_manager.dart';
 
 class ActiveConferenceWidget extends StatelessWidget {
   const ActiveConferenceWidget({
@@ -12,7 +13,7 @@ class ActiveConferenceWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding:  EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
@@ -32,7 +33,7 @@ class ActiveConferenceWidget extends StatelessWidget {
             children: [
               Container(
                 padding: EdgeInsets.all(20),
-                margin: EdgeInsets.all(8),
+                margin: EdgeInsets.all(AppMargin.m8),
                 height: 20,
                 width: 2,
                 decoration: BoxDecoration(color: ColorManager.primary),
@@ -106,9 +107,9 @@ class ActiveConferenceWidget extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 10),
+          SizedBox(height: AppSize.s10),
           Divider(),
-          SizedBox(height: 10),
+          SizedBox(height: AppSize.s10),
           Align(
               alignment: Alignment.bottomLeft,
               child:

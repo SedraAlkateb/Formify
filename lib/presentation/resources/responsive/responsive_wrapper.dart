@@ -18,7 +18,7 @@ class AdaptiveRowColumn extends StatelessWidget {
     return LayoutBuilder(
       builder: (_, c) {
         final isMobile = Breakpoints.isMobileLandscape(context);
-        final isTabletPortrait = Breakpoints.isTabletLandscape(context);
+        final isTabletPortrait = Breakpoints.isTabletPortrait(context);
 
         if (isTabletPortrait ) {
           return Column(

@@ -9,4 +9,6 @@ class Constants {
   static const int zero = 0;
   static const int apiTimeOut = 50000;
   static String isLogin=Routes.onboarding;
+  static bool isTablet  = false;
+
 }

@@ -6,6 +6,7 @@ import 'package:formify/presentation/active_conference/widget/view_all_user.dart
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/resources/theme_bloc/theme_bloc.dart';
+import 'package:formify/presentation/resources/values_manager.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 import 'package:formify/presentation/survey/widget/list_survey_widget.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
@@ -48,7 +49,10 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
       ),
 
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
+        padding: EdgeInsets.symmetric(
+          vertical: AppPadding.p16,
+          horizontal: AppPadding.p18,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -71,9 +75,9 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                             ColorManager.splash1,
+                              ColorManager.splash1,
                               ColorManager.splash2,
-                            //  ColorManager.splash3,
+                              //  ColorManager.splash3,
                             ],
                             begin: Alignment
                                 .topLeft, // البداية من الزاوية العليا اليسرى
@@ -83,9 +87,9 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         // إضافة أي محتوى هنا داخل الـ Container
-                        padding: const EdgeInsets.all(16),
+                        padding: EdgeInsets.all(AppPadding.p16),
                         child: Padding(
-                          padding: const EdgeInsets.all(16),
+                          padding: EdgeInsets.all(AppPadding.p16),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -126,18 +130,18 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                           children: [
                             // Date Section
                             Padding(
-                              padding: const EdgeInsets.all(12),
+                              padding: EdgeInsets.all(AppPadding.p12),
                               child: Row(
                                 children: [
                                   Card(
-                                    margin: const EdgeInsets.all(4),
+                                    margin: EdgeInsets.all(AppMargin.m4),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     elevation: 4,
                                     color: Color(0xEDF4FDFF),
                                     child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
+                                      padding:  EdgeInsets.all(AppPadding.p8),
                                       child: Icon(
                                         Icons.calendar_today,
                                         color: Colors.blue,
@@ -146,7 +150,7 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                                     ),
                                   ),
 
-                                  const SizedBox(width: 8),
+                                   SizedBox(width:AppSize.s8),
                                   Column(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
@@ -186,7 +190,8 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                                         text: TextSpan(
                                           children: [
                                             TextSpan(
-                                              text: "تاريخ الانتهاء: ", // النص الثابت "To:"
+                                              text:
+                                                  "تاريخ الانتهاء: ", // النص الثابت "To:"
                                               style: TextStyle(
                                                 fontSize: 18, // حجم الخط
                                                 fontWeight:
@@ -220,11 +225,11 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                             ),
                             // Location Section
                             Padding(
-                              padding: const EdgeInsets.all(12),
+                              padding:  EdgeInsets.all(AppPadding.p12),
                               child: Row(
                                 children: [
                                   Card(
-                                    margin: const EdgeInsets.all(4),
+                                    margin:  EdgeInsets.all(AppMargin.m4),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
                                     ),
@@ -232,7 +237,7 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
 
                                     color: Color(0xFFFDF5EB),
                                     child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
+                                      padding:  EdgeInsets.all(AppPadding.p8),
                                       child: Icon(
                                         Icons.location_on_outlined,
                                         color: Colors.orange,
@@ -259,14 +264,14 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                       ),
                       SizedBox(height: 4),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding:  EdgeInsets.all(AppPadding.p8),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Row(
                               children: [
                                 Icon(Icons.sticky_note_2_outlined, size: 30),
-                                SizedBox(width: 8),
+                                SizedBox(width: AppSize.s8),
                                 Text(
                                   "الاستبيانات",
                                   style: TextStyle(
@@ -316,7 +321,7 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                                 return surveyListWidget(
                                   state.conferenceModel.surveys[index]
                                       .toDomain(),
-                                      () {
+                                  () {
                                     Navigator.pushNamed(
                                       context,
                                       Routes.viewSurvey,
@@ -372,7 +377,7 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                   return Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding:  EdgeInsets.all(AppPadding.p8),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -412,9 +417,7 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                                     BlocProvider.of<ActiveConferenceBloc>(
                                       context,
                                     ).add(
-                                      GetUserSurveyEvent(
-
-                                          state.users[index]),
+                                      GetUserSurveyEvent(state.users[index]),
                                     );
                                     Navigator.pushNamed(
                                       context,

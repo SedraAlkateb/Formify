@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
+import 'package:formify/presentation/resources/values_manager.dart';
 
 
 Widget surveyListWidget(MainSurveyModel survey,void Function()? onTap) {
@@ -70,7 +71,7 @@ class _SurveyListPressCardState extends State<_SurveyListPressCard> {
             borderRadius: BorderRadius.circular(12),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding:  EdgeInsets.all(AppPadding.p16),
             child: Row(
               children: [
                 _PressIconBox(color: c, pressed: _pressed),
@@ -94,7 +95,7 @@ class _SurveyListPressCardState extends State<_SurveyListPressCard> {
                                 fontWeight: FontWeight.w800,
                               ),
                             ),
-                            const SizedBox(height: 6),
+                             SizedBox(height: AppSize.s6),
                             Text(
                               survey.description,
                               maxLines: 2,
@@ -111,7 +112,7 @@ class _SurveyListPressCardState extends State<_SurveyListPressCard> {
                       ),
 
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding:  EdgeInsets.all(AppPadding.p8),
                         child: Icon(
                           Icons.arrow_forward_ios,
                           color: ColorManager.black.withOpacity(0.5),

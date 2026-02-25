@@ -59,7 +59,7 @@ ThemeData getApplicationTheme({
       style: ElevatedButton.styleFrom(
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
-        padding: const EdgeInsets.symmetric(
+        padding:  EdgeInsets.symmetric(
           horizontal: AppPadding.p20,
           vertical: AppPadding.p12,
         ),
@@ -112,7 +112,7 @@ ThemeData getApplicationTheme({
       fillColor: isLight
           ? ColorManager.fieldBackground
           : ColorManager.darkFieldBackground,
-      contentPadding: const EdgeInsets.all(AppPadding.p12),
+      contentPadding:  EdgeInsets.all(AppPadding.p12),
       labelStyle: getMediumStyle(color: colorScheme.primary),
       hintStyle: getRegularStyle(
         color: isLight ? ColorManager.textHint : ColorManager.darkTextSecondary,
