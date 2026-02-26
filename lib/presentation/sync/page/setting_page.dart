@@ -147,7 +147,6 @@ class SettingPage extends StatelessWidget {
                                     Navigator.of(
                                       context,
                                     ).pushReplacementNamed(Routes.home);
-                                    success(context);
                                     instance<AppPreferences>().setLoggedIn(1);
                                     Navigator.pushNamedAndRemoveUntil(
                                       context,

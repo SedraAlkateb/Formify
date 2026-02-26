@@ -17,10 +17,10 @@ class AdaptiveRowColumn extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (_, c) {
-        final isMobile = Breakpoints.isMobileLandscape(context);
+        final isMobile = Breakpoints.isMobilePortrait(context);
         final isTabletPortrait = Breakpoints.isTabletPortrait(context);
 
-        if (isTabletPortrait ) {
+        if (isTabletPortrait||isMobile ) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [

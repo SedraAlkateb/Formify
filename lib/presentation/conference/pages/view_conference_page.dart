@@ -99,7 +99,24 @@ class _ViewConferencePageState extends State<ViewConferencePage> {
                                 ),
                               ),
                               const SizedBox(height: 20),
-
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    Routes.updateConference,
+                                    arguments: conference.id,
+                                  );
+                                },
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [Icon(Icons.edit,color: ColorManager.white,),
+                                    SizedBox(width: 10,)
+                                    , Text("تعديل",style: TextStyle(
+                                      color: ColorManager.white
+                                    ),)],
+                                ),
+                              ),
                               // Date and location section
                             ],
                           ),

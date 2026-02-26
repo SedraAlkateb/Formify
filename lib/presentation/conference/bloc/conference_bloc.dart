@@ -11,6 +11,7 @@ import 'package:formify/domain/usecase/get_all_survey_and_active_usecase.dart';
 import 'package:formify/domain/usecase/get_all_survey_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_by_id_usecase.dart';
 import 'package:formify/domain/usecase/link_survey_conference_usecase.dart';
+import 'package:formify/domain/usecase/update_conference_usecase.dart';
 import 'package:meta/meta.dart';
 
 part 'conference_event.dart';
@@ -24,6 +25,7 @@ class ConferenceBloc extends Bloc<ConferenceEvent, ConferenceState> {
   DeleteConferenceUsecase deleteConferenceUsecase;
   GetAllSurveyAndActiveUsecase getAllSurveyAndActiveUsecase;
   GetConferenceByIdUsecase getConferenceByIdUsecase;
+  UpdateConferenceUsecase updateConferenceUsecase;
   List<GetAllConferenceModel> allNotActiveConference = [];
   int? selectConferenceId;
   int conferenceId = 0;
@@ -36,6 +38,7 @@ class ConferenceBloc extends Bloc<ConferenceEvent, ConferenceState> {
     this.deleteConferenceUsecase,
     this.getConferenceByIdUsecase,
     this.getAllSurveyAndActiveUsecase,
+      this.updateConferenceUsecase
   ) : super(ConferenceInitial()) {
     on<ConferenceEvent>((event, emit) async {
       if (event is GetAllSurveyByConferenceEvent) {

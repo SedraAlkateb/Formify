@@ -10,6 +10,7 @@ import 'package:formify/domain/usecase/create_survey_question_usecase.dart';
 import 'package:formify/domain/usecase/create_survey_usecase.dart';
 import 'package:formify/domain/usecase/get_all_survey_usecase.dart';
 import 'package:formify/domain/usecase/get_survey_question_id_usecase.dart';
+import 'package:formify/domain/usecase/update_survey_usecase.dart';
 import 'package:image_picker/image_picker.dart';
 import  'package:meta/meta.dart';
 
@@ -21,7 +22,7 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
   GetSurveyQuestionIdUsecase getSurveyQuestionIdUsecase;
   CreateSurveyQuestionUsecase createSurveyQuestionUsecase;
   GetAllSurveyUsecase getAllSurveyUsecase;
-
+  UpdateSurveyUsecase updateSurveyUsecase;
   /////////////////////////////////////////////
   QuestionModel question = QuestionModel.create();
   List<QuestionModel> questions = [];
@@ -41,6 +42,7 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
     this.createSurveyQuestionUsecase,
     this.getAllSurveyUsecase,
     this.getSurveyQuestionIdUsecase,
+      this.updateSurveyUsecase
   ) : super(SurveyInitial()) {
     on<SurveyEvent>((event, emit) async {
       if (event is PickAnswerImageEvent) {
@@ -72,7 +74,27 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
             emit(ViewSurveyState(surveyModel));
           },
         );
-      } else if (event is GetAllSurveyEvent) {
+      } else if (event is UpdateSurveyEvent) {
+        surveyModel.description = event.description;
+        surveyModel.title = event.title;
+        surveyModel.color = event.color;
+        emit(UpdateSurveyLoadingState());
+        (await updateSurveyUsecase.execute(
+          UpdateSurveyRequest(
+              surveyModel.id??-1,
+              title:  event.title,description:event.description,color:event.color),
+        )).fold(
+              (failure) {
+            emit(UpdateSurveyErrorState(failure: failure));
+          },
+              (data) async {
+            emit(ViewSurveyState(surveyModel));
+          },
+        );
+      }
+
+
+      else if (event is GetAllSurveyEvent) {
         emit(GetAllSurveyLoadingState());
         (await getAllSurveyUsecase.execute()).fold(
           (failure) {

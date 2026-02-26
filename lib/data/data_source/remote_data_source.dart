@@ -41,6 +41,8 @@ abstract class RemoteDataSource {
   Future<GetSurveyWithQuestionAndAnswerForUserBaseResponse>
   getUserAnswersForSpecificSurvey(int id, int user_id);
   Future<Message1Response> login(LoginRequest loginRequest);
+  Future<Message1Response> updateConference(int id, ConferenceModel conference);
+  Future<Message1Response> updateSurvey(UpdateSurveyRequest update);
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -164,7 +166,36 @@ class RemoteDataSourceImpl implements RemoteDataSource {
 
   @override
   Future<Message1Response> login(LoginRequest loginRequest) async {
-    return await _appServiceClient.login(loginRequest.username, loginRequest.password);
+    return await _appServiceClient.login(
+      loginRequest.username,
+      loginRequest.password,
+    );
   }
 
+  @override
+  Future<Message1Response> updateConference(
+    int id,
+    ConferenceModel conference,
+  ) async {
+    return await _appServiceClient.updateConference(
+      id,
+      conference.name,
+      conference.description,
+      conference.address,
+      conference.startDate,
+      conference.endDate,
+      conference.isActive
+    );
+  }
+
+  @override
+  Future<Message1Response> updateSurvey(
+      UpdateSurveyRequest update) async {
+    return await _appServiceClient.updateSurvey(
+        update.id,
+       title: update.title,
+       description: update.description,
+      color: update.color
+    );
+  }
 }

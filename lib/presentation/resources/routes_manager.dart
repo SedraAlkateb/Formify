@@ -15,6 +15,7 @@ import 'package:formify/presentation/question/page/text.dart';
 import 'package:formify/presentation/resources/strings_manager.dart';
 import 'package:formify/presentation/survey/pages/create_ques_survey_page.dart';
 import 'package:formify/presentation/survey/pages/create_survey_page.dart';
+import 'package:formify/presentation/survey/pages/update_survey_page.dart';
 import 'package:formify/presentation/survey/pages/view_all_survey_page.dart';
 import 'package:formify/presentation/survey/pages/view_survey.dart';
 import 'package:formify/presentation/sync/page/finished_input_surveys.dart';
@@ -52,6 +53,8 @@ class Routes {
   static const String gameInput = "/gameInput";
   static const String surveyInput = "/surveyInput";
   static const String loginPage = "/LoginPage";
+  static const String updateSurvey = "/updateSurvey";
+  static const String updateConference = "/updateConference";
 
 }
 
@@ -91,9 +94,7 @@ class RouteGenerator {
         );
       case Routes.settingPage:
         final conferenceId = settings.arguments as int;
-        return _animatedRoute(
-          SettingPage(id: conferenceId),
-        );
+        return _animatedRoute(SettingPage(id: conferenceId));
       case Routes.textQuestion:
         return _animatedRoute(TextQuestionPage());
       case Routes.conferenceSurveyById:
@@ -118,6 +119,12 @@ class RouteGenerator {
         return _animatedRoute(ViewUserSurveyPage());
       case Routes.finishedSurvey:
         return _animatedRoute(FinishedInputSurveysPage());
+      case Routes.updateSurvey:
+        final id = settings.arguments as int;
+        return _animatedRoute(UpdateSurveyPage(id: id));
+      case Routes.updateConference:
+        final id = settings.arguments as int;
+        return _animatedRoute(UpdateSurveyPage(id: id));
       // case Routes.getAllConference:
       //   initConferenceModule();
       //   return _animatedRoute(AllConferencePage());
@@ -164,8 +171,11 @@ class RouteGenerator {
       },
     );
   }
+
   // ignore: unused_element
   static Route<dynamic> _Route(Widget page) {
-    return PageRouteBuilder(pageBuilder: (context, animation, secondaryAnimation) => page,);
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => page,
+    );
   }
 }

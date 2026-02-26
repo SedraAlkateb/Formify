@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:formify/domain/models/model_q.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 
 Widget viewAnswerWidget(BuildContext context) {
@@ -95,6 +96,7 @@ Widget viewAnswerWidget(BuildContext context) {
                         ),
                       ],
                     ),
+                    questionModel.type==QuestionType.dropdown?SizedBox():
                     TextButton(
                       onPressed: () {
                         context.read<SurveyBloc>().add(

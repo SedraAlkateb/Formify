@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:formify/app/app_preferences.dart';
-import 'package:formify/app/di.dart';
 import 'package:formify/presentation/resources/responsive/responsive_wrapper.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/unit/text_animation.dart';

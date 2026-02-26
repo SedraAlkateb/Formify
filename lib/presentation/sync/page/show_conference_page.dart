@@ -34,6 +34,7 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
       onWillPop: () async => false,
       child: Scaffold(
         body: Container(
+          height: MediaQuery.of(context).size.height,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [

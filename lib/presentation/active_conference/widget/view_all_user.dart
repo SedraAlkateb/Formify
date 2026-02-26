@@ -100,14 +100,6 @@ Widget userListItem(UserModel user) {
 }
 
 Widget userWidget(UserModel user) {
-  final gradients = [
-    [Color(0xFFff9a9e), Color(0xFFfad0c4)],
-    [Color(0xFFa18cd1), Color(0xFFfbc2eb)],
-    [Color(0xFFfbc2eb), Color(0xFFa6c1ee)],
-  ];
-
-  final colors = gradients[user.id % gradients.length];
-
   return Card(
     color: ColorManager.white,
     shape: RoundedRectangleBorder(
@@ -130,20 +122,16 @@ Widget userWidget(UserModel user) {
               Row(
                 children: [
                   Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
+                    width: 46,
+                    height: 46,
+                    decoration: const BoxDecoration(
                       shape: BoxShape.circle,
-                      gradient: LinearGradient(colors: colors),
+                      color: ColorManager.splash1,
                     ),
-                    child: Center(
-                      child: Text(
-                        user.fullName[0].toUpperCase(),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 30,
-                        ),
-                      ),
+                    child: const Icon(
+                      Icons.person,
+                      color: Colors.white,
+                      size: 26,
                     ),
                   ),
                   SizedBox(width: 10),

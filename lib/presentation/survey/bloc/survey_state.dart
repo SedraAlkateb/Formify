@@ -35,6 +35,21 @@ class ViewQuestionState extends SurveyState {
   List<Object?> get props => [questionModel, images];
 }
 
+final class UpdateSurveyErrorState extends SurveyState {
+  final Failure failure;
+  UpdateSurveyErrorState({required this.failure});
+  @override
+  List<Object?> get props =>[failure];
+}
+final class UpdateSurveyLoadingState extends SurveyState {
+  @override
+  List<Object?> get props => [];
+}
+final class UpdateSurveyState extends SurveyState {
+  @override
+  List<Object?> get props => [];
+}
+
 
 
 final class CreateSurveyErrorState extends SurveyState {
