@@ -38,7 +38,7 @@ class ConferenceBloc extends Bloc<ConferenceEvent, ConferenceState> {
     this.deleteConferenceUsecase,
     this.getConferenceByIdUsecase,
     this.getAllSurveyAndActiveUsecase,
-      this.updateConferenceUsecase
+    this.updateConferenceUsecase,
   ) : super(ConferenceInitial()) {
     on<ConferenceEvent>((event, emit) async {
       if (event is GetAllSurveyByConferenceEvent) {
@@ -102,6 +102,27 @@ class ConferenceBloc extends Bloc<ConferenceEvent, ConferenceState> {
           },
         );
       }
+      if (event is UpdateInfoConferenceEvent) {
+        emit(UpdateConferenceLoadingState());
+        (await updateConferenceUsecase.execute(
+          event.conferenceModel.id,
+          ConferenceModel(
+            event.conferenceModel.name,
+            event.conferenceModel.description,
+            event.conferenceModel.address,
+            event.conferenceModel.startDate,
+            event.conferenceModel.endDate,
+            0),
+        )).fold(
+          (failure) {
+            emit(UpdateConferenceErrorState(failure: failure));
+          },
+          (data) async {
+            emit(UpdateConferenceState());
+          },
+        );
+      }
+
       if (event is GetAllNotActiveConferenceEvent) {
         emit(GetAllConferenceLoadingState());
         (await getAllConferenceUsecase.execute(0)).fold(
@@ -113,7 +134,7 @@ class ConferenceBloc extends Bloc<ConferenceEvent, ConferenceState> {
             if (allNotActiveConference.isEmpty) {
               emit(GetAllEmptyConferenceState());
             } else {
-              emit(GetAllConferenceState(data,0));
+              emit(GetAllConferenceState(data, 0));
             }
           },
         );
@@ -126,7 +147,7 @@ class ConferenceBloc extends Bloc<ConferenceEvent, ConferenceState> {
           },
           (data) async {
             allNotActiveConference.removeAt(event.index);
-            emit(GetAllConferenceState(allNotActiveConference,0));
+            emit(GetAllConferenceState(allNotActiveConference, 0));
           },
         );
       }
@@ -157,7 +178,7 @@ class ConferenceBloc extends Bloc<ConferenceEvent, ConferenceState> {
         List<GetAllConferenceModel> copy = List<GetAllConferenceModel>.from(
           allNotActiveConference,
         );
-        emit(GetAllConferenceState(copy,event.refreshId));
+        emit(GetAllConferenceState(copy, event.refreshId));
       }
     });
   }

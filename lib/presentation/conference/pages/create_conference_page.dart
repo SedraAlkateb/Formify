@@ -61,7 +61,7 @@ class CreateConferencePage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          "Conference Name",
+                          "اسم المؤتمر",
                           style: TextStyle(
                               fontSize: 16, fontWeight: FontWeight.bold),
                         ),
@@ -69,7 +69,7 @@ class CreateConferencePage extends StatelessWidget {
                         FormBuilderTextField(
                           name: 'name',
                           decoration: InputDecoration(
-                            hintText: 'enter conference name',
+                            hintText: 'ادخل اسم المؤتمر',
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(15),
                             ),
@@ -81,7 +81,7 @@ class CreateConferencePage extends StatelessWidget {
                         ),
                         const SizedBox(height: 20),
                         const Text(
-                          "Description",
+                          "الوصف",
                           style: TextStyle(
                               fontSize: 16, fontWeight: FontWeight.bold),
                         ),
@@ -90,7 +90,7 @@ class CreateConferencePage extends StatelessWidget {
                           name: 'description',
                           maxLines: 4,
                           decoration: InputDecoration(
-                            hintText: 'enter conference description',
+                            hintText: 'ادخل وصف المؤتمر',
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(15),
                             ),
@@ -102,7 +102,7 @@ class CreateConferencePage extends StatelessWidget {
                         ),
                         const SizedBox(height: 20),
                         const Text(
-                          "Address",
+                          "العنوان",
                           style: TextStyle(
                               fontSize: 16, fontWeight: FontWeight.bold),
                         ),
@@ -110,7 +110,7 @@ class CreateConferencePage extends StatelessWidget {
                         FormBuilderTextField(
                           name: 'address',
                           decoration: InputDecoration(
-                            hintText: 'enter conference address',
+                            hintText: 'ادخل عنوان المؤتمر',
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(15),
                             ),
@@ -142,7 +142,7 @@ class CreateConferencePage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          "Dates",
+                          "التاريخ",
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
@@ -157,7 +157,7 @@ class CreateConferencePage extends StatelessWidget {
 
                                 inputType: InputType.date,
                                 decoration: InputDecoration(
-                                  labelText: 'Start date',
+                                  labelText: 'تاريخ البدء',
                                   focusColor: ColorManager.primary,
                                   hoverColor: ColorManager.primary,
                                   iconColor: ColorManager.primary,
@@ -179,7 +179,7 @@ class CreateConferencePage extends StatelessWidget {
                                 inputType: InputType.date,
                                 style: TextStyle(color: ColorManager.primary), // لون النص
                                 decoration: InputDecoration(
-                                  labelText: 'End date',
+                                  labelText: 'تاريخ الانتهاء',
                                   labelStyle: TextStyle(color: ColorManager.primary),
                                   hintStyle: TextStyle(color: ColorManager.primary.withOpacity(0.6)),
                                   suffixIcon: Icon(
@@ -214,16 +214,14 @@ class CreateConferencePage extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                //TODO
-
                                 validator: (val) {
                                   final start = _formKey
                                       .currentState
                                       ?.fields['start_date']
                                       ?.value as DateTime?;
-                                  if (val == null) return 'Required';
+                                  if (val == null) return 'مطلوب';
                                   if (start != null && val.isBefore(start)) {
-                                    return 'End date must be after start date';
+                                    return 'تاريخ الانتهاء يجب ان يكون بعد تاريخ البدء';
                                   }
                                   return null;
                                 },
@@ -257,15 +255,17 @@ class CreateConferencePage extends StatelessWidget {
                 } else if (state is CreateConferenceErrorState) {
                   error(context, state.failure.massage, state.failure.code);
                 } else if (state is CreateConferenceState) {
+                  success(context);
+                  Navigator.pushReplacementNamed(context, Routes.conferenceSurveyById,
+                    arguments: {
+                      "conferenceId": state.conferenceId
+                    },
+                  );
                   BlocProvider.of<ConferenceBloc>(context)
                       .add(GetAllSurveyByConferenceEvent(
                     state.conferenceId
                   ));
-                 Navigator.pushReplacementNamed(context, Routes.conferenceSurveyById,
-                   arguments: {
-                     "conferenceId": state.conferenceId
-                   },
-                 );
+
                 }
               },
               child: SizedBox(
@@ -299,7 +299,7 @@ class CreateConferencePage extends StatelessWidget {
                         .add(CreateConferenceEvent(ConferenceModel.fromMap(payload)));
                   },
                   child: const Text(
-                    'Create',
+                    'إنشاء',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                 ),

@@ -5,7 +5,6 @@ import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/resources/theme_bloc/theme_bloc.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
-import 'package:formify/presentation/unit/timer_widget.dart';
 
 class UpdateSurveyPage extends StatelessWidget {
    UpdateSurveyPage({super.key,required this.id});

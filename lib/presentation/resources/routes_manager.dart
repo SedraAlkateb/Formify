@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:formify/app/di.dart';
+import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/active_conference/page/all_active_conference.dart';
 import 'package:formify/presentation/active_conference/page/view_active_conference_page.dart';
 import 'package:formify/presentation/active_conference/page/view_completed_survey.dart';
+import 'package:formify/presentation/conference/pages/Update_conference_page.dart';
 import 'package:formify/presentation/conference/pages/link_survey_by_id.dart';
 import 'package:formify/presentation/conference/pages/create_conference_page.dart';
 import 'package:formify/presentation/conference/pages/view_conference_page.dart';
@@ -123,8 +125,8 @@ class RouteGenerator {
         final id = settings.arguments as int;
         return _animatedRoute(UpdateSurveyPage(id: id));
       case Routes.updateConference:
-        final id = settings.arguments as int;
-        return _animatedRoute(UpdateSurveyPage(id: id));
+        final conference = settings.arguments as GetAllConferenceByIdModel;
+        return _animatedRoute(UpdateConferencePage( conferenceModel: conference,));
       // case Routes.getAllConference:
       //   initConferenceModule();
       //   return _animatedRoute(AllConferencePage());

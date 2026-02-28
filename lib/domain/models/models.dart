@@ -402,6 +402,7 @@ class GetAllConferenceByIdModel {
     this.isActive,
     this.surveys,
   );
+
 }
 
 class SurveyToConferenceModel {

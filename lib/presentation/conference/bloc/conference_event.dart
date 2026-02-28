@@ -70,3 +70,10 @@ class UpdateConferenceEvent extends ConferenceEvent {
   @override
   List<Object?> get props => [refreshId];
 }
+class UpdateInfoConferenceEvent extends ConferenceEvent {
+  final GetAllConferenceByIdModel conferenceModel;
+  UpdateInfoConferenceEvent(this.conferenceModel);
+
+  @override
+  List<Object?> get props => [conferenceModel];
+}

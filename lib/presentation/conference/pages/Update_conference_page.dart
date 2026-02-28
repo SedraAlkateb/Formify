@@ -9,26 +9,23 @@ import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 
 class UpdateConferencePage extends StatelessWidget {
-  UpdateConferencePage({super.key,required this.id,required this.conferenceModel});
- final  int id;
- late final ConferenceModel conferenceModel;
+  UpdateConferencePage({
+    super.key,
+    required this.conferenceModel,
+  });
+  late final GetAllConferenceByIdModel conferenceModel;
   final _formKey = GlobalKey<FormBuilderState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorManager.background,
-      appBar:
-
-      AppBar(
+      appBar: AppBar(
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
           icon: Icon(Icons.arrow_back_ios_new, color: ColorManager.black),
         ),
-        title: Text(
-          'تعديل مؤتمر',
-          style: TextStyle(color: ColorManager.black),
-        ),
+        title: Text('تعديل مؤتمر', style: TextStyle(color: ColorManager.black)),
         backgroundColor: ColorManager.white,
       ),
 
@@ -62,7 +59,9 @@ class UpdateConferencePage extends StatelessWidget {
                         const Text(
                           "اسم المؤتمر",
                           style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(height: 8),
                         FormBuilderTextField(
@@ -83,7 +82,9 @@ class UpdateConferencePage extends StatelessWidget {
                         const Text(
                           "الوصف",
                           style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(height: 8),
                         FormBuilderTextField(
@@ -105,7 +106,9 @@ class UpdateConferencePage extends StatelessWidget {
                         const Text(
                           "العنوان",
                           style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(height: 8),
                         FormBuilderTextField(
@@ -146,16 +149,20 @@ class UpdateConferencePage extends StatelessWidget {
                         const Text(
                           "التاريخ",
                           style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(height: 12),
                         Row(
                           children: [
                             Expanded(
                               child: FormBuilderDateTimePicker(
-                                initialValue: DateTime.parse(conferenceModel.startDate),
+                                initialValue: DateTime.parse(
+                                  conferenceModel.startDate,
+                                ),
                                 cursorColor: ColorManager.primary,
-                                style: TextStyle(color: ColorManager.primary, ),
+                                style: TextStyle(color: ColorManager.primary),
                                 name: 'start_date',
 
                                 inputType: InputType.date,
@@ -164,28 +171,39 @@ class UpdateConferencePage extends StatelessWidget {
                                   focusColor: ColorManager.primary,
                                   hoverColor: ColorManager.primary,
                                   iconColor: ColorManager.primary,
-                                  labelStyle: TextStyle(color: ColorManager.primary, ),
+                                  labelStyle: TextStyle(
+                                    color: ColorManager.primary,
+                                  ),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(15),
                                   ),
-                                  suffixIcon:
-                                  const Icon(Icons.calendar_month),
+                                  suffixIcon: const Icon(Icons.calendar_month),
                                 ),
                                 validator: FormBuilderValidators.required(),
                               ),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
-                              child:FormBuilderDateTimePicker(
+                              child: FormBuilderDateTimePicker(
                                 name: 'end_date',
-                                initialValue: DateTime.parse(conferenceModel.endDate),
+                                initialValue: DateTime.parse(
+                                  conferenceModel.endDate,
+                                ),
                                 cursorColor: ColorManager.primary,
                                 inputType: InputType.date,
-                                style: TextStyle(color: ColorManager.primary), // لون النص
+                                style: TextStyle(
+                                  color: ColorManager.primary,
+                                ), // لون النص
                                 decoration: InputDecoration(
                                   labelText: 'تاريخ الانتهاء',
-                                  labelStyle: TextStyle(color: ColorManager.primary),
-                                  hintStyle: TextStyle(color: ColorManager.primary.withOpacity(0.6)),
+                                  labelStyle: TextStyle(
+                                    color: ColorManager.primary,
+                                  ),
+                                  hintStyle: TextStyle(
+                                    color: ColorManager.primary.withOpacity(
+                                      0.6,
+                                    ),
+                                  ),
                                   suffixIcon: Icon(
                                     Icons.calendar_month,
                                     color: ColorManager.primary,
@@ -218,13 +236,15 @@ class UpdateConferencePage extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                //TODO
 
+                                //TODO
                                 validator: (val) {
-                                  final start = _formKey
-                                      .currentState
-                                      ?.fields['start_date']
-                                      ?.value as DateTime?;
+                                  final start =
+                                      _formKey
+                                              .currentState
+                                              ?.fields['start_date']
+                                              ?.value
+                                          as DateTime?;
                                   if (val == null) return 'Required';
                                   if (start != null && val.isBefore(start)) {
                                     return 'End date must be after start date';
@@ -232,7 +252,6 @@ class UpdateConferencePage extends StatelessWidget {
                                   return null;
                                 },
                               ),
-
                             ),
                           ],
                         ),
@@ -256,29 +275,24 @@ class UpdateConferencePage extends StatelessWidget {
             // ===== BLoC submit =====
             BlocListener<ConferenceBloc, ConferenceState>(
               listener: (context, state) {
-                if (state is CreateConferenceLoadingState) {
+                if (state is UpdateConferenceLoadingState) {
                   loading(context);
-                } else if (state is CreateConferenceErrorState) {
+                } else if (state is UpdateConferenceErrorState) {
                   error(context, state.failure.massage, state.failure.code);
-                } else if (state is CreateConferenceState) {
-                  BlocProvider.of<ConferenceBloc>(context)
-                      .add(GetAllSurveyByConferenceEvent(
-                    state.conferenceId
-                  ));
-                 Navigator.pushReplacementNamed(context, Routes.conferenceSurveyById,
-                   arguments: {
-                     "conferenceId": state.conferenceId
-                   },
-                 );
+                } else if (state is UpdateConferenceState) {
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    Routes.home,
+                   (route) => false
+                  );
                 }
               },
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-
                     backgroundColor: ColorManager.primary, // لون الخلفية
-                    foregroundColor: Colors.white,          // لون النص
+                    foregroundColor: Colors.white, // لون النص
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -286,29 +300,27 @@ class UpdateConferencePage extends StatelessWidget {
                     elevation: 4,
                   ),
                   onPressed: () {
-                    final ok = _formKey.currentState?.saveAndValidate() ?? false;
+                    final ok =
+                        _formKey.currentState?.saveAndValidate() ?? false;
                     if (!ok) return;
-
                     final v = _formKey.currentState!.value;
-                    final payload = {
-                      "name": v["name"],
-                      "description": v["description"],
-                      "address": v["address"],
-                      "start_date": _toYmd(v["start_date"] as DateTime),
-                      "end_date": _toYmd(v["end_date"] as DateTime),
-                      "is_active": (v["is_active"] == true) ? 1 : 0,
-                    };
-
-                    BlocProvider.of<ConferenceBloc>(context)
-                        .add(CreateConferenceEvent(ConferenceModel.fromMap(payload)));
+                    conferenceModel.name=v["name"];
+                    conferenceModel.description=v["description"];
+                    conferenceModel.address=v["address"];
+                    conferenceModel.startDate= _toYmd(v["start_date"] as DateTime);
+                    conferenceModel.endDate=_toYmd(v["end_date"] as DateTime);
+                    BlocProvider.of<ConferenceBloc>(context).add(
+                      UpdateInfoConferenceEvent(
+                        conferenceModel
+                      ),
+                    );
                   },
                   child: const Text(
-                    'Create',
+                    'Update',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                 ),
               ),
-
             ),
           ],
         ),

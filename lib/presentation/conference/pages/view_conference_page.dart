@@ -63,9 +63,9 @@ class _ViewConferencePageState extends State<ViewConferencePage> {
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              Color(0xFF4C4EB9), // اللون الأول (أزرق)
-                              Color(0xFF7A7EF4), // اللون الثاني (أزرق فاتح)
-                              Color(0xFFA4A6E1),
+                              ColorManager.splash1,
+                              ColorManager.splash2,
+                              //  ColorManager.splash3,
                             ],
                             begin: Alignment
                                 .topLeft, // البداية من الزاوية العليا اليسرى
@@ -104,7 +104,7 @@ class _ViewConferencePageState extends State<ViewConferencePage> {
                                   Navigator.pushNamed(
                                     context,
                                     Routes.updateConference,
-                                    arguments: conference.id,
+                                    arguments: conference
                                   );
                                 },
                                 child: Row(
