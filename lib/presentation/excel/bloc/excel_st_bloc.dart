@@ -16,25 +16,20 @@ class ExcelStBloc extends Bloc<ExcelStEvent, ExcelStState> {
     on<UsersAnswersStatisticsEvent>(_onFetch);
   }
   Future<void> _onFetch(
-      UsersAnswersStatisticsEvent event,
-      Emitter<ExcelStState> emit,
-      ) async {
+    UsersAnswersStatisticsEvent event,
+    Emitter<ExcelStState> emit,
+  ) async {
     emit(ExelLoading());
     final result = await statisticsForUsersAnswersUsecase.execute(
       event.surveyId,
     );
     result.fold(
-          (failure) {
-        emit(
-          ExelError(
-            failure: failure
-          ),
-        );
+      (failure) {
+        emit(ExelError(failure: failure));
       },
-          (data) {
-          emit(ExelSuccess(data));
+      (data) {
+        emit(ExelSuccess(data));
       },
     );
   }
-  }
-
+}
