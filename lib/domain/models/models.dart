@@ -42,7 +42,7 @@ class AnswerUserSurveyModel {
   int answer_id;
   String content;
   int isCorrect;
-  AnswerUserSurveyModel(this.id, this.answer_id, this.content,this.isCorrect);
+  AnswerUserSurveyModel(this.id, this.answer_id, this.content, this.isCorrect);
 }
 
 class QuestionModel {
@@ -402,7 +402,6 @@ class GetAllConferenceByIdModel {
     this.isActive,
     this.surveys,
   );
-
 }
 
 class SurveyToConferenceModel {
@@ -627,12 +626,11 @@ class AllUserModel {
   AllUserModel(
     this.users,
     this.conference_id,
-      this.is_active
+    this.is_active,
   ); // المُنشئ الذي يأخذ قائمة المستخدمين
 
   Map<String, dynamic> toJson() {
     return {
-
       "conference_id": conference_id,
       "is_active": is_active,
       'users': users
@@ -647,7 +645,7 @@ class AllUserModel {
         map['users'].map((userMap) => UserModel.fromMap(userMap)),
       ),
       map['conference_id'],
-      map['is_active']
+      map['is_active'],
     );
   }
 }
@@ -658,4 +656,32 @@ class InfoConference {
   int totalCompletedSurvey;
 
   InfoConference(this.totalUser, this.totalSurvey, this.totalCompletedSurvey);
+}
+
+class SurveyQuestionModel {
+  int id;
+  String question;
+  String type;
+  SurveyQuestionModel(this.id, this.question, this.type);
+}
+
+///////UserModel
+class UserAnswerForStatModel {
+  int questionId;
+  String question;
+  String content;
+  UserAnswerForStatModel(this.questionId, this.question, this.content);
+}
+
+class UserAndAnswersModel {
+  UserModel userModel;
+  List<UserAnswerForStatModel> userAnswerForStatModel;
+
+  UserAndAnswersModel(this.userModel, this.userAnswerForStatModel);
+}
+class ExelModel {
+  List<SurveyQuestionModel> surveyQuestionModel;
+  List<UserAndAnswersModel> userAndAnswersModel;
+
+  ExelModel(this.surveyQuestionModel, this.userAndAnswersModel);
 }

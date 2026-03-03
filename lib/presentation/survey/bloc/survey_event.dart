@@ -146,3 +146,15 @@ class SelectValueAnswerEvent extends SurveyEvent {
   @override
   List<Object?> get props => [];
 }
+class RepetitionSurveyEvent extends SurveyEvent {
+  final String color;
+  final String title;
+  final String description;
+  final int id;
+  final String timer;
+
+  RepetitionSurveyEvent(this.color, this.title, this.description, this.id,this.timer);
+
+  @override
+  List<Object?> get props => [color, title, description, id,timer];
+}

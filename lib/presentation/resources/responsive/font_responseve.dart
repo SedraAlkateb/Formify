@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:formify/app/constants.dart';
 
 class FontResponsive {
 
@@ -11,22 +12,13 @@ class FontResponsive {
   static bool isTablet(BuildContext context) =>
       screenWidth(context) >= 600 && screenWidth(context) < 1024;
 
-  static bool isDesktop(BuildContext context) =>
-      screenWidth(context) >= 1024;
-
   /// scale font based on device
   static double font(
       BuildContext context, {
         required double mobile,
         double? tablet,
-        double? desktop,
       }) {
-
-    if (isDesktop(context)) {
-      return desktop ?? tablet ?? mobile;
-    }
-
-    if (isTablet(context)) {
+    if (Constants.isTablet) {
       return tablet ?? mobile;
     }
 

@@ -1,36 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
-import 'package:formify/presentation/resources/responsive/font_responseve.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/resources/theme_bloc/theme_bloc.dart';
-import 'package:formify/presentation/resources/values_manager.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
-import 'package:formify/presentation/unit/timer_widget.dart';
 
-class CreateSurveyPage extends StatefulWidget {
-  const CreateSurveyPage({super.key});
-
-  @override
-  State<CreateSurveyPage> createState() => _CreateSurveyPageState();
-}
-
-class _CreateSurveyPageState extends State<CreateSurveyPage> {
-  @override
-  void initState() {
-    BlocProvider.of<SurveyBloc>(context).initSurveyBloc();
-
-    super.initState();
-  }
-
+class RepetitionSurveyPage extends StatelessWidget {
+  RepetitionSurveyPage({super.key,required this.id});
+   final int id;
   final TextEditingController titleController = TextEditingController();
 
   final TextEditingController descriptionController = TextEditingController();
-  final TextEditingController timerController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    titleController.text=BlocProvider.of<SurveyBloc>(
+      context,
+    ).surveyModel.title;
+    descriptionController.text=BlocProvider.of<SurveyBloc>(
+      context,
+    ).surveyModel.description;
+
     return Scaffold(
       backgroundColor: ColorManager.background,
       appBar: AppBar(
@@ -39,22 +30,15 @@ class _CreateSurveyPageState extends State<CreateSurveyPage> {
           icon: Icon(Icons.arrow_back_ios_new, color: ColorManager.black),
         ),
         title: Text(
-          'انشاء فورمات ديناميكية',
-
-          style: TextStyle(
-              fontSize: FontResponsive.font(
-                context,
-                mobile: 20,
-                tablet: 24,
-              ),
-              color: ColorManager.black),
+          'تكرار الاستبيان',
+          style: TextStyle(color: ColorManager.black),
         ),
         centerTitle: false,
         backgroundColor: ColorManager.white,
       ),
 
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(AppPadding.p16),
+        padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -63,9 +47,8 @@ class _CreateSurveyPageState extends State<CreateSurveyPage> {
               children: [
                 Container(
                   width: double.infinity,
-                  padding:  EdgeInsets.all(AppPadding.p16),
-                  margin:
-                  EdgeInsets.symmetric(vertical: AppMargin.m12),
+                  padding: const EdgeInsets.all(16),
+                  margin: const EdgeInsets.symmetric(vertical: 12),
                   decoration: BoxDecoration(
                     border: Border.all(color: ColorManager.border),
                     color: Colors.white,
@@ -81,18 +64,14 @@ class _CreateSurveyPageState extends State<CreateSurveyPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                       Text(
+                      const Text(
                         "عنوان الاستبيان", // 🔹 عنوان فوق الحقل
                         style: TextStyle(
-                          fontSize: FontResponsive.font(
-                            context,
-                            mobile: 16,
-                            tablet: 20,
-                          ),
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                       SizedBox(height: AppSize.s8),
+                      const SizedBox(height: 8),
                       TextFormField(
                         onChanged: (value) => BlocProvider.of<SurveyBloc>(
                           context,
@@ -106,24 +85,20 @@ class _CreateSurveyPageState extends State<CreateSurveyPage> {
                         ),
                       ),
                       const SizedBox(height: 20),
-                       Text(
+                      const Text(
                         "وصف الاستبيان", // 🔹 عنوان فوق الحقل
                         style: TextStyle(
-                          fontSize: FontResponsive.font(
-                            context,
-                            mobile: 16,
-                            tablet: 20,
-                          ),
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                       SizedBox(height: AppSize.s8),
+                      const SizedBox(height: 8),
                       TextFormField(
                         onChanged: (value) => BlocProvider.of<SurveyBloc>(
                           context,
                         ).surveyModel.description = value,
                         controller: descriptionController,
-                        maxLines: 5,
+                        maxLines: 4,
                         decoration: InputDecoration(
                           hintText: "ادخل وصف الاستبيان",
                           alignLabelWithHint: true,
@@ -137,8 +112,8 @@ class _CreateSurveyPageState extends State<CreateSurveyPage> {
                 ),
                 Container(
                   width: double.infinity,
-                  padding:  EdgeInsets.all(AppPadding.p16),
-                  margin:  EdgeInsets.symmetric(vertical: AppMargin.m12),
+                  padding: const EdgeInsets.all(16),
+                  margin: const EdgeInsets.symmetric(vertical: 12),
                   decoration: BoxDecoration(
                     border: Border.all(color: ColorManager.border),
                     color: Colors.white,
@@ -154,23 +129,19 @@ class _CreateSurveyPageState extends State<CreateSurveyPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                       Text(
+                      const Text(
                         "اختر لون التطبيق",
                         style: TextStyle(
-                          fontSize: FontResponsive.font(
-                            context,
-                            mobile: 18,
-                            tablet: 22,
-                          ),
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
 
-                       SizedBox(height: AppSize.s12),
+                      const SizedBox(height: 12),
 
                       Wrap(
-                        spacing: AppSize.s12,
-                        runSpacing: AppSize.s12,
+                        spacing: 12,
+                        runSpacing: 12,
                         children: [
                           /// 🔥 مجموعة ألوان أساسية (Primary Colors and Their Shades)
                           buildColorOption(
@@ -293,65 +264,19 @@ class _CreateSurveyPageState extends State<CreateSurveyPage> {
                     ],
                   ),
                 ),
-                Container(
-                  width: double.infinity,
-                  padding:  EdgeInsets.all(AppPadding.p16),
-                  margin:  EdgeInsets.symmetric(vertical: AppMargin.m12),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: ColorManager.border),
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(25),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black12,
-                        blurRadius: 8,
-                        offset: Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                       Text(
-                        "ادخل الوقت لاالمسموح للاستبيان",
-                        style: TextStyle(
-                          fontSize: FontResponsive.font(
-                            context,
-                            mobile: 16,
-                            tablet: 20,
-                          ),
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height:AppSize.s8),
-                      TimePickerField(
-
-                        label: "الوقت المسموح للاستبيان",
-                        initialText: "00:10",
-                        onChanged: (t) {
-                          final hh = t.hour.toString().padLeft(2, '0');
-                          final mm = t.minute.toString().padLeft(2, '0');
-                          BlocProvider.of<SurveyBloc>(
-                            context,
-                          ).surveyModel.timer = "$hh:$mm";
-                        },
-
-                        controller: timerController,
-                      ),
-                    ],
-                  ),
-                ),
               ],
             ),
             BlocListener<SurveyBloc, SurveyState>(
               listener: (context, state) {
-                if (state is CreateSurveyLoadingState) {
+                if (state is UpdateSurveyLoadingState) {
                   loading(context);
-                } else if (state is CreateSurveyErrorState) {
+                }
+                else if (state is UpdateSurveyErrorState) {
                   error(context, state.failure.massage, state.failure.code);
-                } else if (state is ViewSurveyState) {
+                }
+                else if (state is ViewSurveyState) {
                   success(context);
-                  Navigator.pushReplacementNamed(
+                  Navigator.pop(
                     context,
                     Routes.viewSurvey,
                   );
@@ -363,21 +288,15 @@ class _CreateSurveyPageState extends State<CreateSurveyPage> {
                     context,
                   ).state.colorName;
                   BlocProvider.of<SurveyBloc>(context).add(
-                    CreateSurveyEvent(
+                    UpdateSurveyEvent(
                       selectedColor.toString(),
                       titleController.text,
                       descriptionController.text,
-                      timerController.text,
+                      id,
                     ),
                   );
                 },
-                child:  Text('التالي',style: TextStyle(
-                  fontSize: FontResponsive.font(
-                    context,
-                    mobile: 16,
-                    tablet: 20,
-                  ),
-                ),),
+                child: const Text('تكرار'),
               ),
             ),
           ],

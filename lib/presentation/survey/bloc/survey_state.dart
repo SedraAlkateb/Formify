@@ -98,3 +98,18 @@ final class GetAllEmptySurveyState extends SurveyState {
   @override
   List<Object?> get props => [];
 }
+
+final class RepetitionSurveyErrorState extends SurveyState {
+  final Failure failure;
+  RepetitionSurveyErrorState({required this.failure});
+  @override
+  List<Object?> get props =>[failure];
+}
+final class RepetitionSurveyLoadingState extends SurveyState {
+  @override
+  List<Object?> get props => [];
+}
+final class RepetitionSurveyState extends SurveyState {
+  @override
+  List<Object?> get props => [];
+}

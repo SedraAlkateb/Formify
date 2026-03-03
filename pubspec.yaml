@@ -60,6 +60,10 @@ dependencies:
   # Serialization
   json_annotation: ^4.9.0
   retrofit: 4.9.2
+  excel: ^4.0.6
+  path_provider: ^2.1.5
+  open_file: ^3.5.11
+  fl_chart: ^1.1.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -16,6 +16,8 @@ class CustomGridPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isTabletLandscape = Breakpoints.isTabletLandscape(context);
+    final isMobileLandscape = Breakpoints.isMobilePortrait(context);
     return Padding(
       padding:  EdgeInsets.all(Breakpoints.isTabletPortrait(context)?20:15.sp),
       child: StaggeredGrid.count(
@@ -25,7 +27,8 @@ class CustomGridPage extends StatelessWidget {
         children: [
           StaggeredGridTile.count(
             crossAxisCellCount: 1,
-            mainAxisCellCount:Breakpoints.isTabletPortrait(context)?0.6: 1,
+            mainAxisCellCount:
+            (isTabletLandscape||isMobileLandscape)?1: 0.6,
             child: AnimatedGridItem(
               text: "عرض المؤتمرات",
               onTap: () {
@@ -39,7 +42,7 @@ class CustomGridPage extends StatelessWidget {
 
           StaggeredGridTile.count(
             crossAxisCellCount: 1,
-            mainAxisCellCount:  Breakpoints.isTabletPortrait(context)?1:1.7, // أكبر من الباقي
+            mainAxisCellCount:  (isTabletLandscape||isMobileLandscape)?1.7:1.2, // أكبر من الباقي
             child: AnimatedGridItem(
               text: "انشاء استبيان ديناميكي",
               onTap: () {
@@ -52,7 +55,7 @@ class CustomGridPage extends StatelessWidget {
 
           StaggeredGridTile.count(
             crossAxisCellCount: 1,
-            mainAxisCellCount: Breakpoints.isTabletPortrait(context)?1:1.7,
+            mainAxisCellCount: (isTabletLandscape||isMobileLandscape)?1.7:1.2,
             child: AnimatedGridItem(
 
               text: "انشاء مؤتمر ديناميكي",
@@ -65,7 +68,7 @@ class CustomGridPage extends StatelessWidget {
           ),
           StaggeredGridTile.count(
             crossAxisCellCount: 1,
-            mainAxisCellCount:Breakpoints.isTabletPortrait(context)?0.6: 1,
+            mainAxisCellCount:(isTabletLandscape||isMobileLandscape)?1: 0.6,
             child: AnimatedGridItem(
               text: "عرض الاستبيانات",
               onTap: () {
@@ -151,7 +154,6 @@ class _AnimatedGridItemState extends State<AnimatedGridItem> {
                        context,
                        mobile: 18,
                        tablet: 20,
-                       desktop: 24,
                      ),
                      fontWeight: FontWeight.bold,
                    ),

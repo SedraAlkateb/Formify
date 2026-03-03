@@ -33,11 +33,13 @@ import 'package:formify/domain/usecase/get_user_answers_survey_usecase.dart';
 import 'package:formify/domain/usecase/insert_user_and_answer_usecase.dart';
 import 'package:formify/domain/usecase/link_survey_conference_usecase.dart';
 import 'package:formify/domain/usecase/login_usecase.dart';
+import 'package:formify/domain/usecase/statistics_for_users_answers_usecase.dart';
 import 'package:formify/domain/usecase/synchronize_users_answers_usecase.dart';
 import 'package:formify/domain/usecase/update_conference_usecase.dart';
 import 'package:formify/domain/usecase/update_survey_usecase.dart';
 import 'package:formify/presentation/active_conference/bloc/active_conference_bloc.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
+import 'package:formify/presentation/excel/bloc/excel_st_bloc.dart';
 import 'package:formify/presentation/onboarding/bloc/onboarding_bloc.dart';
 import 'package:formify/presentation/resources/theme_bloc/theme_bloc.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
@@ -82,7 +84,12 @@ Future<void> initOnBoardingModule() async {
     instance.registerFactory<OnboardingBloc>(() => OnboardingBloc(instance()));
   }
 }
-
+Future<void> initExcelModule() async {
+  if (!GetIt.I.isRegistered<StatisticsForUsersAnswersUsecase>()) {
+    instance.registerFactory<StatisticsForUsersAnswersUsecase>(() => StatisticsForUsersAnswersUsecase(instance()));
+    instance.registerFactory<ExcelStBloc>(() => ExcelStBloc(instance()));
+  }
+}
 Future<void> initConferenceModule() async {
   if (!GetIt.I.isRegistered<ConferenceBloc>()) {
     instance.registerFactory<CreateConferenceUsecase>(

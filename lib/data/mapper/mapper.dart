@@ -420,3 +420,43 @@ extension GetAllUserModelMapper on GetAllUserBaseResponse {
     return allSurvey;
   }
 }
+////////////////////////////Exel
+extension SurveyQuestionModelMapper on SurveyQuestionResponse? {
+  SurveyQuestionModel toDomain() {
+    return SurveyQuestionModel(
+      this?.id ?? Constants.zero,
+      this?.question ?? Constants.empty,
+      this?.type ?? Constants.empty,
+    );
+  }
+}
+extension UserAnswerForStatModelMapper on UserAnswerForStatResponse? {
+  UserAnswerForStatModel toDomain() {
+    return UserAnswerForStatModel(
+      this?.questionId ?? Constants.zero,
+      this?.question ?? Constants.empty,
+      this?.content ?? Constants.empty,
+    );
+  }
+}
+extension UserAndAnswersModelMapper on UserAndAnswersResponse {
+  UserAndAnswersModel toDomain() {
+    List<UserAnswerForStatModel> userAnswerForStatModel = (userAnswers.map(
+          (response) => response.toDomain(),
+    )).cast<UserAnswerForStatModel>().toList();
+    return UserAndAnswersModel(userInformation.toDomain(),
+        userAnswerForStatModel);
+  }}
+
+extension StatisticsForUsersAnswersModelMapper on StatisticsForUsersAnswersBaseResponse {
+  ExelModel toDomain() {
+
+    List<SurveyQuestionModel> surveyQuestionModel = (data.surveyQuestions.map(
+          (response) => response.toDomain(),
+    )).cast<SurveyQuestionModel>().toList();
+    List<UserAndAnswersModel> userAndAnswersModel = (data.usersAnswers.map(
+          (response) => response.toDomain(),
+    )).cast<UserAndAnswersModel>().toList();
+    return ExelModel(surveyQuestionModel,
+        userAndAnswersModel);
+  }}

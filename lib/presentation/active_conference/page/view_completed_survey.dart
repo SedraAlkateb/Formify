@@ -6,6 +6,7 @@ import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/active_conference/bloc/active_conference_bloc.dart';
 import 'package:formify/presentation/question/page/view_answer_question.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
+import 'package:formify/presentation/resources/responsive/font_responseve.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
 class ViewCompletedSurvey extends StatelessWidget {
@@ -19,7 +20,12 @@ class ViewCompletedSurvey extends StatelessWidget {
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
-        title: const Text("معلومات الاستبيان"),
+        title: Text(
+          "معلومات الاستبيان",
+          style: TextStyle(
+            fontSize: FontResponsive.font(context, mobile: 20, tablet: 24),
+          ),
+        ),
         backgroundColor: colors.primary,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -67,30 +73,50 @@ class ViewCompletedSurvey extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             "عنوان الاستبيان",
                             style: TextStyle(
-                              fontSize: 16,
+                              fontSize: FontResponsive.font(
+                                context,
+                                mobile: 16,
+                                tablet: 20,
+                              ),
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             surveyModel.title,
-                            style: const TextStyle(fontSize: 16),
+                            style: TextStyle(
+                              fontSize: FontResponsive.font(
+                                context,
+                                mobile: 16,
+                                tablet: 20,
+                              ),
+                            ),
                           ),
                           const SizedBox(height: 20),
-                          const Text(
+                          Text(
                             "وصف الاستبيان",
                             style: TextStyle(
-                              fontSize: 16,
+                              fontSize: FontResponsive.font(
+                                context,
+                                mobile: 16,
+                                tablet: 20,
+                              ),
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             surveyModel.description,
-                            style: const TextStyle(fontSize: 14),
+                            style: TextStyle(
+                              fontSize: FontResponsive.font(
+                                context,
+                                mobile: 14,
+                                tablet: 18,
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -102,10 +128,14 @@ class ViewCompletedSurvey extends StatelessWidget {
                         horizontal: 18,
                         vertical: 4,
                       ),
-                      child: const Text(
+                      child:  Text(
                         "الأسئلة",
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: FontResponsive.font(
+                            context,
+                            mobile: 20,
+                            tablet: 24,
+                          ),
                           fontWeight: FontWeight.w900,
                         ),
                       ),
@@ -139,6 +169,11 @@ class ViewCompletedSurvey extends StatelessWidget {
                                     Text(
                                       "${q.order}#",
                                       style: TextStyle(
+                                        fontSize: FontResponsive.font(
+                                          context,
+                                          mobile: 15,
+                                          tablet: 19,
+                                        ),
                                         color: colors.primary,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -159,7 +194,11 @@ class ViewCompletedSurvey extends StatelessWidget {
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w600,
                                                 color: colors.onSurface,
-                                                fontSize: 18,
+                                                fontSize: FontResponsive.font(
+                                                  context,
+                                                  mobile: 18,
+                                                  tablet: 22,
+                                                ),
                                               ),
                                             ),
                                           ),
@@ -193,7 +232,6 @@ class ViewCompletedSurvey extends StatelessWidget {
                                         style: TextStyle(
                                           color: Colors.black,
                                           fontWeight: FontWeight.w500,
-                                          fontSize: 15,
                                         ),
                                       ),
                                     )
@@ -211,7 +249,11 @@ class ViewCompletedSurvey extends StatelessWidget {
                                             style: TextStyle(
                                               color: Colors.black,
                                               fontWeight: FontWeight.w500,
-                                              fontSize: 16,
+                                              fontSize: FontResponsive.font(
+                                                context,
+                                                mobile: 16,
+                                                tablet: 20,
+                                              ),
                                             ),
                                           ),
                                         ],

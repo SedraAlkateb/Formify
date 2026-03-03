@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:formify/presentation/resources/responsive/font_responseve.dart';
 
 // class ButtonType extends StatelessWidget {
 //   const ButtonType({super.key});
@@ -19,11 +20,11 @@ import 'package:flutter/material.dart';
 // }
 
 class ButtonType extends StatelessWidget {
-  final String title;          // النص الأساسي
-  final String? subtitle;      // رقم أو كلمة تحتها (اختياري)
-  final Widget? icon;          // صورة أو أي Widget (اختياري)
-  final double size;           // حجم المربع
-  final VoidCallback onTap;    // الفعل عند الضغط
+  final String title; // النص الأساسي
+  final String? subtitle; // رقم أو كلمة تحتها (اختياري)
+  final Widget? icon; // صورة أو أي Widget (اختياري)
+  final double size; // حجم المربع
+  final VoidCallback onTap; // الفعل عند الضغط
 
   const ButtonType({
     super.key,
@@ -51,7 +52,7 @@ class ButtonType extends StatelessWidget {
               color: primary.withOpacity(0.3),
               blurRadius: 8,
               offset: Offset(0, 4),
-            )
+            ),
           ],
         ),
 
@@ -59,18 +60,32 @@ class ButtonType extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           spacing: 6, // ميزة Flutter 3.24+
           children: [
-
             if (icon != null) icon!, // صورة *اختيارية*
 
             Text(
               title,
-              style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: FontResponsive.font(
+                  context,
+                  mobile: 17,
+                  tablet: 21,
+                ),
+                fontWeight: FontWeight.w600,
+              ),
             ),
 
             if (subtitle != null)
               Text(
                 subtitle!,
-                style: TextStyle(color: Colors.white.withOpacity(.9), fontSize: 14),
+                style: TextStyle(
+                  color: Colors.white.withOpacity(.9),
+                  fontSize: FontResponsive.font(
+                    context,
+                    mobile: 14,
+                    tablet: 19,
+                  ),
+                ),
               ),
           ],
         ),

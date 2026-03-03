@@ -43,6 +43,9 @@ abstract class RemoteDataSource {
   Future<Message1Response> login(LoginRequest loginRequest);
   Future<Message1Response> updateConference(int id, ConferenceModel conference);
   Future<Message1Response> updateSurvey(UpdateSurveyRequest update);
+  Future<StatisticsForUsersAnswersBaseResponse> statisticsForUsersAnswers(
+    int surveyId,
+  );
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -184,18 +187,24 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       conference.address,
       conference.startDate,
       conference.endDate,
-      conference.isActive
+      conference.isActive,
     );
   }
 
   @override
-  Future<Message1Response> updateSurvey(
-      UpdateSurveyRequest update) async {
+  Future<Message1Response> updateSurvey(UpdateSurveyRequest update) async {
     return await _appServiceClient.updateSurvey(
-        update.id,
-       title: update.title,
-       description: update.description,
-      color: update.color
+      update.id,
+      title: update.title,
+      description: update.description,
+      color: update.color,
+    );
+  }
+
+  @override
+  Future<StatisticsForUsersAnswersBaseResponse> statisticsForUsersAnswers(int surveyId) async {
+    return await _appServiceClient.statisticsForUsersAnswers(
+        surveyId
     );
   }
 }

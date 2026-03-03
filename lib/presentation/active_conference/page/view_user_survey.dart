@@ -40,7 +40,7 @@ class ViewUserSurveyPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  userWidget(state.userModel),
+                  userWidget(state.userModel,context),
                   Column(
                     children: [
                       SizedBox(height: AppSize.s4),

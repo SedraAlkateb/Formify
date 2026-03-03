@@ -24,7 +24,7 @@ class ConferenceEndedWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding:  EdgeInsets.all(Breakpoints.isTabletPortrait(context)?20:16),
+      padding:  EdgeInsets.all(Breakpoints.isTabletPortrait(context)?18:16),
 
       decoration: BoxDecoration(
         color: Colors.white,
@@ -60,7 +60,7 @@ class ConferenceEndedWidget extends StatelessWidget {
                       context,
                       mobile: 18,
                       tablet: 23,
-                      desktop: 25,
+
                     ),
                     fontWeight: FontWeight.w600,
                     color: ColorManager.primary,
@@ -85,7 +85,7 @@ class ConferenceEndedWidget extends StatelessWidget {
                           context,
                           mobile: 13,
                           tablet: 18,
-                          desktop: 20,
+
                         ),
                         color: Colors.grey.shade700,
                       ),
@@ -98,7 +98,7 @@ class ConferenceEndedWidget extends StatelessWidget {
                           context,
                           mobile: 13,
                           tablet: 18,
-                          desktop: 20,
+
                         ),
                         color: Colors.grey.shade700,
                       ),
@@ -120,7 +120,7 @@ class ConferenceEndedWidget extends StatelessWidget {
                           context,
                           mobile: 13,
                           tablet: 18,
-                          desktop: 20,
+
                         ),
                         color: Colors.grey.shade700,
                       ),
@@ -133,7 +133,7 @@ class ConferenceEndedWidget extends StatelessWidget {
                           context,
                           mobile: 13,
                           tablet: 18,
-                          desktop: 20,
+
                         ),
                         color: Colors.grey.shade700,
                       ),

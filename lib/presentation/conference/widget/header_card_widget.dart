@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
+import 'package:formify/presentation/resources/responsive/font_responseve.dart';
+import 'package:formify/presentation/resources/values_manager.dart';
 
 class HeaderCard extends StatelessWidget {
   const HeaderCard();
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding:  EdgeInsets.all(AppPadding.p14),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
@@ -21,27 +23,35 @@ class HeaderCard extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 44,
-            height: 44,
+            width: AppSize.s45,
+            height:  AppSize.s45,
             decoration: BoxDecoration(
               color: ColorManager.primary.withOpacity(0.12),
               borderRadius: BorderRadius.circular(14),
             ),
             child: const Icon(Icons.link_rounded, color: ColorManager.primary),
           ),
-          const SizedBox(width: 12),
-          const Expanded(
+           SizedBox(width: AppSize.s12),
+           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   "اختر الاستبيانات",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+                  style: TextStyle(  fontSize: FontResponsive.font(
+                    context,
+                    mobile: 16,
+                    tablet: 20,
+                  ), fontWeight: FontWeight.w800),
                 ),
                 SizedBox(height: 4),
                 Text(
                   "فعّل السويتش لربط الاستبيان مع المؤتمر.",
-                  style: TextStyle(fontSize: 12.8, color: Colors.black54),
+                  style: TextStyle(  fontSize: FontResponsive.font(
+                    context,
+                    mobile: 13,
+                    tablet: 17,
+                  ), color: Colors.black54),
                 ),
               ],
             ),

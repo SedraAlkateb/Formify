@@ -80,7 +80,7 @@ class _ButtonAnimationWithTextState extends State<_ButtonAnimationWithText> {
                   context,
                   mobile: 18,
                   tablet: 24,
-                  desktop: 26,
+
                 ),
 
               ),

@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:formify/app/constants.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
+import 'package:formify/presentation/resources/responsive/font_responseve.dart';
+import 'package:formify/presentation/resources/values_manager.dart';
 
-Widget userListItem(UserModel user) {
+Widget userListItem(UserModel user, BuildContext context) {
   return Container(
-    margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-    padding: const EdgeInsets.all(12),
+    margin: EdgeInsets.symmetric(
+      horizontal: AppPadding.p12,
+      vertical: AppPadding.p5,
+    ),
+    padding: EdgeInsets.all(AppPadding.p12),
     decoration: BoxDecoration(
       color: Colors.white,
       borderRadius: BorderRadius.circular(14),
@@ -22,13 +28,17 @@ Widget userListItem(UserModel user) {
       children: [
         /// Avatar ثابت مع icon
         Container(
-          width: 46,
-          height: 46,
+          width: AppSize.s45,
+          height: AppSize.s45,
           decoration: const BoxDecoration(
             shape: BoxShape.circle,
             color: ColorManager.splash1,
           ),
-          child: const Icon(Icons.person, color: Colors.white, size: 26),
+          child: Icon(
+            Icons.person,
+            color: Colors.white,
+            size: Constants.isTablet ? 30 : 26,
+          ),
         ),
 
         const SizedBox(width: 12),
@@ -41,20 +51,24 @@ Widget userListItem(UserModel user) {
               /// Name
               Text(
                 user.fullName,
-                style: const TextStyle(
-                  fontSize: 15,
+                style: TextStyle(
+                  fontSize: FontResponsive.font(
+                    context,
+                    mobile: 15,
+                    tablet: 19,
+                  ),
                   fontWeight: FontWeight.w700,
                 ),
               ),
 
-              const SizedBox(height: 4),
+              SizedBox(height: AppSize.s4),
 
               /// Email
               Row(
                 children: [
                   Icon(
                     Icons.email_outlined,
-                    size: 14,
+                    size: Constants.isTablet ? 18 : 14,
                     color: Colors.grey.shade600,
                   ),
                   const SizedBox(width: 6),
@@ -63,7 +77,7 @@ Widget userListItem(UserModel user) {
                       user.email,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: Constants.isTablet ? 17 : 13,
                         color: Colors.grey.shade700,
                       ),
                     ),
@@ -78,13 +92,16 @@ Widget userListItem(UserModel user) {
                 children: [
                   Icon(
                     Icons.phone_outlined,
-                    size: 14,
+                    size: Constants.isTablet ? 18 : 14,
                     color: Colors.grey.shade600,
                   ),
                   const SizedBox(width: 6),
                   Text(
                     user.phone,
-                    style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
+                    style: TextStyle(
+                      fontSize: Constants.isTablet ? 17 : 13,
+                      color: Colors.grey.shade700,
+                    ),
                   ),
                 ],
               ),
@@ -93,13 +110,17 @@ Widget userListItem(UserModel user) {
         ),
 
         /// Arrow
-        Icon(Icons.chevron_right, color: Colors.grey.shade400),
+        Icon(
+          Icons.chevron_right,
+          color: Colors.grey.shade400,
+          size: Constants.isTablet ? 18 : 22,
+        ),
       ],
     ),
   );
 }
 
-Widget userWidget(UserModel user) {
+Widget userWidget(UserModel user, BuildContext context) {
   return Card(
     color: ColorManager.white,
     shape: RoundedRectangleBorder(
@@ -110,7 +131,7 @@ Widget userWidget(UserModel user) {
 
     elevation: 5,
     child: Padding(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -122,22 +143,30 @@ Widget userWidget(UserModel user) {
               Row(
                 children: [
                   Container(
-                    width: 46,
-                    height: 46,
+                    width: AppSize.s45,
+                    height: AppSize.s45,
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                       color: ColorManager.splash1,
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.person,
                       color: Colors.white,
-                      size: 26,
+                      size: Constants.isTablet ? 30 : 26,
                     ),
                   ),
                   SizedBox(width: 10),
                   Text(
                     user.fullName, // Display user's full name
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: FontResponsive.font(
+                        context,
+                        mobile: 16,
+                        tablet: 20,
+                      ),
+
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
@@ -159,7 +188,15 @@ Widget userWidget(UserModel user) {
                       SizedBox(width: 8),
                       Text(
                         user.email, // Display user's email
-                        style: TextStyle(fontSize: 14, color: Colors.black),
+                        style: TextStyle(
+                          fontSize: FontResponsive.font(
+                            context,
+                            mobile: 14,
+                            tablet: 18,
+                          ),
+
+                          color: Colors.black,
+                        ),
                       ),
                     ],
                   ),
@@ -170,7 +207,14 @@ Widget userWidget(UserModel user) {
                       SizedBox(width: 8),
                       Text(
                         user.phone, // Display user's email
-                        style: TextStyle(fontSize: 14, color: Colors.black),
+                        style: TextStyle(
+                          fontSize: FontResponsive.font(
+                            context,
+                            mobile: 14,
+                            tablet: 18,
+                          ),
+                          color: Colors.black,
+                        ),
                       ),
                     ],
                   ),
@@ -181,7 +225,15 @@ Widget userWidget(UserModel user) {
                       SizedBox(width: 8),
                       Text(
                         user.address, // Display user's email
-                        style: TextStyle(fontSize: 14, color: Colors.black),
+                        style: TextStyle(
+                          fontSize: FontResponsive.font(
+                            context,
+                            mobile: 15,
+                            tablet: 18,
+                          ),
+
+                          color: Colors.black,
+                        ),
                       ),
                     ],
                   ),

@@ -46,6 +46,7 @@ class _HomePageState extends State<HomePage> {
                 final isTabletPortrait = Breakpoints.isTabletPortrait(context);
                 final isMobilePortrait = Breakpoints.isMobilePortrait(context);
                 if (isTabletPortrait || isMobilePortrait) {
+
                   return HomeMobilePage();
                 }
                 return HomeTabletPage();
@@ -76,8 +77,7 @@ class _HomePageState extends State<HomePage> {
                     fontSize: FontResponsive.font(
                       context,
                       mobile: 14,
-                      tablet: 18,
-                      desktop: 20,
+                      tablet: 20,
                     ),
                   ),
                 ),

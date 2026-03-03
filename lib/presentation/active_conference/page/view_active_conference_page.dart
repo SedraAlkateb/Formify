@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:formify/app/constants.dart';
 import 'package:formify/data/mapper/mapper.dart';
 import 'package:formify/presentation/active_conference/bloc/active_conference_bloc.dart';
 import 'package:formify/presentation/active_conference/widget/view_all_user.dart';
+import 'package:formify/presentation/excel/bloc/excel_st_bloc.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
+import 'package:formify/presentation/resources/responsive/font_responseve.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/resources/theme_bloc/theme_bloc.dart';
 import 'package:formify/presentation/resources/values_manager.dart';
@@ -43,7 +46,10 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
         ),
         title: Text(
           "مشاركو المؤتمر",
-          style: TextStyle(color: ColorManager.black),
+          style: TextStyle(
+            fontSize: FontResponsive.font(context, mobile: 20, tablet: 24),
+            color: ColorManager.black,
+          ),
         ),
         backgroundColor: ColorManager.white,
       ),
@@ -96,7 +102,11 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                               Text(
                                 state.conferenceModel.name,
                                 style: TextStyle(
-                                  fontSize: 20,
+                                  fontSize: FontResponsive.font(
+                                    context,
+                                    mobile: 20,
+                                    tablet: 24,
+                                  ),
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,
                                 ),
@@ -106,16 +116,76 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                               Text(
                                 state.conferenceModel.description,
                                 style: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: FontResponsive.font(
+                                    context,
+                                    mobile: 16,
+                                    tablet: 20,
+                                  ),
                                   color: Colors.white,
                                 ),
                               ),
-                              const SizedBox(height: 20),
 
                               // Date and location section
                             ],
                           ),
                         ),
+                      ),
+                      const SizedBox(height: 20),
+                      InkWell(
+                        child: Container(
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                ColorManager.splash1,
+                                ColorManager.splash2,
+                                //  ColorManager.splash3,
+                              ],
+                              begin: Alignment
+                                  .topLeft, // البداية من الزاوية العليا اليسرى
+                              end: Alignment
+                                  .bottomRight, // النهاية عند الزاوية السفلى اليمنى
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          // إضافة أي محتوى هنا داخل الـ Container
+                          padding: EdgeInsets.all(AppPadding.p16),
+                          child: Padding(
+                            padding: EdgeInsets.all(AppPadding.p16),
+                            child: Row(
+                              children: [
+                                Text(
+                                  "عرض احصائيات المؤتمر",
+                                  style: TextStyle(
+                                    fontSize: FontResponsive.font(
+                                      context,
+                                      mobile: 20,
+                                      tablet: 24,
+                                    ),
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                SizedBox(width: 20),
+                                Icon(
+                                  Icons.arrow_forward,
+                                  color: ColorManager.white,
+                                  size: 30,
+                                ),
+                              ],
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                            ),
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.pushNamed(context, Routes.exelConference);
+                          BlocProvider.of<ExcelStBloc>(context).add(
+                            UsersAnswersStatisticsEvent(
+                              state.conferenceModel.surveys[0].id,
+                            ),
+                          );
+                        },
                       ),
                       const SizedBox(height: 20),
                       Card(
@@ -141,16 +211,16 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                                     elevation: 4,
                                     color: Color(0xEDF4FDFF),
                                     child: Padding(
-                                      padding:  EdgeInsets.all(AppPadding.p8),
+                                      padding: EdgeInsets.all(AppPadding.p8),
                                       child: Icon(
                                         Icons.calendar_today,
                                         color: Colors.blue,
-                                        size: 30,
+                                        size: Constants.isTablet ? 34 : 30,
                                       ),
                                     ),
                                   ),
 
-                                   SizedBox(width:AppSize.s8),
+                                  SizedBox(width: AppSize.s8),
                                   Column(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
@@ -164,7 +234,11 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                                               text:
                                                   "تاريخ البدء: ", // النص الثابت "From:"
                                               style: TextStyle(
-                                                fontSize: 18, // حجم الخط
+                                                fontSize: FontResponsive.font(
+                                                  context,
+                                                  mobile: 18,
+                                                  tablet: 22,
+                                                ),
                                                 fontWeight:
                                                     FontWeight.bold, // خط عريض
                                                 color: Colors.black, // اللون
@@ -175,7 +249,11 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                                                   .conferenceModel
                                                   .startDate, // التاريخ أو النص الذي ترغب في عرضه
                                               style: TextStyle(
-                                                fontSize: 18, // حجم الخط
+                                                fontSize: FontResponsive.font(
+                                                  context,
+                                                  mobile: 18,
+                                                  tablet: 22,
+                                                ),
                                                 fontWeight: FontWeight
                                                     .normal, // خط عادي
                                                 color: Colors
@@ -193,7 +271,11 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                                               text:
                                                   "تاريخ الانتهاء: ", // النص الثابت "To:"
                                               style: TextStyle(
-                                                fontSize: 18, // حجم الخط
+                                                fontSize: FontResponsive.font(
+                                                  context,
+                                                  mobile: 18,
+                                                  tablet: 22,
+                                                ),
                                                 fontWeight:
                                                     FontWeight.bold, // خط عريض
                                                 color: Colors.black, // اللون
@@ -204,7 +286,11 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                                                   .conferenceModel
                                                   .endDate, // التاريخ أو النص الذي ترغب في عرضه
                                               style: TextStyle(
-                                                fontSize: 18, // حجم الخط
+                                                fontSize: FontResponsive.font(
+                                                  context,
+                                                  mobile: 18,
+                                                  tablet: 22,
+                                                ),
                                                 fontWeight: FontWeight
                                                     .normal, // خط عادي
                                                 color: Colors
@@ -225,11 +311,11 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                             ),
                             // Location Section
                             Padding(
-                              padding:  EdgeInsets.all(AppPadding.p12),
+                              padding: EdgeInsets.all(AppPadding.p12),
                               child: Row(
                                 children: [
                                   Card(
-                                    margin:  EdgeInsets.all(AppMargin.m4),
+                                    margin: EdgeInsets.all(AppMargin.m4),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
                                     ),
@@ -237,11 +323,11 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
 
                                     color: Color(0xFFFDF5EB),
                                     child: Padding(
-                                      padding:  EdgeInsets.all(AppPadding.p8),
+                                      padding: EdgeInsets.all(AppPadding.p8),
                                       child: Icon(
                                         Icons.location_on_outlined,
                                         color: Colors.orange,
-                                        size: 30,
+                                        size: Constants.isTablet ? 35 : 30,
                                       ),
                                     ),
                                   ),
@@ -251,7 +337,11 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                                     child: Text(
                                       state.conferenceModel.address,
                                       style: TextStyle(
-                                        fontSize: 16,
+                                        fontSize: FontResponsive.font(
+                                          context,
+                                          mobile: 16,
+                                          tablet: 20,
+                                        ),
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
@@ -264,7 +354,7 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                       ),
                       SizedBox(height: 4),
                       Padding(
-                        padding:  EdgeInsets.all(AppPadding.p8),
+                        padding: EdgeInsets.all(AppPadding.p8),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -275,7 +365,11 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                                 Text(
                                   "الاستبيانات",
                                   style: TextStyle(
-                                    fontSize: 18,
+                                    fontSize: FontResponsive.font(
+                                      context,
+                                      mobile: 18,
+                                      tablet: 22,
+                                    ),
                                     fontWeight: FontWeight.bold,
                                     color: Colors.black87,
                                   ),
@@ -308,7 +402,7 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                           ],
                         ),
                       ),
-                      SizedBox(height: 4),
+                      SizedBox(height: AppSize.s4),
                       state.conferenceModel.surveys.isNotEmpty
                           ? ListView.builder(
                               physics: NeverScrollableScrollPhysics(),
@@ -352,7 +446,7 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                               },
                             )
                           : emptyFullScreen(context),
-                      SizedBox(height: 4),
+                      SizedBox(height: AppSize.s4),
                     ],
                   );
                 } else {
@@ -377,7 +471,7 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                   return Column(
                     children: [
                       Padding(
-                        padding:  EdgeInsets.all(AppPadding.p8),
+                        padding: EdgeInsets.all(AppPadding.p8),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -388,7 +482,11 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                                 Text(
                                   "المشاركون",
                                   style: TextStyle(
-                                    fontSize: 18,
+                                    fontSize: FontResponsive.font(
+                                      context,
+                                      mobile: 18,
+                                      tablet: 22,
+                                    ),
                                     fontWeight: FontWeight.bold,
                                     color: Colors.black87,
                                   ),
@@ -404,7 +502,7 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                           ],
                         ),
                       ),
-                      SizedBox(height: 4),
+                      SizedBox(height: AppSize.s4),
                       state.users.isNotEmpty
                           ? ListView.builder(
                               physics: NeverScrollableScrollPhysics(),
@@ -425,7 +523,10 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                                     );
                                   },
 
-                                  child: userListItem(state.users[index]),
+                                  child: userListItem(
+                                    state.users[index],
+                                    context,
+                                  ),
                                 );
                               },
                             )

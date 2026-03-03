@@ -12,7 +12,7 @@ import 'package:formify/domain/usecase/get_all_survey_usecase.dart';
 import 'package:formify/domain/usecase/get_survey_question_id_usecase.dart';
 import 'package:formify/domain/usecase/update_survey_usecase.dart';
 import 'package:image_picker/image_picker.dart';
-import  'package:meta/meta.dart';
+import 'package:meta/meta.dart';
 
 part 'survey_event.dart';
 part 'survey_state.dart';
@@ -30,21 +30,24 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
   SurveyModel surveyModel = SurveyModel.create();
   int id = 0;
   List<File> files = [];
- void initSurveyBloc(){
-    questions=[];
-    question=QuestionModel.create();
+  void initSurveyBloc() {
+    questions = [];
+    question = QuestionModel.create();
     surveyModel = SurveyModel.create();
-    id=0;
-    files=[];
+    id = 0;
+    files = [];
   }
+
   SurveyBloc(
     this.createSurveyUsecase,
     this.createSurveyQuestionUsecase,
     this.getAllSurveyUsecase,
     this.getSurveyQuestionIdUsecase,
-      this.updateSurveyUsecase
+    this.updateSurveyUsecase,
   ) : super(SurveyInitial()) {
+
     on<SurveyEvent>((event, emit) async {
+
       if (event is PickAnswerImageEvent) {
         final s = state;
         if (s is! ViewQuestionState) return;
@@ -61,10 +64,15 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
         surveyModel.description = event.description;
         surveyModel.title = event.title;
         surveyModel.color = event.color;
-        surveyModel.timer=event.timer;
+        surveyModel.timer = event.timer;
         emit(CreateSurveyLoadingState());
         (await createSurveyUsecase.execute(
-          SurveyRequest(event.title, event.description, event.color,event.timer),
+          SurveyRequest(
+            event.title,
+            event.description,
+            event.color,
+            event.timer,
+          ),
         )).fold(
           (failure) {
             emit(CreateSurveyErrorState(failure: failure));
@@ -81,20 +89,20 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
         emit(UpdateSurveyLoadingState());
         (await updateSurveyUsecase.execute(
           UpdateSurveyRequest(
-              surveyModel.id??-1,
-              title:  event.title,description:event.description,color:event.color),
+            surveyModel.id ?? -1,
+            title: event.title,
+            description: event.description,
+            color: event.color,
+          ),
         )).fold(
-              (failure) {
+          (failure) {
             emit(UpdateSurveyErrorState(failure: failure));
           },
-              (data) async {
+          (data) async {
             emit(ViewSurveyState(surveyModel));
           },
         );
-      }
-
-
-      else if (event is GetAllSurveyEvent) {
+      } else if (event is GetAllSurveyEvent) {
         emit(GetAllSurveyLoadingState());
         (await getAllSurveyUsecase.execute()).fold(
           (failure) {
@@ -104,8 +112,7 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
             emit(GetAllSurveyState(data));
           },
         );
-      }
-      else if (event is CreateQuesNameSurveyEvent) {
+      } else if (event is CreateQuesNameSurveyEvent) {
         question.title = event.questionName;
         QuestionModel question1 = question.instanceQuestion();
         emit(ViewQuestionState(question1));
@@ -150,7 +157,7 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
           for (final answer in q.answers) {
             if (answer.img != null) {
               answer.imgName = answer.img!.name;
-              files.add(File(answer.img!.path,));
+              files.add(File(answer.img!.path));
             }
           }
         }
@@ -162,8 +169,8 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
             emit(CreateSurveyWithQuestionErrorState(failure: failure));
           },
           (data) async {
-            files=[];
-            questions=[];
+            files = [];
+            questions = [];
             emit(CreateSurveyWithQuestionState());
           },
         );
@@ -189,13 +196,71 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
           emit(ViewSurveyState(surveyModel));
         }
       }
-      if(event is SelectValueAnswerEvent ){
+      if (event is SelectValueAnswerEvent) {
         final q = (state as ViewQuestionState).questionModel;
-        q.answers[event.index].isCorrect =event.isCorrect ;
-        QuestionModel newAnswers =  q.instanceQuestion();
+        q.answers[event.index].isCorrect = event.isCorrect;
+        QuestionModel newAnswers = q.instanceQuestion();
 
         emit(ViewQuestionState(newAnswers));
+      }else if (event is RepetitionSurveyEvent) {
+        emit(RepetitionSurveyLoadingState());
+
+        try {
+          // تنفيذ العملية الأولى: إنشاء الاستبيان
+          final surveyResult = await createSurveyUsecase.execute(
+            SurveyRequest(
+              event.title,
+              event.description,
+              event.color,
+              event.timer,
+            ),
+          );
+          surveyResult.fold(
+                (failure) {
+              emit(RepetitionSurveyErrorState(failure: failure));
+              return; // إذا فشلت العملية الأولى، نوقف المتابعة
+            },
+                (data) async {
+              // العملية الأولى نجحت، ننتقل إلى العملية الثانية
+                  try {
+                    // معالجة الأسئلة والإجابات
+                    for (final q in questions) {
+                      for (final answer in q.answers) {
+                        if (answer.img != null) {
+                          answer.imgName = answer.img!.name;
+                          files.add(File(answer.img!.path));
+                        }
+                      }
+                    }
+
+                    // تنفيذ العملية الثانية: إنشاء الأسئلة مع الإجابات
+                    final surveyQuestionResult = await createSurveyQuestionUsecase.execute(
+                      SurveyQuestionAndAnswersModel(id, questions),
+                      files,
+                    );
+
+                    surveyQuestionResult.fold(
+                          (failure) {
+                        emit(CreateSurveyWithQuestionErrorState(failure: failure));
+                      },
+                          (data) {
+                        files = [];
+                        questions = [];
+                        emit(RepetitionSurveyState());
+                      },
+                    );
+                  } catch (error) {
+                    emit(CreateSurveyWithQuestionErrorState(failure: Failure(5, error. toString())));
+                  }
+            },
+          );
+        } catch (error) {
+          emit(RepetitionSurveyErrorState(failure: Failure(5, error.toString())));
+        }
       }
+
+
     });
+
   }
 }

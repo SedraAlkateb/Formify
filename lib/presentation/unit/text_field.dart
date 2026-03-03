@@ -108,7 +108,7 @@ class LoginTextField extends StatelessWidget {
               context,
               mobile: 14,
               tablet: 15,
-              desktop: 16,
+
             ),
             fontWeight: FontWeight.bold,
           ),

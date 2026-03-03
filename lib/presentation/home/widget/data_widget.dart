@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:formify/app/constants.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
+import 'package:formify/presentation/resources/values_manager.dart';
 
 Widget dataWidget(Color color, Widget colum){
   return Card(
@@ -28,13 +30,13 @@ Widget dataWidget(Color color, Widget colum){
 
               Icons.date_range,
               color: color,
-              size: 20,
+              size:Constants.isTablet?30: 20,
             ),
           ),
         ),
       ),
       Padding(
-        padding: const EdgeInsets.all(10),
+        padding:  EdgeInsets.all(AppPadding.p10),
         child: colum,
       )
     ],

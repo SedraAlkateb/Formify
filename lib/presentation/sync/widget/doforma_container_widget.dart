@@ -74,7 +74,7 @@ class _FloatingContainerState extends State<FloatingContainer> with TickerProvid
                           context,
                           mobile: 40,
                           tablet: 45,
-                          desktop: 48,
+
                         ),
                         fontWeight: FontWeight.bold,
                       ),
@@ -88,7 +88,6 @@ class _FloatingContainerState extends State<FloatingContainer> with TickerProvid
                           context,
                           mobile: 12,
                           tablet: 17,
-                          desktop: 19,
                         ),
                         fontWeight: FontWeight.normal,
                       ),

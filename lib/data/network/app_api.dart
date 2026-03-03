@@ -110,4 +110,8 @@ abstract class AppServiceClient {
     @Part(name: "end_date") String end_date,
     @Part(name: "is_active") int is_active,
   );
+  @POST("Statistics/statistics_for_usersAnswers.php")
+  Future<StatisticsForUsersAnswersBaseResponse> statisticsForUsersAnswers(
+      @Part(name: "survey_id") int survey_id,
+      );
 }

@@ -4,6 +4,7 @@ import 'package:formify/app/constants.dart';
 import 'package:formify/app/di.dart';
 import 'package:formify/presentation/active_conference/bloc/active_conference_bloc.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
+import 'package:formify/presentation/excel/bloc/excel_st_bloc.dart';
 import 'package:formify/presentation/onboarding/bloc/onboarding_bloc.dart';
 import 'package:formify/presentation/resources/responsive/breakpoints.dart';
 import 'package:formify/presentation/resources/responsive/sizer_responseve.dart';
@@ -29,6 +30,8 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => instance<ConferenceBloc>()),
         BlocProvider(create: (_) => instance<SurveyBloc>()),
         BlocProvider(create: (_) => instance<ThemeBloc>()),
+        BlocProvider(create: (_) => instance<ExcelStBloc>()),
+
       ],
       child: BlocBuilder<ThemeBloc, ThemeState>(
         builder: (context, state) {

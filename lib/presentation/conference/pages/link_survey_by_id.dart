@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:formify/app/constants.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 import 'package:formify/presentation/conference/widget/header_card_widget.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
+import 'package:formify/presentation/resources/responsive/font_responseve.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/resources/theme_bloc/theme_bloc.dart';
+import 'package:formify/presentation/resources/values_manager.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 import 'package:formify/presentation/unit/add_survey_button.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
@@ -29,9 +32,14 @@ class ConferenceSurveyById extends StatelessWidget {
           backgroundColor: Colors.white,
           surfaceTintColor: Colors.white,
           foregroundColor: Colors.black87,
-          title: const Text(
+          title:  Text(
             "ربط الاستبيانات",
             style: TextStyle(
+              fontSize: FontResponsive.font(
+                context,
+                mobile: 20,
+                tablet: 24,
+              ),
               fontWeight: FontWeight.w800,
               color: ColorManager.black,
             ),
@@ -170,7 +178,7 @@ class _SurveyTile extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
         child: Container(
-          padding: const EdgeInsets.all(12),
+          padding:  EdgeInsets.all(AppPadding.p12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: const Color(0xFFE9ECF1)),
@@ -178,23 +186,23 @@ class _SurveyTile extends StatelessWidget {
           child: Row(
             children: [
               Card(
-                margin: const EdgeInsets.all(5),
+                margin:  EdgeInsets.all(AppMargin.m4),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
                 elevation: 4,
                 color: leadingColor,
                 child: Padding(
-                  padding: const EdgeInsets.all(10),
+                  padding:  EdgeInsets.all(AppPadding.p8),
                   child: Icon(
                     Icons.description_outlined,
                     color: Color(0xffffffff),
-                    size: 30,
+                    size:Constants.isTablet?34: 30,
                   ),
                 ),
               ),
 
-              const SizedBox(width: 12),
+               SizedBox(width: AppSize.s12),
 
               // text
               Expanded(
@@ -205,18 +213,26 @@ class _SurveyTile extends StatelessWidget {
                       title.isEmpty ? "بدون عنوان" : title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 15.5,
+                      style:  TextStyle(
+                        fontSize: FontResponsive.font(
+                          context,
+                          mobile: 16,
+                          tablet: 20,
+                        ),
                         fontWeight: FontWeight.w800,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                     SizedBox(height: AppSize.s4),
                     Text(
                       subtitle.isEmpty ? "بدون وصف" : subtitle,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 12.8,
+                      style:  TextStyle(
+                        fontSize: FontResponsive.font(
+                          context,
+                          mobile: 13,
+                          tablet: 17,
+                        ),
                         color: Colors.black54,
                         height: 1.25,
                       ),
@@ -225,7 +241,7 @@ class _SurveyTile extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(width: 10),
+               SizedBox(width: AppSize.s10),
 
               BlocBuilder<ConferenceBloc, ConferenceState>(
                 builder: (context, state) {
@@ -241,7 +257,11 @@ class _SurveyTile extends StatelessWidget {
                             Text(
                               value ? "مربوط" : "غير مربوط",
                               style: TextStyle(
-                                fontSize: 11.5,
+                                fontSize: FontResponsive.font(
+                                  context,
+                                  mobile: 11,
+                                  tablet: 15,
+                                ),
                                 fontWeight: FontWeight.w700,
                                 color: value
                                     ? ColorManager.primary
