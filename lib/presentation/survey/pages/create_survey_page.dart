@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
+import 'package:formify/presentation/resources/responsive/font_responseve.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/resources/theme_bloc/theme_bloc.dart';
+import 'package:formify/presentation/resources/values_manager.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 import 'package:formify/presentation/unit/timer_widget.dart';
@@ -38,14 +40,21 @@ class _CreateSurveyPageState extends State<CreateSurveyPage> {
         ),
         title: Text(
           'انشاء فورمات ديناميكية',
-          style: TextStyle(color: ColorManager.black),
+
+          style: TextStyle(
+              fontSize: FontResponsive.font(
+                context,
+                mobile: 20,
+                tablet: 24,
+              ),
+              color: ColorManager.black),
         ),
         centerTitle: false,
         backgroundColor: ColorManager.white,
       ),
 
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
+        padding: EdgeInsets.all(AppPadding.p16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -54,8 +63,9 @@ class _CreateSurveyPageState extends State<CreateSurveyPage> {
               children: [
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  margin: const EdgeInsets.symmetric(vertical: 12),
+                  padding:  EdgeInsets.all(AppPadding.p16),
+                  margin:
+                  EdgeInsets.symmetric(vertical: AppMargin.m12),
                   decoration: BoxDecoration(
                     border: Border.all(color: ColorManager.border),
                     color: Colors.white,
@@ -71,14 +81,18 @@ class _CreateSurveyPageState extends State<CreateSurveyPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                       Text(
                         "عنوان الاستبيان", // 🔹 عنوان فوق الحقل
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: FontResponsive.font(
+                            context,
+                            mobile: 16,
+                            tablet: 20,
+                          ),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                       SizedBox(height: AppSize.s8),
                       TextFormField(
                         onChanged: (value) => BlocProvider.of<SurveyBloc>(
                           context,
@@ -92,20 +106,24 @@ class _CreateSurveyPageState extends State<CreateSurveyPage> {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      const Text(
+                       Text(
                         "وصف الاستبيان", // 🔹 عنوان فوق الحقل
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: FontResponsive.font(
+                            context,
+                            mobile: 16,
+                            tablet: 20,
+                          ),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                       SizedBox(height: AppSize.s8),
                       TextFormField(
                         onChanged: (value) => BlocProvider.of<SurveyBloc>(
                           context,
                         ).surveyModel.description = value,
                         controller: descriptionController,
-                        maxLines: 4,
+                        maxLines: 5,
                         decoration: InputDecoration(
                           hintText: "ادخل وصف الاستبيان",
                           alignLabelWithHint: true,
@@ -119,8 +137,8 @@ class _CreateSurveyPageState extends State<CreateSurveyPage> {
                 ),
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  margin: const EdgeInsets.symmetric(vertical: 12),
+                  padding:  EdgeInsets.all(AppPadding.p16),
+                  margin:  EdgeInsets.symmetric(vertical: AppMargin.m12),
                   decoration: BoxDecoration(
                     border: Border.all(color: ColorManager.border),
                     color: Colors.white,
@@ -136,19 +154,23 @@ class _CreateSurveyPageState extends State<CreateSurveyPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                       Text(
                         "اختر لون التطبيق",
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: FontResponsive.font(
+                            context,
+                            mobile: 18,
+                            tablet: 22,
+                          ),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
 
-                      const SizedBox(height: 12),
+                       SizedBox(height: AppSize.s12),
 
                       Wrap(
-                        spacing: 12,
-                        runSpacing: 12,
+                        spacing: AppSize.s12,
+                        runSpacing: AppSize.s12,
                         children: [
                           /// 🔥 مجموعة ألوان أساسية (Primary Colors and Their Shades)
                           buildColorOption(
@@ -273,8 +295,8 @@ class _CreateSurveyPageState extends State<CreateSurveyPage> {
                 ),
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  margin: const EdgeInsets.symmetric(vertical: 12),
+                  padding:  EdgeInsets.all(AppPadding.p16),
+                  margin:  EdgeInsets.symmetric(vertical: AppMargin.m12),
                   decoration: BoxDecoration(
                     border: Border.all(color: ColorManager.border),
                     color: Colors.white,
@@ -290,15 +312,20 @@ class _CreateSurveyPageState extends State<CreateSurveyPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                       Text(
                         "ادخل الوقت لاالمسموح للاستبيان",
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: FontResponsive.font(
+                            context,
+                            mobile: 16,
+                            tablet: 20,
+                          ),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height:AppSize.s8),
                       TimePickerField(
+
                         label: "الوقت المسموح للاستبيان",
                         initialText: "00:10",
                         onChanged: (t) {
@@ -308,6 +335,7 @@ class _CreateSurveyPageState extends State<CreateSurveyPage> {
                             context,
                           ).surveyModel.timer = "$hh:$mm";
                         },
+
                         controller: timerController,
                       ),
                     ],
@@ -321,11 +349,11 @@ class _CreateSurveyPageState extends State<CreateSurveyPage> {
                   loading(context);
                 } else if (state is CreateSurveyErrorState) {
                   error(context, state.failure.massage, state.failure.code);
-                } else if (state is CreateSurveyState) {
+                } else if (state is ViewSurveyState) {
                   success(context);
                   Navigator.pushReplacementNamed(
                     context,
-                    Routes.createQuesSurvey,
+                    Routes.viewSurvey,
                   );
                 }
               },
@@ -343,7 +371,13 @@ class _CreateSurveyPageState extends State<CreateSurveyPage> {
                     ),
                   );
                 },
-                child: const Text('التالي'),
+                child:  Text('التالي',style: TextStyle(
+                  fontSize: FontResponsive.font(
+                    context,
+                    mobile: 16,
+                    tablet: 20,
+                  ),
+                ),),
               ),
             ),
           ],

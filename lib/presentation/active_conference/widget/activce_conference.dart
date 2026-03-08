@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:formify/app/constants.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/home/widget/data_widget.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
+import 'package:formify/presentation/resources/responsive/font_responseve.dart';
+import 'package:formify/presentation/resources/values_manager.dart';
 
 class ActiveConferenceWidget extends StatelessWidget {
-  const ActiveConferenceWidget({
-    super.key,
-    required this.conference,
-  });
+  const ActiveConferenceWidget({super.key, required this.conference});
   final GetAllConferenceModel conference;
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(AppPadding.p16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
@@ -42,8 +42,12 @@ class ActiveConferenceWidget extends StatelessWidget {
                   maxLines: 4,
                   overflow: TextOverflow.ellipsis,
                   " ${conference.name}",
-                  style: const TextStyle(
-                    fontSize: 18,
+                  style: TextStyle(
+                    fontSize: FontResponsive.font(
+                      context,
+                      mobile: 18,
+                      tablet: 23,
+                    ),
                     fontWeight: FontWeight.w600,
                     color: ColorManager.primary,
                   ),
@@ -63,7 +67,11 @@ class ActiveConferenceWidget extends StatelessWidget {
                     Text(
                       "البدء: ",
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: FontResponsive.font(
+                          context,
+                          mobile: 13,
+                          tablet: 18,
+                        ),
                         color: Colors.grey.shade700,
                       ),
                       textAlign: TextAlign.right,
@@ -71,7 +79,11 @@ class ActiveConferenceWidget extends StatelessWidget {
                     Text(
                       conference.startDate,
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: FontResponsive.font(
+                          context,
+                          mobile: 13,
+                          tablet: 18,
+                        ),
                         color: Colors.grey.shade700,
                       ),
                       textAlign: TextAlign.right,
@@ -88,7 +100,11 @@ class ActiveConferenceWidget extends StatelessWidget {
                     Text(
                       "الانتهاء: ",
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: FontResponsive.font(
+                          context,
+                          mobile: 13,
+                          tablet: 18,
+                        ),
                         color: Colors.grey.shade700,
                       ),
                       textAlign: TextAlign.right,
@@ -96,7 +112,11 @@ class ActiveConferenceWidget extends StatelessWidget {
                     Text(
                       conference.endDate,
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: FontResponsive.font(
+                          context,
+                          mobile: 13,
+                          tablet: 18,
+                        ),
                         color: Colors.grey.shade700,
                       ),
                       textAlign: TextAlign.right,
@@ -106,15 +126,13 @@ class ActiveConferenceWidget extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 10),
+
+          SizedBox(height: AppSize.s10),
           Divider(),
-          SizedBox(height: 10),
+          SizedBox(height: AppSize.s10),
           Align(
-              alignment: Alignment.bottomLeft,
-              child:
-              Icon(Icons.arrow_forward, color: ColorManager.primary),
-
-
+            alignment: Alignment.bottomLeft,
+            child: Icon(Icons.arrow_forward, color: ColorManager.primary,size: Constants.isTablet?30:26,),
           ),
         ],
       ),

@@ -4,6 +4,7 @@ const String imageSvgPath = "assets/images/svg";
 const String imagePathOnboardingJson = "${imagePath}/onboarding/json";
 const String imagePathOnboarding = "${imagePath}/onboarding";
 const String imagePathHome = "${imagePath}/home";
+const String imagePathMain = "${imagePath}/main";
 
 class HomeImageAssets {
   static const String conference = "$imagePathHome/conference.svg";
@@ -29,5 +30,6 @@ class OnBoardingJsonAssets {
 }
 class ImageAssets {
   static const String logoDomina = "$imagePath/logoDomina.png";
+  static const String login = "$imagePathMain/logo3.png";
 
 }

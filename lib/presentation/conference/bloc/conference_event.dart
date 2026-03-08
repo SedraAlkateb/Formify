@@ -12,8 +12,8 @@ class CreateConferenceEvent extends ConferenceEvent {
 }
 
 class GetAllSurveyByConferenceEvent extends ConferenceEvent {
- final  int conferenceId;
- GetAllSurveyByConferenceEvent(this.conferenceId);
+  final int conferenceId;
+  GetAllSurveyByConferenceEvent(this.conferenceId);
   @override
   List<Object?> get props => [conferenceId];
 }
@@ -23,11 +23,15 @@ class LinkSurveyConferenceEvent extends ConferenceEvent {
   final int index;
   final int conferenceId;
   final List<IsActiveMainSurveyModel> surveys;
-  LinkSurveyConferenceEvent(this.surveyId, this.index, this.surveys,this.conferenceId);
+  LinkSurveyConferenceEvent(
+    this.surveyId,
+    this.index,
+    this.surveys,
+    this.conferenceId,
+  );
   @override
   List<Object?> get props => [surveyId, surveys];
 }
-
 
 class GetConferenceByIdEvent extends ConferenceEvent {
   final int conferenceId;
@@ -39,7 +43,6 @@ class GetConferenceByIdEvent extends ConferenceEvent {
 }
 
 class GetAllNotActiveConferenceEvent extends ConferenceEvent {
-
   @override
   List<Object?> get props => [];
 }
@@ -51,6 +54,7 @@ class DeleteConferenceEvent extends ConferenceEvent {
   @override
   List<Object?> get props => [id];
 }
+
 class SelectEndedConferenceEvent extends ConferenceEvent {
   final int index;
   SelectEndedConferenceEvent(this.index);
@@ -58,3 +62,18 @@ class SelectEndedConferenceEvent extends ConferenceEvent {
   List<Object?> get props => [index];
 }
 
+class UpdateConferenceEvent extends ConferenceEvent {
+  final int refreshId;
+
+  UpdateConferenceEvent(this.refreshId);
+
+  @override
+  List<Object?> get props => [refreshId];
+}
+class UpdateInfoConferenceEvent extends ConferenceEvent {
+  final GetAllConferenceByIdModel conferenceModel;
+  UpdateInfoConferenceEvent(this.conferenceModel);
+
+  @override
+  List<Object?> get props => [conferenceModel];
+}

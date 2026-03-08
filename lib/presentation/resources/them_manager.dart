@@ -1,5 +1,6 @@
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
+import 'package:formify/app/constants.dart';
 import 'color_manager.dart';
 import 'font_manager.dart';
 import 'style_manage.dart';
@@ -59,7 +60,7 @@ ThemeData getApplicationTheme({
       style: ElevatedButton.styleFrom(
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
-        padding: const EdgeInsets.symmetric(
+        padding:  EdgeInsets.symmetric(
           horizontal: AppPadding.p20,
           vertical: AppPadding.p12,
         ),
@@ -112,9 +113,10 @@ ThemeData getApplicationTheme({
       fillColor: isLight
           ? ColorManager.fieldBackground
           : ColorManager.darkFieldBackground,
-      contentPadding: const EdgeInsets.all(AppPadding.p12),
+      contentPadding:  EdgeInsets.all(AppPadding.p12),
       labelStyle: getMediumStyle(color: colorScheme.primary),
       hintStyle: getRegularStyle(
+        fontSize: Constants.isTablet?20:16,
         color: isLight ? ColorManager.textHint : ColorManager.darkTextSecondary,
       ),
       enabledBorder: OutlineInputBorder(

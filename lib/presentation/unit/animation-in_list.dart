@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// ignore: unused_element
 double _getSlideOffset(int index) => (index + 1) * 0.2; // قيمة offset لكل حقل
 double _getStart(int index) => index * 0.1; // توقيت بداية الحقل بالنسبة للمدة
 

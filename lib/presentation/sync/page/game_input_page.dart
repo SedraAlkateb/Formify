@@ -126,7 +126,25 @@ class _GameInputPageState extends State<GameInputPage> {
                 final progress = total == 0 ? 0.0 : (idx + 1) / total;
 
                 return Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    (state.time != null) && (state.time!.isNotEmpty)
+                        ?      Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 40,
+                        vertical: 10,
+                      ),
+                          child: CountdownTimerWidget(
+                            time: state.time ?? "00:00",
+                            onFinished: () {
+                              context.read<SyncBloc>().add(
+                                const SurveySubmitEvent(),
+                              );
+                            },
+                          ),
+                        )
+                        : SizedBox(),
                     Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 18,
@@ -143,18 +161,7 @@ class _GameInputPageState extends State<GameInputPage> {
                             ),
                             label: const Text("العودة"),
                           ),
-                          (state.time != null) && (state.time!.isNotEmpty)
-                              ? Expanded(
-                                  child: CountdownTimerWidget(
-                                    time: state.time ?? "00:00",
-                                    onFinished: () {
-                                      context.read<SyncBloc>().add(
-                                        const SurveySubmitEvent(),
-                                      );
-                                    },
-                                  ),
-                                )
-                              : SizedBox(),
+
                           Expanded(
                             child: Padding(
                               padding: const EdgeInsets.only(right: 4),

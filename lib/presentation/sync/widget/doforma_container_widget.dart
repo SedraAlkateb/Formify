@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:formify/presentation/resources/assets_manager.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
+import 'package:formify/presentation/resources/responsive/font_responseve.dart';
+import 'package:formify/presentation/resources/responsive/sizer_responseve.dart';
 
 class FloatingContainer extends StatefulWidget {
   const FloatingContainer({super.key});
@@ -39,8 +41,8 @@ class _FloatingContainerState extends State<FloatingContainer> with TickerProvid
       position: _animation, // تطبيق الـ SlideTransition
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(20),
-        margin: const EdgeInsets.all(40),
+        padding:  EdgeInsets.all(20.sp),
+        margin:  EdgeInsets.all(40.sp),
         decoration: BoxDecoration(
           boxShadow:[
             BoxShadow(
@@ -56,10 +58,10 @@ class _FloatingContainerState extends State<FloatingContainer> with TickerProvid
 
         child: Row(
           children: [
-          Image.asset(ImageAssets.logoDomina,height: 80,width: 60,),
+          Image.asset(ImageAssets.logoDomina,height: 80.sp,width: 60.sp,),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding:  EdgeInsets.all(8.sp),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -68,7 +70,12 @@ class _FloatingContainerState extends State<FloatingContainer> with TickerProvid
                       textAlign: TextAlign.start,
                       style: TextStyle(
                         color: ColorManager.primary,
-                        fontSize: 40,
+                        fontSize: FontResponsive.font(
+                          context,
+                          mobile: 40,
+                          tablet: 45,
+
+                        ),
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -77,7 +84,11 @@ class _FloatingContainerState extends State<FloatingContainer> with TickerProvid
                       textAlign: TextAlign.start,
                       style: TextStyle(
                         color: ColorManager.black,
-                        fontSize: 12,
+                        fontSize: FontResponsive.font(
+                          context,
+                          mobile: 12,
+                          tablet: 17,
+                        ),
                         fontWeight: FontWeight.normal,
                       ),
                     ),
@@ -85,7 +96,7 @@ class _FloatingContainerState extends State<FloatingContainer> with TickerProvid
                 ),
               ),
             ),
-            SizedBox(width: 20),
+            SizedBox(width: 20.sp),
           ],
         ),
       ),

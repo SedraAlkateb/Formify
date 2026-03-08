@@ -33,21 +33,30 @@ final class DataLoadingState extends SyncState {
 }
 
 final class DeleteDataState extends SyncState {
-  const DeleteDataState();
+  final int isActive;
+  const DeleteDataState(this.isActive);
 }
-
+final class DeleteUserState extends SyncState {
+  const DeleteUserState();
+}
 final class InsertSucState extends SyncState {
-  const InsertSucState();
+  final int conferenceId;
+  const InsertSucState(this.conferenceId);
 }
 
 final class UploadDataState extends SyncState {
-  const UploadDataState();
+  final int isUpload;
+  const UploadDataState(this.isUpload);
+  @override
+  List<Object?> get props => [isUpload];
+
 }
 
 final class GetDataState extends SyncState {
   final int conference_id;
+  final int isActive;
   final List<UserSqlModel> users;
-  const GetDataState(this.users,this.conference_id);
+  const GetDataState(this.users,this.conference_id,this.isActive);
 
   @override
   List<Object?> get props => [users,conference_id];

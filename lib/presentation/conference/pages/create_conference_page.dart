@@ -6,12 +6,14 @@ import 'package:formify/domain/models/models.dart';
 
 // عدّل الاستيرادات حسب مشروعك
 import 'package:formify/presentation/resources/color_manager.dart';
+import 'package:formify/presentation/resources/responsive/font_responseve.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
+import 'package:formify/presentation/resources/values_manager.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 
 class CreateConferencePage extends StatelessWidget {
-   CreateConferencePage({super.key});
+  CreateConferencePage({super.key});
 
   final _formKey = GlobalKey<FormBuilderState>();
 
@@ -19,16 +21,17 @@ class CreateConferencePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorManager.background,
-      appBar:
-
-      AppBar(
+      appBar: AppBar(
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
           icon: Icon(Icons.arrow_back_ios_new, color: ColorManager.black),
         ),
         title: Text(
           'انشاء مؤتمر',
-          style: TextStyle(color: ColorManager.black),
+          style: TextStyle(
+            color: ColorManager.black,
+            fontSize: FontResponsive.font(context, mobile: 20, tablet: 24),
+          ),
         ),
         backgroundColor: ColorManager.white,
       ),
@@ -43,8 +46,8 @@ class CreateConferencePage extends StatelessWidget {
                 children: [
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    margin: const EdgeInsets.symmetric(vertical: 12),
+                    padding:  EdgeInsets.all(AppPadding.p16),
+                    margin:  EdgeInsets.symmetric(vertical: AppPadding.p12),
                     decoration: BoxDecoration(
                       border: Border.all(color: ColorManager.border),
                       color: Colors.white,
@@ -60,16 +63,22 @@ class CreateConferencePage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          "Conference Name",
+                         Text(
+                          "اسم المؤتمر",
                           style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
+                            fontSize: FontResponsive.font(
+                              context,
+                              mobile: 16,
+                              tablet: 20,
+                            ),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(height: 8),
                         FormBuilderTextField(
                           name: 'name',
                           decoration: InputDecoration(
-                            hintText: 'enter conference name',
+                            hintText: 'ادخل اسم المؤتمر',
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(15),
                             ),
@@ -80,17 +89,23 @@ class CreateConferencePage extends StatelessWidget {
                           ]),
                         ),
                         const SizedBox(height: 20),
-                        const Text(
-                          "Description",
+                         Text(
+                          "الوصف",
                           style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
+                            fontSize: FontResponsive.font(
+                              context,
+                              mobile: 16,
+                              tablet: 20,
+                            ),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(height: 8),
                         FormBuilderTextField(
                           name: 'description',
                           maxLines: 4,
                           decoration: InputDecoration(
-                            hintText: 'enter conference description',
+                            hintText: 'ادخل وصف المؤتمر',
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(15),
                             ),
@@ -101,16 +116,24 @@ class CreateConferencePage extends StatelessWidget {
                           ]),
                         ),
                         const SizedBox(height: 20),
-                        const Text(
-                          "Address",
+                         Text(
+                          "العنوان",
+
                           style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
+
+                            fontSize: FontResponsive.font(
+                              context,
+                              mobile: 16,
+                              tablet: 20,
+                            ),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(height: 8),
                         FormBuilderTextField(
                           name: 'address',
                           decoration: InputDecoration(
-                            hintText: 'enter conference address',
+                            hintText: 'ادخل عنوان المؤتمر',
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(15),
                             ),
@@ -141,10 +164,16 @@ class CreateConferencePage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          "Dates",
+                         Text(
+                          "التاريخ",
                           style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
+                            fontSize: FontResponsive.font(
+                              context,
+                              mobile: 18,
+                              tablet: 22,
+                            ),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(height: 12),
                         Row(
@@ -152,36 +181,45 @@ class CreateConferencePage extends StatelessWidget {
                             Expanded(
                               child: FormBuilderDateTimePicker(
                                 cursorColor: ColorManager.primary,
-                                style: TextStyle(color: ColorManager.primary, ),
+                                style: TextStyle(color: ColorManager.primary),
                                 name: 'start_date',
 
                                 inputType: InputType.date,
                                 decoration: InputDecoration(
-                                  labelText: 'Start date',
+                                  labelText: 'تاريخ البدء',
                                   focusColor: ColorManager.primary,
                                   hoverColor: ColorManager.primary,
                                   iconColor: ColorManager.primary,
-                                  labelStyle: TextStyle(color: ColorManager.primary, ),
+                                  labelStyle: TextStyle(
+                                    color: ColorManager.primary,
+                                  ),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(15),
                                   ),
-                                  suffixIcon:
-                                  const Icon(Icons.calendar_month),
+                                  suffixIcon: const Icon(Icons.calendar_month),
                                 ),
                                 validator: FormBuilderValidators.required(),
                               ),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
-                              child:FormBuilderDateTimePicker(
+                              child: FormBuilderDateTimePicker(
                                 name: 'end_date',
                                 cursorColor: ColorManager.primary,
                                 inputType: InputType.date,
-                                style: TextStyle(color: ColorManager.primary), // لون النص
+                                style: TextStyle(
+                                  color: ColorManager.primary,
+                                ), // لون النص
                                 decoration: InputDecoration(
-                                  labelText: 'End date',
-                                  labelStyle: TextStyle(color: ColorManager.primary),
-                                  hintStyle: TextStyle(color: ColorManager.primary.withOpacity(0.6)),
+                                  labelText: 'تاريخ الانتهاء',
+                                  labelStyle: TextStyle(
+                                    color: ColorManager.primary,
+                                  ),
+                                  hintStyle: TextStyle(
+                                    color: ColorManager.primary.withOpacity(
+                                      0.6,
+                                    ),
+                                  ),
                                   suffixIcon: Icon(
                                     Icons.calendar_month,
                                     color: ColorManager.primary,
@@ -214,21 +252,20 @@ class CreateConferencePage extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                //TODO
-
                                 validator: (val) {
-                                  final start = _formKey
-                                      .currentState
-                                      ?.fields['start_date']
-                                      ?.value as DateTime?;
-                                  if (val == null) return 'Required';
+                                  final start =
+                                      _formKey
+                                              .currentState
+                                              ?.fields['start_date']
+                                              ?.value
+                                          as DateTime?;
+                                  if (val == null) return 'مطلوب';
                                   if (start != null && val.isBefore(start)) {
-                                    return 'End date must be after start date';
+                                    return 'تاريخ الانتهاء يجب ان يكون بعد تاريخ البدء';
                                   }
                                   return null;
                                 },
                               ),
-
                             ),
                           ],
                         ),
@@ -257,24 +294,23 @@ class CreateConferencePage extends StatelessWidget {
                 } else if (state is CreateConferenceErrorState) {
                   error(context, state.failure.massage, state.failure.code);
                 } else if (state is CreateConferenceState) {
-                  BlocProvider.of<ConferenceBloc>(context)
-                      .add(GetAllSurveyByConferenceEvent(
-                    state.conferenceId
-                  ));
-                 Navigator.pushReplacementNamed(context, Routes.conferenceSurveyById,
-                   arguments: {
-                     "conferenceId": state.conferenceId
-                   },
-                 );
+                  success(context);
+                  Navigator.pushReplacementNamed(
+                    context,
+                    Routes.conferenceSurveyById,
+                    arguments: {"conferenceId": state.conferenceId},
+                  );
+                  BlocProvider.of<ConferenceBloc>(
+                    context,
+                  ).add(GetAllSurveyByConferenceEvent(state.conferenceId));
                 }
               },
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-
                     backgroundColor: ColorManager.primary, // لون الخلفية
-                    foregroundColor: Colors.white,          // لون النص
+                    foregroundColor: Colors.white, // لون النص
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -282,7 +318,8 @@ class CreateConferencePage extends StatelessWidget {
                     elevation: 4,
                   ),
                   onPressed: () {
-                    final ok = _formKey.currentState?.saveAndValidate() ?? false;
+                    final ok =
+                        _formKey.currentState?.saveAndValidate() ?? false;
                     if (!ok) return;
 
                     final v = _formKey.currentState!.value;
@@ -295,16 +332,20 @@ class CreateConferencePage extends StatelessWidget {
                       "is_active": (v["is_active"] == true) ? 1 : 0,
                     };
 
-                    BlocProvider.of<ConferenceBloc>(context)
-                        .add(CreateConferenceEvent(ConferenceModel.fromMap(payload)));
+                    BlocProvider.of<ConferenceBloc>(context).add(
+                      CreateConferenceEvent(ConferenceModel.fromMap(payload)),
+                    );
                   },
-                  child: const Text(
-                    'Create',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  child:  Text(
+                    'إنشاء',
+                    style: TextStyle(fontWeight: FontWeight.bold,fontSize: FontResponsive.font(
+                      context,
+                      mobile: 16,
+                      tablet: 20,
+                    ),),
                   ),
                 ),
               ),
-
             ),
           ],
         ),

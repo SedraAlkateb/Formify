@@ -64,97 +64,105 @@ class SettingPage extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-
                   ],
                 ),
               ),
 
-              // ✅ FIX: Make the body scrollable within available height
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(20),
-                        margin: const EdgeInsets.all(25),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: ColorManager.border),
-                          color: ColorManager.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: ColorManager.black.withOpacity(0.2),
-                              blurRadius: 3,
-                              offset: const Offset(0, 1),
-                            ),
-                          ],
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(10),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 10),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.table_rows_rounded,
-                                    color: ColorManager.primary,
-                                    size: 35,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    StringsManager.manageConference,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: ColorManager.primary,
-                                      fontSize: 23,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
+              BlocListener<SyncBloc, SyncState>(
+                listener: (context, state) {
+                  if (state is DataLoadingState) {
+                    loading(context);
+                  }
+                  //////////////////
+                  if (state is GetDataState) {
+                    BlocProvider.of<SyncBloc>(context).add(
+                      UploadDataEvent(
+                        state.users,
+                        state.conference_id,
+                        state.isActive,
+                      ),
+                    );
+                  } else if (state is UploadDataState) {
+                    if (state.isUpload == 0) {
+                      BlocProvider.of<SyncBloc>(context).add(DeleteUserEvent());
+                    } else {
+                      BlocProvider.of<SyncBloc>(context).add(DeleteDataEvent());
+                    }
+                  } else if (state is DeleteDataState) {
+                    instance<AppPreferences>().setIConference(
+                      state.isActive == 0 ? false : true,
+                    );
+                    instance<AppPreferences>().setLoggedIn(1);
+                    Navigator.of(context).pushReplacementNamed(Routes.home);
+                    instance<AppPreferences>().setLoggedIn(1);
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      Routes.home,
+                      (route) => false,
+                    );
+                  }
+                },
+                child: Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(20),
+                          margin: const EdgeInsets.all(25),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: ColorManager.border),
+                            color: ColorManager.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: ColorManager.black.withOpacity(0.2),
+                                blurRadius: 3,
+                                offset: const Offset(0, 1),
                               ),
-                              const SizedBox(height: 10),
-                              BlocListener<SyncBloc, SyncState>(
-                                listener: (context, state) {
-                                  if (state is DataLoadingState) {
-                                    loading(context);
-                                  }
-                                  if (state is GetDataState) {
-                                    BlocProvider.of<SyncBloc>(context).add(
-                                      UploadDataEvent(
-                                        state.users,
-                                        state.conference_id,
+                            ],
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 10),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.table_rows_rounded,
+                                      color: ColorManager.primary,
+                                      size: 35,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      StringsManager.manageConference,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: ColorManager.primary,
+                                        fontSize: 23,
+                                        fontWeight: FontWeight.w600,
                                       ),
-                                    );
-                                  } else if (state is UploadDataState) {
-                                    BlocProvider.of<SyncBloc>(
-                                      context,
-                                    ).add(DeleteDataEvent());
-                                  } else if (state is DeleteDataState) {
-                                    success(context);
-                                    instance<AppPreferences>().setLoggedIn(1);
-                                    Navigator.pushNamedAndRemoveUntil(
-                                      context,
-                                      Routes.home,
-                                      (route) => false,
-                                    );
-                                  }
-                                },
-                                child: InkWell(
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                InkWell(
                                   onTap: () {
                                     showConfirmDialog(
                                       context: context,
-                                      title: "offline conference",
+
+                                      title: "حفظ بيانات المؤتمر",
                                       message:
-                                          "Are you sure you want to save conference offline",
+                                          "هل انت متاكد من انك انتهيت من ملئ معلومات المؤتمر وتريد رفعه , تأكد من اتصالك بالانترنت لرفع البيانات",
+
                                       onConfirm: () {
                                         BlocProvider.of<SyncBloc>(
                                           context,
-                                        ).add(GetDataEvent(id));
+                                        ).add(GetDataEvent(id, 0));
                                       },
                                     );
                                   },
@@ -209,8 +217,7 @@ class SettingPage extends StatelessWidget {
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 Text(
-                                                  StringsManager
-                                                      .uploadConference,
+                                                  StringsManager.saveConference,
                                                   textAlign: TextAlign.start,
                                                   style: TextStyle(
                                                     color: ColorManager.white,
@@ -240,69 +247,348 @@ class SettingPage extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                              ),
-                              const SizedBox(height: 10),
-                              InkWell(
-                                onTap: () {
-                                  Navigator.pushNamedAndRemoveUntil(
-                                    context,
-                                    Routes.home,
-                                    (route) => false,
-                                  );
-                                },
-                                child: AnimationContainerWidget(
-                                  child: Container(
-                                    width: double.infinity,
-                                    padding: const EdgeInsets.all(20),
-                                    margin: const EdgeInsets.symmetric(
-                                      vertical: 12,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: ColorManager.border,
+
+                                const SizedBox(height: 10),
+
+                                /////////////////////////tyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyh
+                                InkWell(
+                                  onTap: () {
+                                    showConfirmDialog(
+                                      context: context,
+
+                                      title: "رفع بيانات المؤتمر",
+                                      message:
+                                      "هل انت متاكد من انك انتهيت من ملئ معلومات المؤتمر وتريد رفعه , تأكد من اتصالك بالانترنت لرفع البيانات",
+
+                                      onConfirm: () {
+                                        BlocProvider.of<SyncBloc>(
+                                          context,
+                                        ).add(GetDataEvent(id, 1));
+                                      },
+                                    );
+                                  },
+                                  child: AnimationContainerWidget(
+                                    child: Container(
+                                      width: double.infinity,
+                                      padding: const EdgeInsets.all(20),
+                                      margin: const EdgeInsets.symmetric(
+                                        vertical: 12,
                                       ),
-                                      color: ColorManager.primary,
-                                      borderRadius: BorderRadius.circular(25),
-                                    ),
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Card(
-                                          margin: const EdgeInsets.only(
-                                            left: 15,
-                                            top: 15,
-                                            bottom: 15,
-                                          ),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              12,
-                                            ),
-                                          ),
-                                          color: ColorManager.accent,
-                                          child: const Padding(
-                                            padding: EdgeInsets.symmetric(
-                                              vertical: 15,
-                                              horizontal: 15,
-                                            ),
-                                            child: Icon(
-                                              Icons.logout,
-                                              color: Colors.white,
-                                              size: 30,
-                                            ),
-                                          ),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: ColorManager.border,
                                         ),
-                                        Flexible(
+                                        color: ColorManager.primary,
+                                        borderRadius: BorderRadius.circular(
+                                          25,
+                                        ),
+                                      ),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.center,
+                                        children: [
+                                          Card(
+                                            margin: const EdgeInsets.only(
+                                              left: 15,
+                                              top: 15,
+                                              bottom: 15,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                              BorderRadius.circular(12),
+                                            ),
+                                            color: ColorManager.accent,
+                                            child: const Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                vertical: 15,
+                                                horizontal: 15,
+                                              ),
+                                              child: Icon(
+                                                Icons.cloud_upload_outlined,
+                                                color: Colors.white,
+                                                size: 30,
+                                              ),
+                                            ),
+                                          ),
+                                          Flexible(
+                                            child: Column(
+                                              mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  StringsManager
+                                                      .uploadConference,
+                                                  textAlign: TextAlign.start,
+                                                  style: TextStyle(
+                                                    color: ColorManager.white,
+                                                    fontSize: 18,
+                                                    fontWeight:
+                                                    FontWeight.bold,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  StringsManager
+                                                      .uploadConferenceDesc,
+                                                  textAlign: TextAlign.start,
+                                                  style: TextStyle(
+                                                    color: ColorManager.white,
+                                                    fontSize: 15,
+                                                    fontWeight:
+                                                    FontWeight.w500,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Icon(
+                                            Icons.arrow_forward,
+                                            color: ColorManager.white,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.pushNamedAndRemoveUntil(
+                                      context,
+                                      Routes.home,
+                                      (route) => false,
+                                    );
+                                  },
+                                  child: AnimationContainerWidget(
+                                    child: Container(
+                                      width: double.infinity,
+                                      padding: const EdgeInsets.all(20),
+                                      margin: const EdgeInsets.symmetric(
+                                        vertical: 12,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: ColorManager.border,
+                                        ),
+                                        color: ColorManager.primary,
+                                        borderRadius: BorderRadius.circular(25),
+                                      ),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Card(
+                                            margin: const EdgeInsets.only(
+                                              left: 15,
+                                              top: 15,
+                                              bottom: 15,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                            color: ColorManager.accent,
+                                            child: const Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                vertical: 15,
+                                                horizontal: 15,
+                                              ),
+                                              child: Icon(
+                                                Icons.logout,
+                                                color: Colors.white,
+                                                size: 30,
+                                              ),
+                                            ),
+                                          ),
+                                          Flexible(
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  StringsManager
+                                                      .logoutConference,
+                                                  textAlign: TextAlign.start,
+                                                  style: TextStyle(
+                                                    color: ColorManager.white,
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  StringsManager
+                                                      .logoutConferenceDesc,
+                                                  textAlign: TextAlign.start,
+                                                  style: TextStyle(
+                                                    color: ColorManager.white,
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Icon(
+                                            Icons.arrow_forward,
+                                            color: ColorManager.white,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(12),
+                                  margin: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: ColorManager.border,
+                                    ),
+                                    color: ColorManager.primaryShadow
+                                        .withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(4),
+                                        child: Icon(
+                                          Icons.error_outline,
+                                          color: ColorManager.splash1,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 5),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              StringsManager.importantNote,
+                                              textAlign: TextAlign.start,
+                                              style: TextStyle(
+                                                color: ColorManager.black,
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            Text(
+                                              StringsManager.importantNoteDesc,
+                                              textAlign: TextAlign.start,
+                                              style: TextStyle(
+                                                color:
+                                                    ColorManager.textSecondary,
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        BlocBuilder<SyncBloc, SyncState>(
+                          builder: (context, state) {
+                            if (state is GetInfoConferenceErrorState) {
+                              return errorFullScreen(context);
+                            } else if (state is GetInfoConferenceSuccessState) {
+                              return Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(20),
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 25,
+                                ),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: ColorManager.border,
+                                  ),
+                                  color: ColorManager.white,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: ColorManager.black.withOpacity(
+                                        0.2,
+                                      ),
+                                      blurRadius: 3,
+                                      offset: const Offset(0, 1),
+                                    ),
+                                  ],
+                                  borderRadius: BorderRadius.circular(25),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      const SizedBox(height: 10),
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.bar_chart,
+                                            color: ColorManager.primary,
+                                            size: 35,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            StringsManager.total,
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                              color: ColorManager.primary,
+                                              fontSize: 23,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 10),
+                                      AnimationContainerWidget(
+                                        child: Container(
+                                          width: double.infinity,
+                                          padding: const EdgeInsets.all(30),
+                                          margin: const EdgeInsets.symmetric(
+                                            vertical: 12,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                              color: ColorManager.border,
+                                            ),
+                                            color: ColorManager.primary,
+                                            borderRadius: BorderRadius.circular(
+                                              25,
+                                            ),
+                                          ),
                                           child: Column(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.start,
                                             crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                                CrossAxisAlignment.center,
                                             children: [
                                               Text(
-                                                StringsManager.logoutConference,
+                                                state.infoConference.totalUser
+                                                    .toString(),
                                                 textAlign: TextAlign.start,
                                                 style: TextStyle(
                                                   color: ColorManager.white,
@@ -311,8 +597,7 @@ class SettingPage extends StatelessWidget {
                                                 ),
                                               ),
                                               Text(
-                                                StringsManager
-                                                    .logoutConferenceDesc,
+                                                StringsManager.totalUser,
                                                 textAlign: TextAlign.start,
                                                 style: TextStyle(
                                                   color: ColorManager.white,
@@ -323,281 +608,115 @@ class SettingPage extends StatelessWidget {
                                             ],
                                           ),
                                         ),
-                                        Icon(
-                                          Icons.arrow_forward,
-                                          color: ColorManager.white,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.all(12),
-                                margin: const EdgeInsets.symmetric(
-                                  vertical: 12,
-                                ),
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: ColorManager.border,
-                                  ),
-                                  color: ColorManager.primaryShadow.withOpacity(
-                                    0.2,
-                                  ),
-                                  borderRadius: BorderRadius.circular(25),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(4),
-                                      child: Icon(
-                                        Icons.error_outline,
-                                        color: ColorManager.splash1,
                                       ),
-                                    ),
-                                    const SizedBox(width: 5),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            StringsManager.importantNote,
-                                            textAlign: TextAlign.start,
-                                            style: TextStyle(
-                                              color: ColorManager.black,
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                            ),
+                                      const SizedBox(height: 10),
+                                      AnimationContainerWidget(
+                                        child: Container(
+                                          width: double.infinity,
+                                          padding: const EdgeInsets.all(30),
+                                          margin: const EdgeInsets.symmetric(
+                                            vertical: 12,
                                           ),
-                                          Text(
-                                            StringsManager.importantNoteDesc,
-                                            textAlign: TextAlign.start,
-                                            style: TextStyle(
-                                              color: ColorManager.textSecondary,
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.w500,
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                              color: ColorManager.border,
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      BlocBuilder<SyncBloc, SyncState>(
-                        builder: (context, state) {
-                          if (state is GetInfoConferenceErrorState) {
-                            return errorFullScreen(context);
-                          } else if (state is GetInfoConferenceSuccessState) {
-                            return Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(20),
-                              margin: const EdgeInsets.symmetric(
-                                horizontal: 25,
-                              ),
-                              decoration: BoxDecoration(
-                                border: Border.all(color: ColorManager.border),
-                                color: ColorManager.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: ColorManager.black.withOpacity(0.2),
-                                    blurRadius: 3,
-                                    offset: const Offset(0, 1),
-                                  ),
-                                ],
-                                borderRadius: BorderRadius.circular(25),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(10),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    const SizedBox(height: 10),
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons.bar_chart,
-                                          color: ColorManager.primary,
-                                          size: 35,
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          StringsManager.total,
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
                                             color: ColorManager.primary,
-                                            fontSize: 23,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 10),
-                                    AnimationContainerWidget(
-                                      child: Container(
-                                        width: double.infinity,
-                                        padding: const EdgeInsets.all(30),
-                                        margin: const EdgeInsets.symmetric(
-                                          vertical: 12,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                            color: ColorManager.border,
-                                          ),
-                                          color: ColorManager.primary,
-                                          borderRadius: BorderRadius.circular(
-                                            25,
-                                          ),
-                                        ),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              state.infoConference.totalUser
-                                                  .toString(),
-                                              textAlign: TextAlign.start,
-                                              style: TextStyle(
-                                                color: ColorManager.white,
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                              ),
+                                            borderRadius: BorderRadius.circular(
+                                              25,
                                             ),
-                                            Text(
-                                              StringsManager.totalUser,
-                                              textAlign: TextAlign.start,
-                                              style: TextStyle(
-                                                color: ColorManager.white,
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w500,
+                                          ),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                state.infoConference.totalSurvey
+                                                    .toString(),
+                                                textAlign: TextAlign.start,
+                                                style: TextStyle(
+                                                  color: ColorManager.white,
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                               ),
-                                            ),
-                                          ],
+                                              Text(
+                                                StringsManager.totalSurvey,
+                                                textAlign: TextAlign.start,
+                                                style: TextStyle(
+                                                  color: ColorManager.white,
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    AnimationContainerWidget(
-                                      child: Container(
-                                        width: double.infinity,
-                                        padding: const EdgeInsets.all(30),
-                                        margin: const EdgeInsets.symmetric(
-                                          vertical: 12,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                            color: ColorManager.border,
+                                      const SizedBox(height: 10),
+                                      AnimationContainerWidget(
+                                        child: Container(
+                                          width: double.infinity,
+                                          padding: const EdgeInsets.all(30),
+                                          margin: const EdgeInsets.symmetric(
+                                            vertical: 12,
                                           ),
-                                          color: ColorManager.primary,
-                                          borderRadius: BorderRadius.circular(
-                                            25,
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                              color: ColorManager.border,
+                                            ),
+                                            color: ColorManager.primary,
+                                            borderRadius: BorderRadius.circular(
+                                              25,
+                                            ),
                                           ),
-                                        ),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              state.infoConference.totalSurvey
-                                                  .toString(),
-                                              textAlign: TextAlign.start,
-                                              style: TextStyle(
-                                                color: ColorManager.white,
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                state
+                                                    .infoConference
+                                                    .totalCompletedSurvey
+                                                    .toString(),
+                                                textAlign: TextAlign.start,
+                                                style: TextStyle(
+                                                  color: ColorManager.white,
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                               ),
-                                            ),
-                                            Text(
-                                              StringsManager.totalSurvey,
-                                              textAlign: TextAlign.start,
-                                              style: TextStyle(
-                                                color: ColorManager.white,
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w500,
+                                              Text(
+                                                StringsManager
+                                                    .totalCompletedSurvey,
+                                                textAlign: TextAlign.start,
+                                                style: TextStyle(
+                                                  color: ColorManager.white,
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    AnimationContainerWidget(
-                                      child: Container(
-                                        width: double.infinity,
-                                        padding: const EdgeInsets.all(30),
-                                        margin: const EdgeInsets.symmetric(
-                                          vertical: 12,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                            color: ColorManager.border,
-                                          ),
-                                          color: ColorManager.primary,
-                                          borderRadius: BorderRadius.circular(
-                                            25,
-                                          ),
-                                        ),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                              state
-                                                  .infoConference
-                                                  .totalCompletedSurvey
-                                                  .toString(),
-                                              textAlign: TextAlign.start,
-                                              style: TextStyle(
-                                                color: ColorManager.white,
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            Text(
-                                              StringsManager
-                                                  .totalCompletedSurvey,
-                                              textAlign: TextAlign.start,
-                                              style: TextStyle(
-                                                color: ColorManager.white,
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                  ],
+                                      const SizedBox(height: 10),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            );
-                          } else {
-                            return SizedBox();
-                          }
-                        },
-                      ),
-                      SizedBox(height: 40),
-                    ],
+                              );
+                            } else {
+                              return SizedBox();
+                            }
+                          },
+                        ),
+                        SizedBox(height: 40),
+                      ],
+                    ),
                   ),
                 ),
               ),

@@ -170,7 +170,10 @@ class TextQuestionPage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  nextWidget(context),
+                  nextWidget(context,(){
+                    context.read<SurveyBloc>().add(AddQuestionEvent());
+                    Navigator.pop(context);
+                  }),
                 ],
               ),
             );

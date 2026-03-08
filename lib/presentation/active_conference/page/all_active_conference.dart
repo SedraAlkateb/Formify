@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/presentation/active_conference/bloc/active_conference_bloc.dart';
 import 'package:formify/presentation/active_conference/widget/activce_conference.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
+import 'package:formify/presentation/resources/responsive/font_responseve.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
+import 'package:formify/presentation/resources/values_manager.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
 class AllActiveConferencePage extends StatelessWidget {
@@ -20,7 +22,14 @@ class AllActiveConferencePage extends StatelessWidget {
         ),
         title: Text(
           "المؤتمرات المنتهية",
-          style: TextStyle(color: ColorManager.black),
+
+          style: TextStyle(color: ColorManager.black,
+            fontSize: FontResponsive.font(
+              context,
+              mobile: 20,
+              tablet: 24,
+            ),
+          ),
         ),
         backgroundColor: ColorManager.white,
       ),
@@ -41,11 +50,14 @@ class AllActiveConferencePage extends StatelessWidget {
             final allConferences = state.allActiveConference;
 
             return Padding(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(
+               AppPadding.p16
+              ),
               child: ListView.separated(
                 shrinkWrap: true,
                 itemCount: allConferences.length,
-                separatorBuilder: (context, index) => const SizedBox(height: 10),
+                separatorBuilder: (context, index) =>
+                     SizedBox(height:AppPadding.p10),
                 itemBuilder: (context, index) {
                   return InkWell(
                     onTap: () {

@@ -35,7 +35,14 @@ class SurveyCard extends StatelessWidget {
             survey.title,
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
-          Text(survey.description, style: const TextStyle(fontSize: 15)),
+          Text(survey.description,
+
+              maxLines: 5,
+
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+
+                  fontSize: 15)),
           const SizedBox(height: 30),
           buttonAnimationWithText(
             context,

@@ -195,12 +195,6 @@ class QuestionPreviewBuilder extends StatelessWidget {
         return FormBuilderSwitch(
           name: _name,
           title: Text(question.title),
-          validator: (value) {
-            if (question.isRequired == true && value != true) {
-              return "هذا السؤال مطلوب";
-            }
-            return null;
-          },
         );
 
       case QuestionType.date:

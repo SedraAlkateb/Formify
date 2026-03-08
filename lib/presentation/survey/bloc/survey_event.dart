@@ -3,7 +3,6 @@ part of 'survey_bloc.dart';
 @immutable
 abstract class SurveyEvent extends Equatable {}
 
-
 class PickAnswerImageEvent extends SurveyEvent {
   final int index;
   PickAnswerImageEvent(this.index);
@@ -18,11 +17,24 @@ class CreateSurveyEvent extends SurveyEvent {
   final String description;
   final String timer;
 
-  CreateSurveyEvent(this.color, this.title, this.description,this.timer);
+  CreateSurveyEvent(this.color, this.title, this.description, this.timer);
 
   @override
-  List<Object?> get props => [color, title, description,timer];
+  List<Object?> get props => [color, title, description, timer];
 }
+
+class UpdateSurveyEvent extends SurveyEvent {
+  final String color;
+  final String title;
+  final String description;
+  final int id;
+
+  UpdateSurveyEvent(this.color, this.title, this.description, this.id);
+
+  @override
+  List<Object?> get props => [color, title, description, id];
+}
+
 class GetAllSurveyEvent extends SurveyEvent {
   GetAllSurveyEvent();
 
@@ -95,29 +107,30 @@ class CreateQuesIsRequiredSurveyEvent extends SurveyEvent {
   @override
   List<Object?> get props => [isRequired];
 }
-class CreateSurveyWithQuestionEvent extends SurveyEvent {
 
+class CreateSurveyWithQuestionEvent extends SurveyEvent {
   CreateSurveyWithQuestionEvent();
 
   @override
   List<Object?> get props => [];
 }
+
 class ViewSurveyByIdEvent extends SurveyEvent {
-final int id;
+  final int id;
   ViewSurveyByIdEvent(this.id);
 
   @override
   List<Object?> get props => [id];
 }
-class CreateBoolAnswerSurveyEvent extends SurveyEvent {
 
+class CreateBoolAnswerSurveyEvent extends SurveyEvent {
   CreateBoolAnswerSurveyEvent();
 
   @override
   List<Object?> get props => [];
 }
-class AddQuestionEvent extends SurveyEvent {
 
+class AddQuestionEvent extends SurveyEvent {
   AddQuestionEvent();
 
   @override
@@ -128,9 +141,20 @@ class SelectValueAnswerEvent extends SurveyEvent {
   final int index;
   final int isCorrect;
 
-  SelectValueAnswerEvent(this.index,this.isCorrect);
+  SelectValueAnswerEvent(this.index, this.isCorrect);
 
   @override
+  List<Object?> get props => [];
+}
+class RepetitionSurveyEvent extends SurveyEvent {
+  final String color;
+  final String title;
+  final String description;
+  final int id;
+  final String timer;
 
-  List<Object?> get props =>[];
+  RepetitionSurveyEvent(this.color, this.title, this.description, this.id,this.timer);
+
+  @override
+  List<Object?> get props => [color, title, description, id,timer];
 }

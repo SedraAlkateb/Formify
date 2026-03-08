@@ -16,15 +16,23 @@ Future<void> showDialogGameSurveyWidget({
     barrierDismissible: false,
     builder: (dialogContext) {
       return AlertDialog(
+        backgroundColor: Colors.white, // خلفية ثابتة بيضاء
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        title: Text(title),
+        title: Text(title, style: const TextStyle(
+          color: ColorManager.primary, // أزرق ثابت
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+        ),),
 
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(message),
+            Text(message,  style: const TextStyle(
+              color: Colors.black87,
+              fontSize: 15,
+            ),),
             const SizedBox(height: 12),
 
             ValueListenableBuilder<int?>(

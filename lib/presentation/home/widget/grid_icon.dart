@@ -6,6 +6,9 @@ import 'package:formify/app/di.dart';
 import 'package:formify/presentation/active_conference/bloc/active_conference_bloc.dart';
 import 'package:formify/presentation/resources/assets_manager.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
+import 'package:formify/presentation/resources/responsive/breakpoints.dart';
+import 'package:formify/presentation/resources/responsive/font_responseve.dart';
+import 'package:formify/presentation/resources/responsive/sizer_responseve.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 
 class CustomGridPage extends StatelessWidget {
@@ -13,16 +16,19 @@ class CustomGridPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isTabletLandscape = Breakpoints.isTabletLandscape(context);
+    final isMobileLandscape = Breakpoints.isMobilePortrait(context);
     return Padding(
-      padding: const EdgeInsets.all(15.0),
+      padding:  EdgeInsets.all(Breakpoints.isTabletPortrait(context)?20:15.sp),
       child: StaggeredGrid.count(
         crossAxisCount: 2,
-        crossAxisSpacing: 15,
+        crossAxisSpacing: Breakpoints.isTabletPortrait(context)?50:15,
         mainAxisSpacing: 15,
         children: [
           StaggeredGridTile.count(
             crossAxisCellCount: 1,
-            mainAxisCellCount: 1,
+            mainAxisCellCount:
+            (isTabletLandscape||isMobileLandscape)?1: 0.6,
             child: AnimatedGridItem(
               text: "عرض المؤتمرات",
               onTap: () {
@@ -36,7 +42,7 @@ class CustomGridPage extends StatelessWidget {
 
           StaggeredGridTile.count(
             crossAxisCellCount: 1,
-            mainAxisCellCount: 1.6, // أكبر من الباقي
+            mainAxisCellCount:  (isTabletLandscape||isMobileLandscape)?1.7:1.2, // أكبر من الباقي
             child: AnimatedGridItem(
               text: "انشاء استبيان ديناميكي",
               onTap: () {
@@ -49,7 +55,7 @@ class CustomGridPage extends StatelessWidget {
 
           StaggeredGridTile.count(
             crossAxisCellCount: 1,
-            mainAxisCellCount: 1.6,
+            mainAxisCellCount: (isTabletLandscape||isMobileLandscape)?1.7:1.2,
             child: AnimatedGridItem(
 
               text: "انشاء مؤتمر ديناميكي",
@@ -62,7 +68,7 @@ class CustomGridPage extends StatelessWidget {
           ),
           StaggeredGridTile.count(
             crossAxisCellCount: 1,
-            mainAxisCellCount: 1,
+            mainAxisCellCount:(isTabletLandscape||isMobileLandscape)?1: 0.6,
             child: AnimatedGridItem(
               text: "عرض الاستبيانات",
               onTap: () {
@@ -142,9 +148,13 @@ class _AnimatedGridItemState extends State<AnimatedGridItem> {
                children: [
                  Text(
                    widget.text,
-                   style: const TextStyle(
+                   style: TextStyle(
                      color: ColorManager.primary,
-                     fontSize: 18,
+                     fontSize: FontResponsive.font(
+                       context,
+                       mobile: 18,
+                       tablet: 20,
+                     ),
                      fontWeight: FontWeight.bold,
                    ),
                  ),

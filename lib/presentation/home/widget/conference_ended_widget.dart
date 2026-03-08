@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:formify/app/app_preferences.dart';
+import 'package:formify/app/di.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 import 'package:formify/presentation/conference/widget/conferm_dialog.dart';
 import 'package:formify/presentation/home/widget/data_widget.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
+import 'package:formify/presentation/resources/responsive/breakpoints.dart';
+import 'package:formify/presentation/resources/responsive/font_responseve.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
 
 class ConferenceEndedWidget extends StatelessWidget {
@@ -20,7 +24,8 @@ class ConferenceEndedWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding:  EdgeInsets.all(Breakpoints.isTabletPortrait(context)?18:16),
+
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
@@ -50,8 +55,13 @@ class ConferenceEndedWidget extends StatelessWidget {
                   maxLines: 4,
                   overflow: TextOverflow.ellipsis,
                   " ${allConference[index].name} ${index + 1}",
-                  style: const TextStyle(
-                    fontSize: 18,
+                  style: TextStyle(
+                    fontSize: FontResponsive.font(
+                      context,
+                      mobile: 18,
+                      tablet: 23,
+
+                    ),
                     fontWeight: FontWeight.w600,
                     color: ColorManager.primary,
                   ),
@@ -71,7 +81,12 @@ class ConferenceEndedWidget extends StatelessWidget {
                     Text(
                       "البدء: ",
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: FontResponsive.font(
+                          context,
+                          mobile: 13,
+                          tablet: 18,
+
+                        ),
                         color: Colors.grey.shade700,
                       ),
                       textAlign: TextAlign.right,
@@ -79,7 +94,12 @@ class ConferenceEndedWidget extends StatelessWidget {
                     Text(
                       allConference[index].startDate,
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: FontResponsive.font(
+                          context,
+                          mobile: 13,
+                          tablet: 18,
+
+                        ),
                         color: Colors.grey.shade700,
                       ),
                       textAlign: TextAlign.right,
@@ -96,7 +116,12 @@ class ConferenceEndedWidget extends StatelessWidget {
                     Text(
                       "الانتهاء: ",
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: FontResponsive.font(
+                          context,
+                          mobile: 13,
+                          tablet: 18,
+
+                        ),
                         color: Colors.grey.shade700,
                       ),
                       textAlign: TextAlign.right,
@@ -104,7 +129,12 @@ class ConferenceEndedWidget extends StatelessWidget {
                     Text(
                       allConference[index].endDate,
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: FontResponsive.font(
+                          context,
+                          mobile: 13,
+                          tablet: 18,
+
+                        ),
                         color: Colors.grey.shade700,
                       ),
                       textAlign: TextAlign.right,
@@ -115,87 +145,103 @@ class ConferenceEndedWidget extends StatelessWidget {
             ],
           ),
           SizedBox(height: 10),
-          Divider(),
-          SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Card(
-                    elevation: 5,
-                    color: ColorManager.error.withOpacity(0.25),
-                    child: IconButton(
-                      color: ColorManager.white,
-                      autofocus: true,
-                      splashRadius: 200,
-                      onPressed: () => showConfirmDialog(
-                        context: context,
-                        title: "حذف المؤتمر",
-                        message: "هل تريد حقا حذف المؤتمر",
-                        onConfirm: () {
-                          BlocProvider.of<ConferenceBloc>(context).add(
-                            DeleteConferenceEvent(
-                              allConference[index].id,
-                              index,
+          ((instance<AppPreferences>().getIsConference() == null) ||
+                  (instance<AppPreferences>().getIsConference() ==false))
+              ? Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Divider(),
+                    SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Card(
+                              elevation: 5,
+                              color: ColorManager.error.withOpacity(0.25),
+                              child: IconButton(
+                                color: ColorManager.white,
+                                autofocus: true,
+                                splashRadius: 200,
+                                onPressed: () => showConfirmDialog(
+                                  context: context,
+                                  title: "حذف المؤتمر",
+                                  message: "هل تريد حقا حذف المؤتمر",
+                                  onConfirm: () {
+                                    BlocProvider.of<ConferenceBloc>(
+                                      context,
+                                    ).add(
+                                      DeleteConferenceEvent(
+                                        allConference[index].id,
+                                        index,
+                                      ),
+                                    );
+                                  },
+                                ),
+
+                                icon: Icon(
+                                  Icons.delete_outlined,
+                                  color: ColorManager.error,
+                                ),
+                              ),
                             ),
-                          );
-                        },
-                      ),
+                            Card(
+                              elevation: 5,
+                              color: ColorManager.success.withOpacity(0.25),
+                              child: Radio<int>(
+                                value: allConference[index].id,
+                                groupValue: value,
 
-                      icon: Icon(
-                        Icons.delete_outlined,
-                        color: ColorManager.error,
-                      ),
+                                fillColor:
+                                    MaterialStateProperty.resolveWith<Color>((
+                                      states,
+                                    ) {
+                                      // 🔥 عند لمس الإصبع
+                                      if (states.contains(
+                                        MaterialState.pressed,
+                                      )) {
+                                        return Colors.white;
+                                      }
+
+                                      // عند التحديد
+                                      if (states.contains(
+                                        MaterialState.selected,
+                                      )) {
+                                        return Colors.white;
+                                      }
+
+                                      // الوضع الطبيعي
+                                      return Colors.green.shade800;
+                                    }),
+
+                                splashRadius: 20,
+                                focusColor: Colors.white,
+
+                                onChanged: (v) {
+                                  showConfirmDialog(
+                                    context: context,
+                                    title: "تخزين المؤتمر داخليا",
+                                    message:
+                                        "هل انت متاكد من تفعيل المؤتمر , وتخزينه داخليا لبدء العمل عليه ورفع المؤتمر السابق اذا كان موجود ",
+                                    onConfirm: () {
+                                      BlocProvider.of<SyncBloc>(context).add(
+                                        GetDataEvent(allConference[index].id,0),
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        Icon(Icons.arrow_forward, color: ColorManager.primary),
+                      ],
                     ),
-                  ),
-                  Card(
-                    elevation: 5,
-                    color: ColorManager.success.withOpacity(0.25),
-                    child: Radio<int>(
-                      value: allConference[index].id,
-                      groupValue: value,
-
-                      fillColor: MaterialStateProperty.resolveWith<Color>((
-                        states,
-                      ) {
-                        // 🔥 عند لمس الإصبع
-                        if (states.contains(MaterialState.pressed)) {
-                          return Colors.white;
-                        }
-
-                        // عند التحديد
-                        if (states.contains(MaterialState.selected)) {
-                          return Colors.white;
-                        }
-
-                        // الوضع الطبيعي
-                        return Colors.green.shade800;
-                      }),
-
-                      splashRadius: 20,
-                      focusColor: Colors.white,
-
-                      onChanged: (v) {
-                        showConfirmDialog(
-                          context: context,
-                          title: "تخزين المؤتمر داخليا",
-                          message:
-                              "هل انت متاكد من تفعيل المؤتمر , وتخزينه داخليا لبدء العمل عليه ورفع المؤتمر السابق اذا كان موجود ",
-                          onConfirm: () {
-                            BlocProvider.of<SyncBloc>(
-                              context,
-                            ).add(GetDataEvent(allConference[index].id));
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              Icon(Icons.arrow_forward, color: ColorManager.primary),
-            ],
-          ),
+                  ],
+                )
+              : SizedBox(),
         ],
       ),
     );

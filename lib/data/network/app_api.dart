@@ -17,9 +17,8 @@ abstract class AppServiceClient {
     @Part(name: "title") String title,
     @Part(name: "description") String description,
     @Part(name: "color") String color,
-      @Part(name: "timer") String? timer,
-
-      );
+    @Part(name: "timer") String? timer,
+  );
   @MultiPart()
   @POST("survey-crud/create_survey_questionsAndAnswers.php")
   Future<CreateSurveyQuestionsBaseResponse> createSurveyQuestionsAndAnswers(
@@ -32,7 +31,9 @@ abstract class AppServiceClient {
   Future<GetSurveyWithQuestionAndAnswerByIdBaseResponse>
   getSurveyWithQuestionById(@Part(name: "id") int id);
   @POST("conference-crud/create_conference.php")
-  Future<CreateConferenceBaseResponse> createConference( @Body() ConferenceModel conference,);
+  Future<CreateConferenceBaseResponse> createConference(
+    @Body() ConferenceModel conference,
+  );
   @POST("conference-crud/get_all_conference.php")
   Future<GetAllConferenceBaseResponse> getAllConference(
     @Part(name: "is_active") int isActive,
@@ -85,6 +86,38 @@ abstract class AppServiceClient {
     @Part(name: "id") int id,
     @Part(name: "user_id") int user_id,
   );
-  /////////////update_survey
-  /////////update_conference
+  @POST("users-crud/login.php")
+  Future<Message1Response> login(
+    @Part(name: "username") String username,
+    @Part(name: "password") String password,
+  );
+  @POST("survey-crud/update_survey.php")
+  Future<Message1Response> updateSurvey(
+    @Part(name: "id") int id, {
+    @Part(name: "title") String? title,
+    @Part(name: "description") String? description,
+    @Part(name: "color") String? color,
+  });
+
+  @POST("conference-crud/update_conference.php")
+  Future<Message1Response> updateConference(
+    @Part(name: "id") int id,
+
+    @Part(name: "name") String name,
+    @Part(name: "description") String description,
+    @Part(name: "address") String address,
+    @Part(name: "start_date") String start_date,
+    @Part(name: "end_date") String end_date,
+    @Part(name: "is_active") int is_active,
+  );
+  @POST("Statistics/statistics_for_usersAnswers.php")
+  Future<StatisticsForUsersAnswersBaseResponse> statisticsForUsersAnswers(
+      @Part(name: "survey_id") int survey_id,
+      );
+  @POST("Statistics/get_statistics_for_questionTypes.php")
+  Future<QuestionsStatisticsBaseResponse> getStatisticsForQuestionTypes(
+      @Part(name: "survey_id") int survey_id,
+      @Part(name: "conference_id") int conference_id,
+
+      );
 }

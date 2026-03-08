@@ -1,170 +1,147 @@
 import 'package:flutter/material.dart';
+import 'package:formify/app/constants.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
+import 'package:formify/presentation/resources/responsive/font_responseve.dart';
+import 'package:formify/presentation/resources/values_manager.dart';
 
-Widget allUserWidget(UserModel user) {
-  final gradients = [
-    [Color(0xFFff9a9e), Color(0xFFfad0c4)],
-    [Color(0xFFa18cd1), Color(0xFFfbc2eb)],
-    [Color(0xFFfbc2eb), Color(0xFFa6c1ee)],
-  ];
-
-  final colors = gradients[user.id % gradients.length];
-
-  return Card(
-
-    color: ColorManager.white,
-    shape: RoundedRectangleBorder(
-
-      side: BorderSide(
-
-          color: ColorManager.black.withOpacity(0.1), width: 1),
-
-      borderRadius: BorderRadius.circular(12),
-
+Widget userListItem(UserModel user, BuildContext context) {
+  return Container(
+    margin: EdgeInsets.symmetric(
+      horizontal: AppPadding.p12,
+      vertical: AppPadding.p5,
     ),
-
-    elevation: 5,
-    child: Padding(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Profile image circle (if needed)
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  /*
-                     decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  Color(0xFF4C4EB9), // اللون الأول (أزرق)
-                                  Color(0xFF7A7EF4), // اللون الثاني (أزرق فاتح)
-                                  Color(0xFFA4A6E1),
-                                ],
-                                begin: Alignment
-                                    .topLeft, // البداية من الزاوية العليا اليسرى
-                                end: Alignment
-                                    .bottomRight, // النهاية عند الزاوية السفلى اليمنى
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                   */
-
-      Container(
-      width: 50,
-      height: 50,
-      decoration: BoxDecoration(
-      shape: BoxShape.circle,
-      gradient: LinearGradient(
-      colors: colors,
-      ),
-    ),
-    child: Center(
-      child: Text(
-        user.fullName[0].toUpperCase(),
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 30,
+    padding: EdgeInsets.all(AppPadding.p12),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(14),
+      border: Border.all(color: ColorManager.black.withOpacity(0.08)),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.04),
+          blurRadius: 6,
+          offset: const Offset(0, 2),
         ),
-      ),
+      ],
     ),
-  ),
-  SizedBox(width: 10),
-                  Text(
-                    user.fullName, // Display user's full name
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ],
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Row(
+          children: [
+            /// Avatar ثابت مع icon
+            Container(
+              width: AppSize.s45,
+              height: AppSize.s45,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: ColorManager.splash1,
               ),
+              child: Icon(
+                Icons.person,
+                color: Colors.white,
+                size: Constants.isTablet ? 30 : 26,
+              ),
+            ),
 
-              Icon(
-                Icons.arrow_forward_ios,
-                color: ColorManager.black.withOpacity(0.5),
-                size: 20,
-              ),
-            ],
-          ),
-          const SizedBox(width: 8),
-          Row(
-            children: [
-              SizedBox(width: 50),
-              Column(
+            const SizedBox(width: 12),
+
+            /// Info
+            Expanded(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // User's name
-                  const SizedBox(height: 4),
-                  // User's email
+                  /// Name
+                  Text(
+                    user.fullName,
+                    style: TextStyle(
+                      fontSize: FontResponsive.font(
+                        context,
+                        mobile: 15,
+                        tablet: 19,
+                      ),
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+
+                  SizedBox(height: AppSize.s4),
+
+                  /// Email
                   Row(
                     children: [
-                      Icon(Icons.email_outlined, color: Colors.grey),
-                      SizedBox(width: 8),
-                      Text(
-                        user.email, // Display user's email
-                        style: TextStyle(fontSize: 14, color: Colors.black),
+                      Icon(
+                        Icons.email_outlined,
+                        size: Constants.isTablet ? 18 : 14,
+                        color: Colors.grey.shade600,
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          user.email,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: Constants.isTablet ? 17 : 13,
+                            color: Colors.grey.shade700,
+                          ),
+                        ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+
+                  const SizedBox(height: 2),
+
+                  /// Phone
                   Row(
                     children: [
-                      Icon(Icons.phone_outlined, color: Colors.grey),
-                      SizedBox(width: 8),
-                      Text(
-                        user.phone, // Display user's email
-                        style: TextStyle(fontSize: 14, color: Colors.black),
+                      Icon(
+                        Icons.phone_outlined,
+                        size: Constants.isTablet ? 18 : 14,
+                        color: Colors.grey.shade600,
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(Icons.location_on_outlined, color: Colors.grey),
-                      SizedBox(width: 8),
+                      const SizedBox(width: 6),
                       Text(
-                        user.address, // Display user's email
-                        style: TextStyle(fontSize: 14, color: Colors.black),
+                        user.phone,
+                        style: TextStyle(
+                          fontSize: Constants.isTablet ? 17 : 13,
+                          color: Colors.grey.shade700,
+                        ),
                       ),
                     ],
                   ),
                 ],
               ),
-            ],
-          ),
-          // Right icon (for more details or actions)
-        ],
-      ),
+            ),
+
+          ],
+        ),
+
+
+        SizedBox(height: AppSize.s10),
+        Divider(),
+        /// Arrow
+        Icon(
+          Icons.chevron_right,
+          color: Colors.grey.shade400,
+          size: Constants.isTablet ? 18 : 22,
+        ),
+      ],
     ),
   );
 }
-Widget userWidget(UserModel user) {
-  final gradients = [
-    [Color(0xFFff9a9e), Color(0xFFfad0c4)],
-    [Color(0xFFa18cd1), Color(0xFFfbc2eb)],
-    [Color(0xFFfbc2eb), Color(0xFFa6c1ee)],
-  ];
 
-  final colors = gradients[user.id % gradients.length];
-
+Widget userWidget(UserModel user, BuildContext context) {
   return Card(
-
     color: ColorManager.white,
     shape: RoundedRectangleBorder(
-
-      side: BorderSide(
-
-          color: ColorManager.black.withOpacity(0.1), width: 1),
+      side: BorderSide(color: ColorManager.black.withOpacity(0.1), width: 1),
 
       borderRadius: BorderRadius.circular(12),
-
     ),
 
     elevation: 5,
     child: Padding(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -176,28 +153,30 @@ Widget userWidget(UserModel user) {
               Row(
                 children: [
                   Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(
+                    width: AppSize.s45,
+                    height: AppSize.s45,
+                    decoration: const BoxDecoration(
                       shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: colors,
-                      ),
+                      color: ColorManager.splash1,
                     ),
-                    child: Center(
-                      child: Text(
-                        user.fullName[0].toUpperCase(),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 30,
-                        ),
-                      ),
+                    child: Icon(
+                      Icons.person,
+                      color: Colors.white,
+                      size: Constants.isTablet ? 30 : 26,
                     ),
                   ),
                   SizedBox(width: 10),
                   Text(
                     user.fullName, // Display user's full name
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: FontResponsive.font(
+                        context,
+                        mobile: 16,
+                        tablet: 20,
+                      ),
+
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
@@ -219,7 +198,15 @@ Widget userWidget(UserModel user) {
                       SizedBox(width: 8),
                       Text(
                         user.email, // Display user's email
-                        style: TextStyle(fontSize: 14, color: Colors.black),
+                        style: TextStyle(
+                          fontSize: FontResponsive.font(
+                            context,
+                            mobile: 14,
+                            tablet: 18,
+                          ),
+
+                          color: Colors.black,
+                        ),
                       ),
                     ],
                   ),
@@ -230,7 +217,14 @@ Widget userWidget(UserModel user) {
                       SizedBox(width: 8),
                       Text(
                         user.phone, // Display user's email
-                        style: TextStyle(fontSize: 14, color: Colors.black),
+                        style: TextStyle(
+                          fontSize: FontResponsive.font(
+                            context,
+                            mobile: 14,
+                            tablet: 18,
+                          ),
+                          color: Colors.black,
+                        ),
                       ),
                     ],
                   ),
@@ -241,7 +235,15 @@ Widget userWidget(UserModel user) {
                       SizedBox(width: 8),
                       Text(
                         user.address, // Display user's email
-                        style: TextStyle(fontSize: 14, color: Colors.black),
+                        style: TextStyle(
+                          fontSize: FontResponsive.font(
+                            context,
+                            mobile: 15,
+                            tablet: 18,
+                          ),
+
+                          color: Colors.black,
+                        ),
                       ),
                     ],
                   ),
@@ -255,4 +257,3 @@ Widget userWidget(UserModel user) {
     ),
   );
 }
-

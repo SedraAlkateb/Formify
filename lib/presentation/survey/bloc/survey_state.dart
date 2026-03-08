@@ -17,7 +17,6 @@ final class ViewSurveyLoadingState extends SurveyState {
   @override
   List<Object?> get props => [];
 }
-/// عند تغيير اللون
 class ViewSurveyState extends SurveyState {
   final SurveyModel surveyModel;
    ViewSurveyState(this.surveyModel) ;
@@ -36,11 +35,23 @@ class ViewQuestionState extends SurveyState {
   List<Object?> get props => [questionModel, images];
 }
 
-
-final class CreateSurveyState extends SurveyState {
-  CreateSurveyState();
+final class UpdateSurveyErrorState extends SurveyState {
+  final Failure failure;
+  UpdateSurveyErrorState({required this.failure});
+  @override
+  List<Object?> get props =>[failure];
+}
+final class UpdateSurveyLoadingState extends SurveyState {
+  @override
   List<Object?> get props => [];
 }
+final class UpdateSurveyState extends SurveyState {
+  @override
+  List<Object?> get props => [];
+}
+
+
+
 final class CreateSurveyErrorState extends SurveyState {
   final Failure failure;
   CreateSurveyErrorState({required this.failure});
@@ -84,6 +95,21 @@ final class GetAllSurveyLoadingState extends SurveyState {
   List<Object?> get props => [];
 }
 final class GetAllEmptySurveyState extends SurveyState {
+  @override
+  List<Object?> get props => [];
+}
+
+final class RepetitionSurveyErrorState extends SurveyState {
+  final Failure failure;
+  RepetitionSurveyErrorState({required this.failure});
+  @override
+  List<Object?> get props =>[failure];
+}
+final class RepetitionSurveyLoadingState extends SurveyState {
+  @override
+  List<Object?> get props => [];
+}
+final class RepetitionSurveyState extends SurveyState {
   @override
   List<Object?> get props => [];
 }

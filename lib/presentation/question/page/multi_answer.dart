@@ -21,7 +21,9 @@ class MultiAnswerPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: colorScheme.background,
       appBar: AppBar(
-        title: Text("${BlocProvider.of<SurveyBloc>(context).question.type.title} سؤال"),
+        title: Text(
+          "${BlocProvider.of<SurveyBloc>(context).question.type.title} سؤال",
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -81,42 +83,63 @@ class MultiAnswerPage extends StatelessWidget {
                       return questionModel.title.isEmpty
                           ? const Text("لا يوجد سؤال للمعاينة بعد.")
                           : Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: colorScheme.surface,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: colorScheme.outline.withOpacity(0.25),
-                          ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // ===== Question title =====
-                            Text(
-                              questionModel.title.isEmpty
-                                  ? "سيظهر السؤال هنا"
-                                  : questionModel.title,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: colorScheme.surface,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: colorScheme.outline.withOpacity(0.25),
+                                ),
                               ),
-                              textAlign: TextAlign.right,
-                            ),
-                            const SizedBox(height: 12),
-                            QuestionPreviewBuilder(question: questionModel),
-                          ],
-                        ),
-                      );
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // ===== Question title =====
+                                  Text(
+                                    questionModel.title.isEmpty
+                                        ? "سيظهر السؤال هنا"
+                                        : questionModel.title,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.right,
+                                  ),
+                                  const SizedBox(height: 12),
+                                  QuestionPreviewBuilder(
+                                    question: questionModel,
+                                  ),
+                                ],
+                              ),
+                            );
                     } else {
                       return const SizedBox();
                     }
                   },
                 ),
-
                 const SizedBox(height: 20),
-                nextWidget(context),
+                nextWidget(context, () {
+                  // استدعاء التحقق أولاً
+                  final hasCorrect = context
+                      .read<SurveyBloc>()
+                      .question
+                      .answers
+                      .any((e) => e.isCorrect == 1);
+
+                  if (!hasCorrect) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("يجب اختيار إجابة صحيحة واحدة على الأقل"),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                    return; // منع الانتقال
+                  } else {
+                    context.read<SurveyBloc>().add(AddQuestionEvent());
+                    Navigator.pop(context);
+                  }
+                }),
               ],
             ),
           ),

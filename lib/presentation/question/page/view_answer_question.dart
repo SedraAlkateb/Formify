@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/models/model_q.dart';
 import 'package:form_builder_extra_fields/form_builder_extra_fields.dart';
@@ -153,37 +152,48 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
                         children: [
                           Icon(
                             Icons.block_outlined,
-                            color: ColorManager.success,
+                            color: ColorManager.error,
                           ),
                           SizedBox(width: 12),
-                          Text(
-                            "اجابتك خاطئة الاجابة الصحيحة هي",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16,
-                            ),
-                          ),
+                          selectedAnswer?.title != null
+                              ? Text(
+                                  "اجابتك خاطئة الاجابة الصحيحة هي",
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 16,
+                                  ),
+                                )
+                              : Text(
+                                  "اجابتك خاطئة",
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 16,
+                                  ),
+                                ),
                         ],
                       ),
                       SizedBox(height: 10),
-                      FormBuilderTextField(
-                        initialValue: selectedAnswer!.title,
-                        name: _name,
-                        maxLines: 5,
-                        minLines: 1,
-                        enabled: false,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 20,
-                        ),
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(11),
-                          ),
-                        ),
-                      ),
+                      selectedAnswer?.title != null
+                          ? FormBuilderTextField(
+                              initialValue: selectedAnswer!.title,
+                              name: "${_name}${selectedAnswer.id}",
+                              maxLines: 5,
+                              minLines: 1,
+                              enabled: false,
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 20,
+                              ),
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(11),
+                                ),
+                              ),
+                            )
+                          : SizedBox(),
                     ],
                   ),
           ],
@@ -232,7 +242,7 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
                   )
                 : Row(
                     children: [
-                      Icon(Icons.block_outlined, color: ColorManager.success),
+                      Icon(Icons.block_outlined, color: ColorManager.error),
                       SizedBox(width: 12),
                       Text(
                         "اجابتك خاطئة الاجابة الصحيحة هي",
@@ -277,60 +287,67 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: initValue!.length,
-              itemBuilder: (context, index) =>
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      FormBuilderTextField(
-                        enabled: false,
-                        initialValue: initValue != null ? initValue![index].content : null,
-                        name: "${_name}${index}",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 20,
-                        ),
+              itemBuilder: (context, index) => Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  FormBuilderTextField(
+                    enabled: false,
+                    initialValue: initValue != null
+                        ? initValue![index].content
+                        : null,
+                    name: "${_name}${index}",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 20,
+                    ),
 
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(11),
-                          ),
-                        ),
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(11),
                       ),
-                      SizedBox(height: 10),
-                      initValue![index].isCorrect == 1
-                          ? Row(
-                        children: [
-                          Icon(Icons.check_circle, color: ColorManager.success),
-                          SizedBox(width: 12),
-                          Text(
-                            "اجابتك صحيحة",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
-                      )
-                          : Row(
-                        children: [
-                          Icon(Icons.block_outlined, color: ColorManager.success),
-                          SizedBox(width: 12),
-                          Text(
-                            "اجابتك خاطئة ",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 10),
-                    ],
+                    ),
                   ),
+                  SizedBox(height: 10),
+                  initValue![index].isCorrect == 1
+                      ? Row(
+                          children: [
+                            Icon(
+                              Icons.check_circle,
+                              color: ColorManager.success,
+                            ),
+                            SizedBox(width: 12),
+                            Text(
+                              "اجابتك صحيحة",
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        )
+                      : Row(
+                          children: [
+                            Icon(
+                              Icons.block_outlined,
+                              color: ColorManager.error,
+                            ),
+                            SizedBox(width: 12),
+                            Text(
+                              "اجابتك خاطئة ",
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                  SizedBox(height: 10),
+                ],
+              ),
             ),
             Text(
               "الاجابات الصحيحة هي :",
@@ -358,9 +375,7 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
                     ),
                   )
                   .toList(),
-
             ),
-
           ],
         );
 
@@ -386,16 +401,15 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
         return FormBuilderSwitch(
           name: _name,
           enabled: false,
-
-          initialValue: initValue != null
-              ? (initValue?[0] == "0" ? false : true)
-              : null,
+          activeColor:  ColorManager.success,
+          inactiveThumbColor: ColorManager.success,
+          initialValue: true,
           title: Text(
-            question.title,
+            "",
             style: TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.w500,
-              fontSize: 20,
+              fontSize: 15,
             ),
           ),
         );

@@ -1,67 +1,65 @@
-class  AppMargin {
-  static const double m8=8.0;
-  static const double m12=12.0;
-  static const double m16=16.0;
-  static const double m18=18.0;
-  static const double m20=20.0;
+import 'package:formify/app/constants.dart';
+
+class AppMargin {
+  static double get m4  => Constants.isTablet ? 4 : 8;
+
+  static double get m8  => Constants.isTablet ? 16 : 8;
+  static double get m12 => Constants.isTablet ? 20 : 12;
+  static double get m16 => Constants.isTablet ? 24 : 16;
+  static double get m18 => Constants.isTablet ? 26 : 18;
+  static double get m20 => Constants.isTablet ? 28 : 20;
 }
 
-class  AppPadding {
-  static const double p5=5.0;
-  static const double p2=2.0;
-  static const double p8=8.0;
-  static const double p12=12.0;
-  static const double p14=14.0;
-  static const double p40=40.0;
-  static const double p50=50.0;
-  static const double p10=10.0;
-  static const double p16=16.0;
-  static const double p18=18.0;
-  static const double p20=20.0;
-  static const double p28=28.0;
-  static const double p60=60.0;
-  static const double p70=70.0;
-  static const double p120=120;
-  static const double p100=100.0;
-
+class AppPadding {
+  static double get p2  => Constants.isTablet ? 10 : 2;
+  static double get p5  => Constants.isTablet ? 13 : 5;
+  static double get p8  => Constants.isTablet ? 16 : 8;
+  static double get p10 => Constants.isTablet ? 18 : 10;
+  static double get p12 => Constants.isTablet ? 20 : 12;
+  static double get p14 => Constants.isTablet ? 22 : 14;
+  static double get p16 => Constants.isTablet ? 24 : 16;
+  static double get p18 => Constants.isTablet ? 26 : 18;
+  static double get p20 => Constants.isTablet ? 28 : 20;
+  static double get p28 => Constants.isTablet ? 36 : 28;
+  static double get p40 => Constants.isTablet ? 48 : 40;
+  static double get p50 => Constants.isTablet ? 58 : 50;
+  static double get p60 => Constants.isTablet ? 68 : 60;
+  static double get p70 => Constants.isTablet ? 78 : 70;
+  static double get p100 => Constants.isTablet ? 108 : 100;
+  static double get p120 => Constants.isTablet ? 128 : 120;
 }
-class  AppSize {
-  static const double s0=0.0;
-  static const double s2=2.0;
 
-  static const double s1_5=1.5;
-  static const double s0_5=0.5;
+class AppSize {
+  static double get s0 => 0;
 
-  static const double s4=4.0;
-  static const double s8=8.0;
-  static const double s12=12.0;
-  static const double s14=14.0;
-  static const double s15=15.0;
+  static double get s0_5 => Constants.isTablet ? 8.5 : 0.5;
+  static double get s1_5 => Constants.isTablet ? 9.5 : 1.5;
+  static double get s2 => Constants.isTablet ? 10 : 2;
 
-  static const double s16=16.0;
-  static const double s18=18.0;
-  static const double s20=20.0;
-    static const double s22=22.0;
+  static double get s4  => Constants.isTablet ? 12 : 4;
+  static double get s8  => Constants.isTablet ? 16 : 8;
+  static double get s6  => Constants.isTablet ? 14 : 6;
+  static double get s10 => Constants.isTablet ? 18 : 10;
 
-  static const double s25=25.0;
-
-  static const double s28=28.0;
-
-  static const double s30=30.0;
-  static const double s40=40.0;
-  static const double s45=45.0;
-
-  static const double s50=50.0;
-
-  static const double s60=60.0;
-  static const double s64=64.0;
-  static const double s65=65.0;
-
-  static const double s100=100.0;
-  static const double s120=120.0;
-
-  static const double s150=150.0;
-  static const double s250=250.0;
-  static const double s200=200.0;
-
+  static double get s12 => Constants.isTablet ? 20 : 12;
+  static double get s14 => Constants.isTablet ? 22 : 14;
+  static double get s15 => Constants.isTablet ? 23 : 15;
+  static double get s16 => Constants.isTablet ? 24 : 16;
+  static double get s18 => Constants.isTablet ? 26 : 18;
+  static double get s20 => Constants.isTablet ? 28 : 20;
+  static double get s22 => Constants.isTablet ? 30 : 22;
+  static double get s25 => Constants.isTablet ? 33 : 25;
+  static double get s28 => Constants.isTablet ? 36 : 28;
+  static double get s30 => Constants.isTablet ? 38 : 30;
+  static double get s40 => Constants.isTablet ? 48 : 40;
+  static double get s45 => Constants.isTablet ? 53 : 45;
+  static double get s50 => Constants.isTablet ? 58 : 50;
+  static double get s60 => Constants.isTablet ? 68 : 60;
+  static double get s64 => Constants.isTablet ? 72 : 64;
+  static double get s65 => Constants.isTablet ? 73 : 65;
+  static double get s100 => Constants.isTablet ? 108 : 100;
+  static double get s120 => Constants.isTablet ? 128 : 120;
+  static double get s150 => Constants.isTablet ? 158 : 150;
+  static double get s200 => Constants.isTablet ? 208 : 200;
+  static double get s250 => Constants.isTablet ? 258 : 250;
 }

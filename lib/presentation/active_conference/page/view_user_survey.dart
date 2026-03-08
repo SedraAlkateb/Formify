@@ -6,6 +6,7 @@ import 'package:formify/presentation/active_conference/widget/view_all_user.dart
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/resources/theme_bloc/theme_bloc.dart';
+import 'package:formify/presentation/resources/values_manager.dart';
 import 'package:formify/presentation/survey/widget/list_survey_widget.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
@@ -32,23 +33,26 @@ class ViewUserSurveyPage extends StatelessWidget {
             ),
 
             body: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
+              padding: EdgeInsets.symmetric(
+                vertical: AppPadding.p16,
+                horizontal: AppPadding.p18,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  userWidget(state.userModel),
+                  userWidget(state.userModel,context),
                   Column(
                     children: [
-                      SizedBox(height: 4),
+                      SizedBox(height: AppSize.s4),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding:  EdgeInsets.all(AppPadding.p8),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Row(
                               children: [
                                 Icon(Icons.sticky_note_2_outlined, size: 30),
-                                SizedBox(width: 8),
+                                SizedBox(width: AppSize.s8),
                                 Text(
                                   "الاستبيانات",
                                   style: TextStyle(
@@ -59,38 +63,33 @@ class ViewUserSurveyPage extends StatelessWidget {
                                 ),
                               ],
                             ),
-                         Row(
+                            Row(
                               children: [
-                                Text(
-                                  state.surveys.length
-                                      .toString(),
-                                ),
+                                Text(state.surveys.length.toString()),
                                 Text(" استبيان "),
                               ],
                             ),
                           ],
                         ),
                       ),
-                      SizedBox(height: 4),
+                      SizedBox(height: AppSize.s6),
                       state.surveys.isNotEmpty
                           ? ListView.builder(
                               physics: NeverScrollableScrollPhysics(),
                               shrinkWrap: true,
-                              itemCount: state
-
-                                  .surveys
-                                  .length, // Number of surveys
+                              itemCount:
+                                  state.surveys.length, // Number of surveys
                               itemBuilder: (context, index) {
                                 return InkWell(
-
                                   child: surveyListWidget(
-                                    state.surveys[index]
-                                        .toDomain(),
-                                        () {
-                                      BlocProvider.of<ActiveConferenceBloc>(context).add(
+                                    state.surveys[index].toDomain(),
+                                    () {
+                                      BlocProvider.of<ActiveConferenceBloc>(
+                                        context,
+                                      ).add(
                                         GetCompletedSurveyEvent(
-                                            state.surveys[index].id,
-                                            state.userModel.id
+                                          state.surveys[index].id,
+                                          state.userModel.id,
                                         ),
                                       );
                                       Navigator.pushNamed(
@@ -101,27 +100,19 @@ class ViewUserSurveyPage extends StatelessWidget {
                                         ChangeThemeColorEvent(
                                           Color(
                                             int.parse(
-                                              state
-
-                                                  .surveys[index]
-                                                  .color,
+                                              state.surveys[index].color,
                                             ),
                                           ),
-                                          state
-
-                                              .surveys[index]
-                                              .color,
+                                          state.surveys[index].color,
                                         ),
                                       );
-
-
                                     },
                                   ),
                                 );
                               },
                             )
                           : emptyFullScreen(context),
-                      SizedBox(height: 4),
+                      SizedBox(height: AppSize.s4),
                     ],
                   ),
                 ],

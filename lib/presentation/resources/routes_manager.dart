@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:formify/app/di.dart';
+import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/active_conference/page/all_active_conference.dart';
 import 'package:formify/presentation/active_conference/page/view_active_conference_page.dart';
 import 'package:formify/presentation/active_conference/page/view_completed_survey.dart';
+import 'package:formify/presentation/conference/pages/Update_conference_page.dart';
 import 'package:formify/presentation/conference/pages/link_survey_by_id.dart';
 import 'package:formify/presentation/conference/pages/create_conference_page.dart';
 import 'package:formify/presentation/conference/pages/view_conference_page.dart';
 import 'package:formify/presentation/active_conference/page/view_user_survey.dart';
+import 'package:formify/presentation/excel/page/exel_page.dart';
+import 'package:formify/presentation/excel/page/survey_dashboard.dart';
 import 'package:formify/presentation/home/pages/home_page.dart';
+import 'package:formify/presentation/onboarding/pages/login_page.dart';
 import 'package:formify/presentation/onboarding/pages/onboarding_page.dart';
 import 'package:formify/presentation/question/page/multi_answer.dart';
 import 'package:formify/presentation/question/page/text.dart';
 import 'package:formify/presentation/resources/strings_manager.dart';
 import 'package:formify/presentation/survey/pages/create_ques_survey_page.dart';
 import 'package:formify/presentation/survey/pages/create_survey_page.dart';
+import 'package:formify/presentation/survey/pages/update_survey_page.dart';
 import 'package:formify/presentation/survey/pages/view_all_survey_page.dart';
 import 'package:formify/presentation/survey/pages/view_survey.dart';
 import 'package:formify/presentation/sync/page/finished_input_surveys.dart';
@@ -50,6 +56,11 @@ class Routes {
 
   static const String gameInput = "/gameInput";
   static const String surveyInput = "/surveyInput";
+  static const String loginPage = "/LoginPage";
+  static const String updateSurvey = "/updateSurvey";
+  static const String updateConference = "/updateConference";
+  static const String exelConference = "/exelConference";
+  static const String dashboardSurvey = "/dashboardSurvey";
 
 }
 
@@ -59,9 +70,10 @@ class RouteGenerator {
       case Routes.onboarding:
         initOnBoardingModule();
         return _animatedRoute(OnBoardingPage());
-
+      case Routes.loginPage:
+        return _animatedRoute(LoginPage());
       case Routes.home:
-        initConferenceModule();
+       initConferenceModule();
         initSyncModule();
         return _animatedRoute(HomePage());
       case Routes.createConference:
@@ -82,15 +94,14 @@ class RouteGenerator {
         final conferenceId = settings.arguments as int;
         return _animatedRoute(ViewConferencePage(conferenceId: conferenceId));
       case Routes.viewActiveConference:
+        initExcelModule();
         final conferenceId = settings.arguments as int;
         return _animatedRoute(
           ViewActiveConferencePage(conferenceId: conferenceId),
         );
       case Routes.settingPage:
         final conferenceId = settings.arguments as int;
-        return _animatedRoute(
-          SettingPage(id: conferenceId),
-        );
+        return _animatedRoute(SettingPage(id: conferenceId));
       case Routes.textQuestion:
         return _animatedRoute(TextQuestionPage());
       case Routes.conferenceSurveyById:
@@ -113,8 +124,16 @@ class RouteGenerator {
         return _animatedRoute(InsertUserPage());
       case Routes.viewUserSurvey:
         return _animatedRoute(ViewUserSurveyPage());
+      case Routes.exelConference:
+        return _animatedRoute(ExelConferencePage());
       case Routes.finishedSurvey:
         return _animatedRoute(FinishedInputSurveysPage());
+      case Routes.updateSurvey:
+        final id = settings.arguments as int;
+        return _animatedRoute(UpdateSurveyPage(id: id));
+      case Routes.updateConference:
+        final conference = settings.arguments as GetAllConferenceByIdModel;
+        return _animatedRoute(UpdateConferencePage( conferenceModel: conference,));
       // case Routes.getAllConference:
       //   initConferenceModule();
       //   return _animatedRoute(AllConferencePage());
@@ -126,6 +145,8 @@ class RouteGenerator {
       case Routes.getAllSurvey:
         initSurveyModule();
         return _animatedRoute(ViewAllSurveyPage());
+      case Routes.dashboardSurvey:
+        return _animatedRoute(SurveyDashboardPage());
 
       default:
         return unDefinedRoute();
@@ -161,8 +182,11 @@ class RouteGenerator {
       },
     );
   }
+
   // ignore: unused_element
   static Route<dynamic> _Route(Widget page) {
-    return PageRouteBuilder(pageBuilder: (context, animation, secondaryAnimation) => page,);
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) => page,
+    );
   }
 }

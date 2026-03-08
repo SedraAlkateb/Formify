@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
+import 'package:formify/presentation/resources/values_manager.dart';
 
-/// نسخة Mobile: نفس الشكل + نفس المحتوى.
-/// التفاعل يكون بالضغط (Tap Down/Up) بدل Hover:
-/// - يرفع الكارد ويعمل ميلان خفيف
-/// - الأيقونة تتحرك يمين + تكبر + تدور
-/// - Progress bar تتحرك
+
 Widget surveyListWidget(MainSurveyModel survey,void Function()? onTap) {
   return _SurveyListPressCard(survey: survey,onTap: onTap,);
 }
@@ -65,7 +62,7 @@ class _SurveyListPressCardState extends State<_SurveyListPressCard> {
         child: Card(
           color: ColorManager.white,
           elevation: _pressed ? 12 : 5,
-          shadowColor: c.withOpacity(0.18),
+          shadowColor: c.withOpacity(0.05),
           shape: RoundedRectangleBorder(
             side: BorderSide(
               color: ColorManager.black.withOpacity(0.08),
@@ -74,7 +71,7 @@ class _SurveyListPressCardState extends State<_SurveyListPressCard> {
             borderRadius: BorderRadius.circular(12),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding:  EdgeInsets.all(AppPadding.p16),
             child: Row(
               children: [
                 _PressIconBox(color: c, pressed: _pressed),
@@ -98,7 +95,7 @@ class _SurveyListPressCardState extends State<_SurveyListPressCard> {
                                 fontWeight: FontWeight.w800,
                               ),
                             ),
-                            const SizedBox(height: 6),
+                             SizedBox(height: AppSize.s6),
                             Text(
                               survey.description,
                               maxLines: 2,
@@ -115,7 +112,7 @@ class _SurveyListPressCardState extends State<_SurveyListPressCard> {
                       ),
 
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding:  EdgeInsets.all(AppPadding.p8),
                         child: Icon(
                           Icons.arrow_forward_ios,
                           color: ColorManager.black.withOpacity(0.5),
@@ -167,8 +164,8 @@ class _PressIconBox extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(pressed ? 0.35 : 0.22),
-            blurRadius: pressed ? 18 : 14,
+            color: color.withOpacity(pressed ? 0.15 : 0.2),
+            blurRadius: pressed ? 15 : 11,
             offset: const Offset(0, 10),
           ),
         ],

@@ -18,12 +18,12 @@ class InsertUserPage extends StatefulWidget {
 class _InsertUserPageState extends State<InsertUserPage>
     with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
-  late final AnimationController _controller;
 
   final TextEditingController fullNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
+  late final AnimationController _controller;
 
   @override
   void initState() {
@@ -206,7 +206,6 @@ class _InsertUserPageState extends State<InsertUserPage>
                                 mainAxisAlignment: MainAxisAlignment.center,
                                crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-
                                   Text('متابعة الى الاستبيان'),
                                   SizedBox(width: 9,),
                                   Icon(Icons.arrow_forward),

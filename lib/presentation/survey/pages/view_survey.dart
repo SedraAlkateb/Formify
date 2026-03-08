@@ -10,7 +10,7 @@ import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
 class ViewSurvey extends StatelessWidget {
-   ViewSurvey({super.key});
+  ViewSurvey({super.key});
 
   final _formKey = GlobalKey<FormBuilderState>();
 
@@ -90,32 +90,51 @@ class ViewSurvey extends StatelessWidget {
                             surveyModel.description,
                             style: const TextStyle(fontSize: 14),
                           ),
-                          surveyModel.timer!=null?
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SizedBox(height: 20),
-                                  const Text(
-                                    "الوقت المسموح",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      Icon(Icons.access_time_outlined,color: Colors.black.withOpacity(0.4),size: 20,),
-                                     SizedBox(width: 8,),
-                                      Text(
-                                        surveyModel.timer??"00:00",
-                                        style: const TextStyle(fontSize: 14),
+                          surveyModel.timer != null
+                              ? Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 20),
+                                    const Text(
+                                      "الوقت المسموح",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
                                       ),
-                                    ],
-                                  ),
-                                ],
-                              ):SizedBox()
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.access_time_outlined,
+                                          color: Colors.black.withOpacity(0.4),
+                                          size: 20,
+                                        ),
+                                        SizedBox(width: 8),
+                                        Text(
+                                          surveyModel.timer ?? "00:00",
+                                          style: const TextStyle(fontSize: 14),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                )
+                              : SizedBox(),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pushNamed(
+                                context,
+                                Routes.updateSurvey,
+                                arguments: surveyModel.id,
+                              );
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [Icon(Icons.edit), Text("تعديل")],
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -234,7 +253,7 @@ class ViewSurvey extends StatelessWidget {
                             Navigator.pop(
                               context,
                               // Routes.home,
-                          //    (route) => false,
+                              //    (route) => false,
                             );
                           }
                         },
