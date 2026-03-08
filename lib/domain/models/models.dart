@@ -679,9 +679,34 @@ class UserAndAnswersModel {
 
   UserAndAnswersModel(this.userModel, this.userAnswerForStatModel);
 }
+
 class ExelModel {
   List<SurveyQuestionModel> surveyQuestionModel;
   List<UserAndAnswersModel> userAndAnswersModel;
 
   ExelModel(this.surveyQuestionModel, this.userAndAnswersModel);
+}
+
+//////////////////////Stat
+class UserAnswerStatModel {
+  int userAnswerId;
+  String content;
+  UserAnswerStatModel(this.userAnswerId, this.content);
+}
+
+class StatisticStatModel {
+  int answerId;
+  String title;
+  int count;
+  int total;
+
+  StatisticStatModel(this.answerId, this.title, this.count, this.total);
+}
+
+class QuestionsStatisticsModel{
+  AsyncQuestionModel question;
+  List<UserAnswerStatModel> userAnswers;
+  List<StatisticStatModel> statistics;
+
+  QuestionsStatisticsModel(this.question, this.userAnswers, this.statistics);
 }

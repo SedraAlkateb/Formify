@@ -763,3 +763,98 @@ Map<String, dynamic> _$StatisticsForUsersAnswersBaseResponseToJson(
   'message': instance.message,
   'data': instance.data,
 };
+
+GetQuestionForStatResponse _$GetQuestionForStatResponseFromJson(
+  Map<String, dynamic> json,
+) => GetQuestionForStatResponse(
+  (json['id'] as num?)?.toInt(),
+  json['question_text'] as String?,
+  (json['question_order'] as num?)?.toInt(),
+  json['is_required'] as bool?,
+  json['type'] as String?,
+  (json['survey_id'] as num?)?.toInt(),
+);
+
+Map<String, dynamic> _$GetQuestionForStatResponseToJson(
+  GetQuestionForStatResponse instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'question_text': instance.question_text,
+  'question_order': instance.question_order,
+  'is_required': instance.is_required,
+  'type': instance.type,
+  'survey_id': instance.survey_id,
+};
+
+UserAnswerStatResponse _$UserAnswerStatResponseFromJson(
+  Map<String, dynamic> json,
+) => UserAnswerStatResponse(
+  (json['user_answer_id'] as num?)?.toInt(),
+  json['content'] as String?,
+);
+
+Map<String, dynamic> _$UserAnswerStatResponseToJson(
+  UserAnswerStatResponse instance,
+) => <String, dynamic>{
+  'user_answer_id': instance.user_answer_id,
+  'content': instance.content,
+};
+
+StatisticStatResponse _$StatisticStatResponseFromJson(
+  Map<String, dynamic> json,
+) => StatisticStatResponse(
+  (json['answer_id'] as num?)?.toInt(),
+  json['title'] as String?,
+  (json['count'] as num?)?.toInt(),
+  (json['total'] as num?)?.toInt(),
+);
+
+Map<String, dynamic> _$StatisticStatResponseToJson(
+  StatisticStatResponse instance,
+) => <String, dynamic>{
+  'answer_id': instance.answer_id,
+  'title': instance.title,
+  'count': instance.count,
+  'total': instance.total,
+};
+
+QuestionsStatResponse _$QuestionsStatResponseFromJson(
+  Map<String, dynamic> json,
+) => QuestionsStatResponse(
+  GetQuestionForStatResponse.fromJson(json['question'] as Map<String, dynamic>),
+  (json['user-answers'] as List<dynamic>)
+      .map((e) => UserAnswerStatResponse.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  (json['statistics'] as List<dynamic>)
+      .map((e) => StatisticStatResponse.fromJson(e as Map<String, dynamic>))
+      .toList(),
+);
+
+Map<String, dynamic> _$QuestionsStatResponseToJson(
+  QuestionsStatResponse instance,
+) => <String, dynamic>{
+  'question': instance.question,
+  'user-answers': instance.userAnswers,
+  'statistics': instance.statistics,
+};
+
+QuestionsStatisticsBaseResponse _$QuestionsStatisticsBaseResponseFromJson(
+  Map<String, dynamic> json,
+) =>
+    QuestionsStatisticsBaseResponse(
+        (json['data'] as List<dynamic>)
+            .map(
+              (e) => QuestionsStatResponse.fromJson(e as Map<String, dynamic>),
+            )
+            .toList(),
+      )
+      ..status = json['status'] as String?
+      ..message = json['message'] as String?;
+
+Map<String, dynamic> _$QuestionsStatisticsBaseResponseToJson(
+  QuestionsStatisticsBaseResponse instance,
+) => <String, dynamic>{
+  'status': instance.status,
+  'message': instance.message,
+  'data': instance.data,
+};

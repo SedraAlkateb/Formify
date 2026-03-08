@@ -477,11 +477,10 @@ class RepositoryImp implements Repository {
   }
 
   @override
-  Future<Either<Failure, Null>> login(LoginRequest loginRequest)  async {
+  Future<Either<Failure, Null>> login(LoginRequest loginRequest) async {
     try {
       if (await _networkInfo.isConnected) {
-        final response = await _remoteDataSource
-            .login(loginRequest);
+        final response = await _remoteDataSource.login(loginRequest);
 
         if (response.status == "200" ||
             response.status == ApiInternalStatus.SUCCESS) {
@@ -506,11 +505,13 @@ class RepositoryImp implements Repository {
   }
 
   @override
-  Future<Either<Failure, Null>> updateConference(int id, ConferenceModel update) async {
+  Future<Either<Failure, Null>> updateConference(
+    int id,
+    ConferenceModel update,
+  ) async {
     try {
       if (await _networkInfo.isConnected) {
-        final response = await _remoteDataSource
-            .updateConference(id,update);
+        final response = await _remoteDataSource.updateConference(id, update);
 
         if (response.status == "200" ||
             response.status == ApiInternalStatus.SUCCESS) {
@@ -538,8 +539,7 @@ class RepositoryImp implements Repository {
   Future<Either<Failure, Null>> updateSurvey(UpdateSurveyRequest update) async {
     try {
       if (await _networkInfo.isConnected) {
-        final response = await _remoteDataSource
-            .updateSurvey(update);
+        final response = await _remoteDataSource.updateSurvey(update);
 
         if (response.status == "200" ||
             response.status == ApiInternalStatus.SUCCESS) {
@@ -564,11 +564,14 @@ class RepositoryImp implements Repository {
   }
 
   @override
-  Future<Either<Failure, ExelModel>> statisticsForUsersAnswers(int surveyId)async {
+  Future<Either<Failure, ExelModel>> statisticsForUsersAnswers(
+    int surveyId,
+  ) async {
     try {
       if (await _networkInfo.isConnected) {
-        final response = await _remoteDataSource
-            .statisticsForUsersAnswers(surveyId);
+        final response = await _remoteDataSource.statisticsForUsersAnswers(
+          surveyId,
+        );
 
         if (response.status == "200" ||
             response.status == ApiInternalStatus.SUCCESS) {
@@ -592,4 +595,34 @@ class RepositoryImp implements Repository {
     }
   }
 
+  @override
+  Future<Either<Failure, List<QuestionsStatisticsModel>>>
+  getStatisticsForQuestionTypes(int surveyId, int conferenceId) async {
+    try {
+      if (await _networkInfo.isConnected) {
+        final response = await _remoteDataSource.getStatisticsForQuestionTypes(
+          surveyId,conferenceId
+        );
+
+        if (response.status == "200" ||
+            response.status == ApiInternalStatus.SUCCESS) {
+          return Right(response.toDomain());
+        } else {
+          Failure failure = Failure(
+            ApiInternalStatus.FAILURE,
+            response.message ?? ResponseMassage.DEFAULT,
+          );
+          return Left(failure);
+
+          // return Left(Failure(ApiInternalStatus.FAILURE,
+          //     response.message ?? ResponseMassage.DEFAULT));
+        }
+      } else {
+        return Left(DataSource.NO_INTERNET_CONNECTION.getFailure());
+      }
+    } catch (error) {
+      Failure failure = ErrorHandler.handle(error).failure;
+      return Left(failure);
+    }
+  }
 }

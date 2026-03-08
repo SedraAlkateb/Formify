@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/app/constants.dart';
 import 'package:formify/data/mapper/mapper.dart';
 import 'package:formify/presentation/active_conference/bloc/active_conference_bloc.dart';
+import 'package:formify/presentation/active_conference/widget/card_survey.dart';
 import 'package:formify/presentation/active_conference/widget/view_all_user.dart';
 import 'package:formify/presentation/excel/bloc/excel_st_bloc.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
@@ -130,63 +131,7 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 20),
-                      InkWell(
-                        child: Container(
-                          width: MediaQuery.of(context).size.width,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                ColorManager.splash1,
-                                ColorManager.splash2,
-                                //  ColorManager.splash3,
-                              ],
-                              begin: Alignment
-                                  .topLeft, // البداية من الزاوية العليا اليسرى
-                              end: Alignment
-                                  .bottomRight, // النهاية عند الزاوية السفلى اليمنى
-                            ),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          // إضافة أي محتوى هنا داخل الـ Container
-                          padding: EdgeInsets.all(AppPadding.p16),
-                          child: Padding(
-                            padding: EdgeInsets.all(AppPadding.p16),
-                            child: Row(
-                              children: [
-                                Text(
-                                  "عرض احصائيات المؤتمر",
-                                  style: TextStyle(
-                                    fontSize: FontResponsive.font(
-                                      context,
-                                      mobile: 20,
-                                      tablet: 24,
-                                    ),
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                SizedBox(width: 20),
-                                Icon(
-                                  Icons.arrow_forward,
-                                  color: ColorManager.white,
-                                  size: 30,
-                                ),
-                              ],
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                            ),
-                          ),
-                        ),
-                        onTap: () {
-                          Navigator.pushNamed(context, Routes.exelConference);
-                          BlocProvider.of<ExcelStBloc>(context).add(
-                            UsersAnswersStatisticsEvent(
-                              state.conferenceModel.surveys[0].id,
-                            ),
-                          );
-                        },
-                      ),
+
                       const SizedBox(height: 20),
                       Card(
                         shadowColor: ColorManager.white,
@@ -412,36 +357,10 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                                   .surveys
                                   .length, // Number of surveys
                               itemBuilder: (context, index) {
-                                return surveyListWidget(
+                                return surveyCardActiveConference(
                                   state.conferenceModel.surveys[index]
                                       .toDomain(),
-                                  () {
-                                    Navigator.pushNamed(
-                                      context,
-                                      Routes.viewSurvey,
-                                    );
-                                    BlocProvider.of<ThemeBloc>(context).add(
-                                      ChangeThemeColorEvent(
-                                        Color(
-                                          int.parse(
-                                            state
-                                                .conferenceModel
-                                                .surveys[index]
-                                                .color,
-                                          ),
-                                        ),
-                                        state
-                                            .conferenceModel
-                                            .surveys[index]
-                                            .color,
-                                      ),
-                                    );
-                                    BlocProvider.of<SurveyBloc>(context).add(
-                                      ViewSurveyByIdEvent(
-                                        state.conferenceModel.surveys[index].id,
-                                      ),
-                                    );
-                                  },
+                                  state.conferenceModel.id
                                 );
                               },
                             )

@@ -11,3 +11,12 @@ class UsersAnswersStatisticsEvent extends ExcelStEvent {
   @override
   List<Object?> get props => [surveyId];
 }
+class SurveyStatisticsEvent extends ExcelStEvent {
+  final int surveyId;
+  final int conferenceId;
+
+  SurveyStatisticsEvent(this.surveyId,this.conferenceId);
+
+  @override
+  List<Object?> get props => [surveyId,conferenceId];
+}

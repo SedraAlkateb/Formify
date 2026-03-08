@@ -24,91 +24,101 @@ Widget userListItem(UserModel user, BuildContext context) {
         ),
       ],
     ),
-    child: Row(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        /// Avatar ثابت مع icon
-        Container(
-          width: AppSize.s45,
-          height: AppSize.s45,
-          decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-            color: ColorManager.splash1,
-          ),
-          child: Icon(
-            Icons.person,
-            color: Colors.white,
-            size: Constants.isTablet ? 30 : 26,
-          ),
-        ),
-
-        const SizedBox(width: 12),
-
-        /// Info
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              /// Name
-              Text(
-                user.fullName,
-                style: TextStyle(
-                  fontSize: FontResponsive.font(
-                    context,
-                    mobile: 15,
-                    tablet: 19,
-                  ),
-                  fontWeight: FontWeight.w700,
-                ),
+        Row(
+          children: [
+            /// Avatar ثابت مع icon
+            Container(
+              width: AppSize.s45,
+              height: AppSize.s45,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                color: ColorManager.splash1,
               ),
-
-              SizedBox(height: AppSize.s4),
-
-              /// Email
-              Row(
-                children: [
-                  Icon(
-                    Icons.email_outlined,
-                    size: Constants.isTablet ? 18 : 14,
-                    color: Colors.grey.shade600,
-                  ),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
-                      user.email,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: Constants.isTablet ? 17 : 13,
-                        color: Colors.grey.shade700,
-                      ),
-                    ),
-                  ),
-                ],
+              child: Icon(
+                Icons.person,
+                color: Colors.white,
+                size: Constants.isTablet ? 30 : 26,
               ),
+            ),
 
-              const SizedBox(height: 2),
+            const SizedBox(width: 12),
 
-              /// Phone
-              Row(
+            /// Info
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(
-                    Icons.phone_outlined,
-                    size: Constants.isTablet ? 18 : 14,
-                    color: Colors.grey.shade600,
-                  ),
-                  const SizedBox(width: 6),
+                  /// Name
                   Text(
-                    user.phone,
+                    user.fullName,
                     style: TextStyle(
-                      fontSize: Constants.isTablet ? 17 : 13,
-                      color: Colors.grey.shade700,
+                      fontSize: FontResponsive.font(
+                        context,
+                        mobile: 15,
+                        tablet: 19,
+                      ),
+                      fontWeight: FontWeight.w700,
                     ),
+                  ),
+
+                  SizedBox(height: AppSize.s4),
+
+                  /// Email
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.email_outlined,
+                        size: Constants.isTablet ? 18 : 14,
+                        color: Colors.grey.shade600,
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          user.email,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: Constants.isTablet ? 17 : 13,
+                            color: Colors.grey.shade700,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 2),
+
+                  /// Phone
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.phone_outlined,
+                        size: Constants.isTablet ? 18 : 14,
+                        color: Colors.grey.shade600,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        user.phone,
+                        style: TextStyle(
+                          fontSize: Constants.isTablet ? 17 : 13,
+                          color: Colors.grey.shade700,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
-          ),
+            ),
+
+          ],
         ),
 
+
+        SizedBox(height: AppSize.s10),
+        Divider(),
         /// Arrow
         Icon(
           Icons.chevron_right,

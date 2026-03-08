@@ -460,3 +460,55 @@ extension StatisticsForUsersAnswersModelMapper on StatisticsForUsersAnswersBaseR
     return ExelModel(surveyQuestionModel,
         userAndAnswersModel);
   }}
+extension UserAnswerStatModelMapper on UserAnswerStatResponse? {
+  UserAnswerStatModel toDomain() {
+    return UserAnswerStatModel(
+      this?.user_answer_id ?? Constants.zero,
+      this?.content ?? Constants.empty,
+    );
+  }
+}
+
+extension GetQuestionForStatResponseMapper on GetQuestionForStatResponse? {
+  AsyncQuestionModel toDomain() {
+    return AsyncQuestionModel(
+      this?.id ?? Constants.zero,
+      this?.question_text ?? Constants.empty,
+      this?.question_order ?? Constants.zero,
+      this?.is_required ?? false,
+      convertToQuestionType(this?.type ?? "TextField"),
+      this?.survey_id ?? Constants.zero,
+    );
+  }
+}
+
+extension StatisticStatResponseMapper on StatisticStatResponse? {
+  StatisticStatModel toDomain() {
+    return StatisticStatModel(
+      this?.answer_id ?? Constants.zero,
+      this?.title ?? Constants.empty,
+      this?.count ?? Constants.zero,
+      this?.total ?? Constants.zero,
+    );
+  }
+}
+extension QuestionsStatisticsModelMapper on QuestionsStatResponse {
+  QuestionsStatisticsModel toDomain() {
+
+    List<UserAnswerStatModel> userAnswers = (this.userAnswers.map(
+          (response) => response.toDomain(),
+    )).cast<UserAnswerStatModel>().toList();
+    List<StatisticStatModel> statistics = (this.statistics.map(
+          (response) => response.toDomain(),
+    )).cast<StatisticStatModel>().toList();
+    return QuestionsStatisticsModel(question.toDomain(),userAnswers,
+        statistics);
+  }}
+extension QuestionsStatisticsBaseMapper on QuestionsStatisticsBaseResponse {
+  List<QuestionsStatisticsModel> toDomain() {
+    List<QuestionsStatisticsModel> data = (this.data.map(
+          (response) => response.toDomain(),
+    )).cast<QuestionsStatisticsModel>().toList();
+    return data;
+  }
+}

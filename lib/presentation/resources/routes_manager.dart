@@ -10,6 +10,7 @@ import 'package:formify/presentation/conference/pages/create_conference_page.dar
 import 'package:formify/presentation/conference/pages/view_conference_page.dart';
 import 'package:formify/presentation/active_conference/page/view_user_survey.dart';
 import 'package:formify/presentation/excel/page/exel_page.dart';
+import 'package:formify/presentation/excel/page/survey_dashboard.dart';
 import 'package:formify/presentation/home/pages/home_page.dart';
 import 'package:formify/presentation/onboarding/pages/login_page.dart';
 import 'package:formify/presentation/onboarding/pages/onboarding_page.dart';
@@ -59,6 +60,7 @@ class Routes {
   static const String updateSurvey = "/updateSurvey";
   static const String updateConference = "/updateConference";
   static const String exelConference = "/exelConference";
+  static const String dashboardSurvey = "/dashboardSurvey";
 
 }
 
@@ -92,6 +94,7 @@ class RouteGenerator {
         final conferenceId = settings.arguments as int;
         return _animatedRoute(ViewConferencePage(conferenceId: conferenceId));
       case Routes.viewActiveConference:
+        initExcelModule();
         final conferenceId = settings.arguments as int;
         return _animatedRoute(
           ViewActiveConferencePage(conferenceId: conferenceId),
@@ -122,7 +125,6 @@ class RouteGenerator {
       case Routes.viewUserSurvey:
         return _animatedRoute(ViewUserSurveyPage());
       case Routes.exelConference:
-        initExcelModule();
         return _animatedRoute(ExelConferencePage());
       case Routes.finishedSurvey:
         return _animatedRoute(FinishedInputSurveysPage());
@@ -143,6 +145,8 @@ class RouteGenerator {
       case Routes.getAllSurvey:
         initSurveyModule();
         return _animatedRoute(ViewAllSurveyPage());
+      case Routes.dashboardSurvey:
+        return _animatedRoute(SurveyDashboardPage());
 
       default:
         return unDefinedRoute();
