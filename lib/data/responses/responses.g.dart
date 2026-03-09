@@ -770,9 +770,10 @@ GetQuestionForStatResponse _$GetQuestionForStatResponseFromJson(
   (json['id'] as num?)?.toInt(),
   json['question_text'] as String?,
   (json['question_order'] as num?)?.toInt(),
-  json['is_required'] as bool?,
+  (json['is_required'] as num?)?.toInt(),
   json['type'] as String?,
   (json['survey_id'] as num?)?.toInt(),
+  (json['Group-Type'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$GetQuestionForStatResponseToJson(
@@ -784,6 +785,7 @@ Map<String, dynamic> _$GetQuestionForStatResponseToJson(
   'is_required': instance.is_required,
   'type': instance.type,
   'survey_id': instance.survey_id,
+  'Group-Type': instance.groupType,
 };
 
 UserAnswerStatResponse _$UserAnswerStatResponseFromJson(

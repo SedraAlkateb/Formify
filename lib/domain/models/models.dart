@@ -704,9 +704,27 @@ class StatisticStatModel {
 }
 
 class QuestionsStatisticsModel{
-  AsyncQuestionModel question;
+  QuestionForStatModel question;
   List<UserAnswerStatModel> userAnswers;
   List<StatisticStatModel> statistics;
 
   QuestionsStatisticsModel(this.question, this.userAnswers, this.statistics);
+}
+class QuestionForStatModel {
+  int? id;
+  String title;
+  int order;
+  int isRequired;
+  QuestionType type;
+  int survey_id;
+  int groupType;
+  QuestionForStatModel(
+      this.id,
+      this.title,
+      this.order,
+      this.isRequired,
+      this.type,
+      this.survey_id,
+      this.groupType
+      );
 }

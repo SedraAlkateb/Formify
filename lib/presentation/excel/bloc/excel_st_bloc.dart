@@ -42,7 +42,7 @@ class ExcelStBloc extends Bloc<ExcelStEvent, ExcelStState> {
       ) async {
     emit(SurveyStatisticsLoading());
     final result = await statisticsSurveyUsecase.execute(
-      event.surveyId,
+      event.survey.id,
       event.conferenceId
     );
     result.fold(
@@ -50,7 +50,7 @@ class ExcelStBloc extends Bloc<ExcelStEvent, ExcelStState> {
         emit(SurveyStatisticsError(failure: failure));
       },
           (data) {
-        emit(SurveyStatisticsSuccess(data));
+        emit(SurveyStatisticsSuccess(data,event.survey));
       },
     );
   }

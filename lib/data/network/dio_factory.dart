@@ -1,70 +1,60 @@
+
+import 'dart:io';
+
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
+import 'package:dio/io.dart';
 import 'package:formify/app/constants.dart';
 import 'package:formify/data/network/error_handler.dart';
+import 'package:flutter/foundation.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
-// هذه الاستيرادات فقط لغير الويب
-import 'dart:io' show HttpClient, X509Certificate;
-import 'package:dio/io.dart' show IOHttpClientAdapter;
+const String APPLICATION_JSON="application/json";
+const String MULTIPART="multipart/form-data";
+const String CONTENT_TYPE="contentType";
+const String ACCEPT="accept";
+const String AUTHORIZATION="authorization";
+const String DEFAULT_LANGUAGE="lang";
 
-const String applicationJson = "application/json";
-const String multipart = "multipart/form-data";
-const String contentType = "content-type";
-const String accept = "accept";
-const String authorization = "authorization";
-const String defaultLanguage = "lang";
-
-class DioFactory {
+class DioFactory{
   DioFactory();
 
   Future<Dio> getDio() async {
-    final dio = Dio();
-
-    // هذا الجزء يعمل فقط خارج الويب
-    if (!kIsWeb) {
-      final adapter = dio.httpClientAdapter;
-      if (adapter is IOHttpClientAdapter) {
-        adapter.createHttpClient = () {
-          final client = HttpClient();
-          client.badCertificateCallback =
-              (X509Certificate cert, String host, int port) => true;
-          return client;
-        };
-      }
-    }
-
-    final String to = "";
-    final String token = "Bearer $to";
-    final String language = "ar";
-
-    final headers = <String, String>{
-      contentType: multipart,
-      accept: applicationJson,
-      "X-Requested-With": "XMLHttpRequest",
-      authorization: token,
-      defaultLanguage: language,
+    Dio dio= Dio();
+    (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
+        (HttpClient client) {
+      client.badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+      return client;
     };
-
-    dio.options = BaseOptions(
+    String  to=
+    //    UserInfo.token??
+        "";
+    String token ="Bearer " + to;
+    String language ="ar";
+    Map<String,String> headers={
+      CONTENT_TYPE:MULTIPART,
+      ACCEPT:APPLICATION_JSON,
+      "X-Requested-With":"XMLHttpRequest",
+      AUTHORIZATION:token,
+      DEFAULT_LANGUAGE:language,
+      "Access-Control-Allow-Headers": "*",
+      "Access-Control-Allow-Methods": "POST, GET, OPTIONS, PUT, DELETE, HEAD",
+    };
+    dio.options=BaseOptions(
       baseUrl: Constants.baseUrl,
       headers: headers,
-      connectTimeout: const Duration(seconds: 50),
-      receiveTimeout: const Duration(seconds: 50),
+      connectTimeout: Duration(seconds: 50),
+      receiveTimeout: Duration(seconds: 50),
     );
+    dio.interceptors.add( MyApiInterceptor());
+    if(!kReleaseMode){
+      dio.interceptors.add(PrettyDioLogger(
+        requestHeader : true,
+        requestBody : true,
+        responseHeader : true,
+      ));
 
-    dio.interceptors.add(MyApiInterceptor());
-
-    if (!kReleaseMode) {
-      dio.interceptors.add(
-        PrettyDioLogger(
-          requestHeader: true,
-          requestBody: true,
-          responseHeader: true,
-        ),
-      );
     }
-
     return dio;
   }
 }
@@ -75,30 +65,63 @@ class MyApiInterceptor extends Interceptor {
       RequestOptions options,
       RequestInterceptorHandler handler,
       ) async {
-    final String authToken = "";
-    final String lang = "en";
+    // Add the token to the request headers
 
-    options.headers['Authorization'] = "Bearer $authToken";
-    options.headers['lang'] = lang;
+    String? authToken ="";
+    // UserInfo.token;
+    String lang ="en";
 
+    options.headers['Authorization'] ="Bearer ${authToken}" ;
+    options.headers['lang'] =lang;
+
+    print(authToken);
     return handler.next(options);
   }
-
   @override
-  void onError(
-      DioException err,
-      ErrorInterceptorHandler handler,
-      ) async {
+  void onError(DioError err, ErrorInterceptorHandler handler) async {
     debugPrint(
-      'ERROR[${err.response?.statusCode}] => PATH: ${err.requestOptions.path}',
-    );
-
-    if (err.response?.statusCode == ResponseCode.UNAUTORISED) {
-      // refresh token logic
+        'ERROR[${err.response?.statusCode}] => PATH: ${err.requestOptions.path}');
+    if (err.response?.statusCode ==ResponseCode.UNAUTORISED ) {
+      // UserModel? authenticatedUser =
+      //     await authLocalDataSource.getSavedLoginCredentials();
+      // if (authenticatedUser != null) {
+      // if (await _refreshToken(
+      //   authenticatedUser,
+      // )) {
+      //   return handler.resolve(await _retry(err.requestOptions));
+      // }
+      // }
     }
-
     super.onError(err, handler);
   }
+  final Dio client =Dio();
 
-  final Dio client = Dio();
+// Future<Response<dynamic>> _retry(RequestOptions requestOptions) async {
+//   final options = Options(
+//     method: requestOptions.method,
+//     headers: requestOptions.headers,
+//   );
+//   return
+//     client.request<dynamic>(requestOptions.path,
+//       data: requestOptions.data,
+//       queryParameters: requestOptions.queryParameters,
+//       options: options);
+// }
+
+// Future<bool> _refreshToken(UserModel authenticatedUser) async {
+// final response = await client.post(EndPoints.refreshToken, data: {
+//   AppStrings.token: authenticatedUser.token,
+//   AppStrings.refreshToken: authenticatedUser.refreshToken,
+// });
+// final jsonResponse = Commons.decodeJson(response);
+// BaseResponseModel baseResponse = BaseResponseModel.fromJson(jsonResponse);
+// if (baseResponse.isSuccess!) {
+//   authenticatedUser.token = baseResponse.data["token"];
+//   authenticatedUser.refreshToken = baseResponse.data["refreshToken"];
+//   authLocalDataSource.saveLoginCredentials(userModel: authenticatedUser);
+//   return true;
+// } else {
+//   return false;
+// }
+// }
 }

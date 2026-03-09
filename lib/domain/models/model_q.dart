@@ -266,8 +266,8 @@ extension QuestionTypeX on QuestionType {
 
 Widget _typeChip({required IconData icon, required String text}) {
   return Container(
-    margin: const EdgeInsets.symmetric(horizontal: 8),
-    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+    margin: const EdgeInsets.symmetric(horizontal: 6),
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
     decoration: BoxDecoration(
       color: ColorManager.darkTextSecondary,
       borderRadius: BorderRadius.circular(12),

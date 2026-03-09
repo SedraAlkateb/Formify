@@ -92,7 +92,6 @@ class SettingPage extends StatelessWidget {
                     instance<AppPreferences>().setIConference(
                       state.isActive == 0 ? false : true,
                     );
-                    instance<AppPreferences>().setLoggedIn(1);
                     Navigator.of(context).pushReplacementNamed(Routes.home);
                     instance<AppPreferences>().setLoggedIn(1);
                     Navigator.pushNamedAndRemoveUntil(
@@ -356,6 +355,7 @@ class SettingPage extends StatelessWidget {
                                 const SizedBox(height: 10),
                                 InkWell(
                                   onTap: () {
+                                    instance<AppPreferences>().setLoggedIn(1);
                                     Navigator.pushNamedAndRemoveUntil(
                                       context,
                                       Routes.home,

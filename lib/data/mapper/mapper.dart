@@ -470,14 +470,15 @@ extension UserAnswerStatModelMapper on UserAnswerStatResponse? {
 }
 
 extension GetQuestionForStatResponseMapper on GetQuestionForStatResponse? {
-  AsyncQuestionModel toDomain() {
-    return AsyncQuestionModel(
+  QuestionForStatModel toDomain() {
+    return QuestionForStatModel(
       this?.id ?? Constants.zero,
       this?.question_text ?? Constants.empty,
       this?.question_order ?? Constants.zero,
-      this?.is_required ?? false,
+      this?.is_required  ?? Constants.zero,
       convertToQuestionType(this?.type ?? "TextField"),
       this?.survey_id ?? Constants.zero,
+      this?.groupType  ?? Constants.zero,
     );
   }
 }
