@@ -37,7 +37,7 @@ class CreateConferencePage extends StatelessWidget {
       ),
 
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding:  EdgeInsets.all(AppPadding.p16),
         child: Column(
           children: [
             FormBuilder(

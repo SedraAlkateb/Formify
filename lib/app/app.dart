@@ -7,6 +7,7 @@ import 'package:formify/presentation/active_conference/bloc/active_conference_bl
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 import 'package:formify/presentation/excel/bloc/excel_st_bloc.dart';
 import 'package:formify/presentation/onboarding/bloc/onboarding_bloc.dart';
+import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/responsive/breakpoints.dart';
 import 'package:formify/presentation/resources/responsive/sizer_responseve.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
@@ -31,6 +32,7 @@ class _MyAppState extends State<MyApp> {
     Constants.isLogin = appPreferences.routLogin();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     Breakpoints.isMobileOrTablet(context);
@@ -43,36 +45,39 @@ class _MyAppState extends State<MyApp> {
         BlocProvider(create: (_) => instance<SurveyBloc>()),
         BlocProvider(create: (_) => instance<ThemeBloc>()),
         BlocProvider(create: (_) => instance<ExcelStBloc>()),
-
       ],
       child: BlocBuilder<ThemeBloc, ThemeState>(
         builder: (context, state) {
           return DynamicColorBuilder(
             builder: (lightDynamic, darkDynamic) {
-              return
-                MaterialApp(
-                  builder: (context, child) {
-                    Sizer.init(context);
-                    return child ?? const SizedBox.shrink();
-                  },
-                  debugShowCheckedModeBanner: false,
-                  theme: getApplicationTheme(
-                    dynamicScheme: lightDynamic,
-                    seedColor: state.seedColor,
-                  ),
-                  themeMode: ThemeMode.system,
-                  locale: const Locale('ar'),
-                  supportedLocales: const [Locale('ar'),Locale('en')],
-                  localizationsDelegates: const [
-                    GlobalMaterialLocalizations.delegate,
-                    GlobalWidgetsLocalizations.delegate,
-                    GlobalCupertinoLocalizations.delegate,
-                  ],
-                  onGenerateRoute: RouteGenerator.getRoute,
-                  initialRoute: Constants.isLogin,
-                  // Routes.onboarding,
-                );
-
+              return MaterialApp(
+                builder: (context, child) {
+                  Sizer.init(context);
+                  return Breakpoints.isMobileLandscape(context)
+                      ? Container(
+                          color: ColorManager.white,
+                          margin: EdgeInsets.symmetric(horizontal: 80),
+                          child: child ?? const SizedBox.shrink(),
+                        )
+                      : child ?? const SizedBox.shrink();
+                },
+                debugShowCheckedModeBanner: false,
+                theme: getApplicationTheme(
+                  dynamicScheme: lightDynamic,
+                  seedColor: state.seedColor,
+                ),
+                themeMode: ThemeMode.system,
+                locale: const Locale('ar'),
+                supportedLocales: const [Locale('ar'), Locale('en')],
+                localizationsDelegates: const [
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                onGenerateRoute: RouteGenerator.getRoute,
+                initialRoute: Constants.isLogin,
+                // Routes.onboarding,
+              );
             },
           );
         },

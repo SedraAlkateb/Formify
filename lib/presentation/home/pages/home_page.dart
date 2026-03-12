@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/app/app_preferences.dart';
+import 'package:formify/app/constants.dart';
 import 'package:formify/app/di.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
@@ -95,13 +96,17 @@ class HomeMobilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return SingleChildScrollView(
-      padding:  EdgeInsets.symmetric(vertical: AppPadding.p10,horizontal: AppPadding.p16),
+      padding: EdgeInsets.symmetric(
+        vertical: AppPadding.p10,
+        horizontal: AppPadding.p16,
+      ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 30,),
+          SizedBox(height: 30),
           Text(
             getGreeting(),
             style: TextStyle(fontWeight: FontWeight.w600, fontSize: 30),
@@ -117,19 +122,14 @@ class HomeMobilePage extends StatelessWidget {
           Column(
             children: [
               CustomGridPage(),
-              SizedBox(
-                height: 20,
-              ),
+              SizedBox(height: 20),
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     "المؤتمرات قيد المعالجة",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 25,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 25),
                   ),
                   MultiBlocListener(
                     listeners: [
@@ -196,13 +196,6 @@ class HomeMobilePage extends StatelessWidget {
                         } else if (state is GetAllEmptyConferenceState) {
                           return emptyFullScreen(context);
                         }
-                        // else if(state is GetConferenceAsyncEmptyState){
-                        //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content:  const SnackBar(
-                        //     content: Text(
-                        //       "No Conference Found",
-                        //     ),
-                        //   ),));
-                        // }
                         List<GetAllConferenceModel> items = context
                             .read<ConferenceBloc>()
                             .allNotActiveConference;
@@ -210,9 +203,7 @@ class HomeMobilePage extends StatelessWidget {
                           items = state.allConference;
                         }
                         return Padding(
-                          padding: EdgeInsets.only(
-                            bottom: 40,
-                          ),
+                          padding: EdgeInsets.only(bottom: 40),
                           child: ListView.separated(
                             physics: const NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
@@ -261,23 +252,37 @@ class HomeTabletPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.only(top: 20, left: 24, right: 24),
+        padding:
+        Constants.isTablet?
+        EdgeInsets.only(top: 20, left: 24, right: 24):EdgeInsets.only(top: 10, left: 0, right: 10),
         child: Column(
-
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   getGreeting(),
-                  style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 35),
+                  style:  TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: FontResponsive.font(
+                      context,
+                      mobile: 30,
+                      tablet: 35,
+
+                    ),
+                  ),
                 ),
                 Text(
                   "Domina",
                   style: TextStyle(
                     color: ColorManager.secondary,
                     fontWeight: FontWeight.w600,
-                    fontSize: 25,
+                    fontSize: FontResponsive.font(
+                      context,
+                      mobile: 20,
+                      tablet: 25,
+
+                    ),
                   ),
                 ),
               ],
@@ -287,109 +292,151 @@ class HomeTabletPage extends StatelessWidget {
                 children: [
                   // العمود الأول
                   Expanded(
-                    flex: 1,  // هذا يعني أن العمود الأول سيأخذ نصف المساحة
-                    child:  CustomGridPage(),
+                    flex: 1, // هذا يعني أن العمود الأول سيأخذ نصف المساحة
+                    child: CustomGridPage(),
                   ),
                   // العمود الثاني
                   Expanded(
-                    flex: 1,  // هذا يعني أن العمود الثاني سيأخذ النصف الآخر
-                    child: SingleChildScrollView(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+                    flex: 1,
 
-                          const Text(
-                            "المؤتمرات قيد المعالجة",
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 30,
-                            ),
-                          ),
-                          const SizedBox(height: 40),
-                          MultiBlocListener(
-                            listeners: [
-                              BlocListener<SyncBloc, SyncState>(
-                                listener: (context, state) {
-                                  if (state is DataLoadingState) {
-                                    WidgetsBinding.instance
-                                        .addPostFrameCallback((_) {
-                                      loading(context);
-                                    });
-                                  }
-                                  if (state is DataErrorState) {
-                                    WidgetsBinding.instance
-                                        .addPostFrameCallback((_) {
-                                      error(
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: SingleChildScrollView(
+
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 30,right: 20),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                   Text(
+                                    "المؤتمرات قيد المعالجة",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: FontResponsive.font(
                                         context,
-                                        state.failure.massage,
-                                        state.failure.code,
-                                      );
-                                    });
-                                  }
+                                        mobile: 25,
+                                        tablet: 30,
 
-                                  if (state is GetDataState) {
-                                    context.read<SyncBloc>().add(
-                                      UploadDataEvent(
-                                        state.users,
-                                        state.conference_id,
-                                        0,
                                       ),
-                                    );
-                                  } else if (state is UploadDataState) {
-                                    context.read<SyncBloc>().add(
-                                      DeleteDataEvent(),
-                                    );
-                                  } else if (state is DeleteDataState) {
-                                    context.read<SyncBloc>().add(
-                                      AsyncDataEvent(),
-                                    );
-                                  } else if (state is AsyncConferenceState) {
-                                    context.read<SyncBloc>().add(
-                                      InsertDataSqlEvent(state.asyncModel),
-                                    );
-                                  } else if (state is InsertSucState) {
-                                    BlocProvider.of<ConferenceBloc>(context)
-                                        .add(UpdateConferenceEvent(1));
-                                    success(context);
-                                    instance<AppPreferences>().setIConference(true);
-                                  }
-                                },
+                                    ),
+                                  ),
+                                  Column(
+                                    children: [
+                                      const SizedBox(height: 30),
+                                      MultiBlocListener(
+                                        listeners: [
+                                          BlocListener<SyncBloc, SyncState>(
+                                            listener: (context, state) {
+                                              if (state is DataLoadingState) {
+                                                loading(context);
+                                              }
+                                              if (state is DataErrorState) {
+                                                error(
+                                                  context,
+                                                  state.failure.massage,
+                                                  state.failure.code,
+                                                );
+                                              }
+                                              if (state is GetDataState) {
+                                                BlocProvider.of<SyncBloc>(context).add(
+                                                  UploadDataEvent(
+                                                    state.users,
+                                                    state.conference_id,
+                                                    0,
+                                                  ),
+                                                );
+                                              } else if (state is UploadDataState) {
+                                                BlocProvider.of<SyncBloc>(
+                                                  context,
+                                                ).add(DeleteDataEvent());
+                                              } else if (state is DeleteDataState) {
+                                                BlocProvider.of<SyncBloc>(
+                                                  context,
+                                                ).add(AsyncDataEvent());
+                                              } else if (state is AsyncConferenceState) {
+                                                BlocProvider.of<SyncBloc>(
+                                                  context,
+                                                ).add(InsertDataSqlEvent(state.asyncModel));
+                                              } else if (state is InsertSucState) {
+                                                BlocProvider.of<ConferenceBloc>(
+                                                  context,
+                                                ).add(UpdateConferenceEvent(1));
+                                                success(context);
+                                                instance<AppPreferences>().setIConference(true);
+                                              }
+                                            },
+                                          ),
+                                        ],
+
+                                        child: BlocBuilder<ConferenceBloc, ConferenceState>(
+                                          buildWhen: (previous, current) =>
+                                          current is GetAllConferenceState ||
+                                              current is GetAllConferenceLoadingState ||
+                                              current is GetAllConferenceErrorState ||
+                                              current is GetAllEmptyConferenceState ||
+                                              current is SelectEndedConferenceState,
+                                          builder: (context, state) {
+                                            if (state is GetAllConferenceLoadingState) {
+                                              return loadingFullScreen(context);
+                                            } else if (state is GetAllConferenceErrorState) {
+                                              return errorFullScreen(
+                                                context,
+                                                func: () => context.read<ConferenceBloc>().add(
+                                                  GetAllNotActiveConferenceEvent(),
+                                                ),
+                                              );
+                                            } else if (state is GetAllEmptyConferenceState) {
+                                              return emptyFullScreen(context);
+                                            }
+                                            List<GetAllConferenceModel> items = context
+                                                .read<ConferenceBloc>()
+                                                .allNotActiveConference;
+                                            if (state is GetAllConferenceState) {
+                                              items = state.allConference;
+                                            }
+                                                return ListView.separated(
+                                                  physics:
+                                                      NeverScrollableScrollPhysics(),
+                                                  shrinkWrap: true,
+                                                  padding: EdgeInsets.only(bottom: 40),
+                                                  itemCount: items.length,
+                                                  separatorBuilder: (_, __) =>
+                                                      const SizedBox(height: 10),
+                                                  itemBuilder: (context, index) {
+                                                    return InkWell(
+                                                      onTap: () {
+                                                        Navigator.pushNamed(
+                                                          context,
+                                                          Routes.viewConference,
+                                                          arguments: items[index].id,
+                                                        );
+                                                      },
+                                                      child: ConferenceEndedWidget(
+                                                        value:
+                                                            context
+                                                                .read<ConferenceBloc>()
+                                                                .selectConferenceId ??
+                                                            0,
+                                                        index: index,
+                                                        allConference: items,
+                                                      ),
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                            ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
-                            ],
-                            child: BlocBuilder<ConferenceBloc, ConferenceState>(
-                              builder: (context, state) {
-                                final items = context
-                                    .read<ConferenceBloc>()
-                                    .allNotActiveConference;
-                                return ListView.separated(
-                                  physics: NeverScrollableScrollPhysics(),
-                                  shrinkWrap: true,
-                                  padding: EdgeInsets.only(bottom: 40),
-                                  itemCount: items.length,
-                                  separatorBuilder: (_, __) => const SizedBox(height: 10),
-                                  itemBuilder: (context, index) {
-                                    return InkWell(
-                                      onTap: () {
-                                        Navigator.pushNamed(
-                                          context,
-                                          Routes.viewConference,
-                                          arguments: items[index].id,
-                                        );
-                                      },
-                                      child: ConferenceEndedWidget(
-                                        value: context.read<ConferenceBloc>().selectConferenceId ?? 0,
-                                        index: index,
-                                        allConference: items,
-                                      ),
-                                    );
-                                  },
-                                );
-                              },
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ],

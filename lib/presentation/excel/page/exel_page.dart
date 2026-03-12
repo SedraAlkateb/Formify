@@ -4,8 +4,8 @@ import 'package:formify/presentation/excel/bloc/excel_st_bloc.dart';
 import 'package:formify/presentation/excel/widget/export_exel.dart';
 
 class ExelConferencePage extends StatefulWidget {
-  const ExelConferencePage({super.key});
-
+  const ExelConferencePage({super.key,required this.filename});
+  final String filename;
   @override
   State<ExelConferencePage> createState() => _ExelConferencePageState();
 }
@@ -33,7 +33,7 @@ class _ExelConferencePageState extends State<ExelConferencePage> {
     return Scaffold(
       backgroundColor: colors.background,
       appBar: AppBar(
-        title: const Text('عرض بيانات المستخدمين'),
+        title:  Text(widget. filename),
         backgroundColor: colors.primary,
         actions: [
           IconButton(
@@ -43,7 +43,7 @@ class _ExelConferencePageState extends State<ExelConferencePage> {
                 final file = await exportUsersToExcel(
                   userAnswersList:BlocProvider.of<ExcelStBloc>(context).userAnswersList,
                   questionsMap: BlocProvider.of<ExcelStBloc>(context).questionsMap,
-                  fileName: 'conference_users',
+                  filename: widget. filename,
                 );
 
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -98,16 +98,20 @@ class _ExelConferencePageState extends State<ExelConferencePage> {
                 children: [
                   SizedBox(height: 40,),
                   DropdownButtonFormField<String>(
-                    value: selectedSearchField,
+                   value: selectedSearchField,
+                    isExpanded: true,
                     decoration: const InputDecoration(
                       labelText: 'فلترة حسب الحقل',
-                      border: OutlineInputBorder(),
                     ),
                     items: searchFields.entries.map((entry) {
+
                       return DropdownMenuItem<String>(
+
                         value: entry.key,
+
                         child: Text(
                           entry.value,
+                          maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                       );
@@ -127,11 +131,10 @@ class _ExelConferencePageState extends State<ExelConferencePage> {
                       });
                     },
                     decoration: InputDecoration(
+
                       labelText:
                       'بحث ضمن: ${searchFields[selectedSearchField]}',
-
                       prefixIcon: const Icon(Icons.search),
-                      border: const OutlineInputBorder(),
                     ),
                   ),
                   const SizedBox(height: 16),

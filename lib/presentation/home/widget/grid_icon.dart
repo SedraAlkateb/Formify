@@ -17,6 +17,10 @@ class CustomGridPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isTabletLandscape = Breakpoints.isTabletLandscape(context);
+    final isTabletPortrait = Breakpoints.isTabletPortrait(context);
+
+    final isMobileLandscape = Breakpoints.isMobileLandscape(context);
     return StaggeredGrid.count(
       crossAxisCount: 2,
       crossAxisSpacing: Breakpoints.isTabletPortrait(context)?50:15,
@@ -24,7 +28,8 @@ class CustomGridPage extends StatelessWidget {
       children: [
         StaggeredGridTile.count(
           crossAxisCellCount: 1,
-          mainAxisCellCount: 0.6,
+          mainAxisCellCount:
+          (isTabletLandscape||isMobileLandscape||isTabletPortrait)?0.6: 1,
           child: AnimatedGridItem(
             text: "عرض المؤتمرات",
             onTap: () {
@@ -38,7 +43,7 @@ class CustomGridPage extends StatelessWidget {
 
         StaggeredGridTile.count(
           crossAxisCellCount: 1,
-          mainAxisCellCount:  1.2, // أكبر من الباقي
+          mainAxisCellCount:(isTabletLandscape||isMobileLandscape||isTabletPortrait)?1.2:1.7, // أكبر من الباقي
           child: AnimatedGridItem(
             text: "انشاء استبيان ديناميكي",
             onTap: () {
@@ -51,7 +56,7 @@ class CustomGridPage extends StatelessWidget {
 
         StaggeredGridTile.count(
           crossAxisCellCount: 1,
-          mainAxisCellCount: 1.2,
+          mainAxisCellCount:(isTabletLandscape||isMobileLandscape||isTabletPortrait)?1.2:1.7,
           child: AnimatedGridItem(
 
             text: "انشاء مؤتمر ديناميكي",
@@ -64,7 +69,7 @@ class CustomGridPage extends StatelessWidget {
         ),
         StaggeredGridTile.count(
           crossAxisCellCount: 1,
-          mainAxisCellCount: 0.6,
+          mainAxisCellCount:(isTabletLandscape||isMobileLandscape||isTabletPortrait)?0.6: 1,
           child: AnimatedGridItem(
             text: "عرض الاستبيانات",
             onTap: () {

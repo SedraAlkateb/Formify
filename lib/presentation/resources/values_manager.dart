@@ -21,7 +21,7 @@ class AppPadding {
   static double get p10 => Constants.isTablet ? 18 : 10;
   static double get p12 => Constants.isTablet ? 20 : 12;
   static double get p14 => Constants.isTablet ? 22 : 14;
-  static double get p16 => Constants.isTablet ? 24 : 16;
+  static double get p16 => Constants.isTablet ? 26 : 16;
   static double get p18 => Constants.isTablet ? 26 : 18;
   static double get p20 => Constants.isTablet ? 28 : 20;
   static double get p28 => Constants.isTablet ? 36 : 28;
@@ -31,6 +31,7 @@ class AppPadding {
   static double get p70 => Constants.isTablet ? 78 : 70;
   static double get p100 => Constants.isTablet ? 108 : 100;
   static double get p120 => Constants.isTablet ? 128 : 120;
+
 }
 
 class AppSize {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:formify/app/constants.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/responsive/breakpoints.dart';
@@ -90,7 +91,12 @@ class _InsertUserPageState extends State<InsertUserPage>
                         ? screenHeight
                         : null,
                     width: double.infinity,
-                    margin: const EdgeInsets.only(top: 50,bottom: 50,right: 25,left: 25),
+
+                    margin:
+                    Constants.isTablet?
+                     EdgeInsets.all(
+                      50):
+                     EdgeInsets.only(top: 50,bottom: 50,right: 25,left: 25),
                     decoration: BoxDecoration(
                       border: Border.all(color: ColorManager.border),
                       color: ColorManager.white,
@@ -234,6 +240,7 @@ class _InsertUserPageState extends State<InsertUserPage>
                                     ),
                                   ),
                                 ),
+                                SizedBox(height: AppSize.s20,),
                               ],
                             ),
                           ],

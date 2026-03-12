@@ -6,106 +6,59 @@ import 'package:share_plus/share_plus.dart';
 Future<void> exportAndShareExcel({
   required List<Map<String, String>> userAnswersList,
   required Map<int, String> questionsMap,
+  required String filename
 }) async {
   final file = await exportUsersToExcel(
     userAnswersList: userAnswersList,
     questionsMap: questionsMap,
-    fileName: 'conference_users',
+    filename: filename,
   );
 
   await SharePlus.instance.share(
-    ShareParams(
-      files: [XFile(file.path)],
-      text: 'ملف نتائج الاستبيان',
-    ),
+    ShareParams(files: [XFile(file.path)], text: 'ملف نتائج الاستبيان'),
   );
 }
+
+// دالة لتصدير البيانات إلى ملف Excel
 Future<File> exportUsersToExcel({
   required List<Map<String, String>> userAnswersList,
   required Map<int, String> questionsMap,
-  String fileName = 'survey_results',
+  required String filename
 }) async {
-  final excel = Excel.createExcel();
-  final String sheetName = 'Results';
+  var excel = Excel.createExcel(); // إنشاء ملف Excel جديد
+  Sheet sheet = excel['Sheet1']; // اختر الورقة في الملف
 
-  /// احذف الشيت الافتراضي إذا أردت اسمًا مخصصًا فقط
-  if (excel.tables.containsKey('Sheet1')) {
-    excel.delete('Sheet1');
+  // إضافة رؤوس الأعمدة
+  sheet.appendRow([
+    TextCellValue('الاسم'),
+    TextCellValue('العنوان'),
+    ...questionsMap.values.map((e) => TextCellValue(e)),
+  ]);
+
+  for (var user in userAnswersList) {
+    sheet.appendRow([
+      TextCellValue(user['user'] ?? 'N/A'), // إضافة الاسم من بيانات المستخدم
+      TextCellValue(user['address'] ?? 'N/A'), // إضافة العنوان
+      ...questionsMap.entries.map((entry) {
+        return TextCellValue(user[entry.value.toString()] ?? ""); // إضافة الإجابات
+      }).toList(),
+    ]);
   }
 
-  final Sheet sheet = excel[sheetName];
+  // الحصول على البيانات المشفرة
+  final excelBytes = excel.encode();
 
-  /// ترتيب الأعمدة
-  final List<String> headers = [
-    '#',
-    'اسم المستخدم',
-    'العنوان',
-    ...questionsMap.values,
-  ];
+  if (excelBytes != null) {
+    // الحصول على المسار لمجلد التحميلات أو المستندات
+    Directory directory = Directory('/storage/emulated/0/Download');
+    // أو يمكنك استخدام getDocumentsDirectory() لوضعه في مجلد المستندات
+    final path = '${directory.path}/$filename.xlsx'; // المسار داخل مجلد التحميلات
 
-  /// صف الهيدر
-  for (int col = 0; col < headers.length; col++) {
-    final cell = sheet.cell(
-      CellIndex.indexByColumnRow(columnIndex: col, rowIndex: 0),
-    );
-
-    cell.value = TextCellValue(headers[col]);
-
-    cell.cellStyle = CellStyle(
-      bold: true,
-      horizontalAlign: HorizontalAlign.Center,
-      verticalAlign: VerticalAlign.Center,
-      backgroundColorHex: ExcelColor.blue,
-      fontColorHex: ExcelColor.white,
-      textWrapping: TextWrapping.WrapText,
-    );
+    var file = File(path);
+    await file.writeAsBytes(excelBytes); // الكتابة إلى الملف
+    print(file);
+    return file;
+  } else {
+    throw Exception('فشل في إنشاء الملف');
   }
-
-  /// البيانات
-  for (int row = 0; row < userAnswersList.length; row++) {
-    final user = userAnswersList[row];
-
-    final List<String> rowValues = [
-      '${row + 1}',
-      user['user'] ?? '',
-      user['address'] ?? '',
-      ...questionsMap.values.map((question) => user[question] ?? 'لا توجد إجابة'),
-    ];
-
-    for (int col = 0; col < rowValues.length; col++) {
-      final cell = sheet.cell(
-        CellIndex.indexByColumnRow(columnIndex: col, rowIndex: row + 1),
-      );
-
-      cell.value = TextCellValue(rowValues[col]);
-      cell.cellStyle = CellStyle(
-        horizontalAlign: HorizontalAlign.Center,
-        verticalAlign: VerticalAlign.Center,
-        textWrapping: TextWrapping.WrapText,
-      );
-    }
-  }
-
-  /// عرض الأعمدة
-  sheet.setColumnWidth(0, 8);   // #
-  sheet.setColumnWidth(1, 22);  // اسم المستخدم
-  sheet.setColumnWidth(2, 28);  // العنوان
-
-  for (int i = 3; i < headers.length; i++) {
-    sheet.setColumnWidth(i, 30);
-  }
-
-  /// حفظ الملف
-  final List<int>? bytes = excel.save();
-  if (bytes == null) {
-    throw Exception('فشل إنشاء ملف Excel');
-  }
-
-  final Directory dir = await getApplicationDocumentsDirectory();
-  final String safeName =
-      '${fileName}_${DateTime.now().millisecondsSinceEpoch}.xlsx';
-  final File file = File('${dir.path}/$safeName');
-
-  await file.writeAsBytes(bytes, flush: true);
-  return file;
 }

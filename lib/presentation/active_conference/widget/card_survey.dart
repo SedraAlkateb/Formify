@@ -246,7 +246,7 @@ class _SurveyFeedbackCardState extends State<SurveyFeedbackCard> {
                         widget.survey.color,
                       ),
                     );
-                    Navigator.pushNamed(context, Routes.exelConference);
+                    Navigator.pushNamed(context, Routes.exelConference, arguments: widget.survey.title,);
                     BlocProvider.of<ExcelStBloc>(
                       context,
                     ).add(UsersAnswersStatisticsEvent(widget.survey.id));

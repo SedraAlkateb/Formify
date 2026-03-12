@@ -18,7 +18,7 @@ Widget dataWidget(Color color, Widget colum){
       Padding(
       padding: const EdgeInsets.only(right: 5),
         child: Card(
-          margin: const EdgeInsets.symmetric(horizontal: 7,vertical: 10),
+          margin: const EdgeInsets.symmetric(horizontal: 0,vertical: 0),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),

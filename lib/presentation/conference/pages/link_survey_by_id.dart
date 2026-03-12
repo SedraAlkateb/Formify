@@ -81,7 +81,7 @@ class ConferenceSurveyById extends StatelessWidget {
                 slivers: [
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+                      padding:  EdgeInsets.fromLTRB(AppPadding.p16, AppPadding.p14, AppPadding.p16, AppPadding.p10),
                       child: HeaderCard(),
                     ),
                   ),
@@ -90,7 +90,7 @@ class ConferenceSurveyById extends StatelessWidget {
                     emptyFullScreen(context)
                   else
                     SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 90),
+                      padding:  EdgeInsets.fromLTRB(AppPadding.p16, 0, AppPadding.p16, AppPadding.p100),
                       sliver: SliverList.separated(
                         itemCount: surveys.length,
                         separatorBuilder: (_, __) => const SizedBox(height: 10),
