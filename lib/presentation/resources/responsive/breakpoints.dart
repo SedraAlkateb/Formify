@@ -38,11 +38,12 @@ class Breakpoints {
   // تاب أفقي (Landscape)
   static bool isTabletLandscape(BuildContext context) {
     final size = MediaQuery.of(context).size;
+
     final isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
-
+    print(size.width);
     // تاب أفقي: العرض بين 600 و 900
-    return isLandscape && size.width >= mobile && size.width < tablet;
+    return isLandscape && size.width >= mobile && size.height < tablet ;
   }
 
   // دالة تحقق مما إذا كان الجهاز موبايل أو تاب في الوضع الأفقي أو العمودي

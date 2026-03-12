@@ -4,8 +4,8 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:formify/domain/models/model_q.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/excel/bloc/excel_st_bloc.dart';
-import 'package:formify/presentation/excel/page/stat_widget.dart';
 import 'package:formify/presentation/excel/widget/chart_widget.dart';
+import 'package:formify/presentation/excel/widget/stat_widget.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/responsive/font_responseve.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
@@ -49,7 +49,6 @@ class SurveyDashboardPage extends StatelessWidget {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // ============ بلوك معلومات الاستبيان =============
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(16),
@@ -138,13 +137,73 @@ class SurveyDashboardPage extends StatelessWidget {
                       itemBuilder: (context, index) {
                         final q = surveyStatistics[index];
                         return
-                          q.question.groupType==1?
-                          StatWidget1(q: q):
-                              q.question.type==QuestionType.switchField?
-                          StatisticsCountBoxes(data:q.statistics ):
-                          q.question.groupType==2?
-                          StatWidget2(q: q):StatWidget3(q: q)
-                        ;
+                          q.question.type == QuestionType.generic?
+                          Container(
+                            padding: const EdgeInsets.symmetric(vertical: 30,horizontal: 20),
+
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(color: colors.outline.withOpacity(0.1)),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                Icons.generating_tokens_outlined,
+                                  color: ColorManager.splash1,
+                                ),
+                                SizedBox(width: 10),
+
+                                Flexible(
+                                  child: Text(
+                                    q.question.title,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      color: colors.onSurface,
+                                      fontSize: FontResponsive.font(
+                                        context,
+                                        mobile: 18,
+                                        tablet: 22,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ):
+                          StatWidget(
+                                q: q,
+                            widgetStat:
+
+                                q.question.groupType == 1?
+                                ListView.separated(
+                                  itemBuilder: (context, index) => Container(
+                                    padding: const EdgeInsets.all(18),
+                                    decoration: BoxDecoration(
+                                      color: ColorManager.background,
+                                      borderRadius: BorderRadius.circular(16),
+                                      // border: Border.all(
+                                      //   color: colors.outline.withOpacity(0.1),
+                                      // ),
+                                    ),
+                                    child: Text(q.userAnswers[index].content),
+                                  ),
+                                  separatorBuilder: (context, index) =>
+                                      SizedBox(height: 10),
+                                  shrinkWrap: true,
+                                  physics: NeverScrollableScrollPhysics(),
+                                  itemCount: q.userAnswers.length,
+                                )
+                                    : q.question.type == QuestionType.switchField
+                                    ?StatisticsCountBoxes(
+                                  data: q.statistics,
+                                ): q.question.type == QuestionType.slider
+                                    ?StatisticsCountBoxes(
+                                  data: q.statistics,
+                                ): q.question.groupType == 2?Statistics2ChartCard(
+                                  data: q.statistics,
+                                ):Statistics3ChartCard( data: q.statistics),
+                          );
                       },
                     ),
                   ],

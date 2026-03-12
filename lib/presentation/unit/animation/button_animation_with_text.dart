@@ -68,28 +68,31 @@ class _ButtonAnimationWithTextState extends State<_ButtonAnimationWithText> {
           );
         },
         // child ثابت لا يعاد بناؤه كل فريم (أهم نقطة للأداء)
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal:0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
 
-            Text(
-              widget.text,
-              style:  TextStyle(fontWeight: FontWeight.bold
-                  ,
-                fontSize: FontResponsive.font(
-                  context,
-                  mobile: 18,
-                  tablet: 24,
+              Text(
+                widget.text,
+                style:  TextStyle(fontWeight: FontWeight.bold
+                    ,
+                  fontSize: FontResponsive.font(
+                    context,
+                    mobile: 17,
+                    tablet: 20,
+
+                  ),
 
                 ),
-
               ),
-            ),
-             SizedBox(width: 6.sp),
-             Icon(Icons.arrow_forward_ios, size: 18.sp),
+               SizedBox(width: 6.sp),
+               Icon(Icons.arrow_forward_ios, size: 18.sp),
 
 
-          ],
+            ],
+          ),
         ),
       ),
     );

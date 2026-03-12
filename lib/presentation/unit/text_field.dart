@@ -27,7 +27,7 @@ class GlowTextField extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label),
+        Text(label,style: Theme.of(context).textTheme.titleMedium),
 
         Padding(
           padding: const EdgeInsets.only(bottom: 16, top: 10),

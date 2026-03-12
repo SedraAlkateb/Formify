@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:formify/app/app_preferences.dart';
 import 'package:formify/app/constants.dart';
 import 'package:formify/app/di.dart';
 import 'package:formify/presentation/active_conference/bloc/active_conference_bloc.dart';
@@ -16,9 +17,20 @@ import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    final appPreferences = instance<AppPreferences>();
+    Constants.isLogin = appPreferences.routLogin();
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     Breakpoints.isMobileOrTablet(context);
@@ -46,13 +58,6 @@ class MyApp extends StatelessWidget {
                   debugShowCheckedModeBanner: false,
                   theme: getApplicationTheme(
                     dynamicScheme: lightDynamic,
-                    isLight: true,
-                    seedColor: state.seedColor,
-                  ),
-
-                  darkTheme: getApplicationTheme(
-                    dynamicScheme: darkDynamic,
-                    isLight: false,
                     seedColor: state.seedColor,
                   ),
                   themeMode: ThemeMode.system,

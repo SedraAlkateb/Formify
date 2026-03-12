@@ -9,7 +9,9 @@ final class ExelLoading extends ExcelStState {}
 final class ExelSuccess extends ExcelStState {
  final  List<Map<String, String>> exelModel;
  final Map<int, String>  rowExcel;
-  ExelSuccess(this.exelModel,this.rowExcel);
+ final Map<String, String> searchFields ;
+
+ ExelSuccess(this.exelModel,this.rowExcel,this.searchFields);
 }
 
 final class ExelError extends ExcelStState {

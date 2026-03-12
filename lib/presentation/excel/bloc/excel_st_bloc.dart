@@ -32,7 +32,16 @@ class ExcelStBloc extends Bloc<ExcelStEvent, ExcelStState> {
       },
       (data) {
         createExcel(data);
-        emit(ExelSuccess(userAnswersList,questionsMap));
+        final Map<String, String> searchFields = {
+          'all': 'كل الحقول',
+          'user': 'اسم المستخدم',
+          'address': 'العنوان',
+          ...{
+            for (final entry in questionsMap.entries) entry.value: entry.value,
+          },
+        };
+
+        emit(ExelSuccess(userAnswersList,questionsMap,searchFields));
       },
     );
   }
@@ -55,50 +64,6 @@ class ExcelStBloc extends Bloc<ExcelStEvent, ExcelStState> {
     );
   }
   void createExcel(ExelModel excel) {
-    // بيانات الأسئلة
-    // List<Map<String, dynamic>> surveyQuestions = [
-    //   {"id": 24, "question": "ناتل ااخنا نانا ؟", "type": "text"},
-    //   {"id": 25, "question": "غلاع", "type": "email"},
-    //   {"id": 26, "question": " ةعغةفىىغهىفىهف ؟", "type": "dropdown"},
-    //   // يمكن إضافة المزيد من الأسئلة هنا
-    // ];
-    //
-    // // بيانات الإجابات (من أكثر من مستخدم)
-    // List<Map<String, dynamic>> userAnswers = [
-    //   {
-    //     "user-Information": {
-    //       "id": 7,
-    //       "fullname": "sedra",
-    //       "email": "sedraalkateb3@gmail.com",
-    //       "phone": "0965469235",
-    //       "address": "Damascus"
-    //     },
-    //     "user-answers": [
-    //       {"question-id": 24, "question": "ناتل ااخنا نانا ؟", "content": "ycycycy"},
-    //       {"question-id": 25, "question": "غلاع", "content": "sedraalkateb3@gmail.com"},
-    //       {"question-id": 26, "question": " ةعغةفىىغهىفىهف ؟", "content": "بغفب"},
-    //       // يمكن إضافة المزيد من الإجابات هنا
-    //     ]
-    //   },
-    //   {
-    //     "user-Information": {
-    //       "id": 8,
-    //       "fullname": "sedra",
-    //       "email": "g@gmail.com",
-    //       "phone": "096547552",
-    //       "address": "fffgyu"
-    //     },
-    //     "user-answers": [
-    //       {"question-id": 24, "question": "ناتل ااخنا نانا ؟", "content": "uftdt"},
-    //       {"question-id": 25, "question": "غلاع", "content": "gh@gmail.com"},
-    //       {"question-id": 26, "question": " ةعغةفىىغهىفىهف ؟", "content": "لعغل"},
-    //       // يمكن إضافة المزيد من الإجابات هنا
-    //     ]
-    //   },
-    //   // المزيد من المستخدمين يمكن إضافتهم هنا
-    // ];
-
-    // تحويل الأسئلة إلى Map لتسهيل الوصول إليها عبر الـ id
     questionsMap = {
       for (var question in excel.surveyQuestionModel) question.id: question.question
     };

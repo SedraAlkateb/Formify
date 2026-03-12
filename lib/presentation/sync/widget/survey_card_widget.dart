@@ -19,7 +19,7 @@ class SurveyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+      margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         border: Border.all(color: ColorManager.primary),
@@ -45,6 +45,7 @@ class SurveyCard extends StatelessWidget {
                   fontSize: 15)),
           const SizedBox(height: 30),
           buttonAnimationWithText(
+
             context,
             survey.isActive == true
                 ? null
