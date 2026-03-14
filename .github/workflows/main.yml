@@ -1,0 +1,12 @@
+ name: DoForma WorkFlow
+ on: 
+   push: 
+     branches:
+       - main
+   jops:
+     example-jop:
+       runs-on: ubontu-latest
+       steps:
+       -name: print a welcome message
+        run : ecoh "welcome to our first github action workflow"
+       
