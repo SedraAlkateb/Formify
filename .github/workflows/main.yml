@@ -5,7 +5,7 @@
        - main
  jobs:
    example-jop:
-     runs-on: ubontu-latest
+     runs-on: ubuntu-latest
      steps:
         - name: print a welcome message
           run : ecoh "welcome to our first github action workflow"
