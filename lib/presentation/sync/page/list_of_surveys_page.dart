@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:formify/app/constants.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
+import 'package:formify/presentation/resources/responsive/breakpoints.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
 import 'package:formify/presentation/sync/widget/header_section_widget.dart';
@@ -36,7 +38,6 @@ class _ListOfSurveysPageState extends State<ListOfSurveysPage> {
           child: Column(
             children: [
               HeaderSection(),
-
               Expanded(
                 child: BlocConsumer<SyncBloc, SyncState>(
                   listener: (context, state) {
@@ -44,12 +45,12 @@ class _ListOfSurveysPageState extends State<ListOfSurveysPage> {
                       Navigator.pushNamedAndRemoveUntil(
                         context,
                         Routes.finishedSurvey,
-                        (route) => false,
+                            (route) => false,
                       );
                     }
                   },
                   buildWhen: (previous, current) =>
-                      current is GetSurveyAsyncLoadingState ||
+                  current is GetSurveyAsyncLoadingState ||
                       current is GetSurveyAsyncErrorState ||
                       current is GetSurveyAsyncState ||
                       current is SurveySubmitSuccessState,
@@ -57,27 +58,52 @@ class _ListOfSurveysPageState extends State<ListOfSurveysPage> {
                     if (state is GetSurveyAsyncLoadingState) {
                       return loadingFullScreen(context);
                     }
-
                     if (state is GetSurveyAsyncErrorState) {
                       return errorFullScreen(context);
                     }
-
                     if (state is GetSurveyAsyncState ||
                         state is SurveySubmitSuccessState) {
                       List<IsActiveMainSurveyModel> surveys =
-                          (state is SurveySubmitSuccessState)
+                      (state is SurveySubmitSuccessState)
                           ? state.surveys
                           : (state as GetSurveyAsyncState).surveys;
 
-                      return ListView.builder(
-                        controller: _controller,
-                        padding: const EdgeInsets.symmetric(vertical: 20),
-                        itemCount: surveys.length,
-                        itemBuilder: (context, index) {
-                          return SurveyCard(
-                            survey: surveys[index],
-                            index: index,
-                          );
+                      // باستخدام LayoutBuilder لاكتشاف حجم الشاشة وتغيير طريقة العرض بناءً عليه
+                      return LayoutBuilder(
+
+                        builder: (context, constraints) {
+                          final isTabletLandscape =
+                          Breakpoints.isTabletLandscape(context);
+                          return
+                            Constants.isTablet?
+                            GridView.builder(
+                            controller: _controller,
+                            padding: const EdgeInsets.symmetric(vertical: 20),
+                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2, // عدد الأعمدة
+                              crossAxisSpacing: 0, // المسافة بين الأعمدة
+                              mainAxisSpacing: 0, // المسافة بين الصفوف
+                              childAspectRatio:isTabletLandscape?1.5: 1, // نسبة العرض إلى الارتفاع
+                            ),
+                            itemCount: surveys.length,
+                            itemBuilder: (context, index) {
+                              return SurveyCard(
+                                survey: surveys[index],
+                                index: index,
+                              );
+                            },
+                          ):
+                            ListView.builder(
+                              controller: _controller,
+                              padding: const EdgeInsets.symmetric(vertical: 20),
+                              itemCount: surveys.length,
+                              itemBuilder: (context, index) {
+                                return SurveyCard(
+                                  survey: surveys[index],
+                                  index: index,
+                                );
+                              },
+                            );
                         },
                       );
                     }
@@ -93,7 +119,6 @@ class _ListOfSurveysPageState extends State<ListOfSurveysPage> {
     );
   }
 }
-
 /*
 
 class ListOfSurveysPage extends StatelessWidget {

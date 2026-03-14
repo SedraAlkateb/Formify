@@ -216,25 +216,6 @@ class ViewCompletedSurvey extends StatelessWidget {
                                         initValue: answer[index],
                                       ),
                                     )
-                                  : (q.type == QuestionType.switchField)
-                                  ? FormBuilderSwitch(
-                                      name: "${q.id}02000",
-                                      enabled:
-                                          false, // الـ switch غير قابل للتغيير
-                                      initialValue:
-                                          false, // القيمة الأساسية هي false
-                                      inactiveThumbColor: ColorManager
-                                          .white, // اللون الأحمر عندما تكون false
-                                      inactiveTrackColor: ColorManager
-                                          .error, // اللون الأحمر للـ track (الخلفية) عندما تكون false
-                                      title: Text(
-                                        "",
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    )
                                   : Padding(
                                       padding: const EdgeInsets.only(right: 10),
                                       child: Row(

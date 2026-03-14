@@ -8,7 +8,6 @@ import 'values_manager.dart';
 
 ThemeData getApplicationTheme({
   Color? seedColor,
-  required bool isLight,
   ColorScheme? dynamicScheme,
 }) {
   // ===========================
@@ -20,18 +19,18 @@ ThemeData getApplicationTheme({
     // إذا عندي seedColor من الـ BLoC -> استخدمه وأتجاهل dynamicScheme
     colorScheme = ColorScheme.fromSeed(
       seedColor: seedColor,
-      brightness: isLight ? Brightness.light : Brightness.dark,
+      brightness:  Brightness.light ,
     );
   } else if (dynamicScheme != null) {
     // إذا ما في seedColor لكن في dynamicScheme -> استخدمه
     colorScheme = dynamicScheme.harmonized().copyWith(
-      brightness: isLight ? Brightness.light : Brightness.dark,
+      brightness:  Brightness.light ,
     );
   } else {
     // لا seedColor ولا dynamicScheme -> استخدم اللون الافتراضي
     colorScheme = ColorScheme.fromSeed(
       seedColor: ColorManager.primary,
-      brightness: isLight ? Brightness.light : Brightness.dark,
+      brightness: Brightness.light ,
     );
   }
 
@@ -58,6 +57,7 @@ ThemeData getApplicationTheme({
 
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
+
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
         padding:  EdgeInsets.symmetric(
@@ -65,7 +65,7 @@ ThemeData getApplicationTheme({
           vertical: AppPadding.p12,
         ),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppSize.s14),
+          borderRadius: BorderRadius.circular(14),
         ),
       ),
     ),
@@ -79,7 +79,7 @@ ThemeData getApplicationTheme({
       surfaceTintColor: Colors.transparent, // مهم لمنع dark overlay
 
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppSize.s18),
+        borderRadius: BorderRadius.circular(18),
       ),
 
       clipBehavior: Clip.antiAlias,
@@ -110,41 +110,33 @@ ThemeData getApplicationTheme({
 
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: isLight
-          ? ColorManager.fieldBackground
-          : ColorManager.darkFieldBackground,
-      contentPadding:  EdgeInsets.all(AppPadding.p12),
-      labelStyle: getMediumStyle(color: colorScheme.primary),
+      fillColor:  ColorManager.fieldBackground,
+      contentPadding:  EdgeInsets.all(AppPadding.p5F),
+      labelStyle: getMediumStyle(color: colorScheme.primary,fontSize: 20),
       hintStyle: getRegularStyle(
         fontSize: Constants.isTablet?20:16,
-        color: isLight ? ColorManager.textHint : ColorManager.darkTextSecondary,
+        color:  ColorManager.textHint ,
       ),
       enabledBorder: OutlineInputBorder(
         borderSide: BorderSide(
-          color: isLight ? ColorManager.border : ColorManager.darkBorder,
+          color: ColorManager.border ,
           width: 1.5,
         ),
-        borderRadius: BorderRadius.circular(AppSize.s12),
+        borderRadius: BorderRadius.circular(12),
       ),
       focusedBorder: OutlineInputBorder(
         borderSide: BorderSide(color: colorScheme.primary, width: 2),
-        borderRadius: BorderRadius.circular(AppSize.s12),
+        borderRadius: BorderRadius.circular(12),
       ),
       errorBorder: OutlineInputBorder(
         borderSide: BorderSide(color: ColorManager.error),
-        borderRadius: BorderRadius.circular(AppSize.s12),
+        borderRadius: BorderRadius.circular(12),
       ),
     ),
     dropdownMenuTheme: DropdownMenuThemeData(
-      textStyle: TextStyle(color: ColorManager.black),
+      textStyle: getMediumStyle(color: colorScheme.primary,fontSize: 20),
     ),
 
-    // dropdownButtonTheme: DropdownButtonThemeData(
-    //   textStyle: TextStyle(
-    //     color: isLight ? ColorManager.black : Colors.white,
-    //     fontSize: FontSize.s14,
-    //   ),
-    // ),
     textSelectionTheme: TextSelectionThemeData(
       cursorColor: colorScheme.primary,
     ),

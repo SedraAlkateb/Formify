@@ -229,6 +229,7 @@ class QuestionPreviewNetworkBuilder extends StatelessWidget {
 
       case QuestionType.switchField:
         return FormBuilderSwitch(
+          initialValue: false,
           name: _name,
           title: Text(question.title),
         );

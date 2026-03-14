@@ -403,7 +403,7 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
           enabled: false,
           activeColor:  ColorManager.success,
           inactiveThumbColor: ColorManager.success,
-          initialValue: true,
+          initialValue: initValue?[0].content=="1"?true:false,
           title: Text(
             "",
             style: TextStyle(

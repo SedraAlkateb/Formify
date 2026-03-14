@@ -125,7 +125,10 @@ class RouteGenerator {
       case Routes.viewUserSurvey:
         return _animatedRoute(ViewUserSurveyPage());
       case Routes.exelConference:
-        return _animatedRoute(ExelConferencePage());
+        final filename = settings.arguments as String;
+        return _animatedRoute(ExelConferencePage(
+          filename: filename,
+        ));
       case Routes.finishedSurvey:
         return _animatedRoute(FinishedInputSurveysPage());
       case Routes.updateSurvey:

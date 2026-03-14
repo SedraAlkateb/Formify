@@ -92,7 +92,6 @@ class SettingPage extends StatelessWidget {
                     instance<AppPreferences>().setIConference(
                       state.isActive == 0 ? false : true,
                     );
-                    instance<AppPreferences>().setLoggedIn(1);
                     Navigator.of(context).pushReplacementNamed(Routes.home);
                     instance<AppPreferences>().setLoggedIn(1);
                     Navigator.pushNamedAndRemoveUntil(
@@ -168,6 +167,7 @@ class SettingPage extends StatelessWidget {
                                   },
                                   child: AnimationContainerWidget(
                                     child: Container(
+
                                       width: double.infinity,
                                       padding: const EdgeInsets.all(20),
                                       margin: const EdgeInsets.symmetric(
@@ -184,7 +184,7 @@ class SettingPage extends StatelessWidget {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.center,
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                            MainAxisAlignment.spaceAround,
                                         children: [
                                           Card(
                                             margin: const EdgeInsets.only(
@@ -287,7 +287,7 @@ class SettingPage extends StatelessWidget {
                                         crossAxisAlignment:
                                         CrossAxisAlignment.center,
                                         mainAxisAlignment:
-                                        MainAxisAlignment.center,
+                                        MainAxisAlignment.spaceAround,
                                         children: [
                                           Card(
                                             margin: const EdgeInsets.only(
@@ -356,6 +356,7 @@ class SettingPage extends StatelessWidget {
                                 const SizedBox(height: 10),
                                 InkWell(
                                   onTap: () {
+                                    instance<AppPreferences>().setLoggedIn(1);
                                     Navigator.pushNamedAndRemoveUntil(
                                       context,
                                       Routes.home,
@@ -378,9 +379,9 @@ class SettingPage extends StatelessWidget {
                                       ),
                                       child: Row(
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.center,
+                                        CrossAxisAlignment.center,
                                         mainAxisAlignment:
-                                            MainAxisAlignment.center,
+                                        MainAxisAlignment.spaceAround,
                                         children: [
                                           Card(
                                             margin: const EdgeInsets.only(

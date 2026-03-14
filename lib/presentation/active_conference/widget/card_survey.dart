@@ -8,14 +8,17 @@ import 'package:formify/presentation/resources/theme_bloc/theme_bloc.dart';
 import 'package:formify/presentation/resources/values_manager.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 
-Widget surveyCardActiveConference(MainSurveyModel survey,int conferenceId) {
-  return _SurveyCardPressCard(survey: survey,conferenceId: conferenceId,);
+Widget surveyCardActiveConference(MainSurveyModel survey, int conferenceId) {
+  return _SurveyCardPressCard(survey: survey, conferenceId: conferenceId);
 }
 
 class _SurveyCardPressCard extends StatefulWidget {
   final MainSurveyModel survey;
-final int conferenceId;
-  const _SurveyCardPressCard({required this.survey,required this.conferenceId});
+  final int conferenceId;
+  const _SurveyCardPressCard({
+    required this.survey,
+    required this.conferenceId,
+  });
 
   @override
   State<_SurveyCardPressCard> createState() => _SurveyCardPressCardState();
@@ -117,7 +120,7 @@ class _SurveyCardPressCardState extends State<_SurveyCardPressCard> {
                   ],
                 ),
                 SizedBox(height: 40),
-                SurveyFeedbackCard(survey: survey,conferenceId: conferenceId,),
+                SurveyFeedbackCard(survey: survey, conferenceId: conferenceId),
               ],
             ),
           ),
@@ -175,9 +178,13 @@ class _PressIconBox extends StatelessWidget {
 }
 
 class SurveyFeedbackCard extends StatefulWidget {
-  const SurveyFeedbackCard({super.key, required this.survey,required this.conferenceId});
+  const SurveyFeedbackCard({
+    super.key,
+    required this.survey,
+    required this.conferenceId,
+  });
   final MainSurveyModel survey;
-  final int  conferenceId;
+  final int conferenceId;
   @override
   State<SurveyFeedbackCard> createState() => _SurveyFeedbackCardState();
 }
@@ -206,20 +213,18 @@ class _SurveyFeedbackCardState extends State<SurveyFeedbackCard> {
                     setState(() => hoveredActionIndex = value ? 0 : null);
                   },
                   onTap: () {
-
                     BlocProvider.of<ThemeBloc>(context).add(
                       ChangeThemeColorEvent(
                         Color(int.parse(widget.survey.color)),
                         widget.survey.color,
                       ),
                     );
-                    BlocProvider.of<ExcelStBloc>(
-                      context,
-                    ).add(SurveyStatisticsEvent(
-
-                        widget.survey.id,widget.conferenceId
-
-                    ));
+                    BlocProvider.of<ExcelStBloc>(context).add(
+                      SurveyStatisticsEvent(
+                        widget.survey,
+                        widget.conferenceId,
+                      ),
+                    );
                     Navigator.pushNamed(context, Routes.dashboardSurvey);
                   },
                 ),
@@ -241,7 +246,7 @@ class _SurveyFeedbackCardState extends State<SurveyFeedbackCard> {
                         widget.survey.color,
                       ),
                     );
-                    Navigator.pushNamed(context, Routes.exelConference);
+                    Navigator.pushNamed(context, Routes.exelConference, arguments: widget.survey.title,);
                     BlocProvider.of<ExcelStBloc>(
                       context,
                     ).add(UsersAnswersStatisticsEvent(widget.survey.id));

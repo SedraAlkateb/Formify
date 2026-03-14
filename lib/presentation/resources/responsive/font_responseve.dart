@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:formify/app/constants.dart';
+import 'package:formify/presentation/resources/responsive/breakpoints.dart';
 
 class FontResponsive {
 
@@ -18,6 +19,8 @@ class FontResponsive {
         required double mobile,
         double? tablet,
       }) {
+    final isMobileLandscape = Breakpoints.isMobileLandscape(context);
+
     if (Constants.isTablet) {
       return tablet ?? mobile;
     }

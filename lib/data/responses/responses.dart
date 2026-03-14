@@ -807,11 +807,13 @@ class GetQuestionForStatResponse {
   @JsonKey(name: "question_order")
   int? question_order;
   @JsonKey(name: "is_required")
-  bool? is_required;
+  int? is_required;
   @JsonKey(name: "type")
   String? type;
   @JsonKey(name: "survey_id")
   int? survey_id;
+  @JsonKey(name: "Group-Type")
+  int? groupType;
 
   GetQuestionForStatResponse(
     this.id,
@@ -820,6 +822,7 @@ class GetQuestionForStatResponse {
     this.is_required,
     this.type,
     this.survey_id,
+      this.groupType
   ); // from json
   factory GetQuestionForStatResponse.fromJson(Map<String, dynamic> json) =>
       _$GetQuestionForStatResponseFromJson(json);
