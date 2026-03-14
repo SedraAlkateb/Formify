@@ -8,5 +8,5 @@
      runs-on: ubuntu-latest
      steps:
         - name: print a welcome message
-          run : ecoh "welcome to our first github action workflow"
+          run : echo  "welcome to our first github action workflow"
        
