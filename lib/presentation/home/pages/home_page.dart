@@ -135,6 +135,13 @@ class HomeMobilePage extends StatelessWidget {
                     listeners: [
                       BlocListener<SyncBloc, SyncState>(
                         listener: (context, state) {
+                          if(state is CheckoutState){
+                            Navigator.pushNamedAndRemoveUntil(
+                                context,
+                                Routes.loginPage,
+                                    (route) => false
+                            );
+                          }
                           if (state is DataLoadingState) {
                             loading(context);
                           }
@@ -330,6 +337,13 @@ class HomeTabletPage extends StatelessWidget {
                                         listeners: [
                                           BlocListener<SyncBloc, SyncState>(
                                             listener: (context, state) {
+                                              if(state is CheckoutState){
+                                                Navigator.pushNamedAndRemoveUntil(
+                                                    context,
+                                                    Routes.loginPage,
+                                                        (route) => false
+                                                );
+                                              }
                                               if (state is DataLoadingState) {
                                                 loading(context);
                                               }

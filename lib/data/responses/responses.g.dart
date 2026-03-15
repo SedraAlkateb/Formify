@@ -21,6 +21,18 @@ Message1Response _$Message1ResponseFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$Message1ResponseToJson(Message1Response instance) =>
     <String, dynamic>{'status': instance.status, 'message': instance.message};
 
+CheckoutResponse _$CheckoutResponseFromJson(Map<String, dynamic> json) =>
+    CheckoutResponse(json['success'] as bool)
+      ..status = json['status'] as String?
+      ..message = json['message'] as String?;
+
+Map<String, dynamic> _$CheckoutResponseToJson(CheckoutResponse instance) =>
+    <String, dynamic>{
+      'status': instance.status,
+      'message': instance.message,
+      'success': instance.success,
+    };
+
 MessageResponse _$MessageResponseFromJson(Map<String, dynamic> json) =>
     MessageResponse(json['message'] as String?)
       ..status = json['status'] as String?;
@@ -793,6 +805,7 @@ UserAnswerStatResponse _$UserAnswerStatResponseFromJson(
 ) => UserAnswerStatResponse(
   (json['user_answer_id'] as num?)?.toInt(),
   json['content'] as String?,
+  json['fullname'] as String?,
 );
 
 Map<String, dynamic> _$UserAnswerStatResponseToJson(
@@ -800,6 +813,7 @@ Map<String, dynamic> _$UserAnswerStatResponseToJson(
 ) => <String, dynamic>{
   'user_answer_id': instance.user_answer_id,
   'content': instance.content,
+  'fullname': instance.fullname,
 };
 
 StatisticStatResponse _$StatisticStatResponseFromJson(

@@ -637,9 +637,9 @@ class StarRatingChartWidget extends StatelessWidget {
     );
   }
 
-  String _buildStarsLabel(int count) {
-    return '★' * count;
-  }
+  // String _buildStarsLabel(int count) {
+  //   return '★' * count;
+  // }
 }
 double _getIntervalFromData(List<StatisticStatModel> data) {
   if (data.isEmpty) return 1;

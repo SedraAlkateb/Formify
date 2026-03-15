@@ -51,6 +51,7 @@ abstract class RemoteDataSource {
     int survey_id,
     int conference_id,
   );
+  Future< CheckoutResponse> checkPassword(String password);
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -217,4 +218,10 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   Future<QuestionsStatisticsBaseResponse> getStatisticsForQuestionTypes(int survey_id, int conference_id) async {
     return await _appServiceClient.getStatisticsForQuestionTypes(survey_id,conference_id);
   }
+
+  @override
+  Future<CheckoutResponse> checkPassword(String password)async {
+    return await _appServiceClient.checkPassword(password);
+  }
+
 }

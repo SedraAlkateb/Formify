@@ -5,7 +5,7 @@ import 'package:formify/presentation/onboarding/widget/onboarding_widget.dart';
 import 'package:formify/presentation/resources/assets_manager.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
-import 'package:formify/presentation/unit/animated_button.dart';
+import 'package:formify/presentation/unit/animation/animated_button.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class OnBoardingPage extends StatelessWidget {

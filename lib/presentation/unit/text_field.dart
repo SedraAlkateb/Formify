@@ -73,7 +73,7 @@ class GlowTextField extends StatelessWidget {
 }
 
 class LoginTextField extends StatelessWidget {
-   LoginTextField({
+  const LoginTextField({
     super.key,
 
     required this.controller,
@@ -82,7 +82,7 @@ class LoginTextField extends StatelessWidget {
     required this.hint,
     this.keyboardType,
     this.validator,
-    this.isObscure,
+    this.isObscure =false,
   });
 
   final TextEditingController controller;
@@ -92,7 +92,7 @@ class LoginTextField extends StatelessWidget {
   final IconData icon;
   final TextInputType? keyboardType;
   final String? Function(String?)? validator;
-  bool? isObscure = false;
+  final bool? isObscure ;
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +123,7 @@ class LoginTextField extends StatelessWidget {
             child: TextFormField(
               controller: controller,
               keyboardType: keyboardType,
-              obscureText: isObscure??false,
+              obscureText: isObscure ??false,
               validator: validator,
               cursorColor: ColorManager.primary,
               textAlign: TextAlign.start,

@@ -11,6 +11,7 @@ import 'package:formify/data/repository/repositroy_sql.dart';
 import 'package:formify/domain/repostitory/repository.dart';
 import 'package:formify/domain/repostitory/repository_sql.dart';
 import 'package:formify/domain/usecase/add_async_data_sql_usecase.dart';
+import 'package:formify/domain/usecase/check_password_usecase.dart';
 import 'package:formify/domain/usecase/create_conference_usecase.dart';
 import 'package:formify/domain/usecase/create_survey_question_usecase.dart';
 import 'package:formify/domain/usecase/create_survey_usecase.dart';
@@ -85,14 +86,22 @@ Future<void> initOnBoardingModule() async {
     instance.registerFactory<OnboardingBloc>(() => OnboardingBloc(instance()));
   }
 }
+
 Future<void> initExcelModule() async {
   if (!GetIt.I.isRegistered<StatisticsForUsersAnswersUsecase>()) {
-    instance.registerFactory<StatisticsForUsersAnswersUsecase>(() => StatisticsForUsersAnswersUsecase(instance()));
-    instance.registerFactory<StatisticsSurveyUsecase>(() => StatisticsSurveyUsecase(instance()));
+    instance.registerFactory<StatisticsForUsersAnswersUsecase>(
+      () => StatisticsForUsersAnswersUsecase(instance()),
+    );
+    instance.registerFactory<StatisticsSurveyUsecase>(
+      () => StatisticsSurveyUsecase(instance()),
+    );
 
-    instance.registerFactory<ExcelStBloc>(() => ExcelStBloc(instance(),instance()));
+    instance.registerFactory<ExcelStBloc>(
+      () => ExcelStBloc(instance(), instance()),
+    );
   }
 }
+
 Future<void> initConferenceModule() async {
   if (!GetIt.I.isRegistered<ConferenceBloc>()) {
     instance.registerFactory<CreateConferenceUsecase>(
@@ -117,8 +126,10 @@ Future<void> initConferenceModule() async {
       () => GetAllSurveyAndActiveUsecase(instance()),
     );
     instance.registerFactory<UpdateConferenceUsecase>(
-          () => UpdateConferenceUsecase(instance()),
+      () => UpdateConferenceUsecase(instance()),
     );
+
+
     instance.registerFactory<ConferenceBloc>(
       () => ConferenceBloc(
         instance(),
@@ -128,7 +139,7 @@ Future<void> initConferenceModule() async {
         instance(),
         instance(),
         instance(),
-        instance()
+        instance(),
       ),
     );
   }
@@ -214,9 +225,11 @@ Future<void> initSyncModule() async {
     instance.registerFactory<SynchronizeUsersAnswersUsecase>(
       () => SynchronizeUsersAnswersUsecase(instance()),
     );
-    instance.registerFactory<DeleteDataSqlUsecase>(
-      () => DeleteDataSqlUsecase(instance()),
-    );
+    if (!GetIt.I.isRegistered<DeleteDataSqlUsecase>()) {
+      instance.registerFactory<DeleteDataSqlUsecase>(
+            () => DeleteDataSqlUsecase(instance()),
+      );
+    }
     instance.registerFactory<DeleteUserSqlUsecase>(
       () => DeleteUserSqlUsecase(instance()),
     );
@@ -235,8 +248,12 @@ Future<void> initSyncModule() async {
     instance.registerFactory<GetConferenceInfoSqlUsecase>(
       () => GetConferenceInfoSqlUsecase(instance()),
     );
+    instance.registerFactory<CheckPasswordUsecase>(
+          () => CheckPasswordUsecase(instance()),
+    );
     instance.registerFactory<SyncBloc>(
       () => SyncBloc(
+        instance(),
         instance(),
         instance(),
         instance(),

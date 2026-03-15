@@ -120,4 +120,9 @@ abstract class AppServiceClient {
       @Part(name: "conference_id") int conference_id,
 
       );
+
+  @POST("users-crud/check_password.php")
+  Future<CheckoutResponse> checkPassword(
+      @Part(name: "password") String password,
+      );
 }

@@ -83,7 +83,7 @@ class _ListOfSurveysPageState extends State<ListOfSurveysPage> {
                               crossAxisCount: 2, // عدد الأعمدة
                               crossAxisSpacing: 0, // المسافة بين الأعمدة
                               mainAxisSpacing: 0, // المسافة بين الصفوف
-                              childAspectRatio:isTabletLandscape?1.5: 1, // نسبة العرض إلى الارتفاع
+                              childAspectRatio:isTabletLandscape?1.4: 1, // نسبة العرض إلى الارتفاع
                             ),
                             itemCount: surveys.length,
                             itemBuilder: (context, index) {

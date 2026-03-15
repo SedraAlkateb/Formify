@@ -27,6 +27,7 @@ class SurveyCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           CardListUpDown(),

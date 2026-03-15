@@ -691,7 +691,8 @@ class ExelModel {
 class UserAnswerStatModel {
   int userAnswerId;
   String content;
-  UserAnswerStatModel(this.userAnswerId, this.content);
+  String fullName;
+  UserAnswerStatModel(this.userAnswerId, this.content,this.fullName);
 }
 
 class StatisticStatModel {

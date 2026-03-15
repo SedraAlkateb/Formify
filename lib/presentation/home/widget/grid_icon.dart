@@ -8,9 +8,7 @@ import 'package:formify/presentation/resources/assets_manager.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/responsive/breakpoints.dart';
 import 'package:formify/presentation/resources/responsive/font_responseve.dart';
-import 'package:formify/presentation/resources/responsive/sizer_responseve.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
-import 'package:formify/presentation/resources/values_manager.dart';
 
 class CustomGridPage extends StatelessWidget {
   const CustomGridPage({super.key});

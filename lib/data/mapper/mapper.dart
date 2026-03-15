@@ -113,8 +113,7 @@ extension GetQuestionModelUserMapper on GetQuestionAndAnswerForUserResponse? {
 extension GetAllAnswerUserModelMapper on List<GetAnswerUserResponse>? {
   List<AnswerUserSurveyModel> toDomain() {
     List<AnswerUserSurveyModel> allAnswer =
-        (this?.map((response) => response.toDomain()) ??
-                const Iterable.empty())
+        (this?.map((response) => response.toDomain()) ?? const Iterable.empty())
             .cast<AnswerUserSurveyModel>()
             .toList();
     return allAnswer;
@@ -134,7 +133,7 @@ extension GetAllQuestionForUserMapper
                   if ((response.answersUser != null) &&
                       (response.answersUser!.isNotEmpty)) {
                     answerUser[index] = response.answersUser.toDomain();
-                    correctAnswerUser[index]=response.answersUser.toDomain();
+                    correctAnswerUser[index] = response.answersUser.toDomain();
                   }
                   return response.toDomain(); // مهم ترجع القيمة
                 }) ??
@@ -420,6 +419,7 @@ extension GetAllUserModelMapper on GetAllUserBaseResponse {
     return allSurvey;
   }
 }
+
 ////////////////////////////Exel
 extension SurveyQuestionModelMapper on SurveyQuestionResponse? {
   SurveyQuestionModel toDomain() {
@@ -430,6 +430,7 @@ extension SurveyQuestionModelMapper on SurveyQuestionResponse? {
     );
   }
 }
+
 extension UserAnswerForStatModelMapper on UserAnswerForStatResponse? {
   UserAnswerForStatModel toDomain() {
     return UserAnswerForStatModel(
@@ -439,32 +440,38 @@ extension UserAnswerForStatModelMapper on UserAnswerForStatResponse? {
     );
   }
 }
+
 extension UserAndAnswersModelMapper on UserAndAnswersResponse {
   UserAndAnswersModel toDomain() {
     List<UserAnswerForStatModel> userAnswerForStatModel = (userAnswers.map(
-          (response) => response.toDomain(),
+      (response) => response.toDomain(),
     )).cast<UserAnswerForStatModel>().toList();
-    return UserAndAnswersModel(userInformation.toDomain(),
-        userAnswerForStatModel);
-  }}
+    return UserAndAnswersModel(
+      userInformation.toDomain(),
+      userAnswerForStatModel,
+    );
+  }
+}
 
-extension StatisticsForUsersAnswersModelMapper on StatisticsForUsersAnswersBaseResponse {
+extension StatisticsForUsersAnswersModelMapper
+    on StatisticsForUsersAnswersBaseResponse {
   ExelModel toDomain() {
-
     List<SurveyQuestionModel> surveyQuestionModel = (data.surveyQuestions.map(
-          (response) => response.toDomain(),
+      (response) => response.toDomain(),
     )).cast<SurveyQuestionModel>().toList();
     List<UserAndAnswersModel> userAndAnswersModel = (data.usersAnswers.map(
-          (response) => response.toDomain(),
+      (response) => response.toDomain(),
     )).cast<UserAndAnswersModel>().toList();
-    return ExelModel(surveyQuestionModel,
-        userAndAnswersModel);
-  }}
+    return ExelModel(surveyQuestionModel, userAndAnswersModel);
+  }
+}
+
 extension UserAnswerStatModelMapper on UserAnswerStatResponse? {
   UserAnswerStatModel toDomain() {
     return UserAnswerStatModel(
       this?.user_answer_id ?? Constants.zero,
       this?.content ?? Constants.empty,
+      this?.fullname ?? Constants.empty,
     );
   }
 }
@@ -475,10 +482,10 @@ extension GetQuestionForStatResponseMapper on GetQuestionForStatResponse? {
       this?.id ?? Constants.zero,
       this?.question_text ?? Constants.empty,
       this?.question_order ?? Constants.zero,
-      this?.is_required  ?? Constants.zero,
+      this?.is_required ?? Constants.zero,
       convertToQuestionType(this?.type ?? "TextField"),
       this?.survey_id ?? Constants.zero,
-      this?.groupType  ?? Constants.zero,
+      this?.groupType ?? Constants.zero,
     );
   }
 }
@@ -493,22 +500,27 @@ extension StatisticStatResponseMapper on StatisticStatResponse? {
     );
   }
 }
+
 extension QuestionsStatisticsModelMapper on QuestionsStatResponse {
   QuestionsStatisticsModel toDomain() {
-
     List<UserAnswerStatModel> userAnswers = (this.userAnswers.map(
-          (response) => response.toDomain(),
+      (response) => response.toDomain(),
     )).cast<UserAnswerStatModel>().toList();
     List<StatisticStatModel> statistics = (this.statistics.map(
-          (response) => response.toDomain(),
+      (response) => response.toDomain(),
     )).cast<StatisticStatModel>().toList();
-    return QuestionsStatisticsModel(question.toDomain(),userAnswers,
-        statistics);
-  }}
+    return QuestionsStatisticsModel(
+      question.toDomain(),
+      userAnswers,
+      statistics,
+    );
+  }
+}
+
 extension QuestionsStatisticsBaseMapper on QuestionsStatisticsBaseResponse {
   List<QuestionsStatisticsModel> toDomain() {
     List<QuestionsStatisticsModel> data = (this.data.map(
-          (response) => response.toDomain(),
+      (response) => response.toDomain(),
     )).cast<QuestionsStatisticsModel>().toList();
     return data;
   }

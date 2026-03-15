@@ -75,7 +75,7 @@ class ExcelStBloc extends Bloc<ExcelStEvent, ExcelStState> {
       userAnswerMap["address"]=user.userModel.address;
       for (var answer in user.userAnswerForStatModel) {
         String question = questionsMap[answer.questionId] ?? "سؤال غير موجود";
-        userAnswerMap[question] = answer.content ?? "لا توجد إجابة";
+        userAnswerMap[question] = answer.content;
       }
       userAnswersList.add(userAnswerMap);
     }

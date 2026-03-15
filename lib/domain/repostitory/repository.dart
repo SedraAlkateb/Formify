@@ -47,4 +47,6 @@ abstract class Repository {
   Future<Either<Failure, ExelModel>> statisticsForUsersAnswers(int surveyId);
   Future<Either<Failure, List<QuestionsStatisticsModel>>>
   getStatisticsForQuestionTypes(int surveyId,int conferenceId);
+  Future<Either<Failure, bool>> checkPassword(String password);
+
 }

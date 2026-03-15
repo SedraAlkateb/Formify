@@ -20,6 +20,18 @@ class Message1Response extends BaseResponse {
   // to json
   Map<String, dynamic> toJson() => _$Message1ResponseToJson(this);
 }
+@JsonSerializable()
+class CheckoutResponse extends BaseResponse {
+  @JsonKey(name: "success")
+  bool success;
+  CheckoutResponse(this.success);
+  // from json
+  factory CheckoutResponse.fromJson(Map<String, dynamic> json) =>
+      _$CheckoutResponseFromJson(json);
+
+  // to json
+  Map<String, dynamic> toJson() => _$CheckoutResponseToJson(this);
+}
 
 @JsonSerializable()
 class MessageResponse extends BaseResponse {
@@ -836,8 +848,10 @@ class UserAnswerStatResponse {
   int? user_answer_id;
   @JsonKey(name: "content")
   String? content;
+  @JsonKey(name: "fullname")
+  String? fullname;
 
-  UserAnswerStatResponse(this.user_answer_id, this.content); // from json
+  UserAnswerStatResponse(this.user_answer_id, this.content,this.fullname); // from json
   factory UserAnswerStatResponse.fromJson(Map<String, dynamic> json) =>
       _$UserAnswerStatResponseFromJson(json);
   // to json

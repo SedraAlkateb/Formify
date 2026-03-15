@@ -1,10 +1,13 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:formify/app/app_preferences.dart';
+import 'package:formify/app/di.dart';
 import 'package:formify/data/mapper/mapper.dart';
 import 'package:formify/data/network/failure.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/usecase/add_async_data_sql_usecase.dart';
+import 'package:formify/domain/usecase/check_password_usecase.dart';
 import 'package:formify/domain/usecase/delete_data_sql_usecase.dart';
 import 'package:formify/domain/usecase/delete_user_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_all_async_info_usecase.dart';
@@ -25,7 +28,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   final AddAsyncDataSqlUsecase addAsyncDataSqlUsecase;
   final GetUserAnswerSqlUsecase getUserAnswerSqlUsecase;
   final DeleteDataSqlUsecase deleteDataSqlUsecase;
-  final  DeleteUserSqlUsecase deleteUserSqlUsecase;
+  final DeleteUserSqlUsecase deleteUserSqlUsecase;
   final SynchronizeUsersAnswersUsecase synchronizeUsersAnswersUsecase;
   ///////////////////////////////////////////////////////////////////////////////
   final GetConferenceSqlUsecase getConferenceSqlUsecase;
@@ -33,6 +36,8 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   final GetQuestionAnswersUsecase getQuestionAnswersUsecase;
   final InsertUserAndAnswerUsecase insertUserAndAnswerUsecase;
   GetConferenceInfoSqlUsecase getConferenceInfoSqlUsecase;
+  CheckPasswordUsecase checkPasswordUsecase;
+
   List<IsActiveMainSurveyModel> surveys = [];
   UserSqlModel? userSqlModel;
   int? conferenceId;
@@ -48,7 +53,8 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     this.getQuestionAnswersUsecase,
     this.insertUserAndAnswerUsecase,
     this.getConferenceInfoSqlUsecase,
-      this.deleteUserSqlUsecase
+    this.checkPasswordUsecase,
+    this.deleteUserSqlUsecase,
   ) : super(const SyncInitial()) {
     // ===== Existing =====
     on<AsyncDataEvent>(_onAsyncData);
@@ -71,6 +77,8 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     on<SurveyPageChangedEvent>(_onSurveyPageChanged);
     on<SurveySaveAnswerEvent>(_onSurveySaveAnswer);
     on<SurveySubmitEvent>(_onSurveySubmit);
+    on<CheckEvent>(_onCheck);
+
   }
 
   Future<void> _onAsyncData(
@@ -89,7 +97,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   ) async {
     (await addAsyncDataSqlUsecase.execute(event.asyncModel)).fold(
       (failure) => emit(DataErrorState(failure: failure)),
-      (_) => emit( InsertSucState(event.asyncModel.conferenceModel.id)),
+      (_) => emit(InsertSucState(event.asyncModel.conferenceModel.id)),
     );
   }
 
@@ -102,22 +110,24 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
       (_) => emit(const DeleteDataState(0)),
     );
   }
+
   Future<void> _onDeleteUser(
-      DeleteUserEvent event,
-      Emitter<SyncState> emit,
-      ) async {
+    DeleteUserEvent event,
+    Emitter<SyncState> emit,
+  ) async {
     (await deleteUserSqlUsecase.execute()).fold(
-          (failure) => emit(DataErrorState(failure: failure)),
-          (_) => emit(const DeleteDataState(1)),
+      (failure) => emit(DataErrorState(failure: failure)),
+      (_) => emit(const DeleteDataState(1)),
     );
   }
+
   Future<void> _onGetData(GetDataEvent event, Emitter<SyncState> emit) async {
     emit(const DataLoadingState());
     (await getUserAnswerSqlUsecase.execute()).fold(
       (failure) => emit(DataErrorState(failure: failure)),
       (data) {
         conferenceId = event.conferenceId;
-        emit(GetDataState(data, event.conferenceId,event.isActive));
+        emit(GetDataState(data, event.conferenceId, event.isActive));
       },
     );
   }
@@ -125,13 +135,13 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   Future<void> _onUpload(UploadDataEvent event, Emitter<SyncState> emit) async {
     if (event.userRequest.isNotEmpty) {
       (await synchronizeUsersAnswersUsecase.execute(
-        AllUserModel(event.userRequest, event.conference_id,event.isActive),
+        AllUserModel(event.userRequest, event.conference_id, event.isActive),
       )).fold(
         (failure) => emit(DataErrorState(failure: failure)),
-        (_) => emit( UploadDataState(event.isActive)),
+        (_) => emit(UploadDataState(event.isActive)),
       );
     } else {
-      emit( UploadDataState(event.isActive));
+      emit(UploadDataState(event.isActive));
     }
   }
 
@@ -141,7 +151,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   ) async {
     (await getConferenceInfoSqlUsecase.execute()).fold(
       (failure) => emit(GetInfoConferenceErrorState(failure: failure)),
-      (data) => emit( GetInfoConferenceSuccessState(data)),
+      (data) => emit(GetInfoConferenceSuccessState(data)),
     );
   }
 
@@ -193,7 +203,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
             questions: questions,
             answers: <int, List<AnswerUserModel>>{},
             currentIndex: 0,
-            time: event.time
+            time: event.time,
           ),
         );
       },
@@ -225,40 +235,72 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   }
 
   List<AnswerUserModel> _mapToAnswers(QuestionModel q, dynamic rawValue) {
-    String correctIs="";
     if (rawValue == null) return [];
-
-    // String / num -> content
     if (rawValue is String || rawValue is num) {
       final answerId = q.answers.isNotEmpty ? q.answers[0].id : null;
-      return [AnswerUserModel(answerId, rawValue.toString(),q.answers[0].isCorrect)];
+      return [
+        AnswerUserModel(answerId, rawValue.toString(), q.answers[0].isCorrect),
+      ];
     }
 
     // AnswerModel (dropdown/radio)
     if (rawValue is AnswerModel) {
-      if(rawValue.isCorrect==0){
-        correctIs="الاجابة خاطئة";
-      }
-      return [AnswerUserModel(rawValue.id, rawValue.title,rawValue.isCorrect)];
+      return [AnswerUserModel(rawValue.id, rawValue.title, rawValue.isCorrect)];
     }
 
     // List<AnswerModel> (checkbox)
     if (rawValue is List<AnswerModel>) {
-
-      return rawValue.map((a) => AnswerUserModel(a.id, a.title,a.isCorrect)).toList();
+      return rawValue
+          .map((a) => AnswerUserModel(a.id, a.title, a.isCorrect))
+          .toList();
     }
 
     // DateTime / bool / double (optional support)
     if (rawValue is DateTime) {
       final answerId = q.answers.isNotEmpty ? q.answers[0].id : null;
-      return [AnswerUserModel(answerId, rawValue.toIso8601String(),q.answers[0].isCorrect)];
+      return [
+        AnswerUserModel(
+          answerId,
+          rawValue.toIso8601String(),
+          q.answers[0].isCorrect,
+        ),
+      ];
     }
     if (rawValue is bool) {
       final answerId = q.answers.isNotEmpty ? q.answers[0].id : null;
-      return [AnswerUserModel(answerId, rawValue ? "1" : "0",q.answers[0].isCorrect)];
+      return [
+        AnswerUserModel(answerId, rawValue ? "1" : "0", q.answers[0].isCorrect),
+      ];
     }
 
     return [];
+  }
+
+  Future<void> _onCheck(
+    CheckEvent event,
+    Emitter<SyncState> emit,
+  ) async {
+    (await checkPasswordUsecase.execute(event.password)).fold(
+          (failure) {},
+          (data) async {
+        if (data == false) {
+          (await deleteDataSqlUsecase.execute()).fold(
+                (failure) {
+            },
+                (data) async {
+              await instance<AppPreferences>().signOut();
+              emit(CheckoutState());
+            },
+          );
+
+
+        }
+        else{
+
+        }
+
+      },
+    );
   }
 
   Future<void> _onSurveySubmit(

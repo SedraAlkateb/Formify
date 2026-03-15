@@ -7,7 +7,7 @@ import 'package:formify/presentation/resources/responsive/breakpoints.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/resources/values_manager.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
-import 'package:formify/presentation/unit/animation-in_list.dart';
+import 'package:formify/presentation/unit/animation/animation-in_list.dart';
 import 'package:formify/presentation/unit/animation/buttom_animation.dart';
 import 'package:formify/presentation/unit/text_field.dart';
 
