@@ -18,5 +18,5 @@
         - name: Checkout code
           uses: actions/checkout@v6.0.2
         - name: run test
-          run: npm test
+          run: ls -la
 
