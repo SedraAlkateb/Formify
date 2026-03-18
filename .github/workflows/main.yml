@@ -4,14 +4,19 @@
    push: 
      branches:
        - main
+       - "release/**"
+     paths:
+       - "src/**"
+   pull_request:
+     branches:
+       - main
+       - "release/**"
  jobs:
-   example-jop:
+   test:
      runs-on: ubuntu-latest
      steps:
-        - name: print a welcome message
-          run : echo  "welcome to our first github action workflow"
-        - name: Checkout Reposotory
+        - name: Checkout code
           uses: actions/checkout@v6.0.2
-        - name: List reposotory files
-          run: ls -la
+        - name: run test
+          run: npm test
 
