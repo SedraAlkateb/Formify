@@ -1,2 +1,17 @@
-  on:
-  jobs:
+
+ name: DoForma WorkFlow
+ on: 
+   push: 
+     branches:
+       - main
+ jobs:
+   example-jop:
+     runs-on: ubuntu-latest
+     steps:
+        - name: print a welcome message
+          run : echo  "welcome to our first github action workflow"
+        - name: Checkout Reposotory
+          uses: actions/checkout@v6.0.2
+        - name: List reposotory files
+          run: ls -la
+
