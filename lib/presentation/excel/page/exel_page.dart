@@ -299,6 +299,40 @@ class _ExelConferencePageState extends State<ExelConferencePage> {
                                   ),
                                 ),
                               ),
+                              DataColumn(
+                                label: SizedBox(
+                                  width: normalCellWidth,
+                                  child: Text(
+                                    'الرقم',
+                                    maxLines: 1,
+                                    softWrap: true,
+                                    overflow: TextOverflow.visible,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: headerFontSize,
+                                      fontWeight: FontWeight.w600,
+                                      height: 1.3,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              DataColumn(
+                                label: SizedBox(
+                                  width: normalCellWidth,
+                                  child: Text(
+                                    'النوع',
+                                    maxLines: 3,
+                                    softWrap: true,
+                                    overflow: TextOverflow.visible,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: headerFontSize,
+                                      fontWeight: FontWeight.w600,
+                                      height: 1.3,
+                                    ),
+                                  ),
+                                ),
+                              ),
                               ...rowExcel.entries.map((entry) {
                                 return DataColumn(
                                   label: SizedBox(
@@ -322,11 +356,11 @@ class _ExelConferencePageState extends State<ExelConferencePage> {
                             rows: [
                               for (int i = 0; i < filteredUsers.length; i++)
                                 DataRow(
-                                  onHover: (isHovered) {
-                                    setState(() {
-                                      _hoveredRowIndex = isHovered ? i : null;
-                                    });
-                                  },
+                                  // onHover: (isHovered) {
+                                  //   setState(() {
+                                  //     _hoveredRowIndex = isHovered ? i : null;
+                                  //   });
+                                  // },
                                   color: WidgetStateProperty.resolveWith<Color?>(
                                         (states) {
                                       if (_hoveredRowIndex == i) {
@@ -365,6 +399,28 @@ class _ExelConferencePageState extends State<ExelConferencePage> {
                                         width: normalCellWidth,
                                         child: Text(
                                           filteredUsers[i]['address'] ?? '',
+                                          maxLines: 3,
+                                          softWrap: true,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ),
+                                    DataCell(
+                                      SizedBox(
+                                        width: normalCellWidth,
+                                        child: Text(
+                                          filteredUsers[i]['phone'] ?? '',
+                                          maxLines: 3,
+                                          softWrap: true,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ),
+                                    DataCell(
+                                      SizedBox(
+                                        width: normalCellWidth,
+                                        child: Text(
+                                          filteredUsers[i]['type'] ?? '',
                                           maxLines: 3,
                                           softWrap: true,
                                           overflow: TextOverflow.ellipsis,

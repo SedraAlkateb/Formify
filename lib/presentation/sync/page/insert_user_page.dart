@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/app/constants.dart';
 import 'package:formify/domain/models/models.dart';
+import 'package:formify/domain/models/user_type.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/responsive/breakpoints.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/resources/values_manager.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
-import 'package:formify/presentation/unit/animation-in_list.dart';
+import 'package:formify/presentation/unit/animation/animation-in_list.dart';
 import 'package:formify/presentation/unit/animation/buttom_animation.dart';
+import 'package:formify/presentation/unit/drop_down_field.dart';
 import 'package:formify/presentation/unit/text_field.dart';
 
 class InsertUserPage extends StatefulWidget {
@@ -27,7 +29,7 @@ class _InsertUserPageState extends State<InsertUserPage>
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
   late final AnimationController _controller;
-
+  UserType _selectedUserType = UserType.other;
   @override
   void initState() {
     super.initState();
@@ -51,6 +53,7 @@ class _InsertUserPageState extends State<InsertUserPage>
         email: emailController.text,
         phone: phoneController.text,
         address: addressController.text,
+        userType: userTypeFromId(_selectedUserType.id),
         answerModel: [], // تُملأ لاحقًا
       );
 
@@ -77,7 +80,6 @@ class _InsertUserPageState extends State<InsertUserPage>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-        
               LayoutBuilder(
                 builder: (_, c) {
                   final isTabletPortrait = Breakpoints.isTabletPortrait(
@@ -88,15 +90,18 @@ class _InsertUserPageState extends State<InsertUserPage>
                   );
                   return Container(
                     height: (isTabletPortrait || isMobilePortrait)
-                        ? screenHeight
+                        ? screenHeight * 1.1
                         : null,
                     width: double.infinity,
 
-                    margin:
-                    Constants.isTablet?
-                     EdgeInsets.all(
-                      50):
-                     EdgeInsets.only(top: 50,bottom: 50,right: 25,left: 25),
+                    margin: Constants.isTablet
+                        ? EdgeInsets.all(50)
+                        : EdgeInsets.only(
+                            top: 50,
+                            bottom: 50,
+                            right: 25,
+                            left: 25,
+                          ),
                     decoration: BoxDecoration(
                       border: Border.all(color: ColorManager.border),
                       color: ColorManager.white,
@@ -111,7 +116,11 @@ class _InsertUserPageState extends State<InsertUserPage>
                       borderRadius: BorderRadius.circular(25),
                     ),
                     child: Padding(
-                      padding:  EdgeInsets.only(right: AppPadding.p40,left: AppPadding.p40,top:AppPadding.p20 ),
+                      padding: EdgeInsets.only(
+                        right: AppPadding.p40,
+                        left: AppPadding.p40,
+                        top: AppPadding.p20,
+                      ),
                       child: Form(
                         key: _formKey,
                         child: Column(
@@ -175,24 +184,10 @@ class _InsertUserPageState extends State<InsertUserPage>
                                     hint: " ادخل اسمك الكامل ",
                                     label: 'الاسم الكامل',
                                     controller: fullNameController,
-                        
+
                                     icon: Icons.person_outline,
                                     validator: (v) =>
                                         v!.isEmpty ? 'الاسم مطلوب' : null,
-                                  ),
-                                ),
-                                buildAnimatedField(
-                                  controller: _controller,
-                                  index: 4,
-                                  child: GlowTextField(
-                                    controller: emailController,
-                                    hint: "example@gmail.com",
-                                    label: 'البريد الإلكتروني *',
-                                    icon: Icons.email_outlined,
-                                    keyboardType: TextInputType.emailAddress,
-                                    validator: (v) => v!.contains('@')
-                                        ? null
-                                        : 'إيميل غير صالح',
                                   ),
                                 ),
                                 buildAnimatedField(
@@ -210,17 +205,53 @@ class _InsertUserPageState extends State<InsertUserPage>
                                 ),
                                 buildAnimatedField(
                                   controller: _controller,
+                                  index: 4,
+                                  child: GlowTextField(
+                                    controller: emailController,
+                                    hint: "example@gmail.com",
+                                    label: 'البريد الإلكتروني *',
+                                    icon: Icons.email_outlined,
+                                    keyboardType: TextInputType.emailAddress,
+                                    validator: (v) => null,
+                                  ),
+                                ),
+
+                                buildAnimatedField(
+                                  controller: _controller,
                                   index: 6,
                                   child: GlowTextField(
                                     controller: addressController,
                                     label: 'العنوان',
                                     hint: "أدخل عنوانك الكامل",
                                     icon: Icons.location_on_outlined,
-                                    validator: (v) =>
-                                        v!.isEmpty ? 'العنوان مطلوب' : null,
+                                    validator: (v) => null,
                                   ),
                                 ),
-                                SizedBox(height: AppSize.s20,),
+
+                                buildAnimatedField(
+                                  controller: _controller,
+                                  index: 6,
+                                  child: DropDownField(
+                                    label: 'نوع الحضور',
+                                    hint: 'اختر نوع الحضور',
+                                    icon: Icons.category_outlined,
+                                    value: _selectedUserType,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _selectedUserType =
+                                            value ?? UserType.other;
+                                      });
+                                    },
+                                    validator: (value) {
+                                      if (value == null) {
+                                        return 'يرجى اختيار نوع الحضور';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+
+                                SizedBox(height: AppSize.s20),
                                 buildAnimatedField(
                                   controller: _controller,
                                   index: 7,
@@ -240,7 +271,7 @@ class _InsertUserPageState extends State<InsertUserPage>
                                     ),
                                   ),
                                 ),
-                                SizedBox(height: AppSize.s20,),
+                                SizedBox(height: AppSize.s20),
                               ],
                             ),
                           ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:formify/app/constants.dart';
 import 'package:formify/domain/models/models.dart';
+import 'package:formify/domain/models/user_type.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/responsive/font_responseve.dart';
 import 'package:formify/presentation/resources/values_manager.dart';
@@ -67,7 +68,7 @@ Widget userListItem(UserModel user, BuildContext context) {
 
                   SizedBox(height: AppSize.s4),
 
-                  /// Email
+                  user.email!=null?
                   Row(
                     children: [
                       Icon(
@@ -76,21 +77,20 @@ Widget userListItem(UserModel user, BuildContext context) {
                         color: Colors.grey.shade600,
                       ),
                       const SizedBox(width: 6),
+
                       Expanded(
                         child: Text(
-                          user.email,
+                          user.email??"",
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontSize: Constants.isTablet ? 17 : 13,
                             color: Colors.grey.shade700,
                           ),
                         ),
-                      ),
+                      )
                     ],
-                  ),
-
+                  ):SizedBox(),
                   const SizedBox(height: 2),
-
                   /// Phone
                   Row(
                     children: [
@@ -109,6 +109,24 @@ Widget userListItem(UserModel user, BuildContext context) {
                       ),
                     ],
                   ),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.push_pin_outlined,
+                        size: Constants.isTablet ? 18 : 14,
+                        color: Colors.grey.shade600,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        user.userType.nameAr,
+                        style: TextStyle(
+                          fontSize: Constants.isTablet ? 17 : 13,
+                          color: Colors.grey.shade700,
+                        ),
+                      ),
+                    ],
+                  ),
+
                 ],
               ),
             ),
@@ -196,8 +214,9 @@ Widget userWidget(UserModel user, BuildContext context) {
                     children: [
                       Icon(Icons.email_outlined, color: Colors.grey),
                       SizedBox(width: 8),
+                      user.email!=null?
                       Text(
-                        user.email, // Display user's email
+                        user.email??"", // Display user's email
                         style: TextStyle(
                           fontSize: FontResponsive.font(
                             context,
@@ -207,7 +226,7 @@ Widget userWidget(UserModel user, BuildContext context) {
 
                           color: Colors.black,
                         ),
-                      ),
+                      ):SizedBox(),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -229,12 +248,13 @@ Widget userWidget(UserModel user, BuildContext context) {
                     ],
                   ),
                   const SizedBox(height: 8),
+                  user.address!=null?
                   Row(
                     children: [
                       Icon(Icons.location_on_outlined, color: Colors.grey),
                       SizedBox(width: 8),
                       Text(
-                        user.address, // Display user's email
+                        user.address??"", // Display user's email
                         style: TextStyle(
                           fontSize: FontResponsive.font(
                             context,
@@ -245,6 +265,26 @@ Widget userWidget(UserModel user, BuildContext context) {
                           color: Colors.black,
                         ),
                       ),
+                    ],
+                  ):SizedBox(),
+                  const SizedBox(height: 4),
+                  // User's email
+                  Row(
+                    children: [
+                      Icon(Icons.push_pin_outlined, color: Colors.grey),
+                      SizedBox(width: 8),
+                      Text(
+                        user.userType.nameAr, // Display user's email
+                        style: TextStyle(
+                          fontSize: FontResponsive.font(
+                            context,
+                            mobile: 14,
+                            tablet: 18,
+                          ),
+
+                          color: Colors.black,
+                        ),
+                      )
                     ],
                   ),
                 ],

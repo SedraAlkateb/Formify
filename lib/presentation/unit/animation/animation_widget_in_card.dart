@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 
 class BouncingIconCard extends StatefulWidget {
-  const BouncingIconCard({super.key});
-
+  const BouncingIconCard({super.key,required this.animationWidget});
+  final Widget animationWidget;
   @override
   State<BouncingIconCard> createState() => _BouncingIconCardState();
 }
@@ -44,11 +44,7 @@ class _BouncingIconCardState extends State<BouncingIconCard>
         padding: const EdgeInsets.all(10),
         child: AnimatedBuilder(
           animation: _controller,
-          child: const Icon(
-            Icons.event_note_outlined,
-            color: Color(0xffffffff),
-            size: 30,
-          ),
+          child:  widget.animationWidget,
           builder: (context, child) {
             return Transform.rotate(
               alignment: Alignment.topCenter, // كأنه معلّق من فوق

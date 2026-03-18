@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/app/app_preferences.dart';
+import 'package:formify/app/constants.dart';
 import 'package:formify/app/di.dart';
 import 'package:formify/presentation/onboarding/bloc/onboarding_bloc.dart';
 import 'package:formify/presentation/resources/assets_manager.dart';
@@ -142,14 +143,20 @@ class LoginPage extends StatelessWidget {
                               } else if (state is LoginLoadingState) {
                                 loading(context);
                               } else if (state is LoginSuccessState) {
-                                success(context);
                                 instance<AppPreferences>().setPassword(
                                   passwordController.text,
                                 );
+                                Constants.password=passwordController.text;
                                 instance<AppPreferences>().setLoggedIn(1);
+                                BlocProvider.of<OnboardingBloc>(context).add(GoToHomeEvent());
+                              }
+                              if(state is GoToHomeState){
+                                success(context);
                                 Navigator.of(
                                   context,
                                 ).pushReplacementNamed(Routes.home);
+
+
                               }
                             },
                             child: bottomAnimation(

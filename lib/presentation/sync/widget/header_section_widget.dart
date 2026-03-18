@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
-import 'package:formify/presentation/sync/widget/bouncing_icon_card.dart';
+import 'package:formify/presentation/unit/animation/animation_widget_in_card.dart';
 
 class HeaderSection extends StatelessWidget {
   const HeaderSection();
@@ -24,7 +24,11 @@ class HeaderSection extends StatelessWidget {
       child: SafeArea(
         child: Row(
           children: [
-            BouncingIconCard(),
+            BouncingIconCard(animationWidget: Icon(
+              Icons.event_note_outlined,
+              color: Color(0xffffffff),
+              size: 30,
+            ),),
             const SizedBox(width: 10),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,

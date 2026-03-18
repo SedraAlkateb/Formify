@@ -596,7 +596,7 @@ class RepositoryImp implements Repository {
   }
 
   @override
-  Future<Either<Failure, List<QuestionsStatisticsModel>>>
+  Future<Either<Failure, StatisticsModel>>
   getStatisticsForQuestionTypes(int surveyId, int conferenceId) async {
     try {
       if (await _networkInfo.isConnected) {
@@ -617,6 +617,21 @@ class RepositoryImp implements Repository {
           // return Left(Failure(ApiInternalStatus.FAILURE,
           //     response.message ?? ResponseMassage.DEFAULT));
         }
+      } else {
+        return Left(DataSource.NO_INTERNET_CONNECTION.getFailure());
+      }
+    } catch (error) {
+      Failure failure = ErrorHandler.handle(error).failure;
+      return Left(failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> checkPassword(String password) async {
+    try {
+      if (await _networkInfo.isConnected) {
+        final response = await _remoteDataSource.checkPassword(password);
+        return Right(response.success);
       } else {
         return Left(DataSource.NO_INTERNET_CONNECTION.getFailure());
       }

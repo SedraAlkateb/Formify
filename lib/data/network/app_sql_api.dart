@@ -1,6 +1,7 @@
 import 'package:formify/data/network/sqlite_factory.dart';
 import 'package:formify/domain/models/model_q.dart';
 import 'package:formify/domain/models/models.dart';
+import 'package:formify/domain/models/user_type.dart';
 import 'package:sqflite/sqflite.dart';
 
 abstract class AppSqlApiAbs {
@@ -273,7 +274,8 @@ class AppSqlApi extends AppSqlApiAbs {
       users.fullname      AS fullname,
       users.email         AS email,
       users.phone         AS phone,
-      users.address       AS address,
+     users.id            AS user_id,
+    users.type_id            AS type_id,
       users_answers.answer_id AS answer_id,
       users_answers.content   AS content,
       users_answers.isCorrect   AS isCorrect
@@ -291,9 +293,10 @@ class AppSqlApi extends AppSqlApiAbs {
         userId,
         () => UserSqlModel(
           fullName: row['fullname'] as String,
-          email: row['email'] as String,
+          email: row['email'] as String?,
           phone: row['phone'] as String,
-          address: row['address'] as String,
+          address: row['address'] as String?,
+          userType:   userTypeFromId(row['type_id']as int ),
           answerModel: <AnswerUserModel>[],
         ),
       );

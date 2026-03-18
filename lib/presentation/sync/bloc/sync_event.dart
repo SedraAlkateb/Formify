@@ -113,3 +113,10 @@ final class SurveySaveAnswerEvent extends SyncEvent {
 final class SurveySubmitEvent extends SyncEvent {
   const SurveySubmitEvent();
 }
+class CheckEvent extends SyncEvent {
+  final String password;
+  CheckEvent(this.password);
+
+  @override
+  List<Object?> get props => [password];
+}

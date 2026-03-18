@@ -30,6 +30,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     final appPreferences = instance<AppPreferences>();
     Constants.isLogin = appPreferences.routLogin();
+    Constants.password=appPreferences.getPassword()??"";
     super.initState();
   }
 
@@ -40,8 +41,9 @@ class _MyAppState extends State<MyApp> {
       providers: [
         BlocProvider(create: (_) => instance<OnboardingBloc>()),
         BlocProvider(create: (_) => instance<ActiveConferenceBloc>()),
-        BlocProvider(create: (_) => instance<SyncBloc>()),
-        BlocProvider(create: (_) => instance<ConferenceBloc>()),
+        BlocProvider(create: (_) => instance<SyncBloc>()..add(CheckEvent(Constants.password))),
+        BlocProvider(create: (_) => instance<ConferenceBloc>(),),
+
         BlocProvider(create: (_) => instance<SurveyBloc>()),
         BlocProvider(create: (_) => instance<ThemeBloc>()),
         BlocProvider(create: (_) => instance<ExcelStBloc>()),

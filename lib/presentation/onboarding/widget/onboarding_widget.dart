@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:formify/presentation/resources/responsive/responsive_wrapper.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
-import 'package:formify/presentation/unit/text_animation.dart';
+import 'package:formify/presentation/unit/animation/text_animation.dart';
 import 'package:lottie/lottie.dart';
 
 class BuildPageLottie extends StatelessWidget {
@@ -52,8 +52,6 @@ class BuildPageLottie extends StatelessWidget {
                     left: Column(
                       children: [
                         const SizedBox(height: 40),
-
-                        // ✅ Arabic alignment (right)
                         Align(
                           alignment: Alignment.centerRight,
                           child: SmoothBottomText(

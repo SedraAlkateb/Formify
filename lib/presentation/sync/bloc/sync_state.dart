@@ -225,3 +225,7 @@ final class GetInfoConferenceErrorState extends SyncState {
   @override
   List<Object?> get props => [failure];
 }
+final class CheckoutState extends SyncState {
+  CheckoutState();
+  List<Object?> get props => [];
+}

@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:formify/data/network/failure.dart';
 import 'package:formify/domain/models/models.dart';
+import 'package:formify/domain/models/user_type.dart';
 import 'package:formify/domain/usecase/statistics_for_users_answers_usecase.dart';
 import 'package:formify/domain/usecase/statistics_survey_usecase.dart';
 import 'package:meta/meta.dart';
@@ -36,6 +37,8 @@ class ExcelStBloc extends Bloc<ExcelStEvent, ExcelStState> {
           'all': 'كل الحقول',
           'user': 'اسم المستخدم',
           'address': 'العنوان',
+          'phone':'رقم الموبايل',
+          'type':'النوع',
           ...{
             for (final entry in questionsMap.entries) entry.value: entry.value,
           },
@@ -59,7 +62,7 @@ class ExcelStBloc extends Bloc<ExcelStEvent, ExcelStState> {
         emit(SurveyStatisticsError(failure: failure));
       },
           (data) {
-        emit(SurveyStatisticsSuccess(data,event.survey));
+        emit(SurveyStatisticsSuccess(data.questions,data.counts,event.survey));
       },
     );
   }
@@ -72,10 +75,12 @@ class ExcelStBloc extends Bloc<ExcelStEvent, ExcelStState> {
     for (var user in excel.userAndAnswersModel) {
       Map<String, String> userAnswerMap = {};
       userAnswerMap["user"]=user.userModel.fullName;
-      userAnswerMap["address"]=user.userModel.address;
+      userAnswerMap["address"]=user.userModel.address??"";
+      userAnswerMap["phone"]=user.userModel.phone;
+      userAnswerMap["type"]=user.userModel.userType.nameAr;
       for (var answer in user.userAnswerForStatModel) {
         String question = questionsMap[answer.questionId] ?? "سؤال غير موجود";
-        userAnswerMap[question] = answer.content ?? "لا توجد إجابة";
+        userAnswerMap[question] = answer.content;
       }
       userAnswersList.add(userAnswerMap);
     }

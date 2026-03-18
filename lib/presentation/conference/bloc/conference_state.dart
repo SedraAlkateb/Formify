@@ -13,6 +13,7 @@ final class CreateConferenceState extends ConferenceState {
   CreateConferenceState(this.conferenceId);
   List<Object?> get props => [conferenceId];
 }
+
 final class CreateConferenceErrorState extends ConferenceState {
   final Failure failure;
   CreateConferenceErrorState({required this.failure});

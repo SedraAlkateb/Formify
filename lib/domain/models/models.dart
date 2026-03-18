@@ -1,4 +1,5 @@
 import 'package:formify/domain/models/model_q.dart';
+import 'package:formify/domain/models/user_type.dart';
 import 'package:image_picker/image_picker.dart';
 
 class SurveyModel {
@@ -277,15 +278,17 @@ class UseAnswerModel {
 
 class UserInputModel {
   String fullName;
-  String email;
+  String? email;
   String phone;
-  String address;
+  String? address;
+  UserType userType;
   int conferenceId;
   UserInputModel(
     this.fullName,
     this.email,
     this.phone,
     this.address,
+    this.userType,
     this.conferenceId,
   );
 }
@@ -293,9 +296,10 @@ class UserInputModel {
 class UserModel {
   int id; // المعرف
   String fullName; // الاسم الكامل
-  String email; // البريد الإلكتروني
+  String? email; // البريد الإلكتروني
   String phone; // رقم الهاتف
-  String address; // العنوان
+  String? address; // العنوان
+  UserType userType;
   // List<AnswerSqlModel> answersModel; // قائمة الإجابات المرتبطة بالمستخدم
 
   // مُنشئ لتخزين البيانات
@@ -305,6 +309,7 @@ class UserModel {
     this.email,
     this.phone,
     this.address,
+    this.userType,
     //   required this.answersModel,
   );
 
@@ -316,6 +321,7 @@ class UserModel {
       'email': email,
       'phone': phone,
       'address': address,
+      'type_id': userType.id,
       // 'answers': answersModel
       //     .map((answer) => answer.toJson())
       //     .toList(), // تحويل قائمة الإجابات
@@ -330,6 +336,7 @@ class UserModel {
       map['email'],
       map['phone'],
       map['address'],
+      userTypeFromId(map['type_id']),
       // answersModel: List<AnswerSqlModel>.from(
       //   map['answers'].map((answer) => AnswerSqlModel.fromMap(answer)),
       // ), // تحويل الإجابات المرتبطة
@@ -560,16 +567,18 @@ class SurveyConferenceAsyncModel {
 
 class UserSqlModel {
   String fullName; // الاسم الكامل
-  String email; // البريد الإلكتروني
+  String? email; // البريد الإلكتروني
   String phone; // رقم الهاتف
-  String address; // العنوان
+  String? address; // العنوان
+  UserType userType;
   List<AnswerUserModel> answerModel;
   // مُنشئ لتخزين البيانات
   UserSqlModel({
     required this.fullName,
-    required this.email,
+    this.email,
     required this.phone,
-    required this.address,
+    this.address,
+    required this.userType,
     required this.answerModel,
   });
   Map<String, dynamic> toJson() {
@@ -578,6 +587,7 @@ class UserSqlModel {
       'email': email,
       'phone': phone,
       'address': address,
+      'type_id': userType.id,
       'answers': answerModel.map((user) => user.toJson()).toList(),
     };
   }
@@ -588,6 +598,7 @@ class UserSqlModel {
       'email': email,
       'phone': phone,
       'address': address,
+      'type_id': userType.id,
     };
   }
 
@@ -598,7 +609,7 @@ class UserSqlModel {
       email: map['email'],
       phone: map['phone'],
       address: map['address'],
-      // تحويل الإجابات من الخريطة إلى قائمة من AnswerUserModel
+      userType: userTypeFromId(map['type_id']),
       answerModel: _mapAnswers(
         map['answer_id'],
         map['content'],
@@ -607,7 +618,6 @@ class UserSqlModel {
     );
   }
 
-  // دالة لتحويل الإجابات من الخريطة إلى قائمة من AnswerUserModel
   static List<AnswerUserModel> _mapAnswers(
     int answerId,
     String content,
@@ -691,7 +701,8 @@ class ExelModel {
 class UserAnswerStatModel {
   int userAnswerId;
   String content;
-  UserAnswerStatModel(this.userAnswerId, this.content);
+  String fullName;
+  UserAnswerStatModel(this.userAnswerId, this.content, this.fullName);
 }
 
 class StatisticStatModel {
@@ -703,12 +714,26 @@ class StatisticStatModel {
   StatisticStatModel(this.answerId, this.title, this.count, this.total);
 }
 
-class QuestionsStatisticsModel{
+class CountModel {
+  int typeId;
+  String typeName;
+  int count;
+
+  CountModel(this.typeId, this.typeName, this.count);
+}
+
+class QuestionsStatisticsModel {
   QuestionForStatModel question;
   List<UserAnswerStatModel> userAnswers;
   List<StatisticStatModel> statistics;
 
   QuestionsStatisticsModel(this.question, this.userAnswers, this.statistics);
+}
+class StatisticsModel{
+  List<QuestionsStatisticsModel> questions;
+  List<CountModel>counts;
+
+  StatisticsModel(this.questions, this.counts);
 }
 class QuestionForStatModel {
   int? id;
@@ -719,12 +744,12 @@ class QuestionForStatModel {
   int survey_id;
   int groupType;
   QuestionForStatModel(
-      this.id,
-      this.title,
-      this.order,
-      this.isRequired,
-      this.type,
-      this.survey_id,
-      this.groupType
-      );
+    this.id,
+    this.title,
+    this.order,
+    this.isRequired,
+    this.type,
+    this.survey_id,
+    this.groupType,
+  );
 }

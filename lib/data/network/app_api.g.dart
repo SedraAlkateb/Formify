@@ -351,19 +351,28 @@ class _AppServiceClient implements AppServiceClient {
   @override
   Future<CreateUserResponse> createUserWithConferenceId(
     String fullname,
-    String email,
+    String? email,
     String phone,
-    String address,
+    String? address,
+    int? type_id,
     int conference_id,
   ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     final _data = FormData();
     _data.fields.add(MapEntry('fullname', fullname));
-    _data.fields.add(MapEntry('email', email));
+    if (email != null) {
+      _data.fields.add(MapEntry('email', email));
+    }
     _data.fields.add(MapEntry('phone', phone));
-    _data.fields.add(MapEntry('address', address));
+    if (address != null) {
+      _data.fields.add(MapEntry('address', address));
+    }
+    if (type_id != null) {
+      _data.fields.add(MapEntry('type_id', type_id.toString()));
+    }
     _data.fields.add(MapEntry('conference_id', conference_id.toString()));
     final _options = _setStreamType<CreateUserResponse>(
       Options(method: 'POST', headers: _headers, extra: _extra)
@@ -710,6 +719,34 @@ class _AppServiceClient implements AppServiceClient {
     late QuestionsStatisticsBaseResponse _value;
     try {
       _value = QuestionsStatisticsBaseResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options, response: _result);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<CheckoutResponse> checkPassword(String password) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = FormData();
+    _data.fields.add(MapEntry('password', password));
+    final _options = _setStreamType<CheckoutResponse>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            'users-crud/check_password.php',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late CheckoutResponse _value;
+    try {
+      _value = CheckoutResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
