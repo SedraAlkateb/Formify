@@ -58,9 +58,11 @@ abstract class AppServiceClient {
   @POST("users-crud/create_user_with_conferenceId.php")
   Future<CreateUserResponse> createUserWithConferenceId(
     @Part(name: "fullname") String fullname,
-    @Part(name: "email") String email,
+    @Part(name: "email") String? email,
     @Part(name: "phone") String phone,
-    @Part(name: "address") String address,
+    @Part(name: "address") String? address,
+    @Part(name: "type_id") int? type_id,
+
     @Part(name: "conference_id") int conference_id,
   );
   @POST("users-crud/add_users_answers.php")
@@ -112,17 +114,16 @@ abstract class AppServiceClient {
   );
   @POST("Statistics/statistics_for_usersAnswers.php")
   Future<StatisticsForUsersAnswersBaseResponse> statisticsForUsersAnswers(
-      @Part(name: "survey_id") int survey_id,
-      );
+    @Part(name: "survey_id") int survey_id,
+  );
   @POST("Statistics/get_statistics_for_questionTypes.php")
   Future<QuestionsStatisticsBaseResponse> getStatisticsForQuestionTypes(
-      @Part(name: "survey_id") int survey_id,
-      @Part(name: "conference_id") int conference_id,
-
-      );
+    @Part(name: "survey_id") int survey_id,
+    @Part(name: "conference_id") int conference_id,
+  );
 
   @POST("users-crud/check_password.php")
   Future<CheckoutResponse> checkPassword(
-      @Part(name: "password") String password,
-      );
+    @Part(name: "password") String password,
+  );
 }

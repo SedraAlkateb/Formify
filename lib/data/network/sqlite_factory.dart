@@ -51,9 +51,10 @@ class DatabaseHelper {
       CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         fullname TEXT NOT NULL,
-        email TEXT NOT NULL,
+        email TEXT ,
         phone TEXT NOT NULL,
-        address TEXT NOT NULL
+        address TEXT ,
+        type_id INTEGER NOT NULL
       );
     ''');
 

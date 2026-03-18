@@ -31,6 +31,8 @@ Future<File> exportUsersToExcel({
   sheet.appendRow([
     TextCellValue('الاسم'),
     TextCellValue('العنوان'),
+    TextCellValue('الهاتف'),
+    TextCellValue('النوع'),
     ...questionsMap.values.map((e) => TextCellValue(e)),
   ]);
 
@@ -38,6 +40,8 @@ Future<File> exportUsersToExcel({
     sheet.appendRow([
       TextCellValue(user['user'] ?? 'N/A'), // إضافة الاسم من بيانات المستخدم
       TextCellValue(user['address'] ?? 'N/A'), // إضافة العنوان
+      TextCellValue(user['phone'] ?? 'N/A'), // إضافة الاسم من بيانات المستخدم
+      TextCellValue(user['type'] ?? 'N/A'), // إضافة العنوان
       ...questionsMap.entries.map((entry) {
         return TextCellValue(user[entry.value.toString()] ?? ""); // إضافة الإجابات
       }).toList(),

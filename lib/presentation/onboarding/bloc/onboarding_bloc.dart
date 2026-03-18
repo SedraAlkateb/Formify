@@ -26,9 +26,13 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
             emit(LoginErrorState(failure: failure));
           },
           (data) async {
+
             emit(LoginSuccessState());
           },
         );
+      }
+      else if(event is GoToHomeEvent){
+        emit(GoToHomeState());
       }
     });
   }

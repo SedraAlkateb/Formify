@@ -5,6 +5,7 @@ import 'package:formify/domain/models/model_q.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/excel/bloc/excel_st_bloc.dart';
 import 'package:formify/presentation/excel/widget/chart_widget.dart';
+import 'package:formify/presentation/excel/widget/count_widget.dart';
 import 'package:formify/presentation/excel/widget/stat_widget.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/responsive/font_responseve.dart';
@@ -45,6 +46,8 @@ class SurveyDashboardPage extends StatelessWidget {
               if (state is SurveyStatisticsSuccess) {
                 final List<QuestionsStatisticsModel> surveyStatistics =
                     state.surveyStatistics;
+                final  List<CountModel> count=state.count;
+
                 final MainSurveyModel surveyModel = state.surveyModel;
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -117,6 +120,8 @@ class SurveyDashboardPage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 15),
+                    UserTypeCountBoxes(data: count),
+                    const SizedBox(height: 15),
                     // ============ بلوك الأسئلة داخل Container أبيض =============
                     Text(
                       "الأسئلة",
@@ -136,74 +141,95 @@ class SurveyDashboardPage extends StatelessWidget {
                       separatorBuilder: (_, _) => const SizedBox(height: 20),
                       itemBuilder: (context, index) {
                         final q = surveyStatistics[index];
-                        return
-                          q.question.type == QuestionType.generic?
-                          Container(
-                            padding: const EdgeInsets.symmetric(vertical: 30,horizontal: 20),
-
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(color: colors.outline.withOpacity(0.1)),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                Icons.generating_tokens_outlined,
-                                  color: ColorManager.splash1,
+                        return q.question.type == QuestionType.generic
+                            ? Container(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 30, horizontal: 20),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                      color: colors.outline.withOpacity(0.1)),
                                 ),
-                                SizedBox(width: 10),
-
-                                Flexible(
-                                  child: Text(
-                                    q.question.title,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      color: colors.onSurface,
-                                      fontSize: FontResponsive.font(
-                                        context,
-                                        mobile: 18,
-                                        tablet: 22,
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.generating_tokens_outlined,
+                                      color: ColorManager.splash1,
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Flexible(
+                                      child: Text(
+                                        q.question.title,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          color: colors.onSurface,
+                                          fontSize: FontResponsive.font(
+                                            context,
+                                            mobile: 18,
+                                            tablet: 22,
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                  ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          ):
-                          StatWidget(
+                              )
+                            : StatWidget(
                                 q: q,
-                            widgetStat:
-
-                                q.question.groupType == 1?
-                                ListView.separated(
-                                  itemBuilder: (context, index) => Container(
-                                    padding: const EdgeInsets.all(18),
-                                    decoration: BoxDecoration(
-                                      color: ColorManager.background,
-                                      borderRadius: BorderRadius.circular(16),
-                                      // border: Border.all(
-                                      //   color: colors.outline.withOpacity(0.1),
-                                      // ),
-                                    ),
-                                    child: Text(q.userAnswers[index].content),
-                                  ),
-                                  separatorBuilder: (context, index) =>
-                                      SizedBox(height: 10),
-                                  shrinkWrap: true,
-                                  physics: NeverScrollableScrollPhysics(),
-                                  itemCount: q.userAnswers.length,
-                                )
+                                widgetStat: q.question.groupType == 1
+                                    ? ListView.separated(
+                                        itemBuilder: (context, index) =>
+                                            Tooltip(
+                                          padding: const EdgeInsets.all(8),
+                                          triggerMode: TooltipTriggerMode.tap,
+                                          message: q.userAnswers[index].fullName,
+                                          waitDuration:
+                                              const Duration(milliseconds: 300),
+                                          showDuration:
+                                              const Duration(seconds: 2),
+                                          decoration: BoxDecoration(
+                                            color: Colors.black87,
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                          textStyle: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 14,
+                                          ),
+                                          child: Container(
+                                            padding: const EdgeInsets.all(18),
+                                            decoration: BoxDecoration(
+                                              color: ColorManager.background,
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
+                                            ),
+                                            child: Text(
+                                                q.userAnswers[index].content),
+                                          ),
+                                        ),
+                                        separatorBuilder: (context, index) =>
+                                            const SizedBox(height: 10),
+                                        shrinkWrap: true,
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        itemCount: q.userAnswers.length,
+                                      )
                                     : q.question.type == QuestionType.switchField
-                                    ?StatisticsCountBoxes(
-                                  data: q.statistics,
-                                ): q.question.type == QuestionType.slider
-                                    ?StatisticsCountBoxes(
-                                  data: q.statistics,
-                                ): q.question.groupType == 2?Statistics2ChartCard(
-                                  data: q.statistics,
-                                ):Statistics3ChartCard( data: q.statistics),
-                          );
+                                        ? StatisticsCountBoxes(
+                                            data: q.statistics,
+                                          )
+                                        : q.question.type == QuestionType.slider
+                                            ? StatisticsCountBoxes(
+                                                data: q.statistics,
+                                              )
+                                            : q.question.groupType == 2
+                                                ? Statistics2ChartCard(
+                                                    data: q.statistics,
+                                                  )
+                                                : Statistics3ChartCard(
+                                                    data: q.statistics),
+                              );
                       },
                     ),
                   ],

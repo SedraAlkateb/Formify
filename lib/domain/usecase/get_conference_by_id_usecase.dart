@@ -16,4 +16,3 @@ class GetConferenceByIdUsecase extends Equatable {
 
 
 
-

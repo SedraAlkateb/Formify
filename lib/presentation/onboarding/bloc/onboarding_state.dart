@@ -22,3 +22,7 @@ class LoginSuccessState extends OnboardingState {
   @override
   List<Object?> get props => [];
 }
+final class GoToHomeState extends OnboardingState {
+  @override
+  List<Object?> get props => [];
+}

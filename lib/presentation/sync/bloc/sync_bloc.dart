@@ -78,7 +78,6 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     on<SurveySaveAnswerEvent>(_onSurveySaveAnswer);
     on<SurveySubmitEvent>(_onSurveySubmit);
     on<CheckEvent>(_onCheck);
-
   }
 
   Future<void> _onAsyncData(
@@ -276,31 +275,45 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     return [];
   }
 
-  Future<void> _onCheck(
-    CheckEvent event,
-    Emitter<SyncState> emit,
-  ) async {
-    (await checkPasswordUsecase.execute(event.password)).fold(
-          (failure) {},
-          (data) async {
-        if (data == false) {
-          (await deleteDataSqlUsecase.execute()).fold(
-                (failure) {
-            },
-                (data) async {
-              await instance<AppPreferences>().signOut();
-              emit(CheckoutState());
-            },
-          );
+  Future<void> _onCheck(CheckEvent event, Emitter<SyncState> emit) async {
+    final checkResult = await checkPasswordUsecase.execute(event.password);
 
+    bool hasCheckFailure = false;
+    bool isValid = false;
 
-        }
-        else{
-
-        }
-
+    checkResult.fold(
+      (failure) {
+        hasCheckFailure = true;
+      },
+      (data) {
+        isValid = data;
       },
     );
+
+    if (hasCheckFailure) {
+      return;
+    }
+    if (isValid) {
+      return;
+    } else {
+      final deleteResult = await deleteDataSqlUsecase.execute();
+
+      bool hasDeleteFailure = false;
+
+      deleteResult.fold((failure) {
+        hasDeleteFailure = true;
+      }, (_) {});
+
+      if (hasDeleteFailure) {
+        return;
+      }
+
+      await instance<AppPreferences>().signOut();
+
+      if (!emit.isDone) {
+        emit(CheckoutState());
+      }
+    }
   }
 
   Future<void> _onSurveySubmit(

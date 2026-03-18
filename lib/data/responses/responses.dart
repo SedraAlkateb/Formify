@@ -20,6 +20,7 @@ class Message1Response extends BaseResponse {
   // to json
   Map<String, dynamic> toJson() => _$Message1ResponseToJson(this);
 }
+
 @JsonSerializable()
 class CheckoutResponse extends BaseResponse {
   @JsonKey(name: "success")
@@ -620,7 +621,8 @@ class GetQuestionForAsyncResponse {
     this.is_required,
     this.type,
     this.survey_id,
-  ); // from json
+  );
+  // from json
   factory GetQuestionForAsyncResponse.fromJson(Map<String, dynamic> json) =>
       _$GetQuestionForAsyncResponseFromJson(json);
   // to json
@@ -671,7 +673,8 @@ class SurveyConferenceForAsyncResponse {
     this.survey_order,
     this.survey_id,
     this.conference_id,
-  ); // from json
+  );
+  // from json
   factory SurveyConferenceForAsyncResponse.fromJson(
     Map<String, dynamic> json,
   ) => _$SurveyConferenceForAsyncResponseFromJson(json);
@@ -693,6 +696,8 @@ class UserResponse {
   String? phone;
   @JsonKey(name: "address")
   String? address;
+  @JsonKey(name: "type_name")
+  String? type_name;
 
   UserResponse(
     this.id,
@@ -700,6 +705,7 @@ class UserResponse {
     this.email,
     this.phone,
     this.address,
+    this.type_name,
   ); // from json
   factory UserResponse.fromJson(Map<String, dynamic> json) =>
       _$UserResponseFromJson(json);
@@ -834,7 +840,7 @@ class GetQuestionForStatResponse {
     this.is_required,
     this.type,
     this.survey_id,
-      this.groupType
+    this.groupType,
   ); // from json
   factory GetQuestionForStatResponse.fromJson(Map<String, dynamic> json) =>
       _$GetQuestionForStatResponseFromJson(json);
@@ -851,7 +857,11 @@ class UserAnswerStatResponse {
   @JsonKey(name: "fullname")
   String? fullname;
 
-  UserAnswerStatResponse(this.user_answer_id, this.content,this.fullname); // from json
+  UserAnswerStatResponse(
+    this.user_answer_id,
+    this.content,
+    this.fullname,
+  ); // from json
   factory UserAnswerStatResponse.fromJson(Map<String, dynamic> json) =>
       _$UserAnswerStatResponseFromJson(json);
   // to json
@@ -895,14 +905,49 @@ class QuestionsStatResponse {
 }
 
 @JsonSerializable()
-class QuestionsStatisticsBaseResponse extends BaseResponse{
-  @JsonKey(name: "data")
-  List<QuestionsStatResponse> data;
+class CountStatResponse {
+  @JsonKey(name: "type_id")
+  int? type_id;
+  @JsonKey(name: "type_name")
+  String? type_name;
+  @JsonKey(name: "count")
+  int? count;
 
-  QuestionsStatisticsBaseResponse(this.data);
+  CountStatResponse(this.type_id, this.type_name, this.count);
 
-  factory QuestionsStatisticsBaseResponse.fromJson(Map<String, dynamic> json) =>
-      _$QuestionsStatisticsBaseResponseFromJson(json);
+  factory CountStatResponse.fromJson(Map<String, dynamic> json) =>
+      _$CountStatResponseFromJson(json);
   // to json
-  Map<String, dynamic> toJson() => _$QuestionsStatisticsBaseResponseToJson(this);
+  Map<String, dynamic> toJson() => _$CountStatResponseToJson(this);
 }
+
+@JsonSerializable()
+class QuestionsStatisticsResponse {
+  @JsonKey(name: "questions")
+  List<QuestionsStatResponse> questions;
+  @JsonKey(name: "counts")
+  List<CountStatResponse> counts;
+
+  QuestionsStatisticsResponse(this.questions,this.counts);
+
+  factory QuestionsStatisticsResponse.fromJson(Map<String, dynamic> json) =>
+      _$QuestionsStatisticsResponseFromJson(json);
+  // to json
+  Map<String, dynamic> toJson() =>
+      _$QuestionsStatisticsResponseToJson(this);
+}
+@JsonSerializable()
+class QuestionsStatisticsBaseResponse extends BaseResponse {
+  @JsonKey(name: "data")
+  QuestionsStatisticsResponse data;
+  QuestionsStatisticsBaseResponse(this.data);
+  // from json
+  factory QuestionsStatisticsBaseResponse.fromJson(
+      Map<String, dynamic> json,
+      ) => _$QuestionsStatisticsBaseResponseFromJson(json);
+
+  // to json
+  Map<String, dynamic> toJson() =>
+      _$QuestionsStatisticsBaseResponseToJson(this);
+}
+

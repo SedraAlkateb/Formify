@@ -2,6 +2,7 @@ import 'package:formify/app/constants.dart';
 import 'package:formify/data/responses/responses.dart';
 import 'package:formify/domain/models/model_q.dart';
 import 'package:formify/domain/models/models.dart';
+import 'package:formify/domain/models/user_type.dart';
 
 extension GetMainSurveyModelMapper on GetSurveyResponse? {
   MainSurveyModel toDomain() {
@@ -407,6 +408,7 @@ extension GetUserModelMapper on UserResponse? {
       this?.email ?? Constants.empty,
       this?.phone ?? Constants.empty,
       this?.address ?? Constants.empty,
+      userTypeFromString(this?.type_name ?? Constants.empty),
     );
   }
 }
@@ -517,11 +519,24 @@ extension QuestionsStatisticsModelMapper on QuestionsStatResponse {
   }
 }
 
-extension QuestionsStatisticsBaseMapper on QuestionsStatisticsBaseResponse {
-  List<QuestionsStatisticsModel> toDomain() {
-    List<QuestionsStatisticsModel> data = (this.data.map(
+extension QuestionsStatisticsMapper on QuestionsStatisticsBaseResponse {
+  StatisticsModel toDomain() {
+    List<QuestionsStatisticsModel> questions = (data.questions.map(
       (response) => response.toDomain(),
     )).cast<QuestionsStatisticsModel>().toList();
-    return data;
+    List<CountModel> counts = (data.counts.map(
+      (response) => response.toDomain(),
+    )).cast<CountModel>().toList();
+    return StatisticsModel(questions, counts);
+  }
+}
+
+extension CountResponseMapper on CountStatResponse? {
+  CountModel toDomain() {
+    return CountModel(
+      this?.type_id ?? Constants.zero,
+      this?.type_name ?? Constants.empty,
+      this?.count ?? Constants.zero,
+    );
   }
 }

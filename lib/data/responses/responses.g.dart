@@ -662,6 +662,7 @@ UserResponse _$UserResponseFromJson(Map<String, dynamic> json) => UserResponse(
   json['email'] as String?,
   json['phone'] as String?,
   json['address'] as String?,
+  json['type_name'] as String?,
 );
 
 Map<String, dynamic> _$UserResponseToJson(UserResponse instance) =>
@@ -671,6 +672,7 @@ Map<String, dynamic> _$UserResponseToJson(UserResponse instance) =>
       'email': instance.email,
       'phone': instance.phone,
       'address': instance.address,
+      'type_name': instance.type_name,
     };
 
 GetAllUserBaseResponse _$GetAllUserBaseResponseFromJson(
@@ -854,15 +856,45 @@ Map<String, dynamic> _$QuestionsStatResponseToJson(
   'statistics': instance.statistics,
 };
 
+CountStatResponse _$CountStatResponseFromJson(Map<String, dynamic> json) =>
+    CountStatResponse(
+      (json['type_id'] as num?)?.toInt(),
+      json['type_name'] as String?,
+      (json['count'] as num?)?.toInt(),
+    );
+
+Map<String, dynamic> _$CountStatResponseToJson(CountStatResponse instance) =>
+    <String, dynamic>{
+      'type_id': instance.type_id,
+      'type_name': instance.type_name,
+      'count': instance.count,
+    };
+
+QuestionsStatisticsResponse _$QuestionsStatisticsResponseFromJson(
+  Map<String, dynamic> json,
+) => QuestionsStatisticsResponse(
+  (json['questions'] as List<dynamic>)
+      .map((e) => QuestionsStatResponse.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  (json['counts'] as List<dynamic>)
+      .map((e) => CountStatResponse.fromJson(e as Map<String, dynamic>))
+      .toList(),
+);
+
+Map<String, dynamic> _$QuestionsStatisticsResponseToJson(
+  QuestionsStatisticsResponse instance,
+) => <String, dynamic>{
+  'questions': instance.questions,
+  'counts': instance.counts,
+};
+
 QuestionsStatisticsBaseResponse _$QuestionsStatisticsBaseResponseFromJson(
   Map<String, dynamic> json,
 ) =>
     QuestionsStatisticsBaseResponse(
-        (json['data'] as List<dynamic>)
-            .map(
-              (e) => QuestionsStatResponse.fromJson(e as Map<String, dynamic>),
-            )
-            .toList(),
+        QuestionsStatisticsResponse.fromJson(
+          json['data'] as Map<String, dynamic>,
+        ),
       )
       ..status = json['status'] as String?
       ..message = json['message'] as String?;

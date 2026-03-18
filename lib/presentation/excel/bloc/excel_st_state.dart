@@ -23,8 +23,10 @@ final class SurveyStatisticsLoading extends ExcelStState {}
 
 final class SurveyStatisticsSuccess extends ExcelStState {
   final  List<QuestionsStatisticsModel> surveyStatistics;
+  final  List<CountModel> count;
+
   final  MainSurveyModel surveyModel;
-  SurveyStatisticsSuccess(this.surveyStatistics,this.surveyModel);
+  SurveyStatisticsSuccess(this.surveyStatistics,this.count,this.surveyModel);
 }
 
 final class SurveyStatisticsError extends ExcelStState {
