@@ -726,8 +726,9 @@ class QuestionsStatisticsModel {
   QuestionForStatModel question;
   List<UserAnswerStatModel> userAnswers;
   List<StatisticStatModel> statistics;
-
+  String? desc;
   QuestionsStatisticsModel(this.question, this.userAnswers, this.statistics);
+  bool get hasTextAnswers => userAnswers.isNotEmpty;
 }
 class StatisticsModel{
   List<QuestionsStatisticsModel> questions;
@@ -743,6 +744,7 @@ class QuestionForStatModel {
   QuestionType type;
   int survey_id;
   int groupType;
+  String ?descAi;
   QuestionForStatModel(
     this.id,
     this.title,
@@ -751,5 +753,6 @@ class QuestionForStatModel {
     this.type,
     this.survey_id,
     this.groupType,
+      { this.descAi}
   );
 }

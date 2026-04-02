@@ -7,6 +7,7 @@ environment:
   sdk: ^3.9.2
 
 dependencies:
+  google_generative_ai: ^0.4.3
   flutter:
     sdk: flutter
 
@@ -67,6 +68,7 @@ dependencies:
   syncfusion_flutter_charts: ^32.2.8
   share_plus: ^12.0.1
   device_info_plus: ^12.3.0
+  flutter_dotenv: ^6.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -80,6 +82,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    - .env
     - assets/images/onboarding/json/
     - assets/images/onboarding/
     - assets/images/main/

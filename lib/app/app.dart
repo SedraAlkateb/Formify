@@ -4,6 +4,7 @@ import 'package:formify/app/app_preferences.dart';
 import 'package:formify/app/constants.dart';
 import 'package:formify/app/di.dart';
 import 'package:formify/presentation/active_conference/bloc/active_conference_bloc.dart';
+import 'package:formify/presentation/ai_desc/bloc/ai_bloc.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 import 'package:formify/presentation/excel/bloc/excel_st_bloc.dart';
 import 'package:formify/presentation/onboarding/bloc/onboarding_bloc.dart';
@@ -30,7 +31,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     final appPreferences = instance<AppPreferences>();
     Constants.isLogin = appPreferences.routLogin();
-    Constants.password=appPreferences.getPassword()??"";
+    Constants.password = appPreferences.getPassword() ?? "";
     super.initState();
   }
 
@@ -40,9 +41,14 @@ class _MyAppState extends State<MyApp> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => instance<OnboardingBloc>()),
+        BlocProvider(create: (_) => instance<AiBloc>()),
+
         BlocProvider(create: (_) => instance<ActiveConferenceBloc>()),
-        BlocProvider(create: (_) => instance<SyncBloc>()..add(CheckEvent(Constants.password))),
-        BlocProvider(create: (_) => instance<ConferenceBloc>(),),
+        BlocProvider(
+          create: (_) =>
+              instance<SyncBloc>()..add(CheckEvent(Constants.password)),
+        ),
+        BlocProvider(create: (_) => instance<ConferenceBloc>()),
 
         BlocProvider(create: (_) => instance<SurveyBloc>()),
         BlocProvider(create: (_) => instance<ThemeBloc>()),
@@ -55,6 +61,7 @@ class _MyAppState extends State<MyApp> {
               return MaterialApp(
                 builder: (context, child) {
                   Sizer.init(context);
+
                   return Breakpoints.isMobileLandscape(context)
                       ? Container(
                           color: ColorManager.white,

@@ -149,6 +149,7 @@ class RouteGenerator {
         initSurveyModule();
         return _animatedRoute(ViewAllSurveyPage());
       case Routes.dashboardSurvey:
+        initAiModule();
         return _animatedRoute(SurveyDashboardPage());
 
       default:

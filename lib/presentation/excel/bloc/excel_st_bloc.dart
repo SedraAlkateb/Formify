@@ -12,13 +12,18 @@ part 'excel_st_state.dart';
 
 class ExcelStBloc extends Bloc<ExcelStEvent, ExcelStState> {
   final StatisticsForUsersAnswersUsecase statisticsForUsersAnswersUsecase;
+
   StatisticsSurveyUsecase statisticsSurveyUsecase;
    Map<int, String> questionsMap={};
   List<Map<String, String>> userAnswersList=[];
   ExcelStBloc(this.statisticsForUsersAnswersUsecase,this.statisticsSurveyUsecase) : super(ExcelStInitial()) {
     on<UsersAnswersStatisticsEvent>(_onFetch);
+
     on<SurveyStatisticsEvent>(_surveyStatistics);
+
+
   }
+
   Future<void> _onFetch(
     UsersAnswersStatisticsEvent event,
     Emitter<ExcelStState> emit,

@@ -1,5 +1,8 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:formify/app/app_preferences.dart';
+import 'package:formify/app/secrets/app_secrets.dart';
+import 'package:formify/data/data_source/gemini_remote_data_source.dart';
 import 'package:formify/data/data_source/remote_data_source.dart';
 import 'package:formify/data/network/app_api.dart';
 import 'package:formify/data/network/app_sql_api.dart';
@@ -8,8 +11,10 @@ import 'package:formify/data/network/network_info.dart';
 import 'package:formify/data/network/sqlite_factory.dart';
 import 'package:formify/data/repository/repository.dart';
 import 'package:formify/data/repository/repositroy_sql.dart';
+import 'package:formify/data/repository/statistics_repository.dart';
 import 'package:formify/domain/repostitory/repository.dart';
 import 'package:formify/domain/repostitory/repository_sql.dart';
+import 'package:formify/domain/repostitory/statistics_repository.dart';
 import 'package:formify/domain/usecase/add_async_data_sql_usecase.dart';
 import 'package:formify/domain/usecase/check_password_usecase.dart';
 import 'package:formify/domain/usecase/create_conference_usecase.dart';
@@ -18,6 +23,7 @@ import 'package:formify/domain/usecase/create_survey_usecase.dart';
 import 'package:formify/domain/usecase/delete_conference_usecase.dart';
 import 'package:formify/domain/usecase/delete_data_sql_usecase.dart';
 import 'package:formify/domain/usecase/delete_user_sql_usecase.dart';
+import 'package:formify/domain/usecase/get_ai_usecase.dart';
 import 'package:formify/domain/usecase/get_all_async_info_usecase.dart';
 import 'package:formify/domain/usecase/get_all_conference_usecase.dart';
 import 'package:formify/domain/usecase/get_all_survey_and_active_usecase.dart';
@@ -40,6 +46,7 @@ import 'package:formify/domain/usecase/synchronize_users_answers_usecase.dart';
 import 'package:formify/domain/usecase/update_conference_usecase.dart';
 import 'package:formify/domain/usecase/update_survey_usecase.dart';
 import 'package:formify/presentation/active_conference/bloc/active_conference_bloc.dart';
+import 'package:formify/presentation/ai_desc/bloc/ai_bloc.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 import 'package:formify/presentation/excel/bloc/excel_st_bloc.dart';
 import 'package:formify/presentation/onboarding/bloc/onboarding_bloc.dart';
@@ -47,8 +54,8 @@ import 'package:formify/presentation/resources/theme_bloc/theme_bloc.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:google_generative_ai/google_generative_ai.dart'as prefix;
 import 'package:shared_preferences/shared_preferences.dart';
-
 GetIt instance = GetIt.instance;
 Future<void> initAppModule() async {
   final sharedPrefs = await SharedPreferences.getInstance();
@@ -79,7 +86,48 @@ Future<void> initAppModule() async {
   );
   instance.registerLazySingleton<ThemeBloc>(() => ThemeBloc());
 }
+// features/statistics/presentation/di/statistics_injector.dart
 
+Future<void> initAiModule()async {
+  if (!dotenv.isInitialized) {
+   await  dotenv.load(fileName: ".env");
+  }
+  if (!instance.isRegistered<prefix.GenerativeModel>()) {
+    final apiKey = AppSecrets.geminiApiKey;
+    instance.registerLazySingleton<prefix.GenerativeModel>(
+          () => prefix.GenerativeModel(model:'gemini-2.5-flash', apiKey: apiKey,
+
+          //  requestOptions: const prefix.RequestOptions(apiVersion: 'v1'),
+          ),
+    );
+  }
+
+  // 2. تسجيل الـ Remote Data Source الخاص بالإحصائيات
+  if (!instance.isRegistered<GeminiRemoteDataSource>()) {
+    instance.registerLazySingleton<GeminiRemoteDataSource>(
+          () => GeminiRemoteDataSourceImpl(instance()),
+    );
+  }
+
+  // 3. تسجيل الـ Repository والـ UseCase
+  if (!instance.isRegistered<RepositoryAi>()) {
+    instance.registerLazySingleton<RepositoryAi>(
+          () => RepositoryAiImp(instance(), instance()), // يأخذ الـ Remote والـ Local (SQL)
+    );
+    instance.registerLazySingleton<GetAiUsecase>(
+          () => GetAiUsecase(instance()), // يأخذ الـ Remote والـ Local (SQL)
+    );
+
+  }
+  if (!instance.isRegistered<AiBloc>()) {
+
+     instance.registerFactory<AiBloc>(
+            () => AiBloc(instance()));
+
+  }
+
+
+}
 Future<void> initOnBoardingModule() async {
   if (!GetIt.I.isRegistered<LoginUsecase>()) {
     instance.registerFactory<LoginUsecase>(() => LoginUsecase(instance()));
