@@ -48,6 +48,9 @@ class _ListOfSurveysPageState extends State<ListOfSurveysPage> {
                             (route) => false,
                       );
                     }
+                    if (state is InsertUserErrorState) {
+                     error(context, state.failure.massage, state.failure.code);
+                    }
                   },
                   buildWhen: (previous, current) =>
                   current is GetSurveyAsyncLoadingState ||

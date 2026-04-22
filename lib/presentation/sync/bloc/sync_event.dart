@@ -31,18 +31,21 @@ final class InputUserSqlEvent extends SyncEvent {
 final class DeleteDataEvent extends SyncEvent {
   const DeleteDataEvent();
 }
+
 final class DeleteUserEvent extends SyncEvent {
   const DeleteUserEvent();
 }
+
 final class UploadDataEvent extends SyncEvent {
   final List<UserSqlModel> userRequest;
   final int conference_id;
   final int isActive;
-  const UploadDataEvent(this.userRequest,this.conference_id,this.isActive);
+  const UploadDataEvent(this.userRequest, this.conference_id, this.isActive);
 
   @override
-  List<Object?> get props => [userRequest,conference_id,this.isActive];
+  List<Object?> get props => [userRequest, conference_id, isActive];
 }
+
 final class GetInfoConferenceEvent extends SyncEvent {
   @override
   List<Object?> get props => [];
@@ -51,10 +54,10 @@ final class GetInfoConferenceEvent extends SyncEvent {
 final class GetDataEvent extends SyncEvent {
   final int conferenceId;
   final int isActive;
-  const GetDataEvent(this.conferenceId,this.isActive);
+  const GetDataEvent(this.conferenceId, this.isActive);
 
   @override
-  List<Object?> get props => [conferenceId,isActive];
+  List<Object?> get props => [conferenceId, isActive];
 }
 
 final class GetConferenceAsyncEvent extends SyncEvent {
@@ -75,11 +78,11 @@ final class GetQuestionAnswersEvent extends SyncEvent {
   final int id;
   final String surveyName;
   final String surveyDescription;
-
   final int index;
-  final String ?time;
+  final String? time;
 
-  const GetQuestionAnswersEvent(this.id, this.surveyName,this.surveyDescription,this.index,this.time);
+  const GetQuestionAnswersEvent(
+      this.id, this.surveyName, this.surveyDescription, this.index, this.time);
 
   @override
   List<Object?> get props => [id, surveyName];
@@ -113,10 +116,44 @@ final class SurveySaveAnswerEvent extends SyncEvent {
 final class SurveySubmitEvent extends SyncEvent {
   const SurveySubmitEvent();
 }
+
 class CheckEvent extends SyncEvent {
   final String password;
   CheckEvent(this.password);
 
   @override
   List<Object?> get props => [password];
+}
+
+// ===== Doctor Management Events =====
+
+/// جلب قائمة الأطباء من قاعدة البيانات
+class DoctorEvent extends SyncEvent {
+  const DoctorEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
+/// البحث في قائمة الأطباء (Memory-based search)
+class SearchDoctorEvent extends DoctorEvent {
+  final String query;
+  const SearchDoctorEvent(this.query);
+
+  @override
+  List<Object?> get props => [query];
+}
+
+/// اختيار طبيب محدد من القائمة (لتخزين الـ ID)
+final class SelectDoctorEvent extends SyncEvent {
+  final DoctorsModel doctor;
+  const SelectDoctorEvent(this.doctor);
+
+  @override
+  List<Object?> get props => [doctor];
+}
+
+/// تصفير الاختيار عند التعديل اليدوي في حقل النص
+final class ClearDoctorSelectionEvent extends SyncEvent {
+  const ClearDoctorSelectionEvent();
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:formify/app/di.dart';
 import 'package:formify/domain/models/model_q.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/ai_desc/bloc/ai_bloc.dart';
@@ -24,8 +23,7 @@ class _SurveyDashboardPageState extends State<SurveyDashboardPage> {
   @override
   void initState() {
     BlocProvider.of<AiBloc>(context).aiAnswers.clear();
-    BlocProvider.of<AiBloc>(context).index=0;
-
+    BlocProvider.of<AiBloc>(context).index = 0;
 
     super.initState();
   }
@@ -292,9 +290,13 @@ class _SurveyDashboardPageState extends State<SurveyDashboardPage> {
                                                 InkWell(
                                                   onTap:
                                                       ((stateAi
-                                                              is GetAiDescLoading && index==indexBloc) ||
-                                                         ( stateAi
-                                                              is GetAiDescError && index==indexBloc) )
+                                                                  is GetAiDescLoading &&
+                                                              index ==
+                                                                  indexBloc) ||
+                                                          (stateAi
+                                                                  is GetAiDescError &&
+                                                              index ==
+                                                                  indexBloc))
                                                       ? null
                                                       : () {
                                                           context
@@ -333,32 +335,35 @@ class _SurveyDashboardPageState extends State<SurveyDashboardPage> {
                                                 (stateAi is GetAiDescError &&
                                                         indexBloc == index)
                                                     ? Row(
-                                                      children: [
-                                                        Text(
-                                                            "حدث خطأ: ${stateAi.failure.massage} retry",
-                                                            style: TextStyle(
-                                                              color: Colors.red,
+                                                        children: [
+                                                          Expanded(
+                                                            child: Text(
+                                                              "حدث خطأ: ${stateAi.failure.massage} retry",
+                                                              style: TextStyle(
+                                                                color:
+                                                                    Colors.red,
+                                                              ),
                                                             ),
                                                           ),
-                                                        InkWell(
-                                                            onTap:(){
-                                                              context
-                                                                  .read<AiBloc>()
-                                                                  .add(
+                                                          InkWell(
+                                                            onTap: () {
+                                                              context.read<AiBloc>().add(
                                                                 GetAiDesEvent(
                                                                   title:
-                                                                  surveyModel
-                                                                      .title,
+                                                                      surveyModel
+                                                                          .title,
                                                                   index: index,
                                                                   question: q,
                                                                 ),
                                                               );
-
-                                            },
-                                                            child: Icon(Icons.refresh,color:Colors.red ,)),
-
-                                                      ],
-                                                    )
+                                                            },
+                                                            child: Icon(
+                                                              Icons.refresh,
+                                                              color: Colors.red,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      )
                                                     : stateAi is GetAiDescLoading &&
                                                           stateAi.index == index
                                                     ? const CircularProgressIndicator()

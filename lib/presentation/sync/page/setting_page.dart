@@ -73,6 +73,9 @@ class SettingPage extends StatelessWidget {
                   if (state is DataLoadingState) {
                     loading(context);
                   }
+                  if (state is DataErrorState) {
+                    error(context,state.failure.massage,state.failure.code);
+                  }
                   //////////////////
                   if (state is GetDataState) {
                     BlocProvider.of<SyncBloc>(context).add(

@@ -8,6 +8,7 @@ import 'package:formify/presentation/resources/responsive/breakpoints.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/resources/values_manager.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
+import 'package:formify/presentation/sync/widget/autocomplete.dart';
 import 'package:formify/presentation/unit/animation/animation-in_list.dart';
 import 'package:formify/presentation/unit/animation/buttom_animation.dart';
 import 'package:formify/presentation/unit/drop_down_field.dart';
@@ -30,6 +31,8 @@ class _InsertUserPageState extends State<InsertUserPage>
   final TextEditingController addressController = TextEditingController();
   late final AnimationController _controller;
   UserType _selectedUserType = UserType.other;
+  final FocusNode _doctorFocusNode = FocusNode();
+  int? doctorId;
   @override
   void initState() {
     super.initState();
@@ -42,6 +45,7 @@ class _InsertUserPageState extends State<InsertUserPage>
 
   @override
   void dispose() {
+    _doctorFocusNode.dispose(); // تدمير الـ node عند الخروج
     _controller.dispose();
     super.dispose();
   }
@@ -53,8 +57,10 @@ class _InsertUserPageState extends State<InsertUserPage>
         email: emailController.text,
         phone: phoneController.text,
         address: addressController.text,
+        doctorId:BlocProvider.of<SyncBloc>(context).selectedDoctor?.id,
         userType: userTypeFromId(_selectedUserType.id),
         answerModel: [], // تُملأ لاحقًا
+
       );
 
       BlocProvider.of<SyncBloc>(context).add(InputUserSqlEvent(user));
@@ -114,6 +120,9 @@ class _InsertUserPageState extends State<InsertUserPage>
                       ],
                       //.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(25),
+                    ),
+                    constraints: BoxConstraints(
+                      minHeight: screenHeight * 0.8, // حد أدنى بدلاً من ارتفاع ثابت
                     ),
                     child: Padding(
                       padding: EdgeInsets.only(
@@ -177,19 +186,25 @@ class _InsertUserPageState extends State<InsertUserPage>
                               shrinkWrap: true,
                               physics: NeverScrollableScrollPhysics(),
                               children: [
-                                buildAnimatedField(
-                                  controller: _controller,
+                                DoctorAutocompleteField(
+                                  allDoctors: context.read<SyncBloc>().doctor,
+                                  controller: fullNameController,
+                                  focusNode: _doctorFocusNode, // تمريره هنا يحل المشكلة
                                   index: 3,
-                                  child: GlowTextField(
-                                    hint: " ادخل اسمك الكامل ",
-                                    label: 'الاسم الكامل',
-                                    controller: fullNameController,
+                                  animationController: _controller,
+                                  buildAnimatedField: buildAnimatedField,
+                                  onSelected: (doctor) {
+                                    context.read<SyncBloc>().add(SelectDoctorEvent(doctor));
+                                    fullNameController.text = doctor.name;
+                                    addressController.text = doctor.region;
 
-                                    icon: Icons.person_outline,
-                                    validator: (v) =>
-                                        v!.isEmpty ? 'الاسم مطلوب' : null,
-                                  ),
+                                    _doctorFocusNode.unfocus(); // إغلاق الكيبورد بعد الاختيار
+                                  },
                                 ),
+
+// نصيحة إضافية لحل الـ Overflow:
+// في الـ Container الأساسي، اجعلي الارتفاع هكذا:
+
                                 buildAnimatedField(
                                   controller: _controller,
                                   index: 5,
@@ -199,8 +214,19 @@ class _InsertUserPageState extends State<InsertUserPage>
                                     hint: "09xxxxxxxx",
                                     icon: Icons.phone_outlined,
                                     keyboardType: TextInputType.phone,
-                                    validator: (v) =>
-                                        v!.length < 8 ? 'رقم غير صحيح' : null,
+                                    validator: (v) {
+                                      // 1. إذا كان الحقل فارغاً تماماً أو يحتوي مسافات فقط
+                                      if (v == null || v.trim().isEmpty) {
+                                        return null; // مقبول لأنه ليس إجبارياً
+                                      }
+
+                                      // 2. إذا كتب المستخدم رقماً، نتحقق من الطول
+                                      if (v.trim().length < 8) {
+                                        return 'الرقم قصير جداً، يجب أن يكون 8 أرقام على الأقل';
+                                      }
+
+                                      return null; // مقبول إذا تجاوز الشرط
+                                    },
                                   ),
                                 ),
                                 buildAnimatedField(

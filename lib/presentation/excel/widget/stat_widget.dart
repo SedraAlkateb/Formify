@@ -34,7 +34,7 @@ class StatWidget extends StatelessWidget {
                     : q.question.type == QuestionType.slider
                     ? Icons.linear_scale
                     : q.question.groupType == 2
-                    ?  Icons.bar_chart_outlined
+                    ? Icons.bar_chart_outlined
                     : Icons.try_sms_star_outlined,
                 color: ColorManager.splash1,
               ),
@@ -84,8 +84,11 @@ class StatWidget extends StatelessWidget {
                   ),
                 ),
               ),
+
               Text(
-                q.statistics.length.toString(),
+                q.question.groupType == 1
+                    ? q.userAnswers.length.toString()
+                    : q.statistics.length.toString(),
                 style: TextStyle(
                   fontWeight: FontWeight.w400,
                   color: colors.onSurface,

@@ -52,8 +52,10 @@ final class GetActiveConferenceByIdLoadingState extends ActiveConferenceState {
 ///////////////////////////AllUserActiveConference////////////////////
 final class GetAllUserActiveConferenceState extends ActiveConferenceState {
   final List<UserModel> users;
-  GetAllUserActiveConferenceState(this.users);
-  List<Object?> get props => [users];
+  final List<UserModel> userFilter;
+ final String  newTitle ;
+  GetAllUserActiveConferenceState(this.users,this.newTitle,this.userFilter);
+  List<Object?> get props => [userFilter];
 }
 final class GetAllUserActiveEmptyConferenceState extends ActiveConferenceState {
 
@@ -106,6 +108,23 @@ final class GetCompletedSurveyErrorState extends ActiveConferenceState {
   List<Object?> get props =>[failure];
 }
 final class GetCompletedSurveyLoadingState extends ActiveConferenceState {
+  @override
+  List<Object?> get props => [];
+}
+
+///////////////////////////doctorsAsMap////////////////////
+final class GetDoctorsAsMapState extends ActiveConferenceState {
+  final Map<String, DoctorsModel> doctorsAsMap;
+  GetDoctorsAsMapState(this.doctorsAsMap);
+  List<Object?> get props => [doctorsAsMap];
+}
+final class GetDoctorsAsMapErrorState extends ActiveConferenceState {
+  final Failure failure;
+  GetDoctorsAsMapErrorState({required this.failure});
+  @override
+  List<Object?> get props =>[failure];
+}
+final class GetDoctorsAsMapLoadingState extends ActiveConferenceState {
   @override
   List<Object?> get props => [];
 }

@@ -572,6 +572,7 @@ class UserSqlModel {
   String? address; // العنوان
   UserType userType;
   List<AnswerUserModel> answerModel;
+  int? doctorId;
   // مُنشئ لتخزين البيانات
   UserSqlModel({
     required this.fullName,
@@ -580,6 +581,7 @@ class UserSqlModel {
     this.address,
     required this.userType,
     required this.answerModel,
+    this.doctorId,
   });
   Map<String, dynamic> toJson() {
     return {
@@ -588,6 +590,7 @@ class UserSqlModel {
       'phone': phone,
       'address': address,
       'type_id': userType.id,
+      'doctor_id':doctorId,
       'answers': answerModel.map((user) => user.toJson()).toList(),
     };
   }
@@ -599,6 +602,7 @@ class UserSqlModel {
       'phone': phone,
       'address': address,
       'type_id': userType.id,
+      'doctor_id':doctorId
     };
   }
 
@@ -610,6 +614,7 @@ class UserSqlModel {
       phone: map['phone'],
       address: map['address'],
       userType: userTypeFromId(map['type_id']),
+      doctorId: map['doctor_id'],
       answerModel: _mapAnswers(
         map['answer_id'],
         map['content'],
@@ -755,4 +760,30 @@ class QuestionForStatModel {
     this.groupType,
       { this.descAi}
   );
+}
+class DoctorsModel{
+  int id;
+  String name;
+  String region;
+  String description;
+
+  DoctorsModel(this.id, this.name, this.region, this.description);
+  Map<String, dynamic> toMap() {
+    return {
+
+      'id': id,
+      'name': name,
+      'region': region,
+      'description': description,
+    };
+  }
+
+  factory DoctorsModel.fromMap(Map<String, dynamic> map) {
+    return DoctorsModel(
+      map['id'],
+      map['name'],
+      map['region'],
+      map['description'],
+    );
+  }
 }

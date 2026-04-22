@@ -19,7 +19,12 @@ final class AsyncConferenceState extends SyncState {
   @override
   List<Object?> get props => [asyncModel];
 }
+class DoctorsState extends SyncState {
+  final List<DoctorsModel> data;
+  final DoctorsModel? selectedDoctor; // الطبيب المختار حالياً
 
+  const DoctorsState(this.data, {this.selectedDoctor});
+}
 final class DataErrorState extends SyncState {
   final Failure failure;
   const DataErrorState({required this.failure});
@@ -103,7 +108,9 @@ final class GetSurveyAsyncState extends SyncState {
 final class GetSurveyAsyncLoadingState extends SyncState {
   const GetSurveyAsyncLoadingState();
 }
-
+final class GetSurveyAsyncEmptyState extends SyncState {
+  const GetSurveyAsyncEmptyState();
+}
 final class GetSurveyAsyncErrorState extends SyncState {
   final Failure failure;
   const GetSurveyAsyncErrorState({required this.failure});

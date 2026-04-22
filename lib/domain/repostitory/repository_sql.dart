@@ -13,5 +13,7 @@ abstract class RepositorySql {
   Future<Either<Failure, void>>  insertUserWithAnswer(UserSqlModel user);
   Future<Either<Failure, InfoConference>>  getConferenceInfo();
   Future<Either<Failure, void>>  deleteUser();
+  Future<Either<Failure, List<DoctorsModel>>>  getDoctors();
+  Future<Either<Failure,Map<String, DoctorsModel>>>  getDoctorsAsMap();
 
 }

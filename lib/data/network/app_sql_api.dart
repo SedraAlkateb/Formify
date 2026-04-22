@@ -18,6 +18,9 @@ abstract class AppSqlApiAbs {
   Future<void> insertUserWithAnswer(UserSqlModel user);
   //Future<List<AsyncQuestionModel>> getQuestions();
   Future<InfoConference> getConferenceInfo();
+  Future<List<DoctorsModel>> getDoctors();
+  Future<Map<String, DoctorsModel>> getDoctorsAsMap();
+
 }
 
 class AppSqlApi extends AppSqlApiAbs {
@@ -268,21 +271,22 @@ class AppSqlApi extends AppSqlApiAbs {
   Future<List<UserSqlModel>> getDataSql() async {
     final db = await databaseHelper.database;
 
+    // 1. استخدام LEFT JOIN لجلب المستخدمين حتى لو لم تكن هناك إجابات مرتبطة بهم
     final maps = await db.rawQuery('''
-    SELECT
-      users.id            AS user_id,
-      users.fullname      AS fullname,
-      users.email         AS email,
-      users.phone         AS phone,
-     users.id            AS user_id,
-    users.type_id            AS type_id,
-      users_answers.answer_id AS answer_id,
-      users_answers.content   AS content,
-      users_answers.isCorrect   AS isCorrect
-
-    FROM users
-    JOIN users_answers ON users.id = users_answers.user_id;
-  ''');
+  SELECT 
+    users.id            AS user_id,
+    users.fullname      AS fullname,
+    users.email         AS email,
+    users.phone         AS phone,
+    users.address       AS address,
+    users.doctor_id     AS doctor_id,
+    users.type_id       AS type_id,
+    users_answers.answer_id AS answer_id,
+    users_answers.content   AS content,
+    users_answers.isCorrect AS isCorrect
+  FROM users
+  LEFT JOIN users_answers ON users.id = users_answers.user_id; 
+''');
 
     final Map<int, UserSqlModel> usersMap = {};
 
@@ -291,25 +295,32 @@ class AppSqlApi extends AppSqlApiAbs {
 
       usersMap.putIfAbsent(
         userId,
-        () => UserSqlModel(
+            () => UserSqlModel(
           fullName: row['fullname'] as String,
           email: row['email'] as String?,
-          phone: row['phone'] as String,
+          phone: (row['phone'] as String).isEmpty?"09":row['phone'] as String,
           address: row['address'] as String?,
-          userType:   userTypeFromId(row['type_id']as int ),
+          doctorId: row['doctor_id'] as int?,
+          userType: userTypeFromId(row['type_id'] as int),
           answerModel: <AnswerUserModel>[],
         ),
       );
-      //Image.memory(model.imageBlob)
-      //final bytes = await File(imagePath).readAsBytes();
-      usersMap[userId]!.answerModel.add(
-        AnswerUserModel(row['answer_id'] as int, row['content'] as String,row['isCorrect'] as int),
-      );
+
+      // 2. التحقق من أن حقل الإجابة ليس فارغاً (NULL) قبل محاولة الإضافة
+      // إذا كان المستخدم ليس لديه إجابة، سيكون row['answer_id'] قيمته null
+      if (row['answer_id'] != null) {
+        usersMap[userId]!.answerModel.add(
+          AnswerUserModel(
+            row['answer_id'] as int,
+            row['content'] as String,
+            row['isCorrect'] as int,
+          ),
+        );
+      }
     }
 
     return usersMap.values.toList();
   }
-
   //  @override
   //   Future<List<UserSqlModel>> getDataSql() async {
   //     final db = await databaseHelper.database;
@@ -368,4 +379,29 @@ class AppSqlApi extends AppSqlApiAbs {
       }
     });
   }
+
+  @override
+  Future<List<DoctorsModel>> getDoctors() async {
+    final db = await databaseHelper.database;
+    List<Map<String, dynamic>> maps;
+    maps = await db.query('doctors');
+    return List.generate(maps.length, (i) {
+      return DoctorsModel.fromMap(maps[i]);
+    });
+  }
+  @override
+  Future<Map<String, DoctorsModel>> getDoctorsAsMap() async {
+    final db = await databaseHelper.database;
+
+    // جلب البيانات من الجدول
+    final List<Map<String, dynamic>> maps = await db.query('doctors');
+
+    // تحويل القائمة إلى Map: Key هو الاسم، والقيمة هو الموديل
+    // استخدمنا .fromIterable أو loop عادي
+    return {
+      for (var map in maps)
+        DoctorsModel.fromMap(map).name: DoctorsModel.fromMap(map)
+    };
+  }
+
 }

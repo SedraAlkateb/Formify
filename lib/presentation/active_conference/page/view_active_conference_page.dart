@@ -393,9 +393,9 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                             Row(
                               children: [
                                 Icon(Icons.group_outlined, size: 30),
-                                SizedBox(width: 8),
+                                const SizedBox(width: 8),
                                 Text(
-                                  "المشاركون",
+                                 state.newTitle,
                                   style: TextStyle(
                                     fontSize: FontResponsive.font(
                                       context,
@@ -406,31 +406,69 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                                     color: Colors.black87,
                                   ),
                                 ),
+                                const SizedBox(width: 4),
+                                // زر الفلتر
+                                PopupMenuButton<int>(
+                                  icon: const Icon(Icons.filter_list, color: Colors.blueGrey),
+                                  onSelected: (int value) {
+                                   BlocProvider.of<ActiveConferenceBloc>(context).add(
+                                       FilterDoctorEvent(value, state.users));
+                                    print("Selected Filter: $value");
+                                  },
+                                  itemBuilder: (BuildContext context) => [
+                                    const PopupMenuItem(
+                                      value: 0,
+                                      child: Text("الكل"),
+                                    ),
+                                    const PopupMenuItem(
+                                      value: 1,
+                                      child: Text("المهمين - حضروا"),
+                                    ),
+                                    const PopupMenuItem(
+                                      value: 2,
+                                      child: Text("المهمين - لم يحضروا"),
+                                    ),
+                                  ],
+                                ),
                               ],
                             ),
-                            Row(
-                              children: [
-                                Text(state.users.length.toString()),
-                                Text(" مشارك "),
-                              ],
+                            // القسم الأيسر (العدد)
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.blue.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    state.userFilter.length.toString(),
+                                    style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                                  ),
+                                  const Text(
+                                    " مشارك ",
+                                    style: TextStyle(fontSize: 12, color: Colors.blueGrey),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
                       ),
                       SizedBox(height: AppSize.s4),
-                      state.users.isNotEmpty
+                      state.userFilter.isNotEmpty
                           ? ListView.builder(
                               physics: NeverScrollableScrollPhysics(),
                               shrinkWrap: true,
                               itemCount:
-                                  state.users.length, // Number of surveys
+                                  state.userFilter.length, // Number of surveys
                               itemBuilder: (context, index) {
                                 return InkWell(
-                                  onTap: () {
+                                  onTap:state.newTitle=="المهمين - غائبين" ?null:() {
                                     BlocProvider.of<ActiveConferenceBloc>(
                                       context,
                                     ).add(
-                                      GetUserSurveyEvent(state.users[index]),
+                                      GetUserSurveyEvent(state.userFilter[index]),
                                     );
                                     Navigator.pushNamed(
                                       context,
@@ -439,7 +477,7 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                                   },
 
                                   child: userListItem(
-                                    state.users[index],
+                                    state.userFilter[index],
                                     context,
                                   ),
                                 );

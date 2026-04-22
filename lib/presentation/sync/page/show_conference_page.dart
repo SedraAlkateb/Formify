@@ -16,19 +16,8 @@ import 'package:formify/presentation/unit/animation/button_animation_with_text.d
 import 'package:formify/presentation/unit/animation/animation_container_widget.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
-class ShowConferencePage extends StatefulWidget {
+class ShowConferencePage extends StatelessWidget {
   const ShowConferencePage({super.key});
-
-  @override
-  State<ShowConferencePage> createState() => _ShowConferencePageState();
-}
-
-class _ShowConferencePageState extends State<ShowConferencePage> {
-  @override
-  void initState() {
-    BlocProvider.of<SyncBloc>(context).add(GetConferenceAsyncEvent());
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
