@@ -43,6 +43,8 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
 
   // القوائم المخزنة في الذاكرة
   List<IsActiveMainSurveyModel> surveys = [];
+  List<IsActiveMainSurveyModel> surveysBase = [];
+
   List<DoctorsModel> doctor = [];
 
   // الطبيب المختار حالياً (المصدر الوحيد للحقيقة لـ doctorId)
@@ -219,6 +221,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
 
   Future<void> _onUpload(UploadDataEvent event, Emitter<SyncState> emit) async {
     if (event.userRequest.isNotEmpty) {
+      surveysBase=[];
       (await synchronizeUsersAnswersUsecase.execute(
         AllUserModel(event.userRequest, event.conference_id, event.isActive),
       )).fold(
@@ -262,28 +265,43 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     Emitter<SyncState> emit,
   ) async {
     emit(const GetSurveyAsyncLoadingState());
+    if(surveysBase.isEmpty){
+      final result = await getSurveysSqlUsecase.execute();
+      await result.fold(
+            (failure) async => emit(GetSurveyAsyncErrorState(failure: failure)),
+            (data) async {
+          surveysBase=data.toDomain();
+          surveys = surveysBase;
+          if (surveys.isEmpty) {
+            emit(const InsertUserLoadingState());
+            final insertResult = await insertUserAndAnswerUsecase.execute(
+              userSqlModel!,
+            );
+            insertResult.fold(
+                  (failure) => emit(InsertUserErrorState(failure: failure)),
+                  (_) => emit(FinishedSurveyState()),
+            );
+          }else{
+            emit(GetSurveyAsyncState(surveys));
+          }
 
-    final result = await getSurveysSqlUsecase.execute();
 
-    await result.fold(
-      (failure) async => emit(GetSurveyAsyncErrorState(failure: failure)),
-      (data) async {
-        surveys = data.toDomain();
-        if (surveys.isEmpty) {
-          emit(const InsertUserLoadingState());
-
-          final insertResult = await insertUserAndAnswerUsecase.execute(
-            userSqlModel!,
-          );
-          insertResult.fold(
-            (failure) => emit(InsertUserErrorState(failure: failure)),
-            (_) => emit(FinishedSurveyState()),
-          );
-        } else {
-          emit(GetSurveyAsyncState(surveys));
-        }
-      },
-    );
+        },
+      );
+    }else{
+      if (surveys.isEmpty) {
+        emit(const InsertUserLoadingState());
+        final insertResult = await insertUserAndAnswerUsecase.execute(
+          userSqlModel!,
+        );
+        insertResult.fold(
+              (failure) => emit(InsertUserErrorState(failure: failure)),
+              (_) => emit(FinishedSurveyState()),
+        );
+      }else{
+        emit(GetSurveyAsyncState(surveys));
+      }
+    }
   }
   // --- Survey Logic Handlers ---
 
