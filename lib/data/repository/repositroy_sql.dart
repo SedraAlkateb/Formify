@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:dartz/dartz.dart';
 import 'package:formify/data/network/app_sql_api.dart';
 import 'package:formify/data/network/error_handler.dart';
