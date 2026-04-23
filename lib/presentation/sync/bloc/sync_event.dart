@@ -134,6 +134,13 @@ class DoctorEvent extends SyncEvent {
   @override
   List<Object?> get props => [];
 }
+class InsertEvent extends SyncEvent {
+ final DoctorsModel doctorsModel;
+  const InsertEvent(this.doctorsModel);
+
+  @override
+  List<Object?> get props => [doctorsModel];
+}
 
 /// البحث في قائمة الأطباء (Memory-based search)
 class SearchDoctorEvent extends DoctorEvent {

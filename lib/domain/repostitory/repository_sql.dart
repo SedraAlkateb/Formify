@@ -15,5 +15,6 @@ abstract class RepositorySql {
   Future<Either<Failure, void>>  deleteUser();
   Future<Either<Failure, List<DoctorsModel>>>  getDoctors();
   Future<Either<Failure,Map<String, DoctorsModel>>>  getDoctorsAsMap();
+  Future<Either<Failure,void>> insertDoctor(DoctorsModel doctor);
 
 }

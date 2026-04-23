@@ -762,16 +762,14 @@ class QuestionForStatModel {
   );
 }
 class DoctorsModel{
-  int id;
+  int ?id;
   String name;
   String region;
   String description;
 
-  DoctorsModel(this.id, this.name, this.region, this.description);
+  DoctorsModel(this.name, this.region, this.description,{this.id});
   Map<String, dynamic> toMap() {
     return {
-
-      'id': id,
       'name': name,
       'region': region,
       'description': description,
@@ -780,7 +778,7 @@ class DoctorsModel{
 
   factory DoctorsModel.fromMap(Map<String, dynamic> map) {
     return DoctorsModel(
-      map['id'],
+   id:    map['id'],
       map['name'],
       map['region'],
       map['description'],

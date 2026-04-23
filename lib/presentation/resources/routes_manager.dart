@@ -24,6 +24,7 @@ import 'package:formify/presentation/survey/pages/view_all_survey_page.dart';
 import 'package:formify/presentation/survey/pages/view_survey.dart';
 import 'package:formify/presentation/sync/page/finished_input_surveys.dart';
 import 'package:formify/presentation/sync/page/game_input_page.dart';
+import 'package:formify/presentation/sync/page/insert_doctor_page.dart';
 import 'package:formify/presentation/sync/page/insert_user_page.dart';
 import 'package:formify/presentation/sync/page/list_of_surveys_page.dart';
 import 'package:formify/presentation/sync/page/setting_page.dart';
@@ -61,6 +62,7 @@ class Routes {
   static const String updateConference = "/updateConference";
   static const String exelConference = "/exelConference";
   static const String dashboardSurvey = "/dashboardSurvey";
+  static const String insertDoctor = "/insertDoctor";
 
 }
 
@@ -151,7 +153,9 @@ class RouteGenerator {
       case Routes.dashboardSurvey:
         initAiModule();
         return _animatedRoute(SurveyDashboardPage());
+      case Routes.insertDoctor:
 
+        return _animatedRoute(AddDoctorPage());
       default:
         return unDefinedRoute();
     }

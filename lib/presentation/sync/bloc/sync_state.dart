@@ -236,3 +236,23 @@ final class CheckoutState extends SyncState {
   CheckoutState();
   List<Object?> get props => [];
 }
+final class InsertDoctorErrorState extends SyncState {
+  final Failure failure;
+  const InsertDoctorErrorState({required this.failure});
+
+  @override
+  List<Object?> get props => [failure];
+}
+final class InsertDoctorSucState extends SyncState {
+
+  const InsertDoctorSucState();
+
+  @override
+  List<Object?> get props => [];
+}final class InsertDoctorLoadingState extends SyncState {
+
+  const InsertDoctorLoadingState();
+
+  @override
+  List<Object?> get props => [];
+}

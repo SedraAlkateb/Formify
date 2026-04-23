@@ -151,7 +151,92 @@ class SettingPage extends StatelessWidget {
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 10),
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.pushNamed(context, Routes.insertDoctor);
+                                  },
+                                  child: AnimationContainerWidget(
+                                    child: Container(
+
+                                      width: double.infinity,
+                                      padding: const EdgeInsets.all(20),
+                                      margin: const EdgeInsets.symmetric(
+                                        vertical: 12,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: ColorManager.border,
+                                        ),
+                                        color: ColorManager.primary,
+                                        borderRadius: BorderRadius.circular(25),
+                                      ),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                        children: [
+                                          Card(
+                                            margin: const EdgeInsets.only(
+                                              left: 15,
+                                              top: 15,
+                                              bottom: 15,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                              BorderRadius.circular(12),
+                                            ),
+                                            color: ColorManager.accent,
+                                            child: const Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                vertical: 15,
+                                                horizontal: 15,
+                                              ),
+                                              child: Icon(
+                                                Icons.cloud_upload_outlined,
+                                                color: Colors.white,
+                                                size: 30,
+                                              ),
+                                            ),
+                                          ),
+                                          Flexible(
+                                            child: Column(
+                                              mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  "اضافة طبيب مهم",
+
+                                                  textAlign: TextAlign.start,
+                                                  style: TextStyle(
+                                                    color: ColorManager.white,
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  "اضافة بيانات الاطباء المهمين الى المؤتمر",
+                                                  textAlign: TextAlign.start,
+                                                  style: TextStyle(
+                                                    color: ColorManager.white,
+                                                    fontSize: 15,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Icon(
+                                            Icons.arrow_forward,
+                                            color: ColorManager.white,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
                                 InkWell(
                                   onTap: () {
                                     showConfirmDialog(
@@ -159,7 +244,7 @@ class SettingPage extends StatelessWidget {
 
                                       title: "حفظ بيانات المؤتمر",
                                       message:
-                                          "هل انت متاكد من انك انتهيت من ملئ معلومات المؤتمر وتريد رفعه , تأكد من اتصالك بالانترنت لرفع البيانات",
+                                      "هل انت متاكد من انك انتهيت من ملئ معلومات المؤتمر وتريد رفعه , تأكد من اتصالك بالانترنت لرفع البيانات",
 
                                       onConfirm: () {
                                         BlocProvider.of<SyncBloc>(
@@ -185,9 +270,9 @@ class SettingPage extends StatelessWidget {
                                       ),
                                       child: Row(
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.center,
+                                        CrossAxisAlignment.center,
                                         mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
+                                        MainAxisAlignment.spaceAround,
                                         children: [
                                           Card(
                                             margin: const EdgeInsets.only(
@@ -197,7 +282,7 @@ class SettingPage extends StatelessWidget {
                                             ),
                                             shape: RoundedRectangleBorder(
                                               borderRadius:
-                                                  BorderRadius.circular(12),
+                                              BorderRadius.circular(12),
                                             ),
                                             color: ColorManager.accent,
                                             child: const Padding(
@@ -215,9 +300,9 @@ class SettingPage extends StatelessWidget {
                                           Flexible(
                                             child: Column(
                                               mainAxisAlignment:
-                                                  MainAxisAlignment.start,
+                                              MainAxisAlignment.start,
                                               crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
+                                              CrossAxisAlignment.start,
                                               children: [
                                                 Text(
                                                   StringsManager.saveConference,
@@ -250,8 +335,7 @@ class SettingPage extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-
-                                const SizedBox(height: 10),
+                               // const SizedBox(height: 10),
 
                                 /////////////////////////tyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyh
                                 InkWell(
@@ -356,7 +440,7 @@ class SettingPage extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                const SizedBox(height: 10),
+                             //   const SizedBox(height: 10),
                                 InkWell(
                                   onTap: () {
                                     instance<AppPreferences>().setLoggedIn(1);

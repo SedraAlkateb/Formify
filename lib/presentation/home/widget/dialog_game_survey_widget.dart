@@ -104,8 +104,6 @@ Future<void> showDialogGameSurveyWidget({
                         Routes.showConference,
                             (route) => false,
                       );
-                      BlocProvider.of<SyncBloc>(context).add(GetConferenceAsyncEvent());
-                      BlocProvider.of<SyncBloc>(context).add(DoctorEvent());
                     }
 
                     // ملاحظة: لا تستدعي selected.dispose() هنا لأنها قد تسبب خطأ

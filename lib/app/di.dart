@@ -39,6 +39,7 @@ import 'package:formify/domain/usecase/get_survey_question_id_usecase.dart';
 import 'package:formify/domain/usecase/get_surveys_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_user_answer_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_user_answers_survey_usecase.dart';
+import 'package:formify/domain/usecase/insert_doctor_sql_usecase.dart';
 import 'package:formify/domain/usecase/insert_user_and_answer_usecase.dart';
 import 'package:formify/domain/usecase/link_survey_conference_usecase.dart';
 import 'package:formify/domain/usecase/login_usecase.dart';
@@ -308,8 +309,12 @@ Future<void> initSyncModule() async {
     instance.registerFactory<GetDoctorsSqlUsecase>(
           () => GetDoctorsSqlUsecase(instance()),
     );
+    instance.registerFactory<InsertDoctorSqlUsecase>(
+          () => InsertDoctorSqlUsecase(instance()),
+    );
     instance.registerFactory<SyncBloc>(
       () => SyncBloc(
+        instance(),
         instance(),
         instance(),
         instance(),

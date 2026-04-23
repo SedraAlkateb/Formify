@@ -8,7 +8,7 @@ abstract class AppSqlApiAbs {
   Future<String> asyncData(GetAsyncModel asyncData);
   Future<void> deleteData();
   Future<void> deleteUser();
-
+  Future<void> insertDoctor(DoctorsModel doctor);
   Future<List<UserSqlModel>> getDataSql();
   Future<GetAllConferenceModel?> getConference();
   Future<List<MainSurveyModel>> getSurveys();
@@ -379,7 +379,13 @@ class AppSqlApi extends AppSqlApiAbs {
       }
     });
   }
-
+  @override
+  Future<void> insertDoctor(DoctorsModel doctor) async {
+    final db = await databaseHelper.database;
+    await db.transaction((txn) async {
+      await txn.insert('doctors', doctor.toMap());
+    });
+  }
   @override
   Future<List<DoctorsModel>> getDoctors() async {
     final db = await databaseHelper.database;

@@ -116,7 +116,7 @@ class ActiveConferenceBloc
               // نقوم بتحويل DoctorsModel إلى UserModel ليقبل العرض في القائمة
               missingImportant.add(
                 UserModel(
-                  docModel.id,
+                  docModel.id??0,
                   name,
                   "",
                   "",

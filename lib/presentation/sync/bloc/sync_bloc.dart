@@ -17,6 +17,7 @@ import 'package:formify/domain/usecase/get_doctors_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_question_answers_usecase.dart';
 import 'package:formify/domain/usecase/get_surveys_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_user_answer_sql_usecase.dart';
+import 'package:formify/domain/usecase/insert_doctor_sql_usecase.dart';
 import 'package:formify/domain/usecase/insert_user_and_answer_usecase.dart';
 import 'package:formify/domain/usecase/synchronize_users_answers_usecase.dart';
 import 'package:meta/meta.dart';
@@ -32,7 +33,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   final DeleteUserSqlUsecase deleteUserSqlUsecase;
   final SynchronizeUsersAnswersUsecase synchronizeUsersAnswersUsecase;
   final GetDoctorsSqlUsecase getDoctorsSqlUsecase;
-
+  final InsertDoctorSqlUsecase insertDoctorSqlUsecase;
   final GetConferenceSqlUsecase getConferenceSqlUsecase;
   final GetSurveysSqlUsecase getSurveysSqlUsecase;
   final GetQuestionAnswersUsecase getQuestionAnswersUsecase;
@@ -65,6 +66,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     this.checkPasswordUsecase,
     this.deleteUserSqlUsecase,
     this.getDoctorsSqlUsecase,
+      this.insertDoctorSqlUsecase
   ) : super(const SyncInitial()) {
     // الأحداث الأساسية
     on<AsyncDataEvent>(_onAsyncData);
@@ -91,6 +93,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
 
     // أحداث الأطباء والبحث (المعدلة)
     on<DoctorEvent>(_onGetDoctors);
+    on<InsertEvent>(_onInsertDoctors);
     on<SearchDoctorEvent>(_onSearchDoctor);
     on<SelectDoctorEvent>(_onSelectDoctor);
     on<ClearDoctorSelectionEvent>(_onClearDoctorSelection);
@@ -113,7 +116,23 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
       },
     );
   }
+  Future<void> _onInsertDoctors(InsertEvent event, Emitter<SyncState> emit) async {
+    // 1. إرسال حالة التحميل
+    emit(InsertDoctorLoadingState());
 
+    // 2. تنفيذ العملية
+    final result = await insertDoctorSqlUsecase.execute(event.doctorsModel);
+
+    // 3. معالجة النتيجة
+    result.fold(
+          (failure) => emit(InsertDoctorErrorState(failure: failure)),
+          (data){
+            doctor.add(event.doctorsModel);
+            emit(InsertDoctorSucState());
+
+          },
+    );
+  }
   Future<void> _onSearchDoctor(
     SearchDoctorEvent event,
     Emitter<SyncState> emit,
@@ -256,7 +275,6 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
           final insertResult = await insertUserAndAnswerUsecase.execute(
             userSqlModel!,
           );
-
           insertResult.fold(
             (failure) => emit(InsertUserErrorState(failure: failure)),
             (_) => emit(FinishedSurveyState()),

@@ -16,8 +16,20 @@ import 'package:formify/presentation/unit/animation/button_animation_with_text.d
 import 'package:formify/presentation/unit/animation/animation_container_widget.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
-class ShowConferencePage extends StatelessWidget {
+class ShowConferencePage extends StatefulWidget {
   const ShowConferencePage({super.key});
+
+  @override
+  State<ShowConferencePage> createState() => _ShowConferencePageState();
+}
+
+class _ShowConferencePageState extends State<ShowConferencePage> {
+  @override
+  void initState() {
+    BlocProvider.of<SyncBloc>(context).add(GetConferenceAsyncEvent());
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +54,7 @@ class ShowConferencePage extends StatelessWidget {
           child: SafeArea(
             child: BlocBuilder<SyncBloc, SyncState>(
               buildWhen: (previous, current) =>
-                  current is GetConferenceAsyncLoadingState ||
+              current is GetConferenceAsyncLoadingState ||
                   current is AsyncConferenceErrorState ||
                   current is GetConferenceAsyncState ||
                   current is GetConferenceAsyncEmptyState,
@@ -58,7 +70,7 @@ class ShowConferencePage extends StatelessWidget {
                   return SingleChildScrollView(
                     child: Padding(
                       padding:  EdgeInsets.all(
-                         Constants.isTablet?30:
+                          Constants.isTablet?30:
                           0),
                       child: Column(
 
@@ -67,20 +79,20 @@ class ShowConferencePage extends StatelessWidget {
                           LayoutBuilder(
                             builder: (_, c) {
                               final isTabletPortrait =
-                                  Breakpoints.isTabletPortrait(context);
+                              Breakpoints.isTabletPortrait(context);
                               final isMobilePortrait =
-                                  Breakpoints.isMobilePortrait(context);
+                              Breakpoints.isMobilePortrait(context);
                               return Container(
                                 height:(isTabletPortrait || isMobilePortrait)? screenHeight * 0.7:null,
                                 width: double.infinity,
                                 padding:
                                 EdgeInsets.only(
-                                  left:
+                                    left:
 
-                                  20.sp,
-                                  right: 20.sp,
-                                  top: 20.sp,
-                                  bottom: 20.sp
+                                    20.sp,
+                                    right: 20.sp,
+                                    top: 20.sp,
+                                    bottom: 20.sp
                                 ),
 
                                 margin: EdgeInsets.all(25.sp),
@@ -353,8 +365,8 @@ class ShowConferencePage extends StatelessWidget {
                                                 );
                                               },
                                               correctPassword:
-                                                  instance<AppPreferences>()
-                                                      .getPassword() ??
+                                              instance<AppPreferences>()
+                                                  .getPassword() ??
                                                   "لا يوجد كلمة سر",
                                             );
                                           }, "إعدادات المؤتمر"),
@@ -396,7 +408,7 @@ class ShowConferencePage extends StatelessWidget {
                           Navigator.pushNamedAndRemoveUntil(
                             context,
                             Routes.home,
-                            (route) => false,
+                                (route) => false,
                           );
                         },
                         child: const Text("العودة إلى الرئيسية"),

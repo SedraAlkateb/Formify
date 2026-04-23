@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:dartz/dartz.dart';
 import 'package:formify/data/network/app_sql_api.dart';
 import 'package:formify/data/network/error_handler.dart';
@@ -131,5 +133,14 @@ class RepositroySqlImp extends RepositorySql {
       return Left(failure);
     }
   }
-
+  @override
+  Future<Either<Failure, void>> insertDoctor( DoctorsModel doctor)async {
+    try {
+      final response =await _databaseHelper.insertDoctor(doctor);
+      return Right(response);
+    } catch (e) {
+      Failure failure = ErrorHandler.handle(e).failure;
+      return Left(failure);
+    }
+  }
 }
