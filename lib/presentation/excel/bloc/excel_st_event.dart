@@ -6,10 +6,11 @@ sealed class ExcelStEvent extends Equatable {}
 
 class UsersAnswersStatisticsEvent extends ExcelStEvent {
   final int surveyId;
-  UsersAnswersStatisticsEvent(this.surveyId);
+ final int conference_id;
+  UsersAnswersStatisticsEvent(this.surveyId,this.conference_id);
 
   @override
-  List<Object?> get props => [surveyId];
+  List<Object?> get props => [surveyId,conference_id];
 }
 
 class SurveyStatisticsEvent extends ExcelStEvent {

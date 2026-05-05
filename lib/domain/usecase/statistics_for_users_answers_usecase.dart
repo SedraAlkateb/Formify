@@ -6,8 +6,8 @@ import 'package:formify/domain/repostitory/repository.dart';
 class StatisticsForUsersAnswersUsecase extends Equatable {
   final  Repository _repository;
   const StatisticsForUsersAnswersUsecase(this._repository);
-  Future<Either<Failure, ExelModel>> execute(int surveyId) async{
-    return await _repository.statisticsForUsersAnswers(surveyId);
+  Future<Either<Failure, ExelModel>> execute(int surveyId,int conference_id) async{
+    return await _repository.statisticsForUsersAnswers(surveyId,conference_id);
   }
 
   @override

@@ -164,9 +164,11 @@ Future<void> initConferenceModule() async {
     instance.registerFactory<LinkSurveyConferenceUsecase>(
       () => LinkSurveyConferenceUsecase(instance()),
     );
-    instance.registerFactory<DeleteConferenceUsecase>(
-      () => DeleteConferenceUsecase(instance()),
-    );
+    if (!GetIt.I.isRegistered<DeleteConferenceUsecase>()) {
+
+      instance.registerFactory<DeleteConferenceUsecase>(
+            () => DeleteConferenceUsecase(instance()),
+      );}
     instance.registerFactory<GetAllSurveyUsecase>(
       () => GetAllSurveyUsecase(instance()),
     );
@@ -227,9 +229,14 @@ Future<void> initActiveConferenceModule() async {
     instance.registerFactory<GetDoctorsAsMapSqlUsecase>(
           () => GetDoctorsAsMapSqlUsecase(instance()),
     );
+    if (!GetIt.I.isRegistered<DeleteConferenceUsecase>()) {
+
+      instance.registerFactory<DeleteConferenceUsecase>(
+          () => DeleteConferenceUsecase(instance()),
+    );}
     instance.registerFactory<ActiveConferenceBloc>(
       () =>
-          ActiveConferenceBloc(instance(), instance(), instance(), instance(), instance()),
+          ActiveConferenceBloc(instance(), instance(), instance(), instance(), instance(), instance()),
     );
   }
 }

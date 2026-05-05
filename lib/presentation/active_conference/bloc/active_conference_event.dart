@@ -60,3 +60,24 @@ class FilterDoctorEvent extends ActiveConferenceEvent {
   @override
   List<Object?> get props => [];
 }
+class DeleteFinishedConferenceEvent extends ActiveConferenceEvent {
+  final int id;
+  final int index;
+  DeleteFinishedConferenceEvent(this.id, this.index);
+  @override
+  List<Object?> get props => [id];
+}
+class  ExelUserEvent extends ActiveConferenceEvent {
+  final List<UserModel> users;
+  ExelUserEvent(this.users);
+  @override
+  List<Object?> get props => [users];
+}
+class SearchDoctorEvent extends ActiveConferenceEvent {
+  final String search;
+  final List<UserModel> users;
+  final String filterType;
+  SearchDoctorEvent({required this.search,required this.users,required this.filterType});
+  @override
+  List<Object?> get props => [users];
+}

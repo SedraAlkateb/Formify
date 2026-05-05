@@ -115,6 +115,7 @@ abstract class AppServiceClient {
   @POST("Statistics/statistics_for_usersAnswers.php")
   Future<StatisticsForUsersAnswersBaseResponse> statisticsForUsersAnswers(
     @Part(name: "survey_id") int survey_id,
+  @Part(name: "conference_id") int conference_id,
   );
   @POST("Statistics/get_statistics_for_questionTypes.php")
   Future<QuestionsStatisticsBaseResponse> getStatisticsForQuestionTypes(

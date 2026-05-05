@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:formify/data/network/failure.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/models/user_type.dart';
+import 'package:formify/domain/usecase/delete_conference_usecase.dart';
 import 'package:formify/domain/usecase/get_all_conference_usecase.dart';
 import 'package:formify/domain/usecase/get_all_user_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_by_id_usecase.dart';
@@ -19,7 +20,10 @@ class ActiveConferenceBloc
   final GetConferenceByIdUsecase getConferenceByIdUsecase;
   final GetAllUserUsecase getAllUserUsecase;
   final GetDoctorsAsMapSqlUsecase getDoctorsAsMapSqlUsecase;
+  final DeleteConferenceUsecase deleteConferenceUsecase;
+
   List<SurveyToConferenceModel> surveyModel = [];
+  List<GetAllConferenceModel> allActiveConference = [];
   final GetUserAnswersSurveyUsecase getUserAnswersSurveyUsecase;
   Map<String, DoctorsModel> doctors = {};
   ActiveConferenceBloc(
@@ -28,6 +32,7 @@ class ActiveConferenceBloc
     this.getAllUserUsecase,
     this.getUserAnswersSurveyUsecase,
     this.getDoctorsAsMapSqlUsecase,
+    this.deleteConferenceUsecase,
   ) : super(ActiveConferenceInitial()) {
     on<GetAllActiveConferenceEvent>((event, emit) async {
       emit(GetAllActiveConferenceLoadingState());
@@ -40,11 +45,25 @@ class ActiveConferenceBloc
           if (data.isEmpty) {
             emit(GetAllActiveEmptyConferenceState());
           } else {
+            allActiveConference = data;
             emit(GetAllActiveConferenceState(data));
           }
         },
       );
     });
+    on<DeleteFinishedConferenceEvent>((event, emit) async {
+      emit(DeleteFinishedConferenceLoadingState());
+      (await deleteConferenceUsecase.execute(event.id)).fold(
+        (failure) {
+          emit(DeleteFinishedConferenceErrorState(failure: failure));
+        },
+        (data) async {
+          allActiveConference.removeAt(event.index);
+          emit(GetAllActiveConferenceState(allActiveConference));
+        },
+      );
+    });
+
     on<GetDoctorsAsMapEvent>((event, emit) async {
       emit(GetDoctorsAsMapLoadingState());
       final result = await getDoctorsAsMapSqlUsecase.execute();
@@ -67,11 +86,7 @@ class ActiveConferenceBloc
           emit(GetAllUserActiveConferenceErrorState(failure: failure));
         },
         (data) async {
-          if (data.isEmpty) {
-            emit(GetAllUserActiveEmptyConferenceState());
-          } else {
-            emit(GetAllUserActiveConferenceState(data,"المشاركون",data));
-          }
+          emit(GetAllUserActiveConferenceState(data, "المشاركون", data));
         },
       );
     });
@@ -82,11 +97,6 @@ class ActiveConferenceBloc
       // 2. قائمة النتائج التي سنقوم بتصفيتها
       List<UserModel> filteredList = [];
       String newTitle = "المشاركون"; // لتحديث العنوان في الـ UI
-
-      if (allUsers.isEmpty) {
-        emit(GetAllUserActiveEmptyConferenceState());
-        return;
-      }
 
       // 3. منطق الفلترة بناءً على الـ filterType
       switch (event.filterType) {
@@ -103,9 +113,7 @@ class ActiveConferenceBloc
           newTitle = "المهمين - حضروا";
           break;
 
-        case 2: // المهمين (الذين لم يحضروا)
-          // هم الأطباء الموجودون في الـ Map (المحلي) ولكن أسماؤهم غير موجودة في قائمة الـ API
-          // نحتاج لتحويل أسماء الحاضرين لـ Set لتسريع البحث
+        case 2:
           final attendedNames = allUsers.map((u) => u.fullName.trim()).toSet();
 
           // نبحث في الخريطة المحلية عن أي طبيب اسمه ليس في الـ Set
@@ -116,7 +124,7 @@ class ActiveConferenceBloc
               // نقوم بتحويل DoctorsModel إلى UserModel ليقبل العرض في القائمة
               missingImportant.add(
                 UserModel(
-                  docModel.id??0,
+                  docModel.id ?? 0,
                   name,
                   "",
                   "",
@@ -127,28 +135,54 @@ class ActiveConferenceBloc
               );
             }
           });
-
+          print("objectddd");
           filteredList = missingImportant;
+
           newTitle = "المهمين - غائبين";
+
           break;
       }
-
-      // 4. إرسال الحالة الجديدة (تأكد أن الـ State يقبل العنوان الجديد والقائمة)
-      if (filteredList.isEmpty) {
-        emit(GetAllUserActiveEmptyConferenceState());
-        // ملاحظة: قد تفضل إنشاء State خاص بالفلتر الفارغ لكي لا تختفي الواجهة تماماً
-      } else {
-        emit(
-          GetAllUserActiveConferenceState(
-            allUsers,
-            newTitle,
-             filteredList,
-
-                // أضف هذا الحقل للـ State لكي تستخدمه في الـ UI
-          ),
+      for (var user in filteredList) {
+        print(
+          " | اسم المستخدم: ${user.fullName} | العنوان: ${user.address}  | الرقم: ${user.phone}  | النوع: ${user.userType.name}",
         );
       }
+      emit(
+        GetAllUserActiveConferenceState(
+          allUsers,
+          newTitle,
+          filteredList,
+
+          // أضف هذا الحقل للـ State لكي تستخدمه في الـ UI
+        ),
+      );
     });
+    on<SearchDoctorEvent>((event, emit) async {
+      final allUsers = event.users;
+      List<UserModel> filteredList = [];
+
+      filteredList = allUsers.where((value) {
+        if (value.fullName.contains(event.search)) {
+          return true;
+        }
+        if (value.address != null && value.address!.contains(event.search)) {
+          return true;
+        }
+
+        return false;
+      }).toList();
+      filteredList = allUsers.where((user) {
+        return user.fullName.contains(event.search);
+      }).toList();
+      emit(
+        GetAllUserActiveConferenceState(
+          allUsers,
+          event.filterType,
+          filteredList,
+        ),
+      );
+    });
+
     on<GetActiveConferenceByIdEvent>((event, emit) async {
       emit(GetActiveConferenceByIdLoadingState());
       final result = await getConferenceByIdUsecase.execute(

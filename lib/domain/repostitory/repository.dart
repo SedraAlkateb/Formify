@@ -44,7 +44,7 @@ abstract class Repository {
     ConferenceModel update,
   );
   Future<Either<Failure, Null>> updateSurvey(UpdateSurveyRequest update);
-  Future<Either<Failure, ExelModel>> statisticsForUsersAnswers(int surveyId);
+  Future<Either<Failure, ExelModel>> statisticsForUsersAnswers(int surveyId,int conference_id,);
   Future<Either<Failure, StatisticsModel>>
   getStatisticsForQuestionTypes(int surveyId,int conferenceId);
   Future<Either<Failure, bool>> checkPassword(String password);

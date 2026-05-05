@@ -667,12 +667,14 @@ class _AppServiceClient implements AppServiceClient {
   @override
   Future<StatisticsForUsersAnswersBaseResponse> statisticsForUsersAnswers(
     int survey_id,
+    int conference_id,
   ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = FormData();
     _data.fields.add(MapEntry('survey_id', survey_id.toString()));
+    _data.fields.add(MapEntry('conference_id', conference_id.toString()));
     final _options = _setStreamType<StatisticsForUsersAnswersBaseResponse>(
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(

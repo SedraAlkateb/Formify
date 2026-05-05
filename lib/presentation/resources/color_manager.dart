@@ -28,4 +28,7 @@ class ColorManager {
   static const Color darkTextPrimary = Color(0xFFECECEC);
   static const Color darkTextSecondary = Color(0xFFB0BEC5);
   static const Color darkBorder = Color(0xFF3A3A3A);
+  static const Color medicalMuted     = Color(0xff64748B);
+  static const Color medicalBorder    = Color(0xffE2E8F0);
+
 }

@@ -5,6 +5,7 @@ import 'package:formify/presentation/active_conference/page/all_active_conferenc
 import 'package:formify/presentation/active_conference/page/view_active_conference_page.dart';
 import 'package:formify/presentation/active_conference/page/view_completed_survey.dart';
 import 'package:formify/presentation/conference/pages/Update_conference_page.dart';
+import 'package:formify/presentation/conference/pages/conference_exel_page.dart';
 import 'package:formify/presentation/conference/pages/link_survey_by_id.dart';
 import 'package:formify/presentation/conference/pages/create_conference_page.dart';
 import 'package:formify/presentation/conference/pages/view_conference_page.dart';
@@ -63,6 +64,7 @@ class Routes {
   static const String exelConference = "/exelConference";
   static const String dashboardSurvey = "/dashboardSurvey";
   static const String insertDoctor = "/insertDoctor";
+  static const String exelBaseConference = "/exelBaseConference";
 
 }
 
@@ -128,8 +130,13 @@ class RouteGenerator {
         return _animatedRoute(ViewUserSurveyPage());
       case Routes.exelConference:
         final filename = settings.arguments as String;
-        return _animatedRoute(ExelConferencePage(
+        return _animatedRoute(SurveyExcelPage(
           filename: filename,
+        ));
+      case Routes.exelBaseConference:
+        final users = settings.arguments as List<UserModel>;
+        return _animatedRoute(DoctorExcelPage(
+          allDoctors: users,
         ));
       case Routes.finishedSurvey:
         return _animatedRoute(FinishedInputSurveysPage());

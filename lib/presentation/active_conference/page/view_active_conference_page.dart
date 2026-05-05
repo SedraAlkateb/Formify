@@ -9,6 +9,7 @@ import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/responsive/font_responseve.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/resources/values_manager.dart';
+import 'package:formify/presentation/unit/search_field.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
 class ViewActiveConferencePage extends StatefulWidget {
@@ -21,6 +22,8 @@ class ViewActiveConferencePage extends StatefulWidget {
 }
 
 class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
+  final TextEditingController searchController = TextEditingController();
+
   @override
   void initState() {
     BlocProvider.of<ActiveConferenceBloc>(
@@ -356,7 +359,7 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                                 return surveyCardActiveConference(
                                   state.conferenceModel.surveys[index]
                                       .toDomain(),
-                                  state.conferenceModel.id
+                                  state.conferenceModel.id,
                                 );
                               },
                             )
@@ -373,15 +376,12 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
               buildWhen: (previous, current) =>
                   current is GetAllUserActiveConferenceState ||
                   current is GetAllUserActiveConferenceLoadingState ||
-                  current is GetAllUserActiveConferenceErrorState ||
-                  current is GetAllUserActiveEmptyConferenceState,
+                  current is GetAllUserActiveConferenceErrorState,
               builder: (context, state) {
                 if (state is GetAllUserActiveConferenceErrorState) {
                   return errorFullScreen(context);
                 } else if (state is GetAllUserActiveConferenceLoadingState) {
                   return loadingFullScreen(context);
-                } else if (state is GetAllUserActiveEmptyConferenceState) {
-                  return emptyFullScreen(context);
                 } else if (state is GetAllUserActiveConferenceState) {
                   return Column(
                     children: [
@@ -395,7 +395,7 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                                 Icon(Icons.group_outlined, size: 30),
                                 const SizedBox(width: 8),
                                 Text(
-                                 state.newTitle,
+                                  state.newTitle,
                                   style: TextStyle(
                                     fontSize: FontResponsive.font(
                                       context,
@@ -409,10 +409,16 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                                 const SizedBox(width: 4),
                                 // زر الفلتر
                                 PopupMenuButton<int>(
-                                  icon: const Icon(Icons.filter_list, color: Colors.blueGrey),
+                                  icon: const Icon(
+                                    Icons.filter_list,
+                                    color: Colors.blueGrey,
+                                  ),
                                   onSelected: (int value) {
-                                   BlocProvider.of<ActiveConferenceBloc>(context).add(
-                                       FilterDoctorEvent(value, state.users));
+                                    BlocProvider.of<ActiveConferenceBloc>(
+                                      context,
+                                    ).add(
+                                      FilterDoctorEvent(value, state.users),
+                                    );
                                     print("Selected Filter: $value");
                                   },
                                   itemBuilder: (BuildContext context) => [
@@ -434,7 +440,10 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                             ),
                             // القسم الأيسر (العدد)
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.blue.withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(20),
@@ -443,15 +452,76 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                                 children: [
                                   Text(
                                     state.userFilter.length.toString(),
-                                    style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.blue,
+                                    ),
                                   ),
                                   const Text(
                                     " مشارك ",
-                                    style: TextStyle(fontSize: 12, color: Colors.blueGrey),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.blueGrey,
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: AppSize.s4),
+                      Padding(
+                        padding: EdgeInsets.all(AppPadding.p8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: SearchField(
+                                searchController: searchController,
+                                onPressed: (value) {
+                                  BlocProvider.of<ActiveConferenceBloc>(
+                                    context,
+                                  ).add(
+                                    SearchDoctorEvent(
+                                      search: value,
+                                      users: state.users,
+                                      filterType: state.newTitle,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                            InkWell(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.table_chart_outlined,
+                                    color: const Color(0xFF16A34A),
+                                    size: 24,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'تصدير Excel',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w700,
+                                      color: const Color(0xFF16A34A),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              onTap: () {
+                                Navigator.pushNamed(
+                                  context,
+                                  Routes.exelBaseConference,
+                                  arguments: state.userFilter,
+                                );
+                              },
+                              ///////////////////////
+                            ),
+                            // القسم الأيسر (العدد)
                           ],
                         ),
                       ),
@@ -464,17 +534,21 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                                   state.userFilter.length, // Number of surveys
                               itemBuilder: (context, index) {
                                 return InkWell(
-                                  onTap:state.newTitle=="المهمين - غائبين" ?null:() {
-                                    BlocProvider.of<ActiveConferenceBloc>(
-                                      context,
-                                    ).add(
-                                      GetUserSurveyEvent(state.userFilter[index]),
-                                    );
-                                    Navigator.pushNamed(
-                                      context,
-                                      Routes.viewUserSurvey,
-                                    );
-                                  },
+                                  onTap: state.newTitle == "المهمين - غائبين"
+                                      ? null
+                                      : () {
+                                          BlocProvider.of<ActiveConferenceBloc>(
+                                            context,
+                                          ).add(
+                                            GetUserSurveyEvent(
+                                              state.userFilter[index],
+                                            ),
+                                          );
+                                          Navigator.pushNamed(
+                                            context,
+                                            Routes.viewUserSurvey,
+                                          );
+                                        },
 
                                   child: userListItem(
                                     state.userFilter[index],
@@ -483,7 +557,7 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                                 );
                               },
                             )
-                          : emptyFullScreen(context),
+                          : SizedBox(),
                     ],
                   );
                 } else {

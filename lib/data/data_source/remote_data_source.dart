@@ -46,6 +46,7 @@ abstract class RemoteDataSource {
   Future<Message1Response> updateSurvey(UpdateSurveyRequest update);
   Future<StatisticsForUsersAnswersBaseResponse> statisticsForUsersAnswers(
     int surveyId,
+      int conference_id,
   );
 
   Future<QuestionsStatisticsBaseResponse> getStatisticsForQuestionTypes(
@@ -212,8 +213,9 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   @override
   Future<StatisticsForUsersAnswersBaseResponse> statisticsForUsersAnswers(
     int surveyId,
+      int conference_id,
   ) async {
-    return await _appServiceClient.statisticsForUsersAnswers(surveyId);
+    return await _appServiceClient.statisticsForUsersAnswers(surveyId,conference_id);
   }
 
   @override
