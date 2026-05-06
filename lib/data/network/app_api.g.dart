@@ -396,36 +396,6 @@ class _AppServiceClient implements AppServiceClient {
   }
 
   @override
-  Future<CreateConferenceBaseResponse> add_users_answers(
-    UseAnswerModel userAnswerModel,
-  ) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    _data.addAll(userAnswerModel.toJson());
-    final _options = _setStreamType<CreateConferenceBaseResponse>(
-      Options(method: 'POST', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            'users-crud/add_users_answers.php',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late CreateConferenceBaseResponse _value;
-    try {
-      _value = CreateConferenceBaseResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
   Future<GetAllAsyncByConferenceIdBaseResponse> getAllInformationConference(
     int conference_id,
   ) async {

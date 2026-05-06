@@ -141,4 +141,15 @@ class RepositroySqlImp extends RepositorySql {
       return Left(failure);
     }
   }
+
+@override
+Future<Either<Failure, List<UserModel>>> getUserConference()async {
+  try {
+    final response =await _databaseHelper.getUserConference();
+    return Right(response);
+  } catch (e) {
+    Failure failure = ErrorHandler.handle(e).failure;
+    return Left(failure);
+  }
+}
 }

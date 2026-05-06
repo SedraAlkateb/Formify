@@ -7,7 +7,6 @@ import 'package:formify/presentation/conference/widget/conferm_dialog.dart';
 import 'package:formify/presentation/home/widget/data_widget.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/responsive/font_responseve.dart';
-import 'package:formify/presentation/resources/responsive/sizer_responseve.dart';
 import 'package:formify/presentation/resources/values_manager.dart';
 
 class ActiveConferenceWidget extends StatelessWidget {

@@ -34,9 +34,9 @@ class AllActiveConferencePage extends StatelessWidget {
 
       body: BlocConsumer<ActiveConferenceBloc, ActiveConferenceState>(
         listener: (context, state) {
-          if(state is DeleteFinishedConferenceErrorState){
+          if (state is DeleteFinishedConferenceErrorState) {
             error(context, state.failure.massage, state.failure.code);
-          }else if(state is DeleteFinishedConferenceLoadingState){
+          } else if (state is DeleteFinishedConferenceLoadingState) {
             loading(context);
           }
         },
@@ -45,6 +45,10 @@ class AllActiveConferencePage extends StatelessWidget {
               BlocProvider.of<ActiveConferenceBloc>(
                 context,
               ).allActiveConference;
+          if (state is DeleteFinishedConferenceState) {
+            success(context);
+            allConferences = state.allActiveConference;
+          }
           if (state is GetAllActiveConferenceLoadingState) {
             return loadingFullScreen(context);
           } else if (state is GetAllActiveConferenceErrorState) {

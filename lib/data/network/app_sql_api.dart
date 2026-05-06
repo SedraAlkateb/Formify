@@ -20,6 +20,7 @@ abstract class AppSqlApiAbs {
   Future<InfoConference> getConferenceInfo();
   Future<List<DoctorsModel>> getDoctors();
   Future<Map<String, DoctorsModel>> getDoctorsAsMap();
+  Future<List<UserModel>> getUserConference();
 
 }
 
@@ -408,6 +409,16 @@ class AppSqlApi extends AppSqlApiAbs {
       for (var map in maps)
         DoctorsModel.fromMap(map).name: DoctorsModel.fromMap(map)
     };
+  }
+
+  @override
+  Future<List<UserModel>> getUserConference()async {
+    final db = await databaseHelper.database;
+    List<Map<String, dynamic>> maps;
+    maps = await db.query('users');
+    return List.generate(maps.length, (i) {
+      return UserModel.fromMap(maps[i]);
+    });
   }
 
 }

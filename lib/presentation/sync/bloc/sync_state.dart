@@ -66,6 +66,13 @@ final class GetDataState extends SyncState {
   @override
   List<Object?> get props => [users,conference_id];
 }
+final class AsyncConferenceErrorState extends SyncState {
+  final Failure failure;
+  const AsyncConferenceErrorState({required this.failure});
+
+  @override
+  List<Object?> get props => [failure];
+}
 
 final class GetConferenceAsyncState extends SyncState {
   final GetAllConferenceModel conferenceModel;
@@ -81,14 +88,7 @@ final class GetConferenceAsyncEmptyState extends SyncState {
 }
 final class GetConferenceAsyncLoadingState extends SyncState {
   const GetConferenceAsyncLoadingState();
-}final class AsyncConferenceErrorState extends SyncState {
-  final Failure failure;
-  const AsyncConferenceErrorState({required this.failure});
-
-  @override
-  List<Object?> get props => [failure];
 }
-
 final class GetConferenceAsyncErrorState extends SyncState {
   final Failure failure;
   const GetConferenceAsyncErrorState({required this.failure});
@@ -255,4 +255,23 @@ final class InsertDoctorSucState extends SyncState {
 
   @override
   List<Object?> get props => [];
+}
+
+final class GetUserConferenceState extends SyncState {
+ final List<UserModel> users;
+  const GetUserConferenceState(this.users);
+  @override
+  List<Object?> get props => [];
+}
+final class GetUserConferenceEmptyState extends SyncState {
+
+  @override
+  List<Object?> get props => [];
+}
+final class GetUserConferenceErrorState extends SyncState {
+  final Failure failure;
+  const GetUserConferenceErrorState({required this.failure});
+
+  @override
+  List<Object?> get props => [failure];
 }

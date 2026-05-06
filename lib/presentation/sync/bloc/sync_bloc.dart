@@ -17,6 +17,7 @@ import 'package:formify/domain/usecase/get_doctors_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_question_answers_usecase.dart';
 import 'package:formify/domain/usecase/get_surveys_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_user_answer_sql_usecase.dart';
+import 'package:formify/domain/usecase/get_users_conference_usecase.dart';
 import 'package:formify/domain/usecase/insert_doctor_sql_usecase.dart';
 import 'package:formify/domain/usecase/insert_user_and_answer_usecase.dart';
 import 'package:formify/domain/usecase/synchronize_users_answers_usecase.dart';
@@ -40,7 +41,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   final InsertUserAndAnswerUsecase insertUserAndAnswerUsecase;
   final GetConferenceInfoSqlUsecase getConferenceInfoSqlUsecase;
   final CheckPasswordUsecase checkPasswordUsecase;
-
+final GetUsersConferenceUsecase getUsersConferenceUsecase;
   // القوائم المخزنة في الذاكرة
   List<IsActiveMainSurveyModel> surveys = [];
   List<IsActiveMainSurveyModel> surveysBase = [];
@@ -68,7 +69,8 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     this.checkPasswordUsecase,
     this.deleteUserSqlUsecase,
     this.getDoctorsSqlUsecase,
-      this.insertDoctorSqlUsecase
+      this.insertDoctorSqlUsecase,
+      this.getUsersConferenceUsecase
   ) : super(const SyncInitial()) {
     // الأحداث الأساسية
     on<AsyncDataEvent>(_onAsyncData);
@@ -105,6 +107,8 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     on<SurveyPageChangedEvent>(_onSurveyPageChanged);
     on<SurveySaveAnswerEvent>(_onSurveySaveAnswer);
     on<SurveySubmitEvent>(_onSurveySubmit);
+    on<GetAllUserEvent>(_onGetAllUserEvent);
+
   }
 
   // --- Doctor Handlers ---
@@ -398,6 +402,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
       finished++;
 
       if (finished == surveys.length) {
+
         emit(const InsertUserLoadingState());
         (await insertUserAndAnswerUsecase.execute(userSqlModel!)).fold(
           (failure) => emit(InsertUserErrorState(failure: failure)),
@@ -406,11 +411,42 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
             emit(FinishedSurveyState());
           },
         );
+        print("object1");
+        for (int i = 0; i < surveys.length; i++) {
+          print("Survey: ${surveys[i].title} | Base: ${surveysBase[i].title}");
+          print("Survey: ${surveys[i].isActive} | Base: ${surveysBase[i].isActive}");
+        }
+        surveys=surveysBase;
+        print("object2");
+        for (int i = 0; i < surveys.length; i++) {
+          print("Survey: ${surveys[i].title} | Base: ${surveysBase[i].title}");
+          print("Survey: ${surveys[i].isActive} | Base: ${surveysBase[i].isActive}");
+
+        }
+
+        emit(GetSurveyAsyncState(surveys));
+
       } else {
-        emit(SurveySubmitSuccessState(surveys));
+        emit(SurveySubmitSuccessState(surveysBase));
       }
     } catch (e) {
       emit(SurveySubmitErrorState(failure: Failure(0, e.toString())));
     }
+  }
+
+  Future<void> _onGetAllUserEvent(
+      GetAllUserEvent event,
+      Emitter<SyncState> emit,
+      ) async {
+    (await getUsersConferenceUsecase.execute()).fold(
+          (failure) => emit(GetUserConferenceErrorState(failure: failure)),
+          (data) {
+        if (data.isEmpty) {
+          emit(GetUserConferenceEmptyState());
+        } else {
+          emit(GetUserConferenceState(data));
+        }
+      },
+    );
   }
 }

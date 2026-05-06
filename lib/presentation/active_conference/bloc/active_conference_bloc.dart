@@ -59,7 +59,7 @@ class ActiveConferenceBloc
         },
         (data) async {
           allActiveConference.removeAt(event.index);
-          emit(GetAllActiveConferenceState(allActiveConference));
+          emit(DeleteFinishedConferenceState(allActiveConference));
         },
       );
     });

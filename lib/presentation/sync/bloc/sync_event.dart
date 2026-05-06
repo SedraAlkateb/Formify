@@ -164,3 +164,6 @@ final class SelectDoctorEvent extends SyncEvent {
 final class ClearDoctorSelectionEvent extends SyncEvent {
   const ClearDoctorSelectionEvent();
 }
+final class GetAllUserEvent extends SyncEvent {
+  const GetAllUserEvent();
+}

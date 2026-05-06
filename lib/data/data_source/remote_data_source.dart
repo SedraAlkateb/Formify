@@ -54,6 +54,8 @@ abstract class RemoteDataSource {
     int conference_id,
   );
   Future< CheckoutResponse> checkPassword(String password);
+
+
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
