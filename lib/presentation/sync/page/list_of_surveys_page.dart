@@ -52,12 +52,9 @@ class _ListOfSurveysPageState extends State<ListOfSurveysPage> {
                      error(context, state.failure.massage, state.failure.code);
                     }
                   },
-                  buildWhen: (previous, current) =>
-                  current is GetSurveyAsyncLoadingState ||
-                      current is GetSurveyAsyncErrorState ||
-                      current is GetSurveyAsyncState ||
-                      current is SurveySubmitSuccessState,
+
                   builder: (context, state) {
+                    List<IsActiveMainSurveyModel> surveys=BlocProvider.of<SyncBloc>(context).surveys;
                     if (state is GetSurveyAsyncLoadingState) {
                       return loadingFullScreen(context);
                     }
@@ -66,20 +63,20 @@ class _ListOfSurveysPageState extends State<ListOfSurveysPage> {
                     }
                     if (state is GetSurveyAsyncState ||
                         state is SurveySubmitSuccessState) {
-                      List<IsActiveMainSurveyModel> surveys =
+                       surveys =
                       (state is SurveySubmitSuccessState)
                           ? state.surveys
                           : (state as GetSurveyAsyncState).surveys;
 
-                      // باستخدام LayoutBuilder لاكتشاف حجم الشاشة وتغيير طريقة العرض بناءً عليه
-                      return LayoutBuilder(
+                    }
+                    return LayoutBuilder(
 
-                        builder: (context, constraints) {
-                          final isTabletLandscape =
-                          Breakpoints.isTabletLandscape(context);
-                          return
-                            Constants.isTablet?
-                            GridView.builder(
+                      builder: (context, constraints) {
+                        final isTabletLandscape =
+                        Breakpoints.isTabletLandscape(context);
+                        return
+                          Constants.isTablet?
+                          GridView.builder(
                             controller: _controller,
                             padding: const EdgeInsets.symmetric(vertical: 20),
                             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -96,22 +93,19 @@ class _ListOfSurveysPageState extends State<ListOfSurveysPage> {
                               );
                             },
                           ):
-                            ListView.builder(
-                              controller: _controller,
-                              padding: const EdgeInsets.symmetric(vertical: 20),
-                              itemCount: surveys.length,
-                              itemBuilder: (context, index) {
-                                return SurveyCard(
-                                  survey: surveys[index],
-                                  index: index,
-                                );
-                              },
-                            );
-                        },
-                      );
-                    }
-
-                    return const SizedBox();
+                          ListView.builder(
+                            controller: _controller,
+                            padding: const EdgeInsets.symmetric(vertical: 20),
+                            itemCount: surveys.length,
+                            itemBuilder: (context, index) {
+                              return SurveyCard(
+                                survey: surveys[index],
+                                index: index,
+                              );
+                            },
+                          );
+                      },
+                    );
                   },
                 ),
               ),

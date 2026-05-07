@@ -6,6 +6,7 @@ import 'package:formify/app/di.dart';
 import 'package:formify/data/mapper/mapper.dart';
 import 'package:formify/data/network/failure.dart';
 import 'package:formify/domain/models/models.dart';
+import 'package:formify/domain/models/user_type.dart';
 import 'package:formify/domain/usecase/add_async_data_sql_usecase.dart';
 import 'package:formify/domain/usecase/check_password_usecase.dart';
 import 'package:formify/domain/usecase/delete_data_sql_usecase.dart';
@@ -41,7 +42,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   final InsertUserAndAnswerUsecase insertUserAndAnswerUsecase;
   final GetConferenceInfoSqlUsecase getConferenceInfoSqlUsecase;
   final CheckPasswordUsecase checkPasswordUsecase;
-final GetUsersConferenceUsecase getUsersConferenceUsecase;
+  final GetUsersConferenceUsecase getUsersConferenceUsecase;
   // القوائم المخزنة في الذاكرة
   List<IsActiveMainSurveyModel> surveys = [];
   List<IsActiveMainSurveyModel> surveysBase = [];
@@ -69,8 +70,8 @@ final GetUsersConferenceUsecase getUsersConferenceUsecase;
     this.checkPasswordUsecase,
     this.deleteUserSqlUsecase,
     this.getDoctorsSqlUsecase,
-      this.insertDoctorSqlUsecase,
-      this.getUsersConferenceUsecase
+    this.insertDoctorSqlUsecase,
+    this.getUsersConferenceUsecase,
   ) : super(const SyncInitial()) {
     // الأحداث الأساسية
     on<AsyncDataEvent>(_onAsyncData);
@@ -93,8 +94,66 @@ final GetUsersConferenceUsecase getUsersConferenceUsecase;
       }
 
       finished = 0;
+      if(surveys.isEmpty){
+        emit(NavigateToConferenceState());
+      }else{
+        emit(NavigateToSurveyState());
+      }
     });
+/*
+ if(surveysBase.isEmpty){
+      emit(const InsertUserLoadingState());
+      final insertResult = await insertUserAndAnswerUsecase.execute(
+        userSqlModel??UserSqlModel(fullName: "fullName", phone: "phone", userType: UserType.other, answerModel: []),
+      );
+      insertResult.fold(
+            (failure) => emit(InsertUserErrorState(failure: failure)),
+            (_) => emit(FinishedSurveyState()),
+      );
+    }else{
+      if (surveys.isEmpty) {
+        emit(const InsertUserLoadingState());
+        final insertResult = await insertUserAndAnswerUsecase.execute(
+          userSqlModel!,
+        );
+        insertResult.fold(
+              (failure) => emit(InsertUserErrorState(failure: failure)),
+              (_) => emit(FinishedSurveyState()),
+        );
+      }else{
+        emit(GetSurveyAsyncState(surveys));
+      }
+       emit(const InsertUserLoadingState());
+          final insertResult = await insertUserAndAnswerUsecase.execute(
+            userSqlModel??UserSqlModel(fullName: "fullName", phone: "phone", userType: UserType.other, answerModel: []),
+          );
+          insertResult.fold(
+                (failure) => emit(InsertUserErrorState(failure: failure)),
+                (_) => emit(FinishedSurveyState()),
+          );
+           final result = await getSurveysSqlUsecase.execute();
+      await result.fold(
+            (failure) async => emit(GetSurveyAsyncErrorState(failure: failure)),
+            (data) async {
+          surveysBase=data.toDomain();
+          surveys = surveysBase;
+          if (surveys.isEmpty) {
+            emit(const InsertUserLoadingState());
+            final insertResult = await insertUserAndAnswerUsecase.execute(
+              userSqlModel??UserSqlModel(fullName: "fullName", phone: "phone", userType: UserType.other, answerModel: []),
+            );
+            insertResult.fold(
+                  (failure) => emit(InsertUserErrorState(failure: failure)),
+                  (_) => emit(FinishedSurveyState()),
+            );
+          }else{
+            emit(GetSurveyAsyncState(surveys));
+          }
 
+
+        },
+      );
+ */
     // أحداث الأطباء والبحث (المعدلة)
     on<DoctorEvent>(_onGetDoctors);
     on<InsertEvent>(_onInsertDoctors);
@@ -108,6 +167,8 @@ final GetUsersConferenceUsecase getUsersConferenceUsecase;
     on<SurveySaveAnswerEvent>(_onSurveySaveAnswer);
     on<SurveySubmitEvent>(_onSurveySubmit);
     on<GetAllUserEvent>(_onGetAllUserEvent);
+    on<SearchInUsersEvent>(_searchInUsersEvent);
+    on<InsertUserSqlEvent>(_onInsertUserSql);
 
   }
 
@@ -122,7 +183,11 @@ final GetUsersConferenceUsecase getUsersConferenceUsecase;
       },
     );
   }
-  Future<void> _onInsertDoctors(InsertEvent event, Emitter<SyncState> emit) async {
+
+  Future<void> _onInsertDoctors(
+    InsertEvent event,
+    Emitter<SyncState> emit,
+  ) async {
     // 1. إرسال حالة التحميل
     emit(InsertDoctorLoadingState());
 
@@ -130,15 +195,14 @@ final GetUsersConferenceUsecase getUsersConferenceUsecase;
     final result = await insertDoctorSqlUsecase.execute(event.doctorsModel);
 
     // 3. معالجة النتيجة
-    result.fold(
-          (failure) => emit(InsertDoctorErrorState(failure: failure)),
-          (data){
-            doctor.add(event.doctorsModel);
-            emit(InsertDoctorSucState());
-
-          },
-    );
+    result.fold((failure) => emit(InsertDoctorErrorState(failure: failure)), (
+      data,
+    ) {
+      doctor.add(event.doctorsModel);
+      emit(InsertDoctorSucState());
+    });
   }
+
   Future<void> _onSearchDoctor(
     SearchDoctorEvent event,
     Emitter<SyncState> emit,
@@ -225,7 +289,7 @@ final GetUsersConferenceUsecase getUsersConferenceUsecase;
 
   Future<void> _onUpload(UploadDataEvent event, Emitter<SyncState> emit) async {
     if (event.userRequest.isNotEmpty) {
-      surveysBase=[];
+      surveysBase = [];
       (await synchronizeUsersAnswersUsecase.execute(
         AllUserModel(event.userRequest, event.conference_id, event.isActive),
       )).fold(
@@ -269,44 +333,17 @@ final GetUsersConferenceUsecase getUsersConferenceUsecase;
     Emitter<SyncState> emit,
   ) async {
     emit(const GetSurveyAsyncLoadingState());
-    if(surveysBase.isEmpty){
-      final result = await getSurveysSqlUsecase.execute();
-      await result.fold(
-            (failure) async => emit(GetSurveyAsyncErrorState(failure: failure)),
-            (data) async {
-          surveysBase=data.toDomain();
-          surveys = surveysBase;
-          if (surveys.isEmpty) {
-            emit(const InsertUserLoadingState());
-            final insertResult = await insertUserAndAnswerUsecase.execute(
-              userSqlModel!,
-            );
-            insertResult.fold(
-                  (failure) => emit(InsertUserErrorState(failure: failure)),
-                  (_) => emit(FinishedSurveyState()),
-            );
-          }else{
-            emit(GetSurveyAsyncState(surveys));
-          }
-
-
-        },
-      );
-    }else{
-      if (surveys.isEmpty) {
-        emit(const InsertUserLoadingState());
-        final insertResult = await insertUserAndAnswerUsecase.execute(
-          userSqlModel!,
-        );
-        insertResult.fold(
-              (failure) => emit(InsertUserErrorState(failure: failure)),
-              (_) => emit(FinishedSurveyState()),
-        );
-      }else{
+    final result = await getSurveysSqlUsecase.execute();
+    await result.fold(
+      (failure) async => emit(GetSurveyAsyncErrorState(failure: failure)),
+      (data) async {
+        surveysBase = data.toDomain();
+        surveys = surveysBase;
         emit(GetSurveyAsyncState(surveys));
-      }
-    }
+      },
+    );
   }
+
   // --- Survey Logic Handlers ---
 
   Future<void> _onGetQuestionAnswers(
@@ -402,7 +439,6 @@ final GetUsersConferenceUsecase getUsersConferenceUsecase;
       finished++;
 
       if (finished == surveys.length) {
-
         emit(const InsertUserLoadingState());
         (await insertUserAndAnswerUsecase.execute(userSqlModel!)).fold(
           (failure) => emit(InsertUserErrorState(failure: failure)),
@@ -411,42 +447,61 @@ final GetUsersConferenceUsecase getUsersConferenceUsecase;
             emit(FinishedSurveyState());
           },
         );
-        print("object1");
-        for (int i = 0; i < surveys.length; i++) {
-          print("Survey: ${surveys[i].title} | Base: ${surveysBase[i].title}");
-          print("Survey: ${surveys[i].isActive} | Base: ${surveysBase[i].isActive}");
-        }
-        surveys=surveysBase;
-        print("object2");
-        for (int i = 0; i < surveys.length; i++) {
-          print("Survey: ${surveys[i].title} | Base: ${surveysBase[i].title}");
-          print("Survey: ${surveys[i].isActive} | Base: ${surveysBase[i].isActive}");
-
-        }
-
-        emit(GetSurveyAsyncState(surveys));
-
+        surveys = surveysBase;
       } else {
-        emit(SurveySubmitSuccessState(surveysBase));
+        emit(SurveySubmitSuccessState(surveys));
       }
     } catch (e) {
       emit(SurveySubmitErrorState(failure: Failure(0, e.toString())));
     }
   }
-
-  Future<void> _onGetAllUserEvent(
-      GetAllUserEvent event,
+  Future<void> _onInsertUserSql(
+      InsertUserSqlEvent event,
       Emitter<SyncState> emit,
       ) async {
+    emit(const InsertUserLoadingState());
+    (await insertUserAndAnswerUsecase.execute(userSqlModel!)).fold(
+          (failure) => emit(InsertUserErrorState(failure: failure)),
+          (_) {
+        //   emit(InsertUserSuccessState());
+        emit(FinishedSurveyState());
+      },
+    );
+  }
+  Future<void> _onGetAllUserEvent(
+    GetAllUserEvent event,
+    Emitter<SyncState> emit,
+  ) async {
     (await getUsersConferenceUsecase.execute()).fold(
-          (failure) => emit(GetUserConferenceErrorState(failure: failure)),
-          (data) {
+      (failure) => emit(GetUserConferenceErrorState(failure: failure)),
+      (data) {
         if (data.isEmpty) {
           emit(GetUserConferenceEmptyState());
         } else {
-          emit(GetUserConferenceState(data));
+          emit(GetUserConferenceState(data, data));
         }
       },
     );
+  }
+
+  Future<void> _searchInUsersEvent(
+    SearchInUsersEvent event,
+    Emitter<SyncState> emit,
+  ) async {
+    final allUsers = event.users;
+    List<UserModel> filteredList = [];
+
+    filteredList = allUsers.where((value) {
+      if (value.fullName.contains(event.search)) {
+        return true;
+      }
+      if (value.address != null && value.address!.contains(event.search)) {
+        return true;
+      }
+
+      return false;
+    }).toList();
+
+    emit(GetUserConferenceState(allUsers, filteredList));
   }
 }

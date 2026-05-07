@@ -38,6 +38,7 @@ class ExcelStBloc extends Bloc<ExcelStEvent, ExcelStState> {
         emit(ExelError(failure: failure));
       },
       (data) {
+
         createExcel(data);
         final Map<String, String> searchFields = {
           'all': 'كل الحقول',

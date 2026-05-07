@@ -259,7 +259,9 @@ final class InsertDoctorSucState extends SyncState {
 
 final class GetUserConferenceState extends SyncState {
  final List<UserModel> users;
-  const GetUserConferenceState(this.users);
+ final List<UserModel> filterUsers;
+
+ const GetUserConferenceState(this.users,this.filterUsers);
   @override
   List<Object?> get props => [];
 }
@@ -274,4 +276,15 @@ final class GetUserConferenceErrorState extends SyncState {
 
   @override
   List<Object?> get props => [failure];
+}
+
+final class NavigateToSurveyState extends SyncState {
+
+  @override
+  List<Object?> get props => [];
+}
+final class NavigateToConferenceState extends SyncState {
+
+  @override
+  List<Object?> get props => [];
 }

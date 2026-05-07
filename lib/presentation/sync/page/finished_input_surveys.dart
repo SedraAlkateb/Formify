@@ -138,8 +138,6 @@ class FinishedInputSurveysPage extends StatelessWidget {
 
                               , () {
                             Navigator.pushNamedAndRemoveUntil(context, Routes.showConference, (route) => false,);
-                            BlocProvider.of<SyncBloc>(context).add(GetConferenceAsyncEvent());
-
                             instance<AppPreferences>().setLoggedIn(2);
                           }, StringsManager.goBackToHome),
                         ],

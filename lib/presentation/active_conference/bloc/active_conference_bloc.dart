@@ -171,9 +171,6 @@ class ActiveConferenceBloc
 
         return false;
       }).toList();
-      filteredList = allUsers.where((user) {
-        return user.fullName.contains(event.search);
-      }).toList();
       emit(
         GetAllUserActiveConferenceState(
           allUsers,

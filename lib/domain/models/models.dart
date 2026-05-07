@@ -332,7 +332,7 @@ class UserModel {
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
       map['id'],
-      map['full_name'],
+      map['fullname'],
       map['email'],
       map['phone'],
       map['address'],
@@ -570,6 +570,8 @@ class UserSqlModel {
   String? email; // البريد الإلكتروني
   String phone; // رقم الهاتف
   String? address; // العنوان
+  String? notes; // العنوان
+
   UserType userType;
   List<AnswerUserModel> answerModel;
   int? doctorId;
@@ -579,6 +581,7 @@ class UserSqlModel {
     this.email,
     required this.phone,
     this.address,
+    this.notes,
     required this.userType,
     required this.answerModel,
     this.doctorId,
@@ -589,6 +592,7 @@ class UserSqlModel {
       'email': email,
       'phone': phone,
       'address': address,
+      'notes': notes,
       'type_id': userType.id,
       'doctor_id':doctorId,
       'answers': answerModel.map((user) => user.toJson()).toList(),
@@ -601,6 +605,7 @@ class UserSqlModel {
       'email': email,
       'phone': phone,
       'address': address,
+      'notes': notes,
       'type_id': userType.id,
       'doctor_id':doctorId
     };
@@ -613,6 +618,7 @@ class UserSqlModel {
       email: map['email'],
       phone: map['phone'],
       address: map['address'],
+      notes: map['notes'],
       userType: userTypeFromId(map['type_id']),
       doctorId: map['doctor_id'],
       answerModel: _mapAnswers(

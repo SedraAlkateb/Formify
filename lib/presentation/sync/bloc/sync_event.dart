@@ -19,7 +19,11 @@ final class InsertDataSqlEvent extends SyncEvent {
   @override
   List<Object?> get props => [asyncModel];
 }
+final class InsertUserSqlEvent extends SyncEvent {
 
+  @override
+  List<Object?> get props => [];
+}
 final class InputUserSqlEvent extends SyncEvent {
   final UserSqlModel userSqlModel;
   const InputUserSqlEvent(this.userSqlModel);
@@ -166,4 +170,9 @@ final class ClearDoctorSelectionEvent extends SyncEvent {
 }
 final class GetAllUserEvent extends SyncEvent {
   const GetAllUserEvent();
+}
+final class SearchInUsersEvent extends SyncEvent {
+  final List<UserModel> users;
+  final String search;
+  const SearchInUsersEvent(this.users,this.search);
 }
