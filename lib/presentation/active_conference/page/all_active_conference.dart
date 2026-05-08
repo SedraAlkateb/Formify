@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/active_conference/bloc/active_conference_bloc.dart';
 import 'package:formify/presentation/active_conference/widget/activce_conference.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
@@ -23,62 +24,64 @@ class AllActiveConferencePage extends StatelessWidget {
         title: Text(
           "المؤتمرات المنتهية",
 
-          style: TextStyle(color: ColorManager.black,
-            fontSize: FontResponsive.font(
-              context,
-              mobile: 20,
-              tablet: 24,
-            ),
+          style: TextStyle(
+            color: ColorManager.black,
+            fontSize: FontResponsive.font(context, mobile: 20, tablet: 24),
           ),
         ),
         backgroundColor: ColorManager.white,
       ),
 
-      body: BlocBuilder<ActiveConferenceBloc, ActiveConferenceState>(
-        buildWhen: (previous, current) {
-          return current is GetAllActiveConferenceState ||
-              current is GetAllActiveEmptyConferenceState ||
-              current is GetAllActiveConferenceLoadingState ||
-              current is GetAllActiveConferenceErrorState;
+      body: BlocConsumer<ActiveConferenceBloc, ActiveConferenceState>(
+        listener: (context, state) {
+          if (state is DeleteFinishedConferenceErrorState) {
+            error(context, state.failure.massage, state.failure.code);
+          } else if (state is DeleteFinishedConferenceLoadingState) {
+            loading(context);
+          }
         },
         builder: (context, state) {
+          List<GetAllConferenceModel> allConferences =
+              BlocProvider.of<ActiveConferenceBloc>(
+                context,
+              ).allActiveConference;
+          if (state is DeleteFinishedConferenceState) {
+            success(context);
+            allConferences = state.allActiveConference;
+          }
           if (state is GetAllActiveConferenceLoadingState) {
             return loadingFullScreen(context);
           } else if (state is GetAllActiveConferenceErrorState) {
             return errorFullScreen(context);
           } else if (state is GetAllActiveConferenceState) {
-            final allConferences = state.allActiveConference;
-
-            return Padding(
-              padding: EdgeInsets.all(
-               AppPadding.p16
-              ),
-              child: ListView.separated(
-                shrinkWrap: true,
-                itemCount: allConferences.length,
-                separatorBuilder: (context, index) =>
-                     SizedBox(height:AppPadding.p10),
-                itemBuilder: (context, index) {
-                  return InkWell(
-                    onTap: () {
-                      Navigator.pushNamed(
-                        context,
-                        Routes.viewActiveConference,
-                        arguments: allConferences[index].id,
-                      );
-                    },
-                    child: ActiveConferenceWidget(
-                      conference: allConferences[index],
-                    ),
-                  );
-                },
-              ),
-            );
+            allConferences = state.allActiveConference;
           } else if (state is GetAllActiveEmptyConferenceState) {
             return emptyFullScreen(context);
-          } else {
-            return SizedBox();
           }
+          return Padding(
+            padding: EdgeInsets.all(AppPadding.p16),
+            child: ListView.separated(
+              shrinkWrap: true,
+              itemCount: allConferences.length,
+              separatorBuilder: (context, index) =>
+                  SizedBox(height: AppPadding.p10),
+              itemBuilder: (context, index) {
+                return InkWell(
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      Routes.viewActiveConference,
+                      arguments: allConferences[index].id,
+                    );
+                  },
+                  child: ActiveConferenceWidget(
+                    conference: allConferences[index],
+                    index: index,
+                  ),
+                );
+              },
+            ),
+          );
         },
       ),
     );

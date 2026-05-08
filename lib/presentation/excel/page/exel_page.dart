@@ -3,14 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/presentation/excel/bloc/excel_st_bloc.dart';
 import 'package:formify/presentation/excel/widget/export_exel.dart';
 
-class ExelConferencePage extends StatefulWidget {
-  const ExelConferencePage({super.key,required this.filename});
+class SurveyExcelPage extends StatefulWidget {
+  const SurveyExcelPage({super.key,required this.filename});
   final String filename;
   @override
-  State<ExelConferencePage> createState() => _ExelConferencePageState();
+  State<SurveyExcelPage> createState() => _SurveyExcelPageState();
 }
 
-class _ExelConferencePageState extends State<ExelConferencePage> {
+class _SurveyExcelPageState extends State<SurveyExcelPage> {
   String searchQuery = '';
   String selectedSearchField = 'all';
   int? _hoveredRowIndex;

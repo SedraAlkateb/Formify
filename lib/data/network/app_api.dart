@@ -65,10 +65,7 @@ abstract class AppServiceClient {
 
     @Part(name: "conference_id") int conference_id,
   );
-  @POST("users-crud/add_users_answers.php")
-  Future<CreateConferenceBaseResponse> add_users_answers(
-    @Body() UseAnswerModel userAnswerModel,
-  );
+
   @POST("synchronize/get_allInformation_confernce.php")
   Future<GetAllAsyncByConferenceIdBaseResponse> getAllInformationConference(
     @Part(name: "conference_id") int conference_id,
@@ -88,6 +85,7 @@ abstract class AppServiceClient {
     @Part(name: "id") int id,
     @Part(name: "user_id") int user_id,
   );
+  /////////////////////////////
   @POST("users-crud/login.php")
   Future<Message1Response> login(
     @Part(name: "username") String username,
@@ -115,7 +113,8 @@ abstract class AppServiceClient {
   @POST("Statistics/statistics_for_usersAnswers.php")
   Future<StatisticsForUsersAnswersBaseResponse> statisticsForUsersAnswers(
     @Part(name: "survey_id") int survey_id,
-  );
+  @Part(name: "conference_id") int conference_id,
+  );///////////////////////////////////////
   @POST("Statistics/get_statistics_for_questionTypes.php")
   Future<QuestionsStatisticsBaseResponse> getStatisticsForQuestionTypes(
     @Part(name: "survey_id") int survey_id,

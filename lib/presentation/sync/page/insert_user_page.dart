@@ -8,6 +8,7 @@ import 'package:formify/presentation/resources/responsive/breakpoints.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/resources/values_manager.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
+import 'package:formify/presentation/sync/widget/autocomplete.dart';
 import 'package:formify/presentation/unit/animation/animation-in_list.dart';
 import 'package:formify/presentation/unit/animation/buttom_animation.dart';
 import 'package:formify/presentation/unit/drop_down_field.dart';
@@ -28,8 +29,12 @@ class _InsertUserPageState extends State<InsertUserPage>
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
+  final TextEditingController noteController = TextEditingController();
+
   late final AnimationController _controller;
   UserType _selectedUserType = UserType.other;
+  final FocusNode _doctorFocusNode = FocusNode();
+  int? doctorId;
   @override
   void initState() {
     super.initState();
@@ -42,6 +47,7 @@ class _InsertUserPageState extends State<InsertUserPage>
 
   @override
   void dispose() {
+    _doctorFocusNode.dispose(); // تدمير الـ node عند الخروج
     _controller.dispose();
     super.dispose();
   }
@@ -53,17 +59,13 @@ class _InsertUserPageState extends State<InsertUserPage>
         email: emailController.text,
         phone: phoneController.text,
         address: addressController.text,
+        notes: noteController.text,
+        doctorId: BlocProvider.of<SyncBloc>(context).selectedDoctor?.id,
         userType: userTypeFromId(_selectedUserType.id),
         answerModel: [], // تُملأ لاحقًا
       );
 
       BlocProvider.of<SyncBloc>(context).add(InputUserSqlEvent(user));
-      BlocProvider.of<SyncBloc>(context).add(GetSurveyAsyncEvent());
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        Routes.listOfSurveys,
-        (route) => false,
-      );
     }
   }
 
@@ -115,6 +117,10 @@ class _InsertUserPageState extends State<InsertUserPage>
                       //.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(25),
                     ),
+                    constraints: BoxConstraints(
+                      minHeight:
+                          screenHeight * 0.8, // حد أدنى بدلاً من ارتفاع ثابت
+                    ),
                     child: Padding(
                       padding: EdgeInsets.only(
                         right: AppPadding.p40,
@@ -148,7 +154,7 @@ class _InsertUserPageState extends State<InsertUserPage>
                             ),
                             buildAnimatedField(
                               controller: _controller,
-                              index: 1,
+                              index: 2,
                               child: Text(
                                 "معلومات الحضور",
                                 textAlign: TextAlign.center,
@@ -162,7 +168,7 @@ class _InsertUserPageState extends State<InsertUserPage>
                             SizedBox(height: 5),
                             buildAnimatedField(
                               controller: _controller,
-                              index: 2,
+                              index: 3,
                               child: Text(
                                 "يرجى إدخال بياناتك للمتابعة إلى الاستبيانات",
                                 textAlign: TextAlign.center,
@@ -177,19 +183,28 @@ class _InsertUserPageState extends State<InsertUserPage>
                               shrinkWrap: true,
                               physics: NeverScrollableScrollPhysics(),
                               children: [
-                                buildAnimatedField(
-                                  controller: _controller,
-                                  index: 3,
-                                  child: GlowTextField(
-                                    hint: " ادخل اسمك الكامل ",
-                                    label: 'الاسم الكامل',
-                                    controller: fullNameController,
-
-                                    icon: Icons.person_outline,
-                                    validator: (v) =>
-                                        v!.isEmpty ? 'الاسم مطلوب' : null,
-                                  ),
+                                DoctorAutocompleteField(
+                                  allDoctors: context.read<SyncBloc>().doctor,
+                                  controller: fullNameController,
+                                  focusNode:
+                                      _doctorFocusNode, // تمريره هنا يحل المشكلة
+                                  index: 4,
+                                  animationController: _controller,
+                                  buildAnimatedField: buildAnimatedField,
+                                  onSelected: (doctor) {
+                                    context.read<SyncBloc>().add(
+                                      SelectDoctorEvent(doctor),
+                                    );
+                                    fullNameController.text = doctor.name;
+                                    addressController.text = doctor.region;
+                                    noteController.text = doctor.description;
+                                    _doctorFocusNode
+                                        .unfocus(); // إغلاق الكيبورد بعد الاختيار
+                                  },
                                 ),
+
+                                // نصيحة إضافية لحل الـ Overflow:
+                                // في الـ Container الأساسي، اجعلي الارتفاع هكذا:
                                 buildAnimatedField(
                                   controller: _controller,
                                   index: 5,
@@ -199,13 +214,24 @@ class _InsertUserPageState extends State<InsertUserPage>
                                     hint: "09xxxxxxxx",
                                     icon: Icons.phone_outlined,
                                     keyboardType: TextInputType.phone,
-                                    validator: (v) =>
-                                        v!.length < 8 ? 'رقم غير صحيح' : null,
+                                    validator: (v) {
+                                      // 1. إذا كان الحقل فارغاً تماماً أو يحتوي مسافات فقط
+                                      if (v == null || v.trim().isEmpty) {
+                                        return null; // مقبول لأنه ليس إجبارياً
+                                      }
+
+                                      // 2. إذا كتب المستخدم رقماً، نتحقق من الطول
+                                      if (v.trim().length < 8) {
+                                        return 'الرقم قصير جداً، يجب أن يكون 8 أرقام على الأقل';
+                                      }
+
+                                      return null; // مقبول إذا تجاوز الشرط
+                                    },
                                   ),
                                 ),
                                 buildAnimatedField(
                                   controller: _controller,
-                                  index: 4,
+                                  index: 6,
                                   child: GlowTextField(
                                     controller: emailController,
                                     hint: "example@gmail.com",
@@ -218,7 +244,7 @@ class _InsertUserPageState extends State<InsertUserPage>
 
                                 buildAnimatedField(
                                   controller: _controller,
-                                  index: 6,
+                                  index: 7,
                                   child: GlowTextField(
                                     controller: addressController,
                                     label: 'العنوان',
@@ -227,10 +253,20 @@ class _InsertUserPageState extends State<InsertUserPage>
                                     validator: (v) => null,
                                   ),
                                 ),
-
                                 buildAnimatedField(
                                   controller: _controller,
-                                  index: 6,
+                                  index: 8,
+                                  child: GlowTextField(
+                                    controller: noteController,
+                                    label: 'ملاحظة',
+                                    hint: "أدخل الملاحظة كاملة",
+                                    icon: Icons.location_on_outlined,
+                                    validator: (v) => null,
+                                  ),
+                                ),
+                                buildAnimatedField(
+                                  controller: _controller,
+                                  index: 9,
                                   child: DropDownField(
                                     label: 'نوع الحضور',
                                     hint: 'اختر نوع الحضور',
@@ -252,24 +288,46 @@ class _InsertUserPageState extends State<InsertUserPage>
                                 ),
 
                                 SizedBox(height: AppSize.s20),
-                                buildAnimatedField(
-                                  controller: _controller,
-                                  index: 7,
-                                  child: bottomAnimation(
-                                    context,
-                                    _submit,
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      children: [
-                                        Text('متابعة الى الاستبيان'),
-                                        SizedBox(width: 9),
-                                        Icon(Icons.arrow_forward),
-                                      ],
-                                    ),
-                                  ),
+                                BlocConsumer<SyncBloc, SyncState>(
+                                  listener: (context, state) {
+                                    if (state is NavigateToSurveyState) {
+                                      Navigator.pushNamedAndRemoveUntil(
+                                        context,
+                                        Routes.listOfSurveys,
+                                            (route) => false,
+                                      );
+                                    } else if (state
+                                    is NavigateToConferenceState) {
+                                      BlocProvider.of<SyncBloc>(
+                                        context,
+                                      ).add(InsertUserSqlEvent());
+                                    }
+                                    else   if(state is FinishedSurveyState){
+                                      Navigator.pushNamedAndRemoveUntil(
+                                        context,
+                                        Routes.showConference,
+                                            (route) => false,
+                                      );
+                                    }
+                                  },
+                                  builder: (context, state) {
+
+                                    return bottomAnimation(
+                                      context,
+                                      _submit,
+                                      Row(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.end,
+                                        children: [
+                                          Text(state is InsertUserErrorState?state.failure.massage:state is InsertUserLoadingState?"Loading...":  'متابعة الى الاستبيان'),
+                                          SizedBox(width: 9),
+                                          Icon(Icons.arrow_forward),
+                                        ],
+                                      ),
+                                    );
+                                  },
                                 ),
                                 SizedBox(height: AppSize.s20),
                               ],

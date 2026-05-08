@@ -249,7 +249,7 @@ class _SurveyFeedbackCardState extends State<SurveyFeedbackCard> {
                     Navigator.pushNamed(context, Routes.exelConference, arguments: widget.survey.title,);
                     BlocProvider.of<ExcelStBloc>(
                       context,
-                    ).add(UsersAnswersStatisticsEvent(widget.survey.id));
+                    ).add(UsersAnswersStatisticsEvent(widget.survey.id,widget.conferenceId));
                   },
                 ),
               ),

@@ -566,11 +566,13 @@ class RepositoryImp implements Repository {
   @override
   Future<Either<Failure, ExelModel>> statisticsForUsersAnswers(
     int surveyId,
+      int conference_id,
   ) async {
     try {
       if (await _networkInfo.isConnected) {
         final response = await _remoteDataSource.statisticsForUsersAnswers(
           surveyId,
+        conference_id
         );
 
         if (response.status == "200" ||

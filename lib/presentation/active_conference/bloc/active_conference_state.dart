@@ -1,28 +1,31 @@
 part of 'active_conference_bloc.dart';
 
 @immutable
-abstract class ActiveConferenceState extends Equatable{}
+abstract class ActiveConferenceState extends Equatable {}
 
 final class ActiveConferenceInitial extends ActiveConferenceState {
   @override
-  List<Object?> get props =>  [];
+  List<Object?> get props => [];
 }
+
 ///////////////////////////AllActiveConference////////////////////
 final class GetAllActiveConferenceState extends ActiveConferenceState {
   final List<GetAllConferenceModel> allActiveConference;
   GetAllActiveConferenceState(this.allActiveConference);
   List<Object?> get props => [allActiveConference];
 }
-final class GetAllActiveEmptyConferenceState extends ActiveConferenceState {
 
+final class GetAllActiveEmptyConferenceState extends ActiveConferenceState {
   List<Object?> get props => [];
 }
+
 final class GetAllActiveConferenceErrorState extends ActiveConferenceState {
   final Failure failure;
   GetAllActiveConferenceErrorState({required this.failure});
   @override
-  List<Object?> get props =>[failure];
+  List<Object?> get props => [failure];
 }
+
 final class GetAllActiveConferenceLoadingState extends ActiveConferenceState {
   @override
   List<Object?> get props => [];
@@ -37,75 +40,120 @@ final class GetActiveConferenceByIdState extends ActiveConferenceState {
   @override
   List<Object?> get props => [conferenceModel];
 }
+
 final class GetActiveConferenceByIdErrorState extends ActiveConferenceState {
   final Failure failure;
   GetActiveConferenceByIdErrorState({required this.failure});
   @override
-  List<Object?> get props =>[failure];
+  List<Object?> get props => [failure];
 }
+
 final class GetActiveConferenceByIdLoadingState extends ActiveConferenceState {
   @override
   List<Object?> get props => [];
 }
 
-
 ///////////////////////////AllUserActiveConference////////////////////
 final class GetAllUserActiveConferenceState extends ActiveConferenceState {
   final List<UserModel> users;
-  GetAllUserActiveConferenceState(this.users);
-  List<Object?> get props => [users];
+  final List<UserModel> userFilter;
+  final String newTitle;
+  GetAllUserActiveConferenceState(this.users, this.newTitle, this.userFilter);
+  List<Object?> get props => [userFilter];
 }
-final class GetAllUserActiveEmptyConferenceState extends ActiveConferenceState {
 
-  List<Object?> get props => [];
-}
 final class GetAllUserActiveConferenceErrorState extends ActiveConferenceState {
   final Failure failure;
   GetAllUserActiveConferenceErrorState({required this.failure});
   @override
-  List<Object?> get props =>[failure];
+  List<Object?> get props => [failure];
 }
-final class GetAllUserActiveConferenceLoadingState extends ActiveConferenceState {
+
+final class GetAllUserActiveConferenceLoadingState
+    extends ActiveConferenceState {
   @override
   List<Object?> get props => [];
 }
+
 ///////////////////////////////////////////////////////////////////
 final class GetUserSurveyState extends ActiveConferenceState {
   final UserModel userModel;
   final List<SurveyToConferenceModel> surveys;
 
-  GetUserSurveyState(this.userModel,this.surveys);
+  GetUserSurveyState(this.userModel, this.surveys);
 
   @override
   List<Object?> get props => [userModel];
 }
+
 final class GetUserSurveyErrorState extends ActiveConferenceState {
   final Failure failure;
   GetUserSurveyErrorState({required this.failure});
   @override
-  List<Object?> get props =>[failure];
+  List<Object?> get props => [failure];
 }
+
 final class GetUserSurveyLoadingState extends ActiveConferenceState {
   @override
   List<Object?> get props => [];
 }
+
 /////////////////////////
 final class GetCompletedSurveyState extends ActiveConferenceState {
   final SurveyUserModel surveyUserModel;
   GetCompletedSurveyState(this.surveyUserModel);
   List<Object?> get props => [surveyUserModel];
 }
-final class GetCompletedSurveyEmptyState extends ActiveConferenceState {
 
+final class GetCompletedSurveyEmptyState extends ActiveConferenceState {
   List<Object?> get props => [];
 }
+
 final class GetCompletedSurveyErrorState extends ActiveConferenceState {
   final Failure failure;
   GetCompletedSurveyErrorState({required this.failure});
   @override
-  List<Object?> get props =>[failure];
+  List<Object?> get props => [failure];
 }
+
 final class GetCompletedSurveyLoadingState extends ActiveConferenceState {
+  @override
+  List<Object?> get props => [];
+}
+
+///////////////////////////doctorsAsMap////////////////////
+final class GetDoctorsAsMapState extends ActiveConferenceState {
+  final Map<String, DoctorsModel> doctorsAsMap;
+  GetDoctorsAsMapState(this.doctorsAsMap);
+  List<Object?> get props => [doctorsAsMap];
+}
+
+final class GetDoctorsAsMapErrorState extends ActiveConferenceState {
+  final Failure failure;
+  GetDoctorsAsMapErrorState({required this.failure});
+  @override
+  List<Object?> get props => [failure];
+}
+
+final class GetDoctorsAsMapLoadingState extends ActiveConferenceState {
+  @override
+  List<Object?> get props => [];
+}
+
+final class DeleteFinishedConferenceState extends ActiveConferenceState {
+  final List<GetAllConferenceModel> allActiveConference;
+  DeleteFinishedConferenceState(this.allActiveConference);
+  List<Object?> get props => [allActiveConference];
+}
+
+final class DeleteFinishedConferenceErrorState extends ActiveConferenceState {
+  final Failure failure;
+  DeleteFinishedConferenceErrorState({required this.failure});
+  @override
+  List<Object?> get props => [failure];
+}
+
+final class DeleteFinishedConferenceLoadingState extends ActiveConferenceState {
   @override
   List<Object?> get props => [];
 }

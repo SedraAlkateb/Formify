@@ -67,8 +67,28 @@ Widget userListItem(UserModel user, BuildContext context) {
                   ),
 
                   SizedBox(height: AppSize.s4),
-
-                  user.email!=null?
+                  user.address!=""?
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.location_on_outlined,
+                        size: Constants.isTablet ? 18 : 14,
+                        color: Colors.grey.shade600,
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          user.address??"",
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: Constants.isTablet ? 17 : 13,
+                            color: Colors.grey.shade700,
+                          ),
+                        ),
+                      )
+                    ],
+                  ):SizedBox(),
+                  user.email!=""?
                   Row(
                     children: [
                       Icon(

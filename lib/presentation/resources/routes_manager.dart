@@ -5,6 +5,7 @@ import 'package:formify/presentation/active_conference/page/all_active_conferenc
 import 'package:formify/presentation/active_conference/page/view_active_conference_page.dart';
 import 'package:formify/presentation/active_conference/page/view_completed_survey.dart';
 import 'package:formify/presentation/conference/pages/Update_conference_page.dart';
+import 'package:formify/presentation/conference/pages/conference_exel_page.dart';
 import 'package:formify/presentation/conference/pages/link_survey_by_id.dart';
 import 'package:formify/presentation/conference/pages/create_conference_page.dart';
 import 'package:formify/presentation/conference/pages/view_conference_page.dart';
@@ -24,6 +25,7 @@ import 'package:formify/presentation/survey/pages/view_all_survey_page.dart';
 import 'package:formify/presentation/survey/pages/view_survey.dart';
 import 'package:formify/presentation/sync/page/finished_input_surveys.dart';
 import 'package:formify/presentation/sync/page/game_input_page.dart';
+import 'package:formify/presentation/sync/page/insert_doctor_page.dart';
 import 'package:formify/presentation/sync/page/insert_user_page.dart';
 import 'package:formify/presentation/sync/page/list_of_surveys_page.dart';
 import 'package:formify/presentation/sync/page/setting_page.dart';
@@ -61,6 +63,8 @@ class Routes {
   static const String updateConference = "/updateConference";
   static const String exelConference = "/exelConference";
   static const String dashboardSurvey = "/dashboardSurvey";
+  static const String insertDoctor = "/insertDoctor";
+  static const String exelBaseConference = "/exelBaseConference";
 
 }
 
@@ -126,8 +130,13 @@ class RouteGenerator {
         return _animatedRoute(ViewUserSurveyPage());
       case Routes.exelConference:
         final filename = settings.arguments as String;
-        return _animatedRoute(ExelConferencePage(
+        return _animatedRoute(SurveyExcelPage(
           filename: filename,
+        ));
+      case Routes.exelBaseConference:
+        final users = settings.arguments as List<UserModel>;
+        return _animatedRoute(DoctorExcelPage(
+          allDoctors: users,
         ));
       case Routes.finishedSurvey:
         return _animatedRoute(FinishedInputSurveysPage());
@@ -149,8 +158,11 @@ class RouteGenerator {
         initSurveyModule();
         return _animatedRoute(ViewAllSurveyPage());
       case Routes.dashboardSurvey:
+        initAiModule();
         return _animatedRoute(SurveyDashboardPage());
+      case Routes.insertDoctor:
 
+        return _animatedRoute(AddDoctorPage());
       default:
         return unDefinedRoute();
     }

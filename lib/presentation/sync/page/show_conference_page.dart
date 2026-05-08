@@ -27,6 +27,8 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
   @override
   void initState() {
     BlocProvider.of<SyncBloc>(context).add(GetConferenceAsyncEvent());
+    BlocProvider.of<SyncBloc>(context).add(GetSurveyAsyncEvent());
+
     super.initState();
   }
 
@@ -68,11 +70,8 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
 
                   return SingleChildScrollView(
                     child: Padding(
-                      padding:  EdgeInsets.all(
-                         Constants.isTablet?30:
-                          0),
+                      padding: EdgeInsets.all(Constants.isTablet ? 30 : 0),
                       child: Column(
-
                         children: [
                           FloatingContainer(),
                           LayoutBuilder(
@@ -82,25 +81,28 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                               final isMobilePortrait =
                                   Breakpoints.isMobilePortrait(context);
                               return Container(
-                                height:(isTabletPortrait || isMobilePortrait)? screenHeight * 0.7:null,
+                                height: (isTabletPortrait || isMobilePortrait)
+                                    ? screenHeight * 0.7
+                                    : null,
                                 width: double.infinity,
-                                padding:
-                                EdgeInsets.only(
-                                  left:
-
-                                  20.sp,
+                                padding: EdgeInsets.only(
+                                  left: 20.sp,
                                   right: 20.sp,
                                   top: 20.sp,
-                                  bottom: 20.sp
+                                  bottom: 20.sp,
                                 ),
 
                                 margin: EdgeInsets.all(25.sp),
                                 decoration: BoxDecoration(
-                                  border: Border.all(color: ColorManager.border),
+                                  border: Border.all(
+                                    color: ColorManager.border,
+                                  ),
                                   color: ColorManager.white,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: ColorManager.black.withOpacity(0.2),
+                                      color: ColorManager.black.withOpacity(
+                                        0.2,
+                                      ),
                                       blurRadius: 3,
                                       offset: const Offset(0, 1),
                                     ),
@@ -114,12 +116,16 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                     top: 20.sp,
                                   ),
                                   child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Column(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             conferenceModel.name,
@@ -161,69 +167,85 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                                 border: Border.all(
                                                   color: ColorManager.border,
                                                 ),
-                                                color: ColorManager.primaryShadow
+                                                color: ColorManager
+                                                    .primaryShadow
                                                     .withOpacity(0.2),
-                                                borderRadius: BorderRadius.circular(
-                                                  25,
-                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(25),
                                               ),
                                               child: Row(
                                                 children: [
                                                   Card(
-                                                    margin: EdgeInsets.all(5.sp),
+                                                    margin: EdgeInsets.all(
+                                                      5.sp,
+                                                    ),
                                                     shape: RoundedRectangleBorder(
                                                       borderRadius:
-                                                      BorderRadius.circular(12),
+                                                          BorderRadius.circular(
+                                                            12,
+                                                          ),
                                                     ),
                                                     color: ColorManager.primary,
                                                     child: Padding(
-                                                      padding: EdgeInsets.all(10.sp),
+                                                      padding: EdgeInsets.all(
+                                                        10.sp,
+                                                      ),
                                                       child: Icon(
-                                                        Icons.location_on_outlined,
-                                                        color: Color(0xffffffff),
+                                                        Icons
+                                                            .location_on_outlined,
+                                                        color: Color(
+                                                          0xffffffff,
+                                                        ),
                                                         size: 30.sp,
                                                       ),
                                                     ),
                                                   ),
                                                   Expanded(
                                                     child: Padding(
-                                                      padding: EdgeInsets.all(8.0.sp),
+                                                      padding: EdgeInsets.all(
+                                                        8.0.sp,
+                                                      ),
                                                       child: Column(
                                                         crossAxisAlignment:
-                                                        CrossAxisAlignment.start,
+                                                            CrossAxisAlignment
+                                                                .start,
                                                         children: [
                                                           Text(
                                                             "العنوان",
                                                             textAlign:
-                                                            TextAlign.right,
+                                                                TextAlign.right,
                                                             style: TextStyle(
                                                               color: ColorManager
                                                                   .textSecondary,
                                                               fontSize:
-                                                              FontResponsive.font(
-                                                                context,
-                                                                mobile: 15,
-                                                                tablet: 21,
-                                                              ),
+                                                                  FontResponsive.font(
+                                                                    context,
+                                                                    mobile: 15,
+                                                                    tablet: 21,
+                                                                  ),
                                                               fontWeight:
-                                                              FontWeight.w500,
+                                                                  FontWeight
+                                                                      .w500,
                                                             ),
                                                           ),
                                                           Text(
-                                                            conferenceModel.address,
+                                                            conferenceModel
+                                                                .address,
                                                             textAlign:
-                                                            TextAlign.right,
+                                                                TextAlign.right,
                                                             style: TextStyle(
                                                               color:
-                                                              ColorManager.black,
+                                                                  ColorManager
+                                                                      .black,
                                                               fontSize:
-                                                              FontResponsive.font(
-                                                                context,
-                                                                mobile: 18,
-                                                                tablet: 24,
-                                                              ),
+                                                                  FontResponsive.font(
+                                                                    context,
+                                                                    mobile: 18,
+                                                                    tablet: 24,
+                                                                  ),
                                                               fontWeight:
-                                                              FontWeight.bold,
+                                                                  FontWeight
+                                                                      .bold,
                                                             ),
                                                           ),
                                                         ],
@@ -248,86 +270,102 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                                 border: Border.all(
                                                   color: ColorManager.border,
                                                 ),
-                                                color: ColorManager.primaryShadow
+                                                color: ColorManager
+                                                    .primaryShadow
                                                     .withOpacity(0.2),
-                                                borderRadius: BorderRadius.circular(
-                                                  25,
-                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(25),
                                               ),
                                               child: Row(
                                                 children: [
                                                   Card(
-                                                    margin: EdgeInsets.all(5.sp),
+                                                    margin: EdgeInsets.all(
+                                                      5.sp,
+                                                    ),
                                                     shape: RoundedRectangleBorder(
                                                       borderRadius:
-                                                      BorderRadius.circular(12),
+                                                          BorderRadius.circular(
+                                                            12,
+                                                          ),
                                                     ),
                                                     color: ColorManager.primary,
                                                     child: Padding(
-                                                      padding: EdgeInsets.all(10.sp),
+                                                      padding: EdgeInsets.all(
+                                                        10.sp,
+                                                      ),
                                                       child: Icon(
                                                         Icons.date_range_sharp,
-                                                        color: Color(0xffffffff),
+                                                        color: Color(
+                                                          0xffffffff,
+                                                        ),
                                                         size: 30.sp,
                                                       ),
                                                     ),
                                                   ),
                                                   Expanded(
                                                     child: Padding(
-                                                      padding: EdgeInsets.all(8.0.sp),
+                                                      padding: EdgeInsets.all(
+                                                        8.0.sp,
+                                                      ),
                                                       child: Column(
                                                         crossAxisAlignment:
-                                                        CrossAxisAlignment.start,
+                                                            CrossAxisAlignment
+                                                                .start,
                                                         children: [
                                                           Text(
                                                             "التاريخ",
                                                             textAlign:
-                                                            TextAlign.right,
+                                                                TextAlign.right,
                                                             style: TextStyle(
                                                               color: ColorManager
                                                                   .textSecondary,
                                                               fontSize:
-                                                              FontResponsive.font(
-                                                                context,
-                                                                mobile: 15,
-                                                                tablet: 21,
-                                                              ),
+                                                                  FontResponsive.font(
+                                                                    context,
+                                                                    mobile: 15,
+                                                                    tablet: 21,
+                                                                  ),
                                                               fontWeight:
-                                                              FontWeight.w500,
+                                                                  FontWeight
+                                                                      .w500,
                                                             ),
                                                           ),
                                                           Text(
                                                             "تاريخ البدء: ${conferenceModel.startDate}",
                                                             textAlign:
-                                                            TextAlign.right,
+                                                                TextAlign.right,
                                                             style: TextStyle(
                                                               color:
-                                                              ColorManager.black,
+                                                                  ColorManager
+                                                                      .black,
                                                               fontSize:
-                                                              FontResponsive.font(
-                                                                context,
-                                                                mobile: 18,
-                                                                tablet: 24,
-                                                              ),
+                                                                  FontResponsive.font(
+                                                                    context,
+                                                                    mobile: 18,
+                                                                    tablet: 24,
+                                                                  ),
                                                               fontWeight:
-                                                              FontWeight.bold,
+                                                                  FontWeight
+                                                                      .bold,
                                                             ),
                                                           ),
                                                           Text(
                                                             "تاريخ الانتهاء: ${conferenceModel.endDate}",
                                                             textAlign:
-                                                            TextAlign.right,
+                                                                TextAlign.right,
                                                             style: TextStyle(
                                                               color:
-                                                              ColorManager.black,
+                                                                  ColorManager
+                                                                      .black,
                                                               fontSize:
-                                                              FontResponsive.font(
-                                                                context,
-                                                                mobile: 18,
-                                                                tablet: 24,
-                                                              ),
+                                                                  FontResponsive.font(
+                                                                    context,
+                                                                    mobile: 18,
+                                                                    tablet: 24,
+                                                                  ),
                                                               fontWeight:
-                                                              FontWeight.bold,
+                                                                  FontWeight
+                                                                      .bold,
                                                             ),
                                                           ),
                                                         ],
@@ -357,6 +395,10 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                                 BlocProvider.of<SyncBloc>(
                                                   context,
                                                 ).add(GetInfoConferenceEvent());
+                                                BlocProvider.of<SyncBloc>(
+                                                  context,
+                                                ).add(GetAllUserEvent());
+
                                                 Navigator.pushNamed(
                                                   context,
                                                   Routes.settingPage,
@@ -371,7 +413,6 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                           }, "إعدادات المؤتمر"),
                                         ],
                                       ),
-
                                     ],
                                   ),
                                 ),
@@ -383,7 +424,6 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                     ),
                   );
                 } else if (state is GetConferenceAsyncEmptyState) {
-
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceAround,

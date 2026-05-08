@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/app/constants.dart';
 import 'package:formify/domain/models/models.dart';
+import 'package:formify/presentation/active_conference/bloc/active_conference_bloc.dart';
+import 'package:formify/presentation/conference/widget/conferm_dialog.dart';
 import 'package:formify/presentation/home/widget/data_widget.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/responsive/font_responseve.dart';
 import 'package:formify/presentation/resources/values_manager.dart';
 
 class ActiveConferenceWidget extends StatelessWidget {
-  const ActiveConferenceWidget({super.key, required this.conference});
+  const ActiveConferenceWidget({super.key, required this.conference,required this.index});
   final GetAllConferenceModel conference;
+  final int index;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -130,9 +134,42 @@ class ActiveConferenceWidget extends StatelessWidget {
           SizedBox(height: AppSize.s10),
           Divider(),
           SizedBox(height: AppSize.s10),
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: Icon(Icons.arrow_forward, color: ColorManager.primary,size: Constants.isTablet?30:26,),
+          Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(Icons.arrow_forward, color: ColorManager.primary,size: Constants.isTablet?30:26,),
+              Card(
+                elevation: 5,
+                color: ColorManager.error.withOpacity(0.25),
+                child: IconButton(
+                  color: ColorManager.white,
+                  autofocus: true,
+                  splashRadius: 200,
+                  onPressed: () => showConfirmDialog(
+                    context: context,
+                    title: "حذف المؤتمر",
+                    message: "هل تريد حقا حذف مؤتمر منتهي ؟؟",
+                    onConfirm: () {
+                      BlocProvider.of<ActiveConferenceBloc>(
+                        context,
+                      ).add(
+                        DeleteFinishedConferenceEvent(
+                          conference.id,
+
+                          index,
+                        ),
+                      );
+                    },
+                  ),
+
+                  icon: Icon(
+                    Icons.delete_outlined,
+                    color: ColorManager.error,
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),

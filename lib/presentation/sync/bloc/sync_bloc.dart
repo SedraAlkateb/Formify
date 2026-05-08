@@ -6,6 +6,7 @@ import 'package:formify/app/di.dart';
 import 'package:formify/data/mapper/mapper.dart';
 import 'package:formify/data/network/failure.dart';
 import 'package:formify/domain/models/models.dart';
+import 'package:formify/domain/models/user_type.dart';
 import 'package:formify/domain/usecase/add_async_data_sql_usecase.dart';
 import 'package:formify/domain/usecase/check_password_usecase.dart';
 import 'package:formify/domain/usecase/delete_data_sql_usecase.dart';
@@ -13,9 +14,12 @@ import 'package:formify/domain/usecase/delete_user_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_all_async_info_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_info_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_sql_usecase.dart';
+import 'package:formify/domain/usecase/get_doctors_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_question_answers_usecase.dart';
 import 'package:formify/domain/usecase/get_surveys_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_user_answer_sql_usecase.dart';
+import 'package:formify/domain/usecase/get_users_conference_usecase.dart';
+import 'package:formify/domain/usecase/insert_doctor_sql_usecase.dart';
 import 'package:formify/domain/usecase/insert_user_and_answer_usecase.dart';
 import 'package:formify/domain/usecase/synchronize_users_answers_usecase.dart';
 import 'package:meta/meta.dart';
@@ -30,18 +34,28 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   final DeleteDataSqlUsecase deleteDataSqlUsecase;
   final DeleteUserSqlUsecase deleteUserSqlUsecase;
   final SynchronizeUsersAnswersUsecase synchronizeUsersAnswersUsecase;
-  ///////////////////////////////////////////////////////////////////////////////
+  final GetDoctorsSqlUsecase getDoctorsSqlUsecase;
+  final InsertDoctorSqlUsecase insertDoctorSqlUsecase;
   final GetConferenceSqlUsecase getConferenceSqlUsecase;
   final GetSurveysSqlUsecase getSurveysSqlUsecase;
   final GetQuestionAnswersUsecase getQuestionAnswersUsecase;
   final InsertUserAndAnswerUsecase insertUserAndAnswerUsecase;
-  GetConferenceInfoSqlUsecase getConferenceInfoSqlUsecase;
-  CheckPasswordUsecase checkPasswordUsecase;
-
+  final GetConferenceInfoSqlUsecase getConferenceInfoSqlUsecase;
+  final CheckPasswordUsecase checkPasswordUsecase;
+  final GetUsersConferenceUsecase getUsersConferenceUsecase;
+  // القوائم المخزنة في الذاكرة
   List<IsActiveMainSurveyModel> surveys = [];
+  List<IsActiveMainSurveyModel> surveysBase = [];
+
+  List<DoctorsModel> doctor = [];
+
+  // الطبيب المختار حالياً (المصدر الوحيد للحقيقة لـ doctorId)
+  DoctorsModel? selectedDoctor;
+
   UserSqlModel? userSqlModel;
   int? conferenceId;
   int finished = 0;
+
   SyncBloc(
     this.getAllAsyncInfoUsecase,
     this.addAsyncDataSqlUsecase,
@@ -55,30 +69,172 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     this.getConferenceInfoSqlUsecase,
     this.checkPasswordUsecase,
     this.deleteUserSqlUsecase,
+    this.getDoctorsSqlUsecase,
+    this.insertDoctorSqlUsecase,
+    this.getUsersConferenceUsecase,
   ) : super(const SyncInitial()) {
-    // ===== Existing =====
+    // الأحداث الأساسية
     on<AsyncDataEvent>(_onAsyncData);
     on<InsertDataSqlEvent>(_onInsertSql);
     on<DeleteDataEvent>(_onDeleteData);
     on<DeleteUserEvent>(_onDeleteUser);
     on<GetDataEvent>(_onGetData);
     on<GetInfoConferenceEvent>(_infoConference);
-
     on<UploadDataEvent>(_onUpload);
     on<GetConferenceAsyncEvent>(_onGetConference);
     on<GetSurveyAsyncEvent>(_onGetSurveys);
+    on<CheckEvent>(_onCheck);
+
+    // أحداث إدخال المستخدم
     on<InputUserSqlEvent>((e, emit) async {
       userSqlModel = e.userSqlModel;
-      finished = 0;
-    });
+      if (selectedDoctor != null) {
+        userSqlModel?.doctorId = selectedDoctor?.id;
+        userSqlModel?.address = selectedDoctor?.region;
+      }
 
-    // ===== Survey flow =====
+      finished = 0;
+      if(surveys.isEmpty){
+        emit(NavigateToConferenceState());
+      }else{
+        emit(NavigateToSurveyState());
+      }
+    });
+/*
+ if(surveysBase.isEmpty){
+      emit(const InsertUserLoadingState());
+      final insertResult = await insertUserAndAnswerUsecase.execute(
+        userSqlModel??UserSqlModel(fullName: "fullName", phone: "phone", userType: UserType.other, answerModel: []),
+      );
+      insertResult.fold(
+            (failure) => emit(InsertUserErrorState(failure: failure)),
+            (_) => emit(FinishedSurveyState()),
+      );
+    }else{
+      if (surveys.isEmpty) {
+        emit(const InsertUserLoadingState());
+        final insertResult = await insertUserAndAnswerUsecase.execute(
+          userSqlModel!,
+        );
+        insertResult.fold(
+              (failure) => emit(InsertUserErrorState(failure: failure)),
+              (_) => emit(FinishedSurveyState()),
+        );
+      }else{
+        emit(GetSurveyAsyncState(surveys));
+      }
+       emit(const InsertUserLoadingState());
+          final insertResult = await insertUserAndAnswerUsecase.execute(
+            userSqlModel??UserSqlModel(fullName: "fullName", phone: "phone", userType: UserType.other, answerModel: []),
+          );
+          insertResult.fold(
+                (failure) => emit(InsertUserErrorState(failure: failure)),
+                (_) => emit(FinishedSurveyState()),
+          );
+           final result = await getSurveysSqlUsecase.execute();
+      await result.fold(
+            (failure) async => emit(GetSurveyAsyncErrorState(failure: failure)),
+            (data) async {
+          surveysBase=data.toDomain();
+          surveys = surveysBase;
+          if (surveys.isEmpty) {
+            emit(const InsertUserLoadingState());
+            final insertResult = await insertUserAndAnswerUsecase.execute(
+              userSqlModel??UserSqlModel(fullName: "fullName", phone: "phone", userType: UserType.other, answerModel: []),
+            );
+            insertResult.fold(
+                  (failure) => emit(InsertUserErrorState(failure: failure)),
+                  (_) => emit(FinishedSurveyState()),
+            );
+          }else{
+            emit(GetSurveyAsyncState(surveys));
+          }
+
+
+        },
+      );
+ */
+    // أحداث الأطباء والبحث (المعدلة)
+    on<DoctorEvent>(_onGetDoctors);
+    on<InsertEvent>(_onInsertDoctors);
+    on<SearchDoctorEvent>(_onSearchDoctor);
+    on<SelectDoctorEvent>(_onSelectDoctor);
+    on<ClearDoctorSelectionEvent>(_onClearDoctorSelection);
+
+    // أحداث الاستبيان
     on<GetQuestionAnswersEvent>(_onGetQuestionAnswers);
     on<SurveyPageChangedEvent>(_onSurveyPageChanged);
     on<SurveySaveAnswerEvent>(_onSurveySaveAnswer);
     on<SurveySubmitEvent>(_onSurveySubmit);
-    on<CheckEvent>(_onCheck);
+    on<GetAllUserEvent>(_onGetAllUserEvent);
+    on<SearchInUsersEvent>(_searchInUsersEvent);
+    on<InsertUserSqlEvent>(_onInsertUserSql);
+
   }
+
+  // --- Doctor Handlers ---
+
+  Future<void> _onGetDoctors(DoctorEvent event, Emitter<SyncState> emit) async {
+    (await getDoctorsSqlUsecase.execute()).fold(
+      (failure) => emit(DataErrorState(failure: failure)),
+      (data) {
+        doctor = data;
+        emit(DoctorsState(data, selectedDoctor: selectedDoctor));
+      },
+    );
+  }
+
+  Future<void> _onInsertDoctors(
+    InsertEvent event,
+    Emitter<SyncState> emit,
+  ) async {
+    // 1. إرسال حالة التحميل
+    emit(InsertDoctorLoadingState());
+
+    // 2. تنفيذ العملية
+    final result = await insertDoctorSqlUsecase.execute(event.doctorsModel);
+
+    // 3. معالجة النتيجة
+    result.fold((failure) => emit(InsertDoctorErrorState(failure: failure)), (
+      data,
+    ) {
+      doctor.add(event.doctorsModel);
+      emit(InsertDoctorSucState());
+    });
+  }
+
+  Future<void> _onSearchDoctor(
+    SearchDoctorEvent event,
+    Emitter<SyncState> emit,
+  ) async {
+    if (event.query.isEmpty) {
+      emit(DoctorsState(doctor, selectedDoctor: selectedDoctor));
+      return;
+    }
+
+    final filteredList = doctor.where((doc) {
+      return doc.name.toLowerCase().contains(event.query.toLowerCase());
+    }).toList();
+
+    emit(DoctorsState(filteredList, selectedDoctor: selectedDoctor));
+  }
+
+  void _onSelectDoctor(SelectDoctorEvent event, Emitter<SyncState> emit) {
+    selectedDoctor = event.doctor;
+    emit(DoctorsState(doctor, selectedDoctor: selectedDoctor));
+  }
+
+  void _onClearDoctorSelection(
+    ClearDoctorSelectionEvent event,
+    Emitter<SyncState> emit,
+  ) {
+    selectedDoctor = null;
+    if (state is DoctorsState) {
+      emit(DoctorsState(doctor, selectedDoctor: null));
+    }
+  }
+
+  // --- Async & Cloud Handlers ---
 
   Future<void> _onAsyncData(
     AsyncDataEvent event,
@@ -133,6 +289,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
 
   Future<void> _onUpload(UploadDataEvent event, Emitter<SyncState> emit) async {
     if (event.userRequest.isNotEmpty) {
+      surveysBase = [];
       (await synchronizeUsersAnswersUsecase.execute(
         AllUserModel(event.userRequest, event.conference_id, event.isActive),
       )).fold(
@@ -176,21 +333,24 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     Emitter<SyncState> emit,
   ) async {
     emit(const GetSurveyAsyncLoadingState());
-    (await getSurveysSqlUsecase.execute()).fold(
-      (failure) => emit(GetSurveyAsyncErrorState(failure: failure)),
-      (data) {
-        surveys = data.toDomain();
+    final result = await getSurveysSqlUsecase.execute();
+    await result.fold(
+      (failure) async => emit(GetSurveyAsyncErrorState(failure: failure)),
+      (data) async {
+        surveysBase = data.toDomain();
+        surveys = surveysBase;
         emit(GetSurveyAsyncState(surveys));
       },
     );
   }
+
+  // --- Survey Logic Handlers ---
 
   Future<void> _onGetQuestionAnswers(
     GetQuestionAnswersEvent event,
     Emitter<SyncState> emit,
   ) async {
     emit(const SurveyLoadingState());
-
     (await getQuestionAnswersUsecase.execute(event.id)).fold(
       (failure) => emit(SurveyErrorState(failure: failure)),
       (questions) {
@@ -224,12 +384,9 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   ) async {
     final s = state;
     if (s is! SurveyReadyState) return;
-    //
     final mapped = _mapToAnswers(event.question, event.rawValue);
-
     final newAnswers = Map<int, List<AnswerUserModel>>.from(s.answers);
     newAnswers[event.index] = mapped;
-
     emit(s.copyWith(answers: newAnswers));
   }
 
@@ -241,79 +398,26 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
         AnswerUserModel(answerId, rawValue.toString(), q.answers[0].isCorrect),
       ];
     }
-
-    // AnswerModel (dropdown/radio)
     if (rawValue is AnswerModel) {
       return [AnswerUserModel(rawValue.id, rawValue.title, rawValue.isCorrect)];
     }
-
-    // List<AnswerModel> (checkbox)
     if (rawValue is List<AnswerModel>) {
       return rawValue
           .map((a) => AnswerUserModel(a.id, a.title, a.isCorrect))
           .toList();
     }
-
-    // DateTime / bool / double (optional support)
-    if (rawValue is DateTime) {
-      final answerId = q.answers.isNotEmpty ? q.answers[0].id : null;
-      return [
-        AnswerUserModel(
-          answerId,
-          rawValue.toIso8601String(),
-          q.answers[0].isCorrect,
-        ),
-      ];
-    }
-    if (rawValue is bool) {
-      final answerId = q.answers.isNotEmpty ? q.answers[0].id : null;
-      return [
-        AnswerUserModel(answerId, rawValue ? "1" : "0", q.answers[0].isCorrect),
-      ];
-    }
-
     return [];
   }
 
   Future<void> _onCheck(CheckEvent event, Emitter<SyncState> emit) async {
     final checkResult = await checkPasswordUsecase.execute(event.password);
-
-    bool hasCheckFailure = false;
-    bool isValid = false;
-
-    checkResult.fold(
-      (failure) {
-        hasCheckFailure = true;
-      },
-      (data) {
-        isValid = data;
-      },
-    );
-
-    if (hasCheckFailure) {
-      return;
-    }
-    if (isValid) {
-      return;
-    } else {
-      final deleteResult = await deleteDataSqlUsecase.execute();
-
-      bool hasDeleteFailure = false;
-
-      deleteResult.fold((failure) {
-        hasDeleteFailure = true;
-      }, (_) {});
-
-      if (hasDeleteFailure) {
-        return;
+    checkResult.fold((failure) => null, (isValid) async {
+      if (!isValid) {
+        await deleteDataSqlUsecase.execute();
+        await instance<AppPreferences>().signOut();
+        if (!emit.isDone) emit(CheckoutState());
       }
-
-      await instance<AppPreferences>().signOut();
-
-      if (!emit.isDone) {
-        emit(CheckoutState());
-      }
-    }
+    });
   }
 
   Future<void> _onSurveySubmit(
@@ -322,36 +426,82 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   ) async {
     final s = state;
     if (s is! SurveyReadyState) return;
-
     emit(SurveySubmittingState(s));
 
     try {
-      // هنا استخدم s.answers للإدخال/الإرسال
-      // مثال طباعة:
       s.answers.forEach((index, list) {
         for (final a in list) {
-          print(a.content);
           userSqlModel?.answerModel.add(a);
         }
       });
 
       surveys[s.index].isActive = true;
-      finished = finished + 1;
+      finished++;
+
       if (finished == surveys.length) {
         emit(const InsertUserLoadingState());
-
         (await insertUserAndAnswerUsecase.execute(userSqlModel!)).fold(
           (failure) => emit(InsertUserErrorState(failure: failure)),
-          (questions) {
-            emit(InsertUserSuccessState());
+          (_) {
+            //   emit(InsertUserSuccessState());
+            emit(FinishedSurveyState());
           },
         );
-        emit(FinishedSurveyState());
+        surveys = surveysBase;
       } else {
         emit(SurveySubmitSuccessState(surveys));
       }
     } catch (e) {
       emit(SurveySubmitErrorState(failure: Failure(0, e.toString())));
     }
+  }
+  Future<void> _onInsertUserSql(
+      InsertUserSqlEvent event,
+      Emitter<SyncState> emit,
+      ) async {
+    emit(const InsertUserLoadingState());
+    (await insertUserAndAnswerUsecase.execute(userSqlModel!)).fold(
+          (failure) => emit(InsertUserErrorState(failure: failure)),
+          (_) {
+        //   emit(InsertUserSuccessState());
+        emit(FinishedSurveyState());
+      },
+    );
+  }
+  Future<void> _onGetAllUserEvent(
+    GetAllUserEvent event,
+    Emitter<SyncState> emit,
+  ) async {
+    (await getUsersConferenceUsecase.execute()).fold(
+      (failure) => emit(GetUserConferenceErrorState(failure: failure)),
+      (data) {
+        if (data.isEmpty) {
+          emit(GetUserConferenceEmptyState());
+        } else {
+          emit(GetUserConferenceState(data, data));
+        }
+      },
+    );
+  }
+
+  Future<void> _searchInUsersEvent(
+    SearchInUsersEvent event,
+    Emitter<SyncState> emit,
+  ) async {
+    final allUsers = event.users;
+    List<UserModel> filteredList = [];
+
+    filteredList = allUsers.where((value) {
+      if (value.fullName.contains(event.search)) {
+        return true;
+      }
+      if (value.address != null && value.address!.contains(event.search)) {
+        return true;
+      }
+
+      return false;
+    }).toList();
+
+    emit(GetUserConferenceState(allUsers, filteredList));
   }
 }

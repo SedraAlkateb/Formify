@@ -109,4 +109,47 @@ class RepositroySqlImp extends RepositorySql {
       return Left(failure);
     }
   }
+
+  @override
+  Future<Either<Failure, List<DoctorsModel>>> getDoctors() async {
+    try {
+      final response =await _databaseHelper.getDoctors();
+      return Right(response);
+    } catch (e) {
+      Failure failure = ErrorHandler.handle(e).failure;
+      return Left(failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, Map<String, DoctorsModel>>> getDoctorsAsMap()async {
+    try {
+      final response =await _databaseHelper.getDoctorsAsMap();
+      return Right(response);
+    } catch (e) {
+      Failure failure = ErrorHandler.handle(e).failure;
+      return Left(failure);
+    }
+  }
+  @override
+  Future<Either<Failure, void>> insertDoctor( DoctorsModel doctor)async {
+    try {
+      final response =await _databaseHelper.insertDoctor(doctor);
+      return Right(response);
+    } catch (e) {
+      Failure failure = ErrorHandler.handle(e).failure;
+      return Left(failure);
+    }
+  }
+
+@override
+Future<Either<Failure, List<UserModel>>> getUserConference()async {
+  try {
+    final response =await _databaseHelper.getUserConference();
+    return Right(response);
+  } catch (e) {
+    Failure failure = ErrorHandler.handle(e).failure;
+    return Left(failure);
+  }
+}
 }

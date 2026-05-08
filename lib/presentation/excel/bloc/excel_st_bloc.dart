@@ -12,13 +12,18 @@ part 'excel_st_state.dart';
 
 class ExcelStBloc extends Bloc<ExcelStEvent, ExcelStState> {
   final StatisticsForUsersAnswersUsecase statisticsForUsersAnswersUsecase;
+
   StatisticsSurveyUsecase statisticsSurveyUsecase;
    Map<int, String> questionsMap={};
   List<Map<String, String>> userAnswersList=[];
   ExcelStBloc(this.statisticsForUsersAnswersUsecase,this.statisticsSurveyUsecase) : super(ExcelStInitial()) {
     on<UsersAnswersStatisticsEvent>(_onFetch);
+
     on<SurveyStatisticsEvent>(_surveyStatistics);
+
+
   }
+
   Future<void> _onFetch(
     UsersAnswersStatisticsEvent event,
     Emitter<ExcelStState> emit,
@@ -26,12 +31,14 @@ class ExcelStBloc extends Bloc<ExcelStEvent, ExcelStState> {
     emit(ExelLoading());
     final result = await statisticsForUsersAnswersUsecase.execute(
       event.surveyId,
+      event.conference_id
     );
     result.fold(
       (failure) {
         emit(ExelError(failure: failure));
       },
       (data) {
+
         createExcel(data);
         final Map<String, String> searchFields = {
           'all': 'كل الحقول',
@@ -48,6 +55,7 @@ class ExcelStBloc extends Bloc<ExcelStEvent, ExcelStState> {
       },
     );
   }
+
   Future<void> _surveyStatistics(
       SurveyStatisticsEvent event,
       Emitter<ExcelStState> emit,
@@ -93,6 +101,21 @@ class ExcelStBloc extends Bloc<ExcelStEvent, ExcelStState> {
       print("\n");
     }
 
+  }
+  void createExcelForConference(List<UserModel> users) {
+    // questionsMap = {
+    //   for (var question in excel.surveyQuestionModel) question.id: question.question
+    // };
+    userAnswersList = [];
+
+    for (var user in users) {
+      Map<String, String> userAnswerMap = {};
+      userAnswerMap["user"]=user.fullName;
+      userAnswerMap["address"]=user.address??"";
+      userAnswerMap["phone"]=user.phone;
+      userAnswerMap["type"]=user.userType.nameAr;
+      userAnswersList.add(userAnswerMap);
+    }
   }
 
 }
