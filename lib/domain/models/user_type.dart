@@ -7,6 +7,7 @@ enum UserType {
   pharmacist,   // صيدلي
   resident,     // مقيم
   other,        // غير ذلك
+  importantDoctor,     // مقيم
 
 
 }
@@ -24,6 +25,8 @@ extension UserTypeExtension on UserType {
         return 4;
       case UserType.other:
         return 5;
+      case UserType.importantDoctor:
+        return 6;
     }
   }
   String get nameAr {
@@ -38,6 +41,8 @@ extension UserTypeExtension on UserType {
         return "صيدلي";
       case UserType.other:
         return "غير ذلك";
+      case UserType.importantDoctor:
+        return "طبيب مهم";
     }
   }
   String get nameEng {
@@ -52,6 +57,8 @@ extension UserTypeExtension on UserType {
         return "pharmacist";
       case UserType.other:
         return "other";
+      case UserType.importantDoctor:
+        return "important Doctor";
     }
   }
   IconData get icon {
@@ -64,6 +71,9 @@ extension UserTypeExtension on UserType {
         return Icons.local_pharmacy_outlined; // صيدلي
       case UserType.resident:
         return Icons.badge_outlined; // مقيم
+    case UserType.importantDoctor:
+    return Icons.local_hospital_outlined; // مقيم
+
       default:
         return Icons.more_horiz_outlined; // غير ذلك
     }
@@ -80,6 +90,8 @@ extension UserTypeExtension on UserType {
         return "pharmacist";
       case UserType.other:
         return "other";
+      case UserType.importantDoctor:
+        return "importantDoctor";
     }
   }
 
@@ -93,9 +105,12 @@ extension UserTypeExtension on UserType {
       return UserType.resident;
     case "صيدلي":
       return UserType.pharmacist;
+    case "طبيب مهم":
+      return UserType.importantDoctor;
     default:
       return UserType.other;
   }
+
 }
 UserType userTypeFromId(int id) {
   switch (id) {
@@ -107,6 +122,8 @@ UserType userTypeFromId(int id) {
       return UserType.pharmacist;
     case 4:
       return UserType.resident;
+    case 6:
+      return UserType.importantDoctor;
     default:
       return UserType.other;
   }

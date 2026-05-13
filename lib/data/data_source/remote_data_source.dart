@@ -28,9 +28,6 @@ abstract class RemoteDataSource {
   );
   Future<Message1Response> deleteConference(int id);
   Future<GetConferenceByIdBaseResponse> getConferenceById(int id);
-  Future<CreateUserResponse> createUserWithConferenceId(
-    UserInputModel userInputModel,
-  );
   Future<GetAllAsyncByConferenceIdBaseResponse> getAllInformationConference(
     int conferenceId,
   );
@@ -55,7 +52,8 @@ abstract class RemoteDataSource {
   );
   Future< CheckoutResponse> checkPassword(String password);
 
-
+  Future<GetAllUserForAppBaseResponse> getAllUsers(
+      );
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -229,5 +227,11 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   Future<CheckoutResponse> checkPassword(String password)async {
     return await _appServiceClient.checkPassword(password);
   }
+
+  @override
+  Future<GetAllUserForAppBaseResponse> getAllUsers() async {
+    return await _appServiceClient.getAllUsers();
+  }
+
 
 }

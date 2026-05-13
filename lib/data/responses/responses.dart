@@ -586,13 +586,15 @@ class GetAsyncConferenceResponse {
   List<GetAnswerForAsyncResponse> answers;
   @JsonKey(name: "survey_conference")
   List<SurveyConferenceForAsyncResponse> survey_conference;
-
+  @JsonKey(name: "users")
+  List<UserResponse> users;
   GetAsyncConferenceResponse(
     this.conference,
     this.survey,
     this.questions,
     this.answers,
     this.survey_conference,
+      this.users
   ); // from json
   factory GetAsyncConferenceResponse.fromJson(Map<String, dynamic> json) =>
       _$GetAsyncConferenceResponseFromJson(json);
@@ -698,7 +700,8 @@ class UserResponse {
   String? address;
   @JsonKey(name: "type_name")
   String? type_name;
-
+  @JsonKey(name: "notes")
+  String? notes;
   UserResponse(
     this.id,
     this.fullName,
@@ -706,13 +709,37 @@ class UserResponse {
     this.phone,
     this.address,
     this.type_name,
+      this.notes
   ); // from json
   factory UserResponse.fromJson(Map<String, dynamic> json) =>
       _$UserResponseFromJson(json);
   // to json
   Map<String, dynamic> toJson() => _$UserResponseToJson(this);
 }
+@JsonSerializable()
+class GetAllUserForAppBaseResponse  extends BaseResponse {
+  @JsonKey(name: "data")
+  GetAllUserForAppResponse data;
+  GetAllUserForAppBaseResponse(this.data);
+  // from json
+  factory GetAllUserForAppBaseResponse.fromJson(Map<String, dynamic> json) =>
+      _$GetAllUserForAppBaseResponseFromJson(json);
 
+  // to json
+  Map<String, dynamic> toJson() => _$GetAllUserForAppBaseResponseToJson(this);
+}
+@JsonSerializable()
+class GetAllUserForAppResponse  {
+  @JsonKey(name: "users")
+  List<UserResponse> users;
+  GetAllUserForAppResponse(this.users);
+  // from json
+  factory GetAllUserForAppResponse.fromJson(Map<String, dynamic> json) =>
+      _$GetAllUserForAppResponseFromJson(json);
+
+  // to json
+  Map<String, dynamic> toJson() => _$GetAllUserForAppResponseToJson(this);
+}
 @JsonSerializable()
 class GetAllUserBaseResponse extends BaseResponse {
   @JsonKey(name: "data")

@@ -20,8 +20,8 @@ final class AsyncConferenceState extends SyncState {
   List<Object?> get props => [asyncModel];
 }
 class DoctorsState extends SyncState {
-  final List<DoctorsModel> data;
-  final DoctorsModel? selectedDoctor; // الطبيب المختار حالياً
+  final List<UserModel> data;
+  final UserModel? selectedDoctor; // الطبيب المختار حالياً
 
   const DoctorsState(this.data, {this.selectedDoctor});
 }
@@ -287,4 +287,26 @@ final class NavigateToConferenceState extends SyncState {
 
   @override
   List<Object?> get props => [];
+}
+
+final class EditUserState extends SyncState {
+  final List<IsActiveMainSurveyModel> surveys;
+  const EditUserState(this.surveys);
+
+  @override
+  List<Object?> get props => [surveys];
+}
+
+final class EditUserLoadingState extends SyncState {
+  const EditUserLoadingState();
+}
+final class EditUserEmptyState extends SyncState {
+  const EditUserEmptyState();
+}
+final class EditUserErrorState extends SyncState {
+  final Failure failure;
+  const EditUserErrorState({required this.failure});
+
+  @override
+  List<Object?> get props => [failure];
 }

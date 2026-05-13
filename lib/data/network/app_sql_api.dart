@@ -8,7 +8,8 @@ abstract class AppSqlApiAbs {
   Future<String> asyncData(GetAsyncModel asyncData);
   Future<void> deleteData();
   Future<void> deleteUser();
-  Future<void> insertDoctor(DoctorsModel doctor);
+  Future<void> insertDoctor(UserModel doctor);
+  Future<void> insertAllUsers(List<UserModel> users);
   Future<List<UserSqlModel>> getDataSql();
   Future<GetAllConferenceModel?> getConference();
   Future<List<MainSurveyModel>> getSurveys();
@@ -18,10 +19,10 @@ abstract class AppSqlApiAbs {
   Future<void> insertUserWithAnswer(UserSqlModel user);
   //Future<List<AsyncQuestionModel>> getQuestions();
   Future<InfoConference> getConferenceInfo();
-  Future<List<DoctorsModel>> getDoctors();
-  Future<Map<String, DoctorsModel>> getDoctorsAsMap();
+  Future<List<UserModel>> getDoctors();
   Future<List<UserModel>> getUserConference();
-
+  Future<void> updateUser(UserModel user);
+  Future<List<UserModel>> getAllImportantDoctorNotCome(List<UserModel> users);
 }
 
 class AppSqlApi extends AppSqlApiAbs {
@@ -200,6 +201,7 @@ class AppSqlApi extends AppSqlApiAbs {
     final db = await databaseHelper.database;
     final tables = [
       'users',
+      'all_users',
       'conference',
       'survey',
       'questions',
@@ -218,7 +220,7 @@ class AppSqlApi extends AppSqlApiAbs {
     final db = await databaseHelper.database;
     final tables = [
       'users',
-      'users_answers',
+     // 'users_answers',
     ];
     Batch batch = db.batch();
     for (var table in tables) {
@@ -280,7 +282,6 @@ class AppSqlApi extends AppSqlApiAbs {
     users.email         AS email,
     users.phone         AS phone,
     users.address       AS address,
-    users.doctor_id     AS doctor_id,
     users.type_id       AS type_id,
     users_answers.answer_id AS answer_id,
     users_answers.content   AS content,
@@ -347,7 +348,6 @@ class AppSqlApi extends AppSqlApiAbs {
   //   }
 
   @override
-  @override
   Future<GetAllConferenceModel?> getConference() async {
     final db = await databaseHelper.database;
 
@@ -381,36 +381,52 @@ class AppSqlApi extends AppSqlApiAbs {
     });
   }
   @override
-  Future<void> insertDoctor(DoctorsModel doctor) async {
+  Future<void> insertDoctor(UserModel doctor) async {
     final db = await databaseHelper.database;
     await db.transaction((txn) async {
-      await txn.insert('doctors', doctor.toMap());
+      await txn.insert('users', doctor.toJson());
     });
   }
+
+  ////////////////// تخزين كل المستخدمين
   @override
-  Future<List<DoctorsModel>> getDoctors() async {
+  Future<void> insertAllUsers(List<UserModel> users) async {
+    // 1. الحصول على نسخة من قاعدة البيانات
     final db = await databaseHelper.database;
-    List<Map<String, dynamic>> maps;
-    maps = await db.query('doctors');
+
+    // 2. بدء عملية "Transaction" لضمان السرعة والأمان
+    await db.transaction((txn) async {
+      // 3. التكرار على كل مستخدم (User) موجود في القائمة الممررة
+      for (var user in users) {
+        // 4. إدخال بيانات المستخدم الحالي في جدول 'all_users'
+        // يتم تحويل الـ Model إلى Map باستخدام toJson()
+        await txn.insert(
+          'all_users',
+          user.toJsonSql(),
+          // استخدام conflictAlgorithm يمنع توقف التطبيق في حال تكرار نفس المستخدم
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+      }
+    });
+    // عند انتهاء الحلقة، يتم اعتماد (Commit) جميع الإدخالات مرة واحدة
+  }
+  //////////////////// لجلب الاطباء المهمين
+  @override
+  Future<List<UserModel>> getDoctors() async {
+    final db = await databaseHelper.database;
+
+    // إضافة شرط التصفية (Filter) بناءً على type_id
+    final List<Map<String, dynamic>> maps = await db.query(
+      'users',
+      where: 'type_id = ?',
+      whereArgs: [6],
+    );
+
     return List.generate(maps.length, (i) {
-      return DoctorsModel.fromMap(maps[i]);
+      return UserModel.fromMap(maps[i]);
     });
   }
-  @override
-  Future<Map<String, DoctorsModel>> getDoctorsAsMap() async {
-    final db = await databaseHelper.database;
-
-    // جلب البيانات من الجدول
-    final List<Map<String, dynamic>> maps = await db.query('doctors');
-
-    // تحويل القائمة إلى Map: Key هو الاسم، والقيمة هو الموديل
-    // استخدمنا .fromIterable أو loop عادي
-    return {
-      for (var map in maps)
-        DoctorsModel.fromMap(map).name: DoctorsModel.fromMap(map)
-    };
-  }
-
+/// جلب كحل المستخدمين الخاصين بالكونفيرنس
   @override
   Future<List<UserModel>> getUserConference()async {
     final db = await databaseHelper.database;
@@ -420,5 +436,88 @@ class AppSqlApi extends AppSqlApiAbs {
       return UserModel.fromMap(maps[i]);
     });
   }
+  /*
+  @override
 
-}
+Future<void> updateUser(UserModel user) async {
+
+  final db = await databaseHelper.database;
+
+   await db.update(
+
+    'users',
+
+    user.toJson(),
+
+    where: 'id = ?',
+
+    whereArgs: [user.id],
+
+  );
+
+} اريد المافقة على التعديل اذا كان  isUpload=0 ,  اريد تحديثه الى  1
+   */
+////////////////////// تحديث المستخدم
+  @override
+  Future<void> updateUser(UserModel user) async {
+    // 1. الحصول على نسخة من قاعدة البيانات
+    final db = await databaseHelper.database;
+
+    // 2. تحويل كائن المستخدم وتجهيز البيانات للتحديث
+    final Map<String, dynamic> userMap = {
+      ...user.toJson(),
+      'isUpload': 1, // سنفترض أن أي تعديل محلي يجعل السجل بحاجة للرفع مجدداً
+    };
+
+    // 3. محاولة التحديث وتخزين عدد الصفوف المتأثرة
+    // الشرط: id مطابق و isUpload الحالي يجب أن يكون 0
+    int count = await db.update(
+      'users',
+      userMap,
+      where: 'id = ? AND isUpload = ?',
+      whereArgs: [user.id, 0],
+    );
+
+    // 4. التحقق من نجاح التعديل
+    if (count == 0) {
+      // إذا كان count يساوي 0، فهذا يعني أن الشرط لم يتحقق (السجل مرفوع مسبقاً أو غير موجود)
+      throw Exception("عذراً، لا يمكن تعديل هذا المستخدم لأنه تم رفعه مسبقاً إلى السيرفر.");
+    }
+
+    // إذا وصل الكود إلى هنا، فهذا يعني أن التحديث تم بنجاح
+  }
+  /// الطريقة الأكثر كفاءة لجلب الأطباء (نوع 6) وتحويلهم مباشرة إلى قائمة UserModel
+  @override
+  Future<List<UserModel>> getAllImportantDoctorNotCome(List<UserModel> users) async {
+    // 1. الحصول على نسخة من قاعدة البيانات
+    final db = await databaseHelper.database;
+
+    // 2. تحويل قائمة المستخدمين (الباراميتر) إلى قائمة أسماء فقط للمقارنة
+    // نستخدم .map لاستخراج fullname ونحولها لـ List<String>
+    List<String> namesInParam = users.map((u) => u.fullName).toList();
+
+    // 3. التحقق إذا كانت القائمة فارغة
+    // إذا كانت فارغة، سنحتاج لجلب كل الأطباء من نوع 6 دون استثناء
+    if (namesInParam.isEmpty) {
+      final List<Map<String, dynamic>> allImportant = await db.query(
+          'all_users',
+          where: 'type_id = ?',
+          whereArgs: [6]
+      );
+      return allImportant.map((map) => UserModel.fromMapSql(map)).toList();
+    }
+
+    // 4. بناء الاستعلام باستخدام 'NOT IN'
+    // نستخدم علامات الاستفهام لضمان الأمان ومنع SQL Injection
+    String placeholders = List.filled(namesInParam.length, '?').join(',');
+
+    final List<Map<String, dynamic>> results = await db.rawQuery('''
+    SELECT * 
+    FROM all_users 
+    WHERE type_id = 6 
+    AND fullname NOT IN ($placeholders)
+  ''', namesInParam); // نمرر قائمة الأسماء هنا كـ whereArgs
+
+    // 5. تحويل النتائج إلى قائمة UserModel وإعادتها
+    return results.map((map) => UserModel.fromMapSql(map)).toList();
+  }}

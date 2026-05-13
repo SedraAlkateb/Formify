@@ -18,6 +18,7 @@ class ExcelStBloc extends Bloc<ExcelStEvent, ExcelStState> {
   List<Map<String, String>> userAnswersList=[];
   ExcelStBloc(this.statisticsForUsersAnswersUsecase,this.statisticsSurveyUsecase) : super(ExcelStInitial()) {
     on<UsersAnswersStatisticsEvent>(_onFetch);
+    on<ExcelForConferenceEvent>(_onFetchConference);
 
     on<SurveyStatisticsEvent>(_surveyStatistics);
 
@@ -54,6 +55,22 @@ class ExcelStBloc extends Bloc<ExcelStEvent, ExcelStState> {
         emit(ExelSuccess(userAnswersList,questionsMap,searchFields));
       },
     );
+  }
+  Future<void> _onFetchConference(
+      ExcelForConferenceEvent event,
+      Emitter<ExcelStState> emit,
+      ) async {
+
+    createExcelForConference(event.doctors);
+    final Map<String, String> searchFields = {
+      'all': 'كل الحقول',
+      'user': 'اسم المستخدم',
+      'address': 'العنوان',
+      'phone':'رقم الموبايل',
+      'type':'النوع',
+    };
+
+    emit(ExelSuccess(userAnswersList,questionsMap,searchFields));
   }
 
   Future<void> _surveyStatistics(
@@ -103,11 +120,8 @@ class ExcelStBloc extends Bloc<ExcelStEvent, ExcelStState> {
 
   }
   void createExcelForConference(List<UserModel> users) {
-    // questionsMap = {
-    //   for (var question in excel.surveyQuestionModel) question.id: question.question
-    // };
     userAnswersList = [];
-
+    questionsMap={};
     for (var user in users) {
       Map<String, String> userAnswerMap = {};
       userAnswerMap["user"]=user.fullName;

@@ -128,7 +128,13 @@ class CheckEvent extends SyncEvent {
   @override
   List<Object?> get props => [password];
 }
+class EditUserEvent extends SyncEvent {
+  final UserModel user;
+  EditUserEvent(this.user);
 
+  @override
+  List<Object?> get props => [user];
+}
 // ===== Doctor Management Events =====
 
 /// جلب قائمة الأطباء من قاعدة البيانات
@@ -139,7 +145,7 @@ class DoctorEvent extends SyncEvent {
   List<Object?> get props => [];
 }
 class InsertEvent extends SyncEvent {
- final DoctorsModel doctorsModel;
+ final UserModel doctorsModel;
   const InsertEvent(this.doctorsModel);
 
   @override
@@ -157,7 +163,7 @@ class SearchDoctorEvent extends DoctorEvent {
 
 /// اختيار طبيب محدد من القائمة (لتخزين الـ ID)
 final class SelectDoctorEvent extends SyncEvent {
-  final DoctorsModel doctor;
+  final UserModel doctor;
   const SelectDoctorEvent(this.doctor);
 
   @override

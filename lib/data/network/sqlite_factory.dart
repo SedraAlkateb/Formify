@@ -17,58 +17,48 @@ class DatabaseHelper {
   Future<Database> _initDatabase() async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, 'task_database1.db');
-
     return openDatabase(
       path,
-      version: 7, // تم رفع الإصدار من 6 إلى 7 لإضافة عمود notes
+      version: 1,
       onCreate: _onCreate,
-      onUpgrade: _onUpgrade,
       onOpen: (db) async {
         await db.execute('PRAGMA foreign_keys = ON');
       },
     );
   }
 
-  // التعديل الجوهري هنا: إضافة العمود دون حذف الجداول
-  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    if (oldVersion < 7) {
-      try {
-        // إضافة عمود notes إلى جدول users دون التأثير على البيانات الموجودة
-        await db.execute('ALTER TABLE users ADD COLUMN notes TEXT;');
-        print("Database Upgraded: notes column added to users table.");
-      } catch (e) {
-        print("Migration Error or Column already exists: $e");
-      }
-    }
-  }
+
 
   Future<void> _onCreate(Database db, int version) async {
-    // جدول الأطباء
+// تصحيح جدول all_users بإضافة PRIMARY KEY
     await db.execute('''
-      CREATE TABLE doctors (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        region TEXT NOT NULL,
-        description TEXT
-      );
-    ''');
+  CREATE TABLE IF NOT EXISTS all_users (
+    id INTEGER PRIMARY KEY, -- ضروري جداً لإصلاح الخطأ
+    fullname TEXT NOT NULL,
+    email TEXT,
+    phone TEXT NOT NULL,
+    address TEXT,
+    type_id INTEGER NOT NULL,
+    notes TEXT
+  )
+''');
 
-    // جدول المستخدمين - تم إضافة عمود notes هنا للنسخ الجديدة
+// جدول users (يبقى كما هو، الربط الآن صحيح)
     await db.execute('''
-      CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        fullname TEXT NOT NULL,
-        email TEXT ,
-        phone TEXT NOT NULL,
-        address TEXT ,
-        type_id INTEGER NOT NULL,
-        doctor_id INTEGER,
-        notes TEXT, 
-        FOREIGN KEY (doctor_id) REFERENCES doctors(id) 
-      );
-    ''');
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    fullname TEXT NOT NULL,
+    email TEXT,
+    phone TEXT NOT NULL,
+    address TEXT,
+    type_id INTEGER NOT NULL,
+    user_id INTEGER,
+    notes TEXT, 
+    isUpload INTEGER DEFAULT 0,
+    FOREIGN KEY (user_id) REFERENCES all_users(id) 
+  );
+''');
 
-    // باقي الجداول
     await db.execute('''
       CREATE TABLE IF NOT EXISTS conference (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -81,6 +71,7 @@ class DatabaseHelper {
       );
     ''');
 
+    // 5. جدول الاستبيانات
     await db.execute('''
       CREATE TABLE IF NOT EXISTS survey (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -91,6 +82,7 @@ class DatabaseHelper {
       );
     ''');
 
+    // 6. جدول الأسئلة
     await db.execute('''
       CREATE TABLE IF NOT EXISTS questions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -104,6 +96,7 @@ class DatabaseHelper {
       );
     ''');
 
+    // 7. جدول الخيارات (الإجابات المقترحة)
     await db.execute('''
       CREATE TABLE IF NOT EXISTS answers (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -115,6 +108,7 @@ class DatabaseHelper {
       );
     ''');
 
+    // 8. جدول إجابات المستخدمين
     await db.execute('''
       CREATE TABLE IF NOT EXISTS users_answers (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -127,6 +121,7 @@ class DatabaseHelper {
       );
     ''');
 
+    // 9. جدول الربط بين الاستبيان والمؤتمر
     await db.execute('''
       CREATE TABLE IF NOT EXISTS survey_conference (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -137,87 +132,113 @@ class DatabaseHelper {
         FOREIGN KEY (conference_id) REFERENCES conference(id) ON DELETE CASCADE
       );
     ''');
-
-    await _seedInitialDoctors(db);
   }
 
-  Future<void> _seedInitialDoctors(Database db) async {
-    final batch = db.batch();
-    final List<Map<String, String>> initialDoctors = [
-      {'name': 'د. نور الدين الخطيب', 'region': 'حلب', 'description': 'مدير مشفى العيون - مهم جداً'},
-      {'name': 'د. سوسن ابراهيم', 'region': 'حلب', 'description': 'طبيبة عينية - مشفى العيون'},
-      {'name': 'د. بانة حامشلي', 'region': 'حلب', 'description': 'طبيبة عينية - مشفى العيون'},
-      {'name': 'د. عمار كيالي', 'region': 'حلب', 'description': 'أخصائي عينية - مشفى الجامعة'},
-      {'name': 'د. نديم زحلوق', 'region': 'حلب', 'description': 'أخصائي عينية - مشفى الجامعة'},
-      {'name': 'د. عبد الرحمن نجوم', 'region': 'حلب', 'description': 'أخصائي عينية - مشفى الجامعة'},
-      {'name': 'د. عثمان نعمة', 'region': 'حلب', 'description': 'أخصائي عينية - مشفى الجامعة'},
-      {'name': 'طلال حبوش', 'region': 'حمص', 'description': 'طبيب عينية - مهم'},
-      {'name': 'رامز بيطار', 'region': 'حمص', 'description': 'طبيب عينية - مهم'},
-      {'name': 'سناء عباس', 'region': 'حمص', 'description': 'طبيبة عينية'},
-      {'name': 'نهال ابو اللبن', 'region': 'حمص', 'description': 'طبيبة عينية'},
-      {'name': 'عاصم حبوس', 'region': 'حمص', 'description': 'طبيب عينية'},
-      {'name': 'فواز النجار', 'region': 'حمص', 'description': 'طبيب عينية'},
-      {'name': 'نور خلوف', 'region': 'حمص', 'description': 'طبيبة عينية'},
-      {'name': 'نيروز علي', 'region': 'حمص', 'description': 'طبيبة عينية'},
-      {'name': 'يونس عتون', 'region': 'حمص', 'description': 'طبيب عينية'},
-      {'name': 'هبة مطر', 'region': 'حمص', 'description': 'طبيبة عينية'},
-      {'name': 'بتول سعود', 'region': 'حمص', 'description': 'طبيبة عينية'},
-      {'name': 'د.عبدالله الاصفر', 'region': 'حماة', 'description': 'طبيب عينية - مهم جداً'},
-      {'name': 'د.محمد بدر زقزوق', 'region': 'حماة', 'description': 'طبيب عينية - مهم'},
-      {'name': 'د.منار طالب اغا', 'region': 'حماة', 'description': 'طبيبة عينية'},
-      {'name': 'د.عبد الرزاق الكيلاني', 'region': 'حماة', 'description': 'طبيب عينية'},
-      {'name': 'د.صفوان الحاج حسين', 'region': 'حماة', 'description': 'طبيب عينية'},
-      {'name': 'د.معتز عبد الرزاق', 'region': 'حماة', 'description': 'طبيب عينية'},
-      {'name': 'د.ايهاب الخطيب', 'region': 'حماة', 'description': 'طبيب عينية'},
-      {'name': 'د.حسن صيادي', 'region': 'حماة', 'description': 'طبيب عينية'},
-      {'name': 'د.فواز العوض', 'region': 'حماة', 'description': 'طبيب عينية'},
-      {'name': 'د. شهاب محمد', 'region': 'طرطوس', 'description': 'طبيب عينية'},
-      {'name': 'د. أيمن خضر', 'region': 'طرطوس', 'description': 'طبيب عينية'},
-      {'name': 'د. أيمن يوسف', 'region': 'طرطوس', 'description': 'طبيب عينية'},
-      {'name': 'د. ايفيلين رستم', 'region': 'طرطوس', 'description': 'طبيبة عينية'},
-      {'name': 'د. ربااسماعيل', 'region': 'طرطوس', 'description': 'طبيبة عينية'},
-      {'name': 'د. مهى عيسى', 'region': 'طرطوس', 'description': 'طبيبة عينية'},
-      {'name': 'د.وافي ميهوب', 'region': 'طرطوس', 'description': 'متوقع عدم الحضور'},
-      {'name': 'د. أحمدونوس', 'region': 'طرطوس', 'description': 'متوقع عدم الحضور'},
-      {'name': 'د أكسم أحمد', 'region': 'طرطوس', 'description': 'متوقع عدم الحضور'},
-      {'name': 'د. عبدالرحمن سلمان', 'region': 'طرطوس', 'description': 'متوقع عدم الحضور'},
-      {'name': 'د. محمدمعلا', 'region': 'طرطوس', 'description': 'متوقع عدم الحضور'},
-      {'name': 'د أمجد الصالح', 'region': 'السويداء', 'description': 'أولوية قصوى - مهم جداً'},
-      {'name': 'د مناف معروف', 'region': 'السويداء', 'description': 'أهمية مرتفعة'},
-      {'name': 'د أمية جنود', 'region': 'السويداء', 'description': 'مهم'},
-      {'name': 'د خالد أبو حمدان', 'region': 'السويداء', 'description': 'طبيب عينية'},
-      {'name': 'د أدهم خير', 'region': 'السويداء', 'description': 'طبيب عينية'},
-      {'name': 'د إيمان جنود', 'region': 'السويداء', 'description': 'طبيبة عينية'},
-      {'name': 'د دينا أبو شديد', 'region': 'السويداء', 'description': 'طبيبة عينية'},
-      {'name': 'د مجد الحلبي', 'region': 'السويداء', 'description': 'طبيب عينية'},
-      {'name': 'د خلدون البعيني', 'region': 'السويداء', 'description': 'أهمية عادية'},
-      {'name': 'عبد القادر تعتاع', 'region': 'اللاذقية', 'description': 'رئيس قسم العينية بمشفى تشرين الجامعي - مهم جداً'},
-      {'name': 'فريد طيفور', 'region': 'اللاذقية', 'description': 'رئيس قسم العينية بالمشفى الوطني - مهم جداً'},
-      {'name': 'نادر يونس', 'region': 'اللاذقية', 'description': 'طبيب عينية - مهم'},
-      {'name': 'زينب حلوم', 'region': 'اللاذقية', 'description': 'طبيبة عينية'},
-      {'name': 'ميساء أحمد', 'region': 'اللاذقية', 'description': 'طبيبة عينية'},
-      {'name': 'احمد ميهوب', 'region': 'اللاذقية', 'description': 'طبيب عينية'},
-      {'name': 'يوسف سليمان', 'region': 'اللاذقية', 'description': 'طبيب عينية'},
-      {'name': 'محمد بركات', 'region': 'اللاذقية', 'description': 'طبيب عينية'},
-      {'name': 'مجدولين سرحيل', 'region': 'اللاذقية', 'description': 'طبيبة عينية'},
-      {'name': 'ميراي جمل', 'region': 'اللاذقية', 'description': 'طبيبة عينية'},
-      {'name': 'رؤى عبد الرحمن', 'region': 'اللاذقية', 'description': 'طبيبة عينية'},
-      {'name': 'حنان علي', 'region': 'اللاذقية', 'description': 'طبيبة عينية'},
-      {'name': 'رانية امهان', 'region': 'اللاذقية', 'description': 'طبيبة عينية'},
-      {'name': 'احمد احمد', 'region': 'اللاذقية', 'description': 'طبيب عينية'},
-      {'name': 'ميرنا جرجس', 'region': 'اللاذقية', 'description': 'طبيبة عينية'},
-      {'name': 'مي شهابي', 'region': 'اللاذقية', 'description': 'طبيبة عينية'},
-      {'name': 'د عبدالمعين عميش', 'region': 'جبلة', 'description': 'طبيب عينية - مهم'},
-      {'name': 'لمياء الراهب', 'region': 'جبلة', 'description': 'طبيبة عينية'},
-      {'name': 'مهى محمد', 'region': 'جبلة', 'description': 'طبيبة عينية'},
-      {'name': 'د عبد الودود الحمصي', 'region': 'درعا', 'description': 'طبيب عينية - مهم'},
-      {'name': 'د قاسم كيوان', 'region': 'درعا', 'description': 'طبيب عينية'},
-      {'name': 'د أزهر النايف', 'region': 'درعا', 'description': 'طبيب عينية'},
-    ];
 
-    for (var doc in initialDoctors) {
-      batch.insert('doctors', doc);
-    }
-    await batch.commit();
-  }
 }
+
+/*
+  Future<List<UserSqlModel>> getDataSql() async {
+
+    final db = await databaseHelper.database;
+
+
+
+    // 1. استخدام LEFT JOIN لجلب المستخدمين حتى لو لم تكن هناك إجابات مرتبطة بهم
+
+    final maps = await db.rawQuery('''
+
+  SELECT
+
+    users.id            AS user_id,
+
+    users.fullname      AS fullname,
+
+    users.email         AS email,
+
+    users.phone         AS phone,
+
+    users.address       AS address,
+
+    users.type_id       AS type_id,
+
+    users_answers.answer_id AS answer_id,
+
+    users_answers.content   AS content,
+
+    users_answers.isCorrect AS isCorrect
+
+  FROM users
+
+  LEFT JOIN users_answers ON users.id = users_answers.user_id;
+
+''');
+
+
+
+    final Map<int, UserSqlModel> usersMap = {};
+
+
+
+    for (final row in maps) {
+
+      final int userId = row['user_id'] as int;
+
+
+
+      usersMap.putIfAbsent(
+
+        userId,
+
+            () => UserSqlModel(
+
+          fullName: row['fullname'] as String,
+
+          email: row['email'] as String?,
+
+          phone: (row['phone'] as String).isEmpty?"09":row['phone'] as String,
+
+          address: row['address'] as String?,
+
+          doctorId: row['doctor_id'] as int?,
+
+          userType: userTypeFromId(row['type_id'] as int),
+
+          answerModel: <AnswerUserModel>[],
+
+        ),
+
+      );
+
+
+
+      // 2. التحقق من أن حقل الإجابة ليس فارغاً (NULL) قبل محاولة الإضافة
+
+      // إذا كان المستخدم ليس لديه إجابة، سيكون row['answer_id'] قيمته null
+
+      if (row['answer_id'] != null) {
+
+        usersMap[userId]!.answerModel.add(
+
+          AnswerUserModel(
+
+            row['answer_id'] as int,
+
+            row['content'] as String,
+
+            row['isCorrect'] as int,
+
+          ),
+
+        );
+
+      }
+
+    }
+
+
+
+    return usersMap.values.toList();
+
+  } اجلب لي isUpload =0 فقط  للمستخدم users_answers و users
+ */

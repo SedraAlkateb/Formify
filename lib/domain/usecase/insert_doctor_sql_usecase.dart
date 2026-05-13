@@ -7,7 +7,7 @@ import 'package:formify/domain/repostitory/repository_sql.dart';
 class InsertDoctorSqlUsecase extends Equatable {
   final RepositorySql _repository;
   const InsertDoctorSqlUsecase(this._repository);
-  Future<Either<Failure, void>> execute(DoctorsModel doctor) async {
+  Future<Either<Failure, void>> execute(UserModel doctor) async {
     return await _repository.insertDoctor(doctor);
   }
 

@@ -10,6 +10,16 @@ class LoginRequestEvent extends OnboardingEvent {
   @override
   List<Object?> get props => [];
 }
+class GetUserEvent extends OnboardingEvent {
+  @override
+  List<Object?> get props => [];
+}
+class InsertUserEvent extends OnboardingEvent {
+ final List<UserModel> users;
+  InsertUserEvent(this.users);
+  @override
+  List<Object?> get props => [users];
+}
 
 class GoToHomeEvent extends OnboardingEvent {
   @override

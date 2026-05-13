@@ -294,56 +294,108 @@ class UserInputModel {
 }
 
 class UserModel {
-  int id; // المعرف
-  String fullName; // الاسم الكامل
-  String? email; // البريد الإلكتروني
-  String phone; // رقم الهاتف
-  String? address; // العنوان
+  int? id;
+  String fullName;
+  String? email;
+  String phone;
+  String? address;
+  String? notes;
   UserType userType;
-  // List<AnswerSqlModel> answersModel; // قائمة الإجابات المرتبطة بالمستخدم
 
-  // مُنشئ لتخزين البيانات
+  // جعل القيمة غير قابلة لـ null لضمان استقرار التطبيق
+  int isUpload;
+  int? userId;
+
   UserModel(
-    this.id,
-    this.fullName,
-    this.email,
-    this.phone,
-    this.address,
-    this.userType,
-    //   required this.answersModel,
-  );
 
-  // تحويل البيانات إلى JSON (لاستخدامها مع قاعدة البيانات أو الواجهة)
+      this.fullName,
+      this.email,
+      this.phone,
+      this.address,
+      this.userType,
+      this.notes,
+      { this.id,
+        this.userId,
+        this.isUpload = 0} // القيمة الافتراضية 0
+      );
+
+  // وظيفة لإنشاء نسخة معدلة من الكائن
+  UserModel copyWith({
+    int? id,
+    String? fullName,
+    String? email,
+    String? phone,
+    String? address,
+    String? notes,
+    UserType? userType,
+    int? isUpload,
+    int? userId,
+
+  }) {
+    return UserModel(
+
+      fullName ?? this.fullName,
+      email ?? this.email,
+      phone ?? this.phone,
+      address ?? this.address,
+      userType ?? this.userType,
+      notes ?? this.notes,
+      isUpload: isUpload ?? this.isUpload,
+      id:   id ?? this.id,
+      userId: userId??this.userId
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
       'fullname': fullName,
       'email': email,
       'phone': phone,
       'address': address,
       'type_id': userType.id,
-      // 'answers': answersModel
-      //     .map((answer) => answer.toJson())
-      //     .toList(), // تحويل قائمة الإجابات
+      'notes': notes,
+      'isUpload': isUpload,
+      'user_id':userId
     };
   }
+  Map<String, dynamic> toJsonSql() {
+    return {
+      'id':id,
+      'fullname': fullName,
+      'email': email,
+      'phone': phone,
+      'address': address,
+      'type_id': userType.id,
+      'notes': notes,
+    };
+  }
+  factory UserModel.fromMapSql(Map<String, dynamic> map) {
+    return UserModel(
+        id:  map['id'],
+        map['fullname'],
+        map['email'],
+        map['phone'],
+        map['address'],
+        userTypeFromId(map['type_id']),
+        map['notes'],
+    );
+  }
 
-  // تحويل البيانات من قاعدة البيانات إلى كائن من UserModel
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
-      map['id'],
+    id:  map['id'],
       map['fullname'],
       map['email'],
       map['phone'],
       map['address'],
       userTypeFromId(map['type_id']),
-      // answersModel: List<AnswerSqlModel>.from(
-      //   map['answers'].map((answer) => AnswerSqlModel.fromMap(answer)),
-      // ), // تحويل الإجابات المرتبطة
+      map['notes'],
+      // التأكد من عدم وجود قيمة null عند القراءة
+      isUpload: map['isUpload'] ?? 0,
+        userId:map['userId']
     );
   }
 }
-
 class GetAllConferenceModel {
   int id;
   String name;
@@ -436,6 +488,7 @@ class GetAsyncModel {
   List<AsyncQuestionModel> questions;
   List<AnswerModel> answers;
   List<SurveyConferenceAsyncModel> surveyConference;
+  List<UserModel> users;
 
   GetAsyncModel(
     this.conferenceModel,
@@ -443,9 +496,10 @@ class GetAsyncModel {
     this.questions,
     this.answers,
     this.surveyConference,
+      this.users
   );
   static GetAsyncModel create() {
-    return GetAsyncModel(GetAllConferenceModel.create(), [], [], [], []);
+    return GetAsyncModel(GetAllConferenceModel.create(), [], [], [], [],[]);
   }
 }
 
@@ -566,16 +620,16 @@ class SurveyConferenceAsyncModel {
 }
 
 class UserSqlModel {
-  String fullName; // الاسم الكامل
-  String? email; // البريد الإلكتروني
-  String phone; // رقم الهاتف
-  String? address; // العنوان
-  String? notes; // العنوان
-
+  String fullName;
+  String? email;
+  String phone;
+  String? address;
+  String? notes;
   UserType userType;
   List<AnswerUserModel> answerModel;
   int? doctorId;
-  // مُنشئ لتخزين البيانات
+  int isUpload; // قيمة صحيحة ثابتة
+
   UserSqlModel({
     required this.fullName,
     this.email,
@@ -585,7 +639,9 @@ class UserSqlModel {
     required this.userType,
     required this.answerModel,
     this.doctorId,
+    this.isUpload = 0, // القيمة المبدأية 0
   });
+
   Map<String, dynamic> toJson() {
     return {
       'fullname': fullName,
@@ -594,8 +650,9 @@ class UserSqlModel {
       'address': address,
       'notes': notes,
       'type_id': userType.id,
-      'doctor_id':doctorId,
+      'doctor_id': doctorId,
       'answers': answerModel.map((user) => user.toJson()).toList(),
+      'isUpload': isUpload
     };
   }
 
@@ -607,11 +664,11 @@ class UserSqlModel {
       'address': address,
       'notes': notes,
       'type_id': userType.id,
-      'doctor_id':doctorId
+      'doctor_id': doctorId,
+      'isUpload': isUpload
     };
   }
 
-  // دالة لتحويل خريطة إلى كائن UserSqlModel
   factory UserSqlModel.fromMap(Map<String, dynamic> map) {
     return UserSqlModel(
       fullName: map['fullname'],
@@ -621,6 +678,7 @@ class UserSqlModel {
       notes: map['notes'],
       userType: userTypeFromId(map['type_id']),
       doctorId: map['doctor_id'],
+      isUpload: map['isUpload'] ?? 0, // ضمان القيمة 0 عند القراءة
       answerModel: _mapAnswers(
         map['answer_id'],
         map['content'],
@@ -630,16 +688,13 @@ class UserSqlModel {
   }
 
   static List<AnswerUserModel> _mapAnswers(
-    int answerId,
-    String content,
-    int isCorrect,
-  ) {
-    // إذا كان يوجد إجابة مرتبطة بالمستخدم، نقوم بإنشاء كائن من AnswerUserModel
+      int answerId,
+      String content,
+      int isCorrect,
+      ) {
     return [AnswerUserModel(answerId, content, isCorrect)];
   }
-}
-
-//
+}//
 class AllUserModel {
   List<UserSqlModel> users; // قائمة من المستخدمين (UserModel)
   int conference_id;
@@ -766,28 +821,4 @@ class QuestionForStatModel {
     this.groupType,
       { this.descAi}
   );
-}
-class DoctorsModel{
-  int ?id;
-  String name;
-  String region;
-  String description;
-
-  DoctorsModel(this.name, this.region, this.description,{this.id});
-  Map<String, dynamic> toMap() {
-    return {
-      'name': name,
-      'region': region,
-      'description': description,
-    };
-  }
-
-  factory DoctorsModel.fromMap(Map<String, dynamic> map) {
-    return DoctorsModel(
-   id:    map['id'],
-      map['name'],
-      map['region'],
-      map['description'],
-    );
-  }
 }

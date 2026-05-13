@@ -269,93 +269,100 @@ class SettingPage extends StatelessWidget {
                       ? Colors.blueAccent
                       : Colors.teal;
 
-                  return AnimationContainerWidget( // استخدام الأنيميشن الخاص بك
-                    child: Container(
-                      margin: const EdgeInsets.only(bottom: 16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(25),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.04),
-                            blurRadius: 15,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(25),
-                        child: Stack(
-                          children: [
-                            // لمسة فنية: دائرة ملونة في الخلفية
-                            PositionRectangle(typeColor),
-
-                            Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Row(
-                                children: [
-                                  // أيقونة الحالة (تم التحقق)
-                                  Icon(Icons.verified, color: Colors.green.shade400, size: 20),
-
-                                  const Spacer(),
-
-                                  // تفاصيل المستخدم
-                                  Expanded(
-                                    flex: 4,
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.end,
-                                      children: [
-                                        Text(
-                                          u.fullName,
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 17,
-                                            color: Color(0xFF2D3142),
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4),
-
-                                        // رقم الهاتف مع أيقونة صغيرة
-                                        _buildInfoRow(u.phone, Icons.phone_android_outlined),
-
-                                        if (u.email != null && u.email!.isNotEmpty)
-                                          _buildInfoRow(u.email!, Icons.email_outlined),
-
-                                        if (u.address != null && u.address!.isNotEmpty)
-                                          _buildInfoRow(u.address!, Icons.location_on_outlined),
-
-                                        const SizedBox(height: 10),
-
-                                        // وسام نوع المستخدم (Tag)
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                                          decoration: BoxDecoration(
-                                            color: typeColor.withOpacity(0.1),
-                                            borderRadius: BorderRadius.circular(10),
-                                            border: Border.all(color: typeColor.withOpacity(0.2)),
-                                          ),
-                                          child: Text(
-                                            u.userType.name.toUpperCase(),
-                                            style: TextStyle(
-                                              fontSize: 10,
-                                              fontWeight: FontWeight.bold,
-                                              color: typeColor,
-                                              letterSpacing: 1,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-
-                                  const SizedBox(width: 15),
-
-                                  // الصورة الشخصية (Avatar) بتصميم عصري
-                                  _buildModernAvatar(u),
-                                ],
-                              ),
+                  return AnimationContainerWidget(
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.pushNamed(context, Routes.editUser,arguments: u);
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(25),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.04),
+                              blurRadius: 15,
+                              offset: const Offset(0, 8),
                             ),
                           ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(25),
+                          child: Stack(
+                            children: [
+                              // لمسة فنية: دائرة ملونة في الخلفية
+                              PositionRectangle(typeColor),
+
+                              Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Row(
+                                  children: [
+                                    // أيقونة الحالة (تم التحقق)
+                                    Icon(Icons.edit, color:
+                                    u.isUpload!=0?Colors.grey:
+                                    Colors.green.shade400, size: 20),
+
+                                    const Spacer(),
+
+                                    // تفاصيل المستخدم
+                                    Expanded(
+                                      flex: 4,
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                        children: [
+                                          Text(
+                                            u.fullName,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 17,
+                                              color: Color(0xFF2D3142),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+
+                                          // رقم الهاتف مع أيقونة صغيرة
+                                          _buildInfoRow(u.phone, Icons.phone_android_outlined),
+
+                                          if (u.email != null && u.email!.isNotEmpty)
+                                            _buildInfoRow(u.email!, Icons.email_outlined),
+
+                                          if (u.address != null && u.address!.isNotEmpty)
+                                            _buildInfoRow(u.address!, Icons.location_on_outlined),
+
+                                          const SizedBox(height: 10),
+
+                                          // وسام نوع المستخدم (Tag)
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              color: typeColor.withOpacity(0.1),
+                                              borderRadius: BorderRadius.circular(10),
+                                              border: Border.all(color: typeColor.withOpacity(0.2)),
+                                            ),
+                                            child: Text(
+                                              u.userType.name.toUpperCase(),
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold,
+                                                color: typeColor,
+                                                letterSpacing: 1,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+                                    const SizedBox(width: 15),
+
+                                    // الصورة الشخصية (Avatar) بتصميم عصري
+                                    _buildModernAvatar(u),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),

@@ -111,7 +111,7 @@ class RepositroySqlImp extends RepositorySql {
   }
 
   @override
-  Future<Either<Failure, List<DoctorsModel>>> getDoctors() async {
+  Future<Either<Failure, List<UserModel>>> getDoctors() async {
     try {
       final response =await _databaseHelper.getDoctors();
       return Right(response);
@@ -121,18 +121,9 @@ class RepositroySqlImp extends RepositorySql {
     }
   }
 
+
   @override
-  Future<Either<Failure, Map<String, DoctorsModel>>> getDoctorsAsMap()async {
-    try {
-      final response =await _databaseHelper.getDoctorsAsMap();
-      return Right(response);
-    } catch (e) {
-      Failure failure = ErrorHandler.handle(e).failure;
-      return Left(failure);
-    }
-  }
-  @override
-  Future<Either<Failure, void>> insertDoctor( DoctorsModel doctor)async {
+  Future<Either<Failure, void>> insertDoctor( UserModel doctor)async {
     try {
       final response =await _databaseHelper.insertDoctor(doctor);
       return Right(response);
@@ -152,4 +143,39 @@ Future<Either<Failure, List<UserModel>>> getUserConference()async {
     return Left(failure);
   }
 }
-}
+  @override
+  Future<Either<Failure, void>> updateUser(UserModel user)async {
+    try {
+      final response =await _databaseHelper.updateUser(user);
+      return Right(response);
+    } catch (e) {
+      Failure failure = ErrorHandler.handle(e).failure;
+      return Left(failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> insertAllUsers(List<UserModel> users) async {
+    try {
+      final response = await _databaseHelper.insertAllUsers(users);
+      return Right(response);
+    } catch (e) {
+      Failure failure = ErrorHandler
+          .handle(e)
+          .failure;
+      return Left(failure);
+    }
+  }
+
+@override
+Future<Either<Failure, List<UserModel>>> getAllImportantDoctorNotCome(List<UserModel> users) async {
+  try {
+    final response = await _databaseHelper.getAllImportantDoctorNotCome(users);
+    return Right(response);
+  } catch (e) {
+    Failure failure = ErrorHandler
+        .handle(e)
+        .failure;
+    return Left(failure);
+  }
+}}

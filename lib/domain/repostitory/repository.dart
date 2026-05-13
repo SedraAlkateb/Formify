@@ -22,9 +22,7 @@ abstract class Repository {
   );
   Future<Either<Failure, Null>> deleteConference(int id);
   Future<Either<Failure, GetAllConferenceByIdModel>> getConferenceById(int id);
-  Future<Either<Failure, int>> createUserWithConferenceId(
-    UserInputModel userInputModel,
-  );
+
   Future<Either<Failure, GetAsyncModel>> getAllInformationConference(int id);
   Future<Either<Failure, List<IsActiveMainSurveyModel>>>
   getAllSurveyAndActiveSurvey(int conferenceId);
@@ -48,5 +46,7 @@ abstract class Repository {
   Future<Either<Failure, StatisticsModel>>
   getStatisticsForQuestionTypes(int surveyId,int conferenceId);
   Future<Either<Failure, bool>> checkPassword(String password);
+  Future<Either<Failure, List<UserModel>>> getAllUsers(
 
+      );
 }

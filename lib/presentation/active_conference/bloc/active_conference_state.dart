@@ -121,24 +121,8 @@ final class GetCompletedSurveyLoadingState extends ActiveConferenceState {
   List<Object?> get props => [];
 }
 
-///////////////////////////doctorsAsMap////////////////////
-final class GetDoctorsAsMapState extends ActiveConferenceState {
-  final Map<String, DoctorsModel> doctorsAsMap;
-  GetDoctorsAsMapState(this.doctorsAsMap);
-  List<Object?> get props => [doctorsAsMap];
-}
 
-final class GetDoctorsAsMapErrorState extends ActiveConferenceState {
-  final Failure failure;
-  GetDoctorsAsMapErrorState({required this.failure});
-  @override
-  List<Object?> get props => [failure];
-}
 
-final class GetDoctorsAsMapLoadingState extends ActiveConferenceState {
-  @override
-  List<Object?> get props => [];
-}
 
 final class DeleteFinishedConferenceState extends ActiveConferenceState {
   final List<GetAllConferenceModel> allActiveConference;

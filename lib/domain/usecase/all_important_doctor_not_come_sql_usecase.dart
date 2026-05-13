@@ -4,11 +4,11 @@ import 'package:formify/data/network/failure.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/repostitory/repository_sql.dart';
 
-class GetDoctorsAsMapSqlUsecase extends Equatable {
+class AllImportantDoctorNotComeSqlUsecase extends Equatable {
   final RepositorySql _repository;
-  const GetDoctorsAsMapSqlUsecase(this._repository);
-  Future<Either<Failure, Map<String, DoctorsModel>>> execute() async {
-    return await _repository.getDoctorsAsMap();
+  const AllImportantDoctorNotComeSqlUsecase(this._repository);
+  Future<Either<Failure, List<UserModel>>> execute(List<UserModel> users) async {
+    return await _repository.getAllImportantDoctorNotCome(users);
   }
 
   @override

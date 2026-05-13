@@ -65,7 +65,7 @@ abstract class AppServiceClient {
 
     @Part(name: "conference_id") int conference_id,
   );
-
+//////////////TODO
   @POST("synchronize/get_allInformation_confernce.php")
   Future<GetAllAsyncByConferenceIdBaseResponse> getAllInformationConference(
     @Part(name: "conference_id") int conference_id,
@@ -125,4 +125,7 @@ abstract class AppServiceClient {
   Future<CheckoutResponse> checkPassword(
     @Part(name: "password") String password,
   );
+  @GET("users-crud/get_all_users.php")
+  Future<GetAllUserForAppBaseResponse> getAllUsers(
+      );
 }

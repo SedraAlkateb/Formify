@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:formify/app/constants.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/models/user_type.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
-import 'package:formify/presentation/resources/responsive/breakpoints.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/resources/values_manager.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
@@ -12,173 +10,145 @@ import 'package:formify/presentation/sync/widget/autocomplete.dart';
 import 'package:formify/presentation/unit/animation/animation-in_list.dart';
 import 'package:formify/presentation/unit/animation/buttom_animation.dart';
 import 'package:formify/presentation/unit/drop_down_field.dart';
+import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 import 'package:formify/presentation/unit/text_field.dart';
 
-class InsertUserPage extends StatefulWidget {
-  const InsertUserPage({super.key});
+class EditUserPage extends StatefulWidget {
+  final UserModel userModel;
+
+  const EditUserPage({super.key, required this.userModel});
 
   @override
-  State<InsertUserPage> createState() => _InsertUserPageState();
+  State<EditUserPage> createState() => _EditUserPageState();
 }
 
-class _InsertUserPageState extends State<InsertUserPage>
+class _EditUserPageState extends State<EditUserPage>
     with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
-
-  final TextEditingController fullNameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
-  final TextEditingController addressController = TextEditingController();
-  final TextEditingController noteController = TextEditingController();
+  final FocusNode _doctorFocusNode = FocusNode();
+  // وحدات التحكم بالنصوص
+  late final TextEditingController fullNameController;
+  late final TextEditingController emailController;
+  late final TextEditingController phoneController;
+  late final TextEditingController addressController;
+  late final TextEditingController noteController;
 
   late final AnimationController _controller;
-  UserType _selectedUserType = UserType.other;
-  final FocusNode _doctorFocusNode = FocusNode();
-  int? doctorId;
+  late UserType _selectedUserType;
+
   @override
   void initState() {
     super.initState();
+    // 1. تهيئة المتحكمات بالقيم القادمة من الـ userModel
+    fullNameController = TextEditingController(text: widget.userModel.fullName);
+    emailController = TextEditingController(text: widget.userModel.email ?? "");
+    phoneController = TextEditingController(text: widget.userModel.phone);
+    addressController = TextEditingController(text: widget.userModel.address ?? "");
+    noteController = TextEditingController(text: widget.userModel.notes ?? "");
+
+    // 2. تهيئة نوع المستخدم
+    _selectedUserType = widget.userModel.userType;
+
+    // 3. تهيئة الأنيميشن
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1200), // مدة الحركة كاملة
+      duration: const Duration(milliseconds: 1000),
     );
-    _controller.forward(); // تشغيل الأنيميشن مباشرة
+    _controller.forward();
   }
+  void _submit() {
+    if (_formKey.currentState!.validate()) {
+      final user = UserModel(
+     id:   widget.userModel.id,
+         fullNameController.text,
+         emailController.text,
+        phoneController.text,
+        addressController.text,
+       userTypeFromId(_selectedUserType.id),
+         noteController.text,
+      );
 
+      BlocProvider.of<SyncBloc>(context).add(EditUserEvent(user));
+    }
+  }
   @override
   void dispose() {
-    _doctorFocusNode.dispose(); // تدمير الـ node عند الخروج
+    fullNameController.dispose();
+    emailController.dispose();
+    phoneController.dispose();
+    addressController.dispose();
+    noteController.dispose();
     _controller.dispose();
+    _doctorFocusNode.dispose(); // تدمير الـ node عند الخروج
+
     super.dispose();
   }
 
-  void _submit() {
+  void _updateSubmit() {
     if (_formKey.currentState!.validate()) {
-      final user = UserSqlModel(
+      // بناء كائن المستخدم المعدل مع الحفاظ على الـ ID القديم
+      final updatedUser = widget.userModel.copyWith(
         fullName: fullNameController.text,
         email: emailController.text,
         phone: phoneController.text,
         address: addressController.text,
         notes: noteController.text,
-        doctorId: BlocProvider.of<SyncBloc>(context).selectedDoctor?.id,
-        userType: userTypeFromId(_selectedUserType.id),
-        answerModel: [], // تُملأ لاحقًا
+        userType: _selectedUserType,
       );
 
-      BlocProvider.of<SyncBloc>(context).add(InputUserSqlEvent(user));
+      // إرسال حدث التعديل إلى الـ Bloc (افترضنا وجود حدث اسمه UpdateUserSqlEvent)
+      // BlocProvider.of<SyncBloc>(context).add(UpdateUserSqlEvent(updatedUser));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.of(
-      context,
-    ).size.height; // للحصول على ارتفاع الشاشة
-
     return Scaffold(
-      backgroundColor: ColorManager.primary,
+      backgroundColor: ColorManager.primary, // الحفاظ على نفس هوية صفحة الإدخال
+      appBar: AppBar(
+        title: const Text("تعديل البيانات"),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        centerTitle: true,
+      ),
       body: SingleChildScrollView(
         child: SafeArea(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               LayoutBuilder(
                 builder: (_, c) {
-                  final isTabletPortrait = Breakpoints.isTabletPortrait(
-                    context,
-                  );
-                  final isMobilePortrait = Breakpoints.isMobilePortrait(
-                    context,
-                  );
                   return Container(
-                    height: (isTabletPortrait || isMobilePortrait)
-                        ? screenHeight * 1.1
-                        : null,
                     width: double.infinity,
-
-                    margin: Constants.isTablet
-                        ? EdgeInsets.all(50)
-                        : EdgeInsets.only(
-                            top: 50,
-                            bottom: 50,
-                            right: 25,
-                            left: 25,
-                          ),
+                    margin: EdgeInsets.all(25),
                     decoration: BoxDecoration(
-                      border: Border.all(color: ColorManager.border),
                       color: ColorManager.white,
+                      borderRadius: BorderRadius.circular(25),
                       boxShadow: [
                         BoxShadow(
-                          color: ColorManager.black.withOpacity(0.2),
-                          blurRadius: 3,
-                          offset: Offset(0, 1),
+                          color: ColorManager.black.withOpacity(0.1),
+                          blurRadius: 10,
+                          offset: const Offset(0, 5),
                         ),
                       ],
-                      //.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    constraints: BoxConstraints(
-                      minHeight:
-                          screenHeight * 0.8, // حد أدنى بدلاً من ارتفاع ثابت
                     ),
                     child: Padding(
-                      padding: EdgeInsets.only(
-                        right: AppPadding.p40,
-                        left: AppPadding.p40,
-                        top: AppPadding.p20,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 30),
                       child: Form(
                         key: _formKey,
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
+                            // أيقونة المستخدم العلوية
                             buildAnimatedField(
                               controller: _controller,
                               index: 1,
-                              child: Card(
-                                margin: const EdgeInsets.all(5),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                // elevation: 4,
-                                color: ColorManager.primary,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10),
-                                  child: Icon(
-                                    Icons.person_outline,
-                                    color: Color(0xffffffff),
-                                    size: 45,
-                                  ),
-                                ),
+                              child: CircleAvatar(
+                                radius: 40,
+                                backgroundColor: ColorManager.primary.withOpacity(0.1),
+                                child: Icon(Icons.edit_note_rounded,
+                                    size: 40, color: ColorManager.primary),
                               ),
                             ),
-                            buildAnimatedField(
-                              controller: _controller,
-                              index: 2,
-                              child: Text(
-                                "معلومات الحضور",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: ColorManager.primary,
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 5),
-                            buildAnimatedField(
-                              controller: _controller,
-                              index: 3,
-                              child: Text(
-                                "يرجى إدخال بياناتك للمتابعة إلى الاستبيانات",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: ColorManager.black,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ),
+                            const SizedBox(height: 20),
                             ListView(
                               shrinkWrap: true,
                               physics: NeverScrollableScrollPhysics(),
@@ -187,7 +157,7 @@ class _InsertUserPageState extends State<InsertUserPage>
                                   allDoctors: context.read<SyncBloc>().doctor,
                                   controller: fullNameController,
                                   focusNode:
-                                      _doctorFocusNode, // تمريره هنا يحل المشكلة
+                                  _doctorFocusNode, // تمريره هنا يحل المشكلة
                                   index: 4,
                                   animationController: _controller,
                                   buildAnimatedField: buildAnimatedField,
@@ -290,41 +260,29 @@ class _InsertUserPageState extends State<InsertUserPage>
                                 SizedBox(height: AppSize.s20),
                                 BlocConsumer<SyncBloc, SyncState>(
                                   listener: (context, state) {
-                                    if (state is NavigateToSurveyState) {
-                                      Navigator.pushNamedAndRemoveUntil(
-                                        context,
-                                        Routes.listOfSurveys,
-                                            (route) => false,
-                                      );
+                                    if (state is EditUserState) {
+                                      Navigator.pop(context);
                                     } else if (state
-                                    is NavigateToConferenceState) {
-                                      BlocProvider.of<SyncBloc>(
-                                        context,
-                                      ).add(InsertUserSqlEvent());
-                                    }
-                                    else   if(state is FinishedSurveyState){
-                                      Navigator.pushNamedAndRemoveUntil(
-                                        context,
-                                        Routes.showConference,
-                                            (route) => false,
-                                      );
+                                    is EditUserErrorState) {
+                                error(context, state.failure.massage, state.failure.code);
                                     }
                                   },
                                   builder: (context, state) {
 
-                                    return bottomAnimation(
-                                      context,
-                                      _submit,
-                                      Row(
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                        CrossAxisAlignment.end,
-                                        children: [
-                                          Text(state is InsertUserErrorState?state.failure.massage:state is InsertUserLoadingState?"Loading...":  'متابعة الى الاستبيان'),
-                                          SizedBox(width: 9),
-                                          Icon(Icons.arrow_forward),
-                                        ],
+                                    return    buildAnimatedField(
+                                      controller: _controller,
+                                      index: 7,
+                                      child: bottomAnimation(
+                                        context,
+                                        _submit,
+                                        const Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Text('حفظ التعديلات'),
+                                            SizedBox(width: 10),
+                                            Icon(Icons.check_circle_outline),
+                                          ],
+                                        ),
                                       ),
                                     );
                                   },
@@ -332,6 +290,7 @@ class _InsertUserPageState extends State<InsertUserPage>
                                 SizedBox(height: AppSize.s20),
                               ],
                             ),
+
                           ],
                         ),
                       ),

@@ -42,7 +42,7 @@ class _MyAppState extends State<MyApp> {
       providers: [
         BlocProvider(create: (_) => instance<OnboardingBloc>()),
         BlocProvider(create: (_) => instance<AiBloc>()),
-        BlocProvider(create: (_) => instance<ActiveConferenceBloc>()..add(GetDoctorsAsMapEvent())),
+        BlocProvider(create: (_) => instance<ActiveConferenceBloc>()),
         BlocProvider(
           create: (_) => instance<SyncBloc>()
            // ..add(GetConferenceAsyncEvent())

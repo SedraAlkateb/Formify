@@ -22,3 +22,9 @@ class SurveyStatisticsEvent extends ExcelStEvent {
   List<Object?> get props => [survey, conferenceId];
 }
 
+class ExcelForConferenceEvent extends ExcelStEvent {
+  final List<UserModel> doctors;
+  ExcelForConferenceEvent(this.doctors);
+  @override
+  List<Object?> get props => [];
+}

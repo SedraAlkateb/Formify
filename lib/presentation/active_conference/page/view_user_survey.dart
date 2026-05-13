@@ -89,7 +89,7 @@ class ViewUserSurveyPage extends StatelessWidget {
                                       ).add(
                                         GetCompletedSurveyEvent(
                                           state.surveys[index].id,
-                                          state.userModel.id,
+                                          state.userModel.id??0,
                                         ),
                                       );
                                       Navigator.pushNamed(
