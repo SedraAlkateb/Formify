@@ -94,7 +94,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     on<InputUserSqlEvent>((e, emit) async {
       userSqlModel = e.userSqlModel;
       if (selectedDoctor != null) {
-        userSqlModel?.doctorId = selectedDoctor?.id;
+        userSqlModel?.userId = selectedDoctor?.id;
         userSqlModel?.address = selectedDoctor?.address;
       }
 

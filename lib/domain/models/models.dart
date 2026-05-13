@@ -627,18 +627,17 @@ class UserSqlModel {
   String? notes;
   UserType userType;
   List<AnswerUserModel> answerModel;
-  int? doctorId;
   int isUpload; // قيمة صحيحة ثابتة
-
+  int? userId;
   UserSqlModel({
     required this.fullName,
+    this.userId,
     this.email,
     required this.phone,
     this.address,
     this.notes,
     required this.userType,
     required this.answerModel,
-    this.doctorId,
     this.isUpload = 0, // القيمة المبدأية 0
   });
 
@@ -650,9 +649,9 @@ class UserSqlModel {
       'address': address,
       'notes': notes,
       'type_id': userType.id,
-      'doctor_id': doctorId,
       'answers': answerModel.map((user) => user.toJson()).toList(),
-      'isUpload': isUpload
+      'isUpload': isUpload,
+      'user_id':userId ?? -1
     };
   }
 
@@ -664,8 +663,8 @@ class UserSqlModel {
       'address': address,
       'notes': notes,
       'type_id': userType.id,
-      'doctor_id': doctorId,
-      'isUpload': isUpload
+      'isUpload': isUpload,
+      'user_id':userId
     };
   }
 
@@ -677,8 +676,7 @@ class UserSqlModel {
       address: map['address'],
       notes: map['notes'],
       userType: userTypeFromId(map['type_id']),
-      doctorId: map['doctor_id'],
-      isUpload: map['isUpload'] ?? 0, // ضمان القيمة 0 عند القراءة
+      isUpload: map['isUpload'] ?? 0,
       answerModel: _mapAnswers(
         map['answer_id'],
         map['content'],

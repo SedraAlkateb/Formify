@@ -186,7 +186,13 @@ class AppSqlApi extends AppSqlApiAbs {
             conflictAlgorithm: ConflictAlgorithm.replace,
           );
         }
-
+        for (final at in asyncData.users) {
+          batch.insert(
+            'all_users',
+            at.toJsonSql(),
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
+        }
         await batch.commit(noResult: true);
       });
 
@@ -302,7 +308,6 @@ class AppSqlApi extends AppSqlApiAbs {
           email: row['email'] as String?,
           phone: (row['phone'] as String).isEmpty?"09":row['phone'] as String,
           address: row['address'] as String?,
-          doctorId: row['doctor_id'] as int?,
           userType: userTypeFromId(row['type_id'] as int),
           answerModel: <AnswerUserModel>[],
         ),
@@ -417,7 +422,7 @@ class AppSqlApi extends AppSqlApiAbs {
 
     // إضافة شرط التصفية (Filter) بناءً على type_id
     final List<Map<String, dynamic>> maps = await db.query(
-      'users',
+      'all_users',
       where: 'type_id = ?',
       whereArgs: [6],
     );

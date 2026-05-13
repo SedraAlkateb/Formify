@@ -34,7 +34,6 @@ class _InsertUserPageState extends State<InsertUserPage>
   late final AnimationController _controller;
   UserType _selectedUserType = UserType.other;
   final FocusNode _doctorFocusNode = FocusNode();
-  int? doctorId;
   @override
   void initState() {
     super.initState();
@@ -60,7 +59,7 @@ class _InsertUserPageState extends State<InsertUserPage>
         phone: phoneController.text,
         address: addressController.text,
         notes: noteController.text,
-        doctorId: BlocProvider.of<SyncBloc>(context).selectedDoctor?.id,
+        userId: BlocProvider.of<SyncBloc>(context).selectedDoctor?.id,
         userType: userTypeFromId(_selectedUserType.id),
         answerModel: [], // تُملأ لاحقًا
       );
