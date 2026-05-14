@@ -978,3 +978,62 @@ class QuestionsStatisticsBaseResponse extends BaseResponse {
       _$QuestionsStatisticsBaseResponseToJson(this);
 }
 
+////////Spec
+@JsonSerializable()
+class SpecificationResponse {
+  @JsonKey(name: "id")
+  int? id;
+  @JsonKey(name: "title")
+  String? title;
+  SpecificationResponse(this.id,this.title);
+
+  factory SpecificationResponse.fromJson(Map<String, dynamic> json) =>
+      _$SpecificationResponseFromJson(json);
+  // to json
+  Map<String, dynamic> toJson() => _$SpecificationResponseToJson(this);
+}
+
+@JsonSerializable()
+class AllSpecificationResponse {
+  @JsonKey(name: "specifications")
+  List<SpecificationResponse> specifications;
+
+  AllSpecificationResponse(this.specifications);
+
+  factory AllSpecificationResponse.fromJson(Map<String, dynamic> json) =>
+      _$AllSpecificationResponseFromJson(json);
+  // to json
+  Map<String, dynamic> toJson() =>
+      _$AllSpecificationResponseToJson(this);
+}
+
+@JsonSerializable()
+class AllSpecificationBaseResponse extends BaseResponse {
+  @JsonKey(name: "data")
+  AllSpecificationResponse data;
+  AllSpecificationBaseResponse(this.data);
+  // from json
+  factory AllSpecificationBaseResponse.fromJson(
+      Map<String, dynamic> json,
+      ) => _$AllSpecificationBaseResponseFromJson(json);
+
+  // to json
+  Map<String, dynamic> toJson() =>
+      _$AllSpecificationBaseResponseToJson(this);
+}
+
+@JsonSerializable()
+class SpecificationBaseResponse extends BaseResponse {
+  @JsonKey(name: "data")
+  SpecificationResponse data;
+  SpecificationBaseResponse(this.data);
+  // from json
+  factory SpecificationBaseResponse.fromJson(
+      Map<String, dynamic> json,
+      ) => _$SpecificationBaseResponseFromJson(json);
+
+  // to json
+  Map<String, dynamic> toJson() =>
+      _$SpecificationBaseResponseToJson(this);
+}
+

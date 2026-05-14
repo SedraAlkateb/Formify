@@ -16,6 +16,7 @@ import 'package:formify/domain/repostitory/repository.dart';
 import 'package:formify/domain/repostitory/repository_sql.dart';
 import 'package:formify/domain/repostitory/statistics_repository.dart';
 import 'package:formify/domain/usecase/add_async_data_sql_usecase.dart';
+import 'package:formify/domain/usecase/add_spec_usecase.dart';
 import 'package:formify/domain/usecase/all_important_doctor_not_come_sql_usecase.dart';
 import 'package:formify/domain/usecase/check_password_usecase.dart';
 import 'package:formify/domain/usecase/create_conference_usecase.dart';
@@ -27,6 +28,7 @@ import 'package:formify/domain/usecase/delete_user_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_ai_usecase.dart';
 import 'package:formify/domain/usecase/get_all_async_info_usecase.dart';
 import 'package:formify/domain/usecase/get_all_conference_usecase.dart';
+import 'package:formify/domain/usecase/get_all_spec_usecase.dart';
 import 'package:formify/domain/usecase/get_all_survey_and_active_usecase.dart';
 import 'package:formify/domain/usecase/get_all_survey_usecase.dart';
 import 'package:formify/domain/usecase/get_all_user_for_app_usecase.dart';
@@ -188,10 +190,17 @@ Future<void> initConferenceModule() async {
     instance.registerFactory<UpdateConferenceUsecase>(
       () => UpdateConferenceUsecase(instance()),
     );
-
+    instance.registerFactory<GetAllSpecUsecase>(
+          () => GetAllSpecUsecase(instance()),
+    );
+    instance.registerFactory<AddSpecUsecase>(
+          () => AddSpecUsecase(instance()),
+    );
 
     instance.registerFactory<ConferenceBloc>(
       () => ConferenceBloc(
+        instance(),
+        instance(),
         instance(),
         instance(),
         instance(),

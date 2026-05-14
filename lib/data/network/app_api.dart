@@ -128,4 +128,11 @@ abstract class AppServiceClient {
   @GET("users-crud/get_all_users.php")
   Future<GetAllUserForAppBaseResponse> getAllUsers(
       );
+  @GET("specification-crud/get_all_specification.php")
+  Future<AllSpecificationBaseResponse> getAllSpecification(
+      );
+  @POST("specification-crud/add_specification.php")
+  Future<SpecificationBaseResponse> addSpecification(
+      @Part(name: "title") String title,
+      );
 }

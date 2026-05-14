@@ -205,7 +205,7 @@ class ConferenceModel {
   String startDate;
   String endDate;
   int isActive;
-
+  List<int>? specification_ids;
   ConferenceModel(
     this.name,
     this.description,
@@ -213,6 +213,7 @@ class ConferenceModel {
     this.startDate,
     this.endDate,
     this.isActive,
+      { this.specification_ids}
   );
 
   Map<String, dynamic> toJson() {
@@ -223,6 +224,7 @@ class ConferenceModel {
       'start_date': startDate,
       'end_date': endDate,
       'is_active': isActive,
+      'specification_ids':specification_ids
     };
   }
 
@@ -234,6 +236,7 @@ class ConferenceModel {
       map['start_date'],
       map['end_date'],
       map['is_active'],
+        specification_ids: map['specification_ids']
     );
   }
 }
@@ -819,4 +822,9 @@ class QuestionForStatModel {
     this.groupType,
       { this.descAi}
   );
+}
+class SpecModel {
+  int id;
+  String title;
+  SpecModel(this.id, this.title);
 }

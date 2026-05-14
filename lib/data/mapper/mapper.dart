@@ -560,3 +560,27 @@ extension CountResponseMapper on CountStatResponse? {
     );
   }
 }
+extension GetSpecModelMapper on SpecificationResponse? {
+  SpecModel toDomain() {
+    return SpecModel(
+      this?.id ?? Constants.zero,
+      this?.title ?? Constants.empty,
+    );
+  }
+}
+extension GetSpecBaseModelMapper on SpecificationBaseResponse? {
+  SpecModel toDomain() {
+    return SpecModel(
+      this?.data.id ?? Constants.zero,
+      this?.data.title ?? Constants.empty,
+    );
+  }
+}
+extension GetAllSpoecModelMapper on AllSpecificationBaseResponse {
+  List<SpecModel> toDomain() {
+    List<SpecModel> allSpec = (data.specifications.map(
+          (response) => response.toDomain(),
+    )).cast<SpecModel>().toList();
+    return allSpec;
+  }
+}

@@ -640,4 +640,62 @@ class RepositoryImp implements Repository {
       return Left(failure);
     }
   }
+
+  @override
+  Future<Either<Failure, List<SpecModel>>> getAllSpecification()  async {
+    try {
+      if (await _networkInfo.isConnected) {
+        final response = await _remoteDataSource.getAllSpecification(
+        );
+
+        if (response.status == "200" ||
+            response.status == ApiInternalStatus.SUCCESS) {
+          return Right(response.toDomain());
+        } else {
+          Failure failure = Failure(
+            ApiInternalStatus.FAILURE,
+            response.message ?? ResponseMassage.DEFAULT,
+          );
+          return Left(failure);
+
+          // return Left(Failure(ApiInternalStatus.FAILURE,
+          //     response.message ?? ResponseMassage.DEFAULT));
+        }
+      } else {
+        return Left(DataSource.NO_INTERNET_CONNECTION.getFailure());
+      }
+    } catch (error) {
+      Failure failure = ErrorHandler.handle(error).failure;
+      return Left(failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, SpecModel>> addSpecification(String title)async {
+    try {
+      if (await _networkInfo.isConnected) {
+        final response = await _remoteDataSource.addSpecification(title
+        );
+
+        if (response.status == "200" ||
+            response.status == ApiInternalStatus.SUCCESS) {
+          return Right(response.toDomain());
+        } else {
+          Failure failure = Failure(
+            ApiInternalStatus.FAILURE,
+            response.message ?? ResponseMassage.DEFAULT,
+          );
+          return Left(failure);
+
+          // return Left(Failure(ApiInternalStatus.FAILURE,
+          //     response.message ?? ResponseMassage.DEFAULT));
+        }
+      } else {
+        return Left(DataSource.NO_INTERNET_CONNECTION.getFailure());
+      }
+    } catch (error) {
+      Failure failure = ErrorHandler.handle(error).failure;
+      return Left(failure);
+    }
+  }
 }

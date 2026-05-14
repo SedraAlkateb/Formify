@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/models/user_type.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
-import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/resources/values_manager.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
 import 'package:formify/presentation/sync/widget/autocomplete.dart';
@@ -84,22 +83,6 @@ class _EditUserPageState extends State<EditUserPage>
     super.dispose();
   }
 
-  void _updateSubmit() {
-    if (_formKey.currentState!.validate()) {
-      // بناء كائن المستخدم المعدل مع الحفاظ على الـ ID القديم
-      final updatedUser = widget.userModel.copyWith(
-        fullName: fullNameController.text,
-        email: emailController.text,
-        phone: phoneController.text,
-        address: addressController.text,
-        notes: noteController.text,
-        userType: _selectedUserType,
-      );
-
-      // إرسال حدث التعديل إلى الـ Bloc (افترضنا وجود حدث اسمه UpdateUserSqlEvent)
-      // BlocProvider.of<SyncBloc>(context).add(UpdateUserSqlEvent(updatedUser));
-    }
-  }
 
   @override
   Widget build(BuildContext context) {

@@ -110,6 +110,24 @@ final class DeleteConferenceLoadingState extends ConferenceState {
   @override
   List<Object?> get props => [];
 }
+//////////////////////GetAllSpec
+final class GetAllSpecState extends ConferenceState {
+  final List<SpecModel> allSpec;
+  GetAllSpecState(this.allSpec);
+  List<Object?> get props => [allSpec];
+}
+final class GetAllSpecErrorState extends ConferenceState {
+  final Failure failure;
+  GetAllSpecErrorState({required this.failure});
+  @override
+  List<Object?> get props =>[failure];
+}
+final class GetAllSpecLoadingState extends ConferenceState {
+  @override
+  List<Object?> get props => [];
+}
+
+
 final class GetConferenceByIdState extends ConferenceState {
   final GetAllConferenceByIdModel conferenceModel;
 
@@ -134,4 +152,27 @@ final class SelectEndedConferenceState extends ConferenceState {
   SelectEndedConferenceState(this.index);
   @override
   List<Object?> get props => [index];
+}
+// الحالات (States)
+class SelectedSpecialtiesUpdatedState extends ConferenceState {
+  final List<SpecModel> selectedSpecs;
+  SelectedSpecialtiesUpdatedState(this.selectedSpecs);
+  @override
+  List<Object?> get props =>[selectedSpecs];
+}
+final class CreateSpecState extends ConferenceState {
+  final List<SpecModel> spec ;
+  CreateSpecState(this.spec);
+  List<Object?> get props => [spec];
+}
+
+final class CreateSpecErrorState extends ConferenceState {
+  final Failure failure;
+  CreateSpecErrorState({required this.failure});
+  @override
+  List<Object?> get props =>[failure];
+}
+final class CreateSpecLoadingState extends ConferenceState {
+  @override
+  List<Object?> get props => [];
 }

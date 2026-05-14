@@ -116,7 +116,7 @@ class AppSqlApi extends AppSqlApiAbs {
             aId as int,
             r['a_title'] as String,
             imgName: r['a_img'] as String?,
-           isCorrect:  r['a_isCorrect'] as int,
+            isCorrect: r['a_isCorrect'] as int,
           ),
         );
       }
@@ -221,17 +221,25 @@ class AppSqlApi extends AppSqlApiAbs {
     }
     await batch.commit(noResult: true);
   }
+
   @override
   Future<void> deleteUser() async {
+    // 1. الحصول على نسخة من قاعدة البيانات المحلية
     final db = await databaseHelper.database;
-    final tables = [
-      'users',
-     // 'users_answers',
-    ];
+
+    // 2. إنشاء Batch لتجميع العمليات البرمجية وتنفيذها دفعة واحدة
     Batch batch = db.batch();
-    for (var table in tables) {
-      batch.delete(table);
-    }
+
+    // العملية الأولى: تحديث حالة الرفع في جدول المستخدمين الأساسي
+    // نضع قيمة 1 في حقل isUpload لجميع الأسطر
+    batch.update("users", {'isUpload': 1});
+
+    // العملية الثانية: حذف (تفريغ) كافة البيانات من جدول all_users
+    // استخدام batch.delete بدون شرط (where) يؤدي لحذف جميع السجلات في الجدول
+    batch.delete("all_users");
+
+    // 3. تنفيذ كافة العمليات المخزنة في الـ Batch
+    // noResult: true تستخدم عندما لا نحتاج لمعرفة عدد الأسطر التي تأثرت، وهي أسرع في التنفيذ
     await batch.commit(noResult: true);
   }
 
@@ -292,8 +300,9 @@ class AppSqlApi extends AppSqlApiAbs {
     users_answers.answer_id AS answer_id,
     users_answers.content   AS content,
     users_answers.isCorrect AS isCorrect
-  FROM users
-  LEFT JOIN users_answers ON users.id = users_answers.user_id; 
+    FROM users
+    LEFT JOIN users_answers ON users.id = users_answers.user_id
+    WHERE users.isUpload = 0;
 ''');
 
     final Map<int, UserSqlModel> usersMap = {};
@@ -303,10 +312,12 @@ class AppSqlApi extends AppSqlApiAbs {
 
       usersMap.putIfAbsent(
         userId,
-            () => UserSqlModel(
+        () => UserSqlModel(
           fullName: row['fullname'] as String,
           email: row['email'] as String?,
-          phone: (row['phone'] as String).isEmpty?"09":row['phone'] as String,
+          phone: (row['phone'] as String).isEmpty
+              ? "09"
+              : row['phone'] as String,
           address: row['address'] as String?,
           userType: userTypeFromId(row['type_id'] as int),
           answerModel: <AnswerUserModel>[],
@@ -385,6 +396,7 @@ class AppSqlApi extends AppSqlApiAbs {
       }
     });
   }
+
   @override
   Future<void> insertDoctor(UserModel doctor) async {
     final db = await databaseHelper.database;
@@ -415,6 +427,7 @@ class AppSqlApi extends AppSqlApiAbs {
     });
     // عند انتهاء الحلقة، يتم اعتماد (Commit) جميع الإدخالات مرة واحدة
   }
+
   //////////////////// لجلب الاطباء المهمين
   @override
   Future<List<UserModel>> getDoctors() async {
@@ -431,9 +444,10 @@ class AppSqlApi extends AppSqlApiAbs {
       return UserModel.fromMap(maps[i]);
     });
   }
-/// جلب كحل المستخدمين الخاصين بالكونفيرنس
+
+  /// جلب كحل المستخدمين الخاصين بالكونفيرنس
   @override
-  Future<List<UserModel>> getUserConference()async {
+  Future<List<UserModel>> getUserConference() async {
     final db = await databaseHelper.database;
     List<Map<String, dynamic>> maps;
     maps = await db.query('users');
@@ -441,6 +455,7 @@ class AppSqlApi extends AppSqlApiAbs {
       return UserModel.fromMap(maps[i]);
     });
   }
+
   /*
   @override
 
@@ -462,7 +477,7 @@ Future<void> updateUser(UserModel user) async {
 
 } اريد المافقة على التعديل اذا كان  isUpload=0 ,  اريد تحديثه الى  1
    */
-////////////////////// تحديث المستخدم
+  ////////////////////// تحديث المستخدم
   @override
   Future<void> updateUser(UserModel user) async {
     // 1. الحصول على نسخة من قاعدة البيانات
@@ -486,14 +501,19 @@ Future<void> updateUser(UserModel user) async {
     // 4. التحقق من نجاح التعديل
     if (count == 0) {
       // إذا كان count يساوي 0، فهذا يعني أن الشرط لم يتحقق (السجل مرفوع مسبقاً أو غير موجود)
-      throw Exception("عذراً، لا يمكن تعديل هذا المستخدم لأنه تم رفعه مسبقاً إلى السيرفر.");
+      throw Exception(
+        "عذراً، لا يمكن تعديل هذا المستخدم لأنه تم رفعه مسبقاً إلى السيرفر.",
+      );
     }
 
     // إذا وصل الكود إلى هنا، فهذا يعني أن التحديث تم بنجاح
   }
+
   /// الطريقة الأكثر كفاءة لجلب الأطباء (نوع 6) وتحويلهم مباشرة إلى قائمة UserModel
   @override
-  Future<List<UserModel>> getAllImportantDoctorNotCome(List<UserModel> users) async {
+  Future<List<UserModel>> getAllImportantDoctorNotCome(
+    List<UserModel> users,
+  ) async {
     // 1. الحصول على نسخة من قاعدة البيانات
     final db = await databaseHelper.database;
 
@@ -505,9 +525,9 @@ Future<void> updateUser(UserModel user) async {
     // إذا كانت فارغة، سنحتاج لجلب كل الأطباء من نوع 6 دون استثناء
     if (namesInParam.isEmpty) {
       final List<Map<String, dynamic>> allImportant = await db.query(
-          'all_users',
-          where: 'type_id = ?',
-          whereArgs: [6]
+        'all_users',
+        where: 'type_id = ?',
+        whereArgs: [6],
       );
       return allImportant.map((map) => UserModel.fromMapSql(map)).toList();
     }
@@ -525,4 +545,5 @@ Future<void> updateUser(UserModel user) async {
 
     // 5. تحويل النتائج إلى قائمة UserModel وإعادتها
     return results.map((map) => UserModel.fromMapSql(map)).toList();
-  }}
+  }
+}

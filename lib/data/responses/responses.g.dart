@@ -941,3 +941,60 @@ Map<String, dynamic> _$QuestionsStatisticsBaseResponseToJson(
   'message': instance.message,
   'data': instance.data,
 };
+
+SpecificationResponse _$SpecificationResponseFromJson(
+  Map<String, dynamic> json,
+) => SpecificationResponse(
+  (json['id'] as num?)?.toInt(),
+  json['title'] as String?,
+);
+
+Map<String, dynamic> _$SpecificationResponseToJson(
+  SpecificationResponse instance,
+) => <String, dynamic>{'id': instance.id, 'title': instance.title};
+
+AllSpecificationResponse _$AllSpecificationResponseFromJson(
+  Map<String, dynamic> json,
+) => AllSpecificationResponse(
+  (json['specifications'] as List<dynamic>)
+      .map((e) => SpecificationResponse.fromJson(e as Map<String, dynamic>))
+      .toList(),
+);
+
+Map<String, dynamic> _$AllSpecificationResponseToJson(
+  AllSpecificationResponse instance,
+) => <String, dynamic>{'specifications': instance.specifications};
+
+AllSpecificationBaseResponse _$AllSpecificationBaseResponseFromJson(
+  Map<String, dynamic> json,
+) =>
+    AllSpecificationBaseResponse(
+        AllSpecificationResponse.fromJson(json['data'] as Map<String, dynamic>),
+      )
+      ..status = json['status'] as String?
+      ..message = json['message'] as String?;
+
+Map<String, dynamic> _$AllSpecificationBaseResponseToJson(
+  AllSpecificationBaseResponse instance,
+) => <String, dynamic>{
+  'status': instance.status,
+  'message': instance.message,
+  'data': instance.data,
+};
+
+SpecificationBaseResponse _$SpecificationBaseResponseFromJson(
+  Map<String, dynamic> json,
+) =>
+    SpecificationBaseResponse(
+        SpecificationResponse.fromJson(json['data'] as Map<String, dynamic>),
+      )
+      ..status = json['status'] as String?
+      ..message = json['message'] as String?;
+
+Map<String, dynamic> _$SpecificationBaseResponseToJson(
+  SpecificationBaseResponse instance,
+) => <String, dynamic>{
+  'status': instance.status,
+  'message': instance.message,
+  'data': instance.data,
+};

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/app/app_preferences.dart';
 import 'package:formify/app/constants.dart';
 import 'package:formify/app/di.dart';
@@ -8,7 +7,6 @@ import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/resources/strings_manager.dart';
 import 'package:formify/presentation/resources/values_manager.dart';
-import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
 import 'package:formify/presentation/unit/animation/animation_container_widget.dart';
 import 'package:formify/presentation/unit/animation/button_animation_with_text.dart';
 import 'package:lottie/lottie.dart';

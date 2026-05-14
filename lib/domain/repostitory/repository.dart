@@ -46,7 +46,8 @@ abstract class Repository {
   Future<Either<Failure, StatisticsModel>>
   getStatisticsForQuestionTypes(int surveyId,int conferenceId);
   Future<Either<Failure, bool>> checkPassword(String password);
-  Future<Either<Failure, List<UserModel>>> getAllUsers(
+  Future<Either<Failure, List<UserModel>>> getAllUsers();
+  Future<Either<Failure, List<SpecModel>>>  getAllSpecification();
+  Future<Either<Failure, SpecModel>>  addSpecification(String title);
 
-      );
 }

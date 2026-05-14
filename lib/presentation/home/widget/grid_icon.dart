@@ -4,6 +4,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:formify/app/di.dart';
 import 'package:formify/presentation/active_conference/bloc/active_conference_bloc.dart';
+import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 import 'package:formify/presentation/resources/assets_manager.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/responsive/breakpoints.dart';
@@ -59,6 +60,7 @@ class CustomGridPage extends StatelessWidget {
 
             text: "انشاء مؤتمر ديناميكي",
             onTap: () {
+              BlocProvider.of<ConferenceBloc>(context).add(GetAllSpecEvent());
               Navigator.pushNamed(context, Routes.createConference);
             },
             image: HomeImageAssets.conference,

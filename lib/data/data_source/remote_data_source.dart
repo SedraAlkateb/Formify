@@ -54,6 +54,8 @@ abstract class RemoteDataSource {
 
   Future<GetAllUserForAppBaseResponse> getAllUsers(
       );
+  Future<AllSpecificationBaseResponse> getAllSpecification();
+  Future<SpecificationBaseResponse> addSpecification(String title,);
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -128,7 +130,6 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     return await _appServiceClient.getConferenceById(id);
   }
 
-  @override
   Future<CreateUserResponse> createUserWithConferenceId(
     UserInputModel userInputModel,
   ) async {
@@ -231,6 +232,16 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   @override
   Future<GetAllUserForAppBaseResponse> getAllUsers() async {
     return await _appServiceClient.getAllUsers();
+  }
+
+  @override
+  Future<AllSpecificationBaseResponse> getAllSpecification() async {
+    return await _appServiceClient.getAllSpecification();
+  }
+
+  @override
+  Future<SpecificationBaseResponse> addSpecification(String title) async {
+    return await _appServiceClient.addSpecification(title);
   }
 
 

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:formify/domain/models/models.dart';
+import 'package:formify/presentation/conference/widget/spec_widget.dart';
 
 // عدّل الاستيرادات حسب مشروعك
 import 'package:formify/presentation/resources/color_manager.dart';
@@ -37,7 +38,7 @@ class CreateConferencePage extends StatelessWidget {
       ),
 
       body: SingleChildScrollView(
-        padding:  EdgeInsets.all(AppPadding.p16),
+        padding: EdgeInsets.all(AppPadding.p16),
         child: Column(
           children: [
             FormBuilder(
@@ -46,8 +47,8 @@ class CreateConferencePage extends StatelessWidget {
                 children: [
                   Container(
                     width: double.infinity,
-                    padding:  EdgeInsets.all(AppPadding.p16),
-                    margin:  EdgeInsets.symmetric(vertical: AppPadding.p12),
+                    padding: EdgeInsets.all(AppPadding.p16),
+                    margin: EdgeInsets.symmetric(vertical: AppPadding.p12),
                     decoration: BoxDecoration(
                       border: Border.all(color: ColorManager.border),
                       color: Colors.white,
@@ -63,7 +64,7 @@ class CreateConferencePage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                         Text(
+                        Text(
                           "اسم المؤتمر",
                           style: TextStyle(
                             fontSize: FontResponsive.font(
@@ -89,7 +90,7 @@ class CreateConferencePage extends StatelessWidget {
                           ]),
                         ),
                         const SizedBox(height: 20),
-                         Text(
+                        Text(
                           "الوصف",
                           style: TextStyle(
                             fontSize: FontResponsive.font(
@@ -116,11 +117,10 @@ class CreateConferencePage extends StatelessWidget {
                           ]),
                         ),
                         const SizedBox(height: 20),
-                         Text(
+                        Text(
                           "العنوان",
 
                           style: TextStyle(
-
                             fontSize: FontResponsive.font(
                               context,
                               mobile: 16,
@@ -164,7 +164,7 @@ class CreateConferencePage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                         Text(
+                        Text(
                           "التاريخ",
                           style: TextStyle(
                             fontSize: FontResponsive.font(
@@ -270,6 +270,7 @@ class CreateConferencePage extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 12),
+
                         // FormBuilderSwitch(
                         //   name: 'is_active',
                         //   initialValue: true,
@@ -282,6 +283,140 @@ class CreateConferencePage extends StatelessWidget {
                       ],
                     ),
                   ),
+                  // الاختصاص
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    margin: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: ColorManager.border),
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(25),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 8,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 12),
+                        BlocBuilder<ConferenceBloc, ConferenceState>(
+                            buildWhen: (previous, current) =>
+                            current is GetAllSpecState ||
+                                current is GetAllSpecLoadingState ||
+                                current is GetAllSpecErrorState,
+                          builder: (context, state) {
+                            return Column(
+                              children: [
+                                SpecialtyDropdownField(
+                                  specialties: state is GetAllSpecState
+                                      ? state.allSpec
+                                      : null,
+                                  isLoading: state is GetAllSpecLoadingState,
+                                  errorText: state is GetAllSpecErrorState
+                                      ? "فشل تحميل البيانات"
+                                      : null,
+                                  onChanged: (selected) {
+                                    if (selected != null) {
+                                      context.read<ConferenceBloc>().add(AddSpecialtyToLocalListEvent(selected));
+                                      print(
+                                        "تم اختيار الاختصاص ذو المعرف: ${selected.title}",
+                                      );
+                                    }
+                                  },
+                                ),
+                                const SizedBox(height: 12),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: _buildAddSpecButton(context,(state is GetAllSpecState
+                                  ? state.allSpec:[])),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        BlocBuilder<ConferenceBloc, ConferenceState>(
+                          buildWhen: (previous, current) => current is SelectedSpecialtiesUpdatedState,
+                          builder: (context, state) {
+                            List<SpecModel> specs = [];
+                            if (state is SelectedSpecialtiesUpdatedState) {
+                              specs = state.selectedSpecs;
+                            }
+
+                            return AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 400),
+                              child: specs.isEmpty
+                                  ? const SizedBox.shrink() // إخفاء الواجهة تماماً إذا كانت القائمة فارغة
+                                  : Container(
+                                key: ValueKey(specs.length), // يساعد في تفعيل الأنيميشن عند تغيير العدد
+                                width: double.infinity,
+                                margin: const EdgeInsets.symmetric(vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(15),
+                                  border: Border.all(color: const Color(0xFF3A5A75).withOpacity(0.2)),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.05),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(15),
+                                  child: DataTable(
+                                    headingRowColor: MaterialStateProperty.all(
+                                      const Color(0xFF3A5A75).withOpacity(0.1), // لون خفيف للترويسة
+                                    ),
+                                    columnSpacing: 24,
+                                    horizontalMargin: 16,
+                                    columns: const [
+                                      DataColumn(
+                                        label: Text(
+                                          'الاختصاص',
+                                          style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF3A5A75)),
+                                        ),
+                                      ),
+                                      DataColumn(
+                                        label: Text(
+                                          'الإجراء',
+                                          style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF3A5A75)),
+                                        ),
+                                      ),
+                                    ],
+                                    rows: specs.map((s) => DataRow(
+                                      cells: [
+                                        DataCell(Text(s.title, style: const TextStyle(fontSize: 14))),
+                                        DataCell(
+
+                                          IconButton(
+                                            alignment: Alignment.centerLeft,
+                                            icon: const Icon(Icons.delete_outline, color: Colors.redAccent, size: 22),
+                                            onPressed: () {
+                                              // إرسال حدث الحذف إلى الـ Bloc
+                                              context.read<ConferenceBloc>().add(RemoveSpecialtyFromLocalListEvent(s.id));
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    )).toList(),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+
+
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
                 ],
               ),
             ),
@@ -330,25 +465,92 @@ class CreateConferencePage extends StatelessWidget {
                       "start_date": _toYmd(v["start_date"] as DateTime),
                       "end_date": _toYmd(v["end_date"] as DateTime),
                       "is_active": (v["is_active"] == true) ? 1 : 0,
+
                     };
 
                     BlocProvider.of<ConferenceBloc>(context).add(
                       CreateConferenceEvent(ConferenceModel.fromMap(payload)),
                     );
                   },
-                  child:  Text(
+                  child: Text(
                     'إنشاء',
-                    style: TextStyle(fontWeight: FontWeight.bold,fontSize: FontResponsive.font(
-                      context,
-                      mobile: 16,
-                      tablet: 20,
-                    ),),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: FontResponsive.font(
+                        context,
+                        mobile: 16,
+                        tablet: 20,
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
+            const SizedBox(height: 8),
           ],
         ),
+      ),
+    );
+  }
+
+  // ويدجيت الزر الخاص بإضافة اختصاص جديد
+  Widget _buildAddSpecButton(BuildContext context,List<SpecModel> spec) {
+    return TextButton.icon(
+      onPressed: () => _showAddSpecDialog(context,spec),
+      icon: const Icon(Icons.add_circle_outline, size: 22),
+      label: Text(
+        "إنشاء اختصاص جديد",
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: FontResponsive.font(context, mobile: 14, tablet: 18),
+        ),
+      ),
+      style: TextButton.styleFrom(
+        foregroundColor:
+            ColorManager.primary, // اللون الأزرق المعتمد لتطبيق DoForm
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      ),
+    );
+  }
+
+  // نافذة إدخال اسم الاختصاص
+  void _showAddSpecDialog(BuildContext context,List<SpecModel> spec) {
+    final TextEditingController specController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text("إضافة اختصاص جديد", textAlign: TextAlign.right),
+        content: TextField(
+          controller: specController,
+          autofocus: true,
+          decoration: InputDecoration(
+            hintText: "اسم الاختصاص (مثلاً: جراحة قلب)",
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("إلغاء", style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: ColorManager.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            onPressed: () {
+              if (specController.text.isNotEmpty) {
+                BlocProvider.of<ConferenceBloc>(context).add(CreateSpecEvent(specController.text,spec));
+                Navigator.pop(context);
+              }
+            },
+            child: const Text("إضافة", style: TextStyle(color: Colors.white)),
+          ),
+        ],
       ),
     );
   }
