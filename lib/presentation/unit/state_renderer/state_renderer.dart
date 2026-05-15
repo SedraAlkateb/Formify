@@ -8,6 +8,7 @@ import 'package:formify/presentation/resources/font_manager.dart';
 import 'package:formify/presentation/resources/style_manage.dart';
 import 'package:formify/presentation/resources/values_manager.dart';
 import 'package:lottie/lottie.dart';
+import 'package:shimmer/shimmer.dart';
 
 enum StateRendererType{
 ///popup states (dialog)
@@ -55,7 +56,7 @@ class StateRenderer extends StatelessWidget {
             _getRetryButton("موافق",context)
         ]);
       case StateRendererType.fullScreenLoadingState:
-      return _getItemsColumn([_getAnimatedImage(JsonAssets.loading2)]);
+      return buildShimmerListLoading(context);///////////////
       case StateRendererType.fullScreenErrorState:
         return _getItemsColumn(
             [
@@ -72,6 +73,98 @@ class StateRenderer extends StatelessWidget {
       case StateRendererType.contentState:
       return Container();
     }
+  }
+
+// هذا الـ Widget يبني هيكل تحميل يشبه واجهة المؤتمر الخاصة بك
+  Widget buildShimmerListLoading(BuildContext context) {
+    return Shimmer.fromColors(
+      // اللون الأساسي للعناصر
+      baseColor: Colors.grey[300]!,
+      // لون اللمعة التي تتحرك
+      highlightColor: Colors.grey[100]!,
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 30),
+              _buildShimmerBox(),
+              const SizedBox(height: 15),
+              _buildShimmerBox(),
+              const SizedBox(height: 15),
+              _buildShimmerBox(),
+              const SizedBox(height: 15),
+              _buildShimmerBox(),
+              const SizedBox(height: 15),
+              _buildShimmerBox(),
+              const SizedBox(height: 15),
+              _buildShimmerBox(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+  Widget buildShimmerContainerLoading(BuildContext context) {
+    return Shimmer.fromColors(
+      // اللون الأساسي للعناصر
+      baseColor: Colors.grey[300]!,
+      // لون اللمعة التي تتحرك
+      highlightColor: Colors.grey[100]!,
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 30),
+              // محاكاة للصورة أو الحاوية العلوية FloatingContainer
+              Container(
+                width: double.infinity,
+                height: 200,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(25),
+                ),
+              ),
+              const SizedBox(height: 30),
+              // محاكاة لعنوان المؤتمر
+              Container(
+                width: 200,
+                height: 30,
+                color: Colors.white,
+              ),
+              const SizedBox(height: 15),
+              // محاكاة لوصف المؤتمر
+              Container(
+                width: double.infinity,
+                height: 15,
+                color: Colors.white,
+              ),
+              const SizedBox(height: 10),
+              Container(
+                width: double.infinity,
+                height: 15,
+                color: Colors.white,
+              ),
+              const SizedBox(height: 30),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildShimmerBox() {
+    return Container(
+      width: double.infinity,
+      height: 80,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+      ),
+    );
   }
 Widget _getItemsColumn(List<Widget>children){
  return Center(

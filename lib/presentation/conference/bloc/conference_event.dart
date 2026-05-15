@@ -77,3 +77,32 @@ class UpdateInfoConferenceEvent extends ConferenceEvent {
   @override
   List<Object?> get props => [conferenceModel];
 }
+class GetAllSpecEvent extends ConferenceEvent {
+  @override
+  List<Object?> get props => [];
+}
+
+// حدث لإضافة اختصاص مختار إلى القائمة المحلية
+class AddSpecialtyToLocalListEvent extends ConferenceEvent {
+  final SpecModel specialty;
+  AddSpecialtyToLocalListEvent(this.specialty);
+
+  @override
+  List<Object?> get props =>[specialty];
+}
+
+// حدث لحذف اختصاص من القائمة المحلية
+class RemoveSpecialtyFromLocalListEvent extends ConferenceEvent {
+  final int specialtyId;
+  RemoveSpecialtyFromLocalListEvent(this.specialtyId);
+  @override
+  List<Object?> get props =>[specialtyId];
+}
+
+class CreateSpecEvent extends ConferenceEvent {
+  final String name;
+  final List<SpecModel> spec;
+  CreateSpecEvent(this.name,this.spec);
+  @override
+  List<Object?> get props =>[name,spec];
+}

@@ -6,7 +6,6 @@ import 'package:formify/app/di.dart';
 import 'package:formify/data/mapper/mapper.dart';
 import 'package:formify/data/network/failure.dart';
 import 'package:formify/domain/models/models.dart';
-import 'package:formify/domain/models/user_type.dart';
 import 'package:formify/domain/usecase/add_async_data_sql_usecase.dart';
 import 'package:formify/domain/usecase/check_password_usecase.dart';
 import 'package:formify/domain/usecase/delete_data_sql_usecase.dart';
@@ -22,6 +21,7 @@ import 'package:formify/domain/usecase/get_users_conference_usecase.dart';
 import 'package:formify/domain/usecase/insert_doctor_sql_usecase.dart';
 import 'package:formify/domain/usecase/insert_user_and_answer_usecase.dart';
 import 'package:formify/domain/usecase/synchronize_users_answers_usecase.dart';
+import 'package:formify/domain/usecase/update_user_sql_usecase.dart';
 import 'package:meta/meta.dart';
 
 part 'sync_event.dart';
@@ -43,14 +43,15 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   final GetConferenceInfoSqlUsecase getConferenceInfoSqlUsecase;
   final CheckPasswordUsecase checkPasswordUsecase;
   final GetUsersConferenceUsecase getUsersConferenceUsecase;
+  final  UpdateUserSqlUsecase updateUserSqlUsecase;
   // القوائم المخزنة في الذاكرة
   List<IsActiveMainSurveyModel> surveys = [];
   List<IsActiveMainSurveyModel> surveysBase = [];
 
-  List<DoctorsModel> doctor = [];
+  List<UserModel> doctor = [];
 
   // الطبيب المختار حالياً (المصدر الوحيد للحقيقة لـ doctorId)
-  DoctorsModel? selectedDoctor;
+  UserModel? selectedDoctor;
 
   UserSqlModel? userSqlModel;
   int? conferenceId;
@@ -71,7 +72,9 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     this.deleteUserSqlUsecase,
     this.getDoctorsSqlUsecase,
     this.insertDoctorSqlUsecase,
+
     this.getUsersConferenceUsecase,
+      this.updateUserSqlUsecase
   ) : super(const SyncInitial()) {
     // الأحداث الأساسية
     on<AsyncDataEvent>(_onAsyncData);
@@ -84,13 +87,14 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     on<GetConferenceAsyncEvent>(_onGetConference);
     on<GetSurveyAsyncEvent>(_onGetSurveys);
     on<CheckEvent>(_onCheck);
+    on<EditUserEvent>(_onEditUser);
 
     // أحداث إدخال المستخدم
     on<InputUserSqlEvent>((e, emit) async {
       userSqlModel = e.userSqlModel;
       if (selectedDoctor != null) {
-        userSqlModel?.doctorId = selectedDoctor?.id;
-        userSqlModel?.address = selectedDoctor?.region;
+        userSqlModel?.userId = selectedDoctor?.id;
+        userSqlModel?.address = selectedDoctor?.address;
       }
 
       finished = 0;
@@ -213,7 +217,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     }
 
     final filteredList = doctor.where((doc) {
-      return doc.name.toLowerCase().contains(event.query.toLowerCase());
+      return doc.fullName.toLowerCase().contains(event.query.toLowerCase());
     }).toList();
 
     emit(DoctorsState(filteredList, selectedDoctor: selectedDoctor));
@@ -418,6 +422,15 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
         if (!emit.isDone) emit(CheckoutState());
       }
     });
+  }
+  Future<void> _onEditUser(EditUserEvent event, Emitter<SyncState> emit) async {
+    final checkResult = await updateUserSqlUsecase.execute(event.user);
+    await checkResult.fold(
+          (failure) async => emit(EditUserErrorState(failure: failure)),
+          (data) async {
+        emit(EditUserState(surveys));
+      },
+    );
   }
 
   Future<void> _onSurveySubmit(

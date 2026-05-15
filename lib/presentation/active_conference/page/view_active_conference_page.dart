@@ -5,6 +5,7 @@ import 'package:formify/data/mapper/mapper.dart';
 import 'package:formify/presentation/active_conference/bloc/active_conference_bloc.dart';
 import 'package:formify/presentation/active_conference/widget/card_survey.dart';
 import 'package:formify/presentation/active_conference/widget/view_all_user.dart';
+import 'package:formify/presentation/excel/bloc/excel_st_bloc.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/responsive/font_responseve.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
@@ -55,10 +56,6 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
       ),
 
       body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(
-          vertical: AppPadding.p16,
-          horizontal: AppPadding.p18,
-        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -77,6 +74,10 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                   return Column(
                     children: [
                       Container(
+                        padding: EdgeInsets.symmetric(
+                          vertical: AppPadding.p16,
+                          horizontal: AppPadding.p18,
+                        ),
                         width: MediaQuery.of(context).size.width,
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
@@ -92,8 +93,6 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                           ),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        // إضافة أي محتوى هنا داخل الـ Container
-                        padding: EdgeInsets.all(AppPadding.p16),
                         child: Padding(
                           padding: EdgeInsets.all(AppPadding.p16),
                           child: Column(
@@ -297,55 +296,61 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                         ),
                       ),
                       SizedBox(height: 4),
-                      Padding(
-                        padding: EdgeInsets.all(AppPadding.p8),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(Icons.sticky_note_2_outlined, size: 30),
-                                SizedBox(width: AppSize.s8),
-                                Text(
-                                  "الاستبيانات",
-                                  style: TextStyle(
-                                    fontSize: FontResponsive.font(
-                                      context,
-                                      mobile: 18,
-                                      tablet: 22,
-                                    ),
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black87,
+                      state.conferenceModel.surveys.isNotEmpty
+                          ? Padding(
+                              padding: EdgeInsets.all(AppPadding.p8),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.sticky_note_2_outlined,
+                                        size: 30,
+                                      ),
+                                      SizedBox(width: AppSize.s8),
+                                      Text(
+                                        "الاستبيانات",
+                                        style: TextStyle(
+                                          fontSize: FontResponsive.font(
+                                            context,
+                                            mobile: 18,
+                                            tablet: 22,
+                                          ),
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ],
-                            ),
-                            // Row(
-                            //   children: [
-                            //     Icon(Icons.description_outlined),
-                            //     SizedBox(width: 8),
-                            //     Text(
-                            //       "Surveys",
-                            //       style: TextStyle(
-                            //         fontSize: 18,
-                            //         fontWeight: FontWeight.bold,
-                            //         color: Colors.black87,
-                            //       ),
-                            //     ),
-                            //   ],
-                            // ),
-                            Row(
-                              children: [
-                                Text(
-                                  state.conferenceModel.surveys.length
-                                      .toString(),
-                                ),
-                                Text(" استبيان "),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
+                                  // Row(
+                                  //   children: [
+                                  //     Icon(Icons.description_outlined),
+                                  //     SizedBox(width: 8),
+                                  //     Text(
+                                  //       "Surveys",
+                                  //       style: TextStyle(
+                                  //         fontSize: 18,
+                                  //         fontWeight: FontWeight.bold,
+                                  //         color: Colors.black87,
+                                  //       ),
+                                  //     ),
+                                  //   ],
+                                  // ),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        state.conferenceModel.surveys.length
+                                            .toString(),
+                                      ),
+                                      Text(" استبيان "),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            )
+                          : SizedBox(),
                       SizedBox(height: AppSize.s4),
                       state.conferenceModel.surveys.isNotEmpty
                           ? ListView.builder(
@@ -363,7 +368,11 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                                 );
                               },
                             )
-                          : emptyFullScreen(context),
+                          : buildEmptySurveysWidget(
+                              context,
+                              "لا توجد استبيانات",
+                              "يبدو أن هذا المؤتمر لا يحتوي على استبيانات فهو مؤتمر لعرض معلومات المشاركين في المؤتمر , كما في الاسفل",
+                            ),
                       SizedBox(height: AppSize.s4),
                     ],
                   );
@@ -515,9 +524,11 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                               onTap: () {
                                 Navigator.pushNamed(
                                   context,
-                                  Routes.exelBaseConference,
-                                  arguments: state.userFilter,
+                                  Routes.exelConference,
+                                  arguments: state.newTitle,
                                 );
+                                BlocProvider.of<ExcelStBloc>(context).add(ExcelForConferenceEvent(state.userFilter));
+
                               },
                               ///////////////////////
                             ),
@@ -557,7 +568,11 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                                 );
                               },
                             )
-                          : SizedBox(),
+                          : buildEmptySurveysWidget(
+                              context,
+                              "لا يوجد مشاركين",
+                              "يبدو أن هذا المؤتمر لا يحتوي على مشاركين بهذا الاسم",
+                            ),
                     ],
                   );
                 } else {
@@ -570,4 +585,69 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
       ),
     );
   }
+}
+
+Widget buildEmptySurveysWidget(
+  BuildContext context,
+  String title,
+  String supTitle,
+) {
+  return Center(
+    child: Container(
+      padding: EdgeInsets.all(25),
+      margin: EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: ColorManager.white,
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: ColorManager.black.withOpacity(0.05),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min, // ليأخذ الحاوية حجم المحتوى فقط
+        children: [
+          // أيقونة جذابة مع خلفية دائرية خفيفة
+          Container(
+            padding: EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: ColorManager.primaryShadow.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.assignment_late_outlined, // أيقونة استبيان مفقود
+              size: 60,
+              color: ColorManager.primary,
+            ),
+          ),
+          SizedBox(height: 20),
+          // العنوان الرئيسي
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: ColorManager.primary,
+              fontSize: FontResponsive.font(context, mobile: 22, tablet: 28),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 10),
+          // نص توضيحي
+          Text(
+            supTitle,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: ColorManager.textSecondary,
+              fontSize: FontResponsive.font(context, mobile: 14, tablet: 18),
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+          SizedBox(height: 30),
+        ],
+      ),
+    ),
+  );
 }

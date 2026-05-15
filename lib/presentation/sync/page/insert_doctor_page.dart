@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/domain/models/models.dart';
+import 'package:formify/domain/models/user_type.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
 
 // افترضت أن اسم البلوك SyncBloc واسم الموديل DoctorsModel
@@ -152,10 +153,15 @@ class _AddDoctorPageState extends State<AddDoctorPage> {
 
   void _submitData() {
     if (_formKey.currentState!.validate()) {
-      final doctor = DoctorsModel(
+      final doctor = UserModel(
+
         _nameController.text.trim(),
+      null,
+        "09",
         _regionController.text.trim(),
+          UserType.importantDoctor,
         _descController.text.trim(),
+        userId: -2
       );
 
       // استدعاء البلوك

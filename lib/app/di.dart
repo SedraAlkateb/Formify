@@ -16,6 +16,8 @@ import 'package:formify/domain/repostitory/repository.dart';
 import 'package:formify/domain/repostitory/repository_sql.dart';
 import 'package:formify/domain/repostitory/statistics_repository.dart';
 import 'package:formify/domain/usecase/add_async_data_sql_usecase.dart';
+import 'package:formify/domain/usecase/add_spec_usecase.dart';
+import 'package:formify/domain/usecase/all_important_doctor_not_come_sql_usecase.dart';
 import 'package:formify/domain/usecase/check_password_usecase.dart';
 import 'package:formify/domain/usecase/create_conference_usecase.dart';
 import 'package:formify/domain/usecase/create_survey_question_usecase.dart';
@@ -26,13 +28,14 @@ import 'package:formify/domain/usecase/delete_user_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_ai_usecase.dart';
 import 'package:formify/domain/usecase/get_all_async_info_usecase.dart';
 import 'package:formify/domain/usecase/get_all_conference_usecase.dart';
+import 'package:formify/domain/usecase/get_all_spec_usecase.dart';
 import 'package:formify/domain/usecase/get_all_survey_and_active_usecase.dart';
 import 'package:formify/domain/usecase/get_all_survey_usecase.dart';
+import 'package:formify/domain/usecase/get_all_user_for_app_usecase.dart';
 import 'package:formify/domain/usecase/get_all_user_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_by_id_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_info_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_sql_usecase.dart';
-import 'package:formify/domain/usecase/get_doctors_as_map_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_doctors_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_question_answers_usecase.dart';
 import 'package:formify/domain/usecase/get_survey_question_id_usecase.dart';
@@ -40,6 +43,7 @@ import 'package:formify/domain/usecase/get_surveys_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_user_answer_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_user_answers_survey_usecase.dart';
 import 'package:formify/domain/usecase/get_users_conference_usecase.dart';
+import 'package:formify/domain/usecase/insert_all_user_app_usecase.dart';
 import 'package:formify/domain/usecase/insert_doctor_sql_usecase.dart';
 import 'package:formify/domain/usecase/insert_user_and_answer_usecase.dart';
 import 'package:formify/domain/usecase/link_survey_conference_usecase.dart';
@@ -49,6 +53,7 @@ import 'package:formify/domain/usecase/statistics_survey_usecase.dart';
 import 'package:formify/domain/usecase/synchronize_users_answers_usecase.dart';
 import 'package:formify/domain/usecase/update_conference_usecase.dart';
 import 'package:formify/domain/usecase/update_survey_usecase.dart';
+import 'package:formify/domain/usecase/update_user_sql_usecase.dart';
 import 'package:formify/presentation/active_conference/bloc/active_conference_bloc.dart';
 import 'package:formify/presentation/ai_desc/bloc/ai_bloc.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
@@ -135,7 +140,10 @@ Future<void> initAiModule()async {
 Future<void> initOnBoardingModule() async {
   if (!GetIt.I.isRegistered<LoginUsecase>()) {
     instance.registerFactory<LoginUsecase>(() => LoginUsecase(instance()));
-    instance.registerFactory<OnboardingBloc>(() => OnboardingBloc(instance()));
+    instance.registerFactory<GetAllUserForAppUsecase>(() => GetAllUserForAppUsecase(instance()));
+    instance.registerFactory<InsertAllUserAppUsecase>(() => InsertAllUserAppUsecase(instance()));
+
+    instance.registerFactory<OnboardingBloc>(() => OnboardingBloc(instance(),instance(),instance()));
   }
 }
 
@@ -182,10 +190,17 @@ Future<void> initConferenceModule() async {
     instance.registerFactory<UpdateConferenceUsecase>(
       () => UpdateConferenceUsecase(instance()),
     );
-
+    instance.registerFactory<GetAllSpecUsecase>(
+          () => GetAllSpecUsecase(instance()),
+    );
+    instance.registerFactory<AddSpecUsecase>(
+          () => AddSpecUsecase(instance()),
+    );
 
     instance.registerFactory<ConferenceBloc>(
       () => ConferenceBloc(
+        instance(),
+        instance(),
         instance(),
         instance(),
         instance(),
@@ -227,8 +242,8 @@ Future<void> initActiveConferenceModule() async {
   }
 
   if (!GetIt.I.isRegistered<ActiveConferenceBloc>()) {
-    instance.registerFactory<GetDoctorsAsMapSqlUsecase>(
-          () => GetDoctorsAsMapSqlUsecase(instance()),
+    instance.registerFactory<AllImportantDoctorNotComeSqlUsecase>(
+          () => AllImportantDoctorNotComeSqlUsecase(instance()),
     );
     if (!GetIt.I.isRegistered<DeleteConferenceUsecase>()) {
 
@@ -323,8 +338,12 @@ Future<void> initSyncModule() async {
     instance.registerFactory<GetUsersConferenceUsecase>(
           () => GetUsersConferenceUsecase(instance()),
     );
+    instance.registerFactory<UpdateUserSqlUsecase>(
+          () => UpdateUserSqlUsecase(instance()),
+    );
     instance.registerFactory<SyncBloc>(
       () => SyncBloc(
+        instance(),
         instance(),
         instance(),
         instance(),

@@ -5,8 +5,8 @@ import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
 
 class DoctorAutocompleteField extends StatelessWidget {
-  final List<DoctorsModel> allDoctors;
-  final Function(DoctorsModel) onSelected;
+  final List<UserModel> allDoctors;
+  final Function(UserModel) onSelected;
   final TextEditingController controller;
   final FocusNode? focusNode; // إضافة هذا الحقل
   final int index;
@@ -37,16 +37,16 @@ class DoctorAutocompleteField extends StatelessWidget {
         children: [
           Text("الاسم الكامل", style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 10),
-          RawAutocomplete<DoctorsModel>(
+          RawAutocomplete<UserModel>(
             textEditingController: controller,
             focusNode: effectiveFocusNode, // تمرير الـ focusNode هنا ضروري جداً
-            displayStringForOption: (DoctorsModel option) => option.name,
+            displayStringForOption: (UserModel option) => option.fullName,
             optionsBuilder: (TextEditingValue textEditingValue) {
               if (textEditingValue.text.isEmpty) {
-                return const Iterable<DoctorsModel>.empty();
+                return const Iterable<UserModel>.empty();
               }
-              return allDoctors.where((DoctorsModel doc) {
-                return doc.name.toLowerCase().contains(textEditingValue.text.toLowerCase());
+              return allDoctors.where((UserModel doc) {
+                return doc.fullName.toLowerCase().contains(textEditingValue.text.toLowerCase());
               });
             },
             onSelected: onSelected,
@@ -68,10 +68,10 @@ class DoctorAutocompleteField extends StatelessWidget {
                         itemCount: options.length,
                         separatorBuilder: (context, i) => Divider(height: 1, color: Colors.grey.shade100),
                         itemBuilder: (context, index) {
-                          final DoctorsModel doc = options.elementAt(index);
+                          final UserModel doc = options.elementAt(index);
                           return ListTile(
-                            title: Text(doc.name, style: const TextStyle(fontWeight: FontWeight.w600)),
-                            subtitle: Text("${doc.region} - ${doc.description}"),
+                            title: Text(doc.fullName, style: const TextStyle(fontWeight: FontWeight.w600)),
+                            subtitle: Text("${doc.address} - ${doc.notes}"),
                             onTap: () => onSelected(doc),
                           );
                         },

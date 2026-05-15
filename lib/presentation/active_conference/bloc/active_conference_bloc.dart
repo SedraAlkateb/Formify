@@ -3,11 +3,11 @@ import 'package:equatable/equatable.dart';
 import 'package:formify/data/network/failure.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/models/user_type.dart';
+import 'package:formify/domain/usecase/all_important_doctor_not_come_sql_usecase.dart';
 import 'package:formify/domain/usecase/delete_conference_usecase.dart';
 import 'package:formify/domain/usecase/get_all_conference_usecase.dart';
 import 'package:formify/domain/usecase/get_all_user_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_by_id_usecase.dart';
-import 'package:formify/domain/usecase/get_doctors_as_map_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_user_answers_survey_usecase.dart';
 import 'package:meta/meta.dart';
 
@@ -19,20 +19,20 @@ class ActiveConferenceBloc
   final GetAllConferenceUsecase getAllConferenceUsecase;
   final GetConferenceByIdUsecase getConferenceByIdUsecase;
   final GetAllUserUsecase getAllUserUsecase;
-  final GetDoctorsAsMapSqlUsecase getDoctorsAsMapSqlUsecase;
   final DeleteConferenceUsecase deleteConferenceUsecase;
 
   List<SurveyToConferenceModel> surveyModel = [];
   List<GetAllConferenceModel> allActiveConference = [];
   final GetUserAnswersSurveyUsecase getUserAnswersSurveyUsecase;
-  Map<String, DoctorsModel> doctors = {};
+  final AllImportantDoctorNotComeSqlUsecase allImportantDoctorNotComeSqlUsecase;
+  Map<String, UserModel> doctors = {};
   ActiveConferenceBloc(
     this.getAllConferenceUsecase,
     this.getConferenceByIdUsecase,
     this.getAllUserUsecase,
     this.getUserAnswersSurveyUsecase,
-    this.getDoctorsAsMapSqlUsecase,
     this.deleteConferenceUsecase,
+      this.allImportantDoctorNotComeSqlUsecase
   ) : super(ActiveConferenceInitial()) {
     on<GetAllActiveConferenceEvent>((event, emit) async {
       emit(GetAllActiveConferenceLoadingState());
@@ -64,19 +64,7 @@ class ActiveConferenceBloc
       );
     });
 
-    on<GetDoctorsAsMapEvent>((event, emit) async {
-      emit(GetDoctorsAsMapLoadingState());
-      final result = await getDoctorsAsMapSqlUsecase.execute();
-      result.fold(
-        (failure) {
-          emit(GetDoctorsAsMapErrorState(failure: failure));
-        },
-        (data) async {
-          doctors = data;
-          emit(GetDoctorsAsMapState(data));
-        },
-      );
-    });
+
 
     on<GetAllUserByActiveConferenceEvent>((event, emit) async {
       emit(GetAllUserActiveConferenceLoadingState());
@@ -91,10 +79,7 @@ class ActiveConferenceBloc
       );
     });
     on<FilterDoctorEvent>((event, emit) async {
-      // 1. القائمة الكاملة التي وصلت مع الـ Event
       final allUsers = event.users;
-
-      // 2. قائمة النتائج التي سنقوم بتصفيتها
       List<UserModel> filteredList = [];
       String newTitle = "المشاركون"; // لتحديث العنوان في الـ UI
 
@@ -108,38 +93,21 @@ class ActiveConferenceBloc
         case 1: // المهمين (الذين حضروا)
           // هم المستخدمون الموجود أسماؤهم في الـ Map الخاصة بالأطباء المهمين
           filteredList = allUsers.where((user) {
-            return doctors.containsKey(user.fullName.trim());
+            return user.userType==UserType.importantDoctor;
           }).toList();
           newTitle = "المهمين - حضروا";
           break;
 
         case 2:
-          final attendedNames = allUsers.map((u) => u.fullName.trim()).toSet();
-
-          // نبحث في الخريطة المحلية عن أي طبيب اسمه ليس في الـ Set
-          final List<UserModel> missingImportant = [];
-
-          doctors.forEach((name, docModel) {
-            if (!attendedNames.contains(name.trim())) {
-              // نقوم بتحويل DoctorsModel إلى UserModel ليقبل العرض في القائمة
-              missingImportant.add(
-                UserModel(
-                  docModel.id ?? 0,
-                  name,
-                  "",
-                  "",
-                  docModel.region,
-                  UserType.pharmacist,
-                  // أضف أي حقول أخرى يحتاجها الـ UserModel هنا
-                ),
-              );
-            }
-          });
-          print("objectddd");
-          filteredList = missingImportant;
-
+          (await allImportantDoctorNotComeSqlUsecase.execute(event.users)).fold(
+                (failure) {
+              emit(DeleteFinishedConferenceErrorState(failure: failure));
+            },
+                (data) async {
+                  filteredList=data;
+            },
+          );
           newTitle = "المهمين - غائبين";
-
           break;
       }
       for (var user in filteredList) {

@@ -584,6 +584,9 @@ GetAsyncConferenceResponse _$GetAsyncConferenceResponseFromJson(
         ),
       )
       .toList(),
+  (json['users'] as List<dynamic>)
+      .map((e) => UserResponse.fromJson(e as Map<String, dynamic>))
+      .toList(),
 );
 
 Map<String, dynamic> _$GetAsyncConferenceResponseToJson(
@@ -594,6 +597,7 @@ Map<String, dynamic> _$GetAsyncConferenceResponseToJson(
   'questions': instance.questions,
   'answers': instance.answers,
   'survey_conference': instance.survey_conference,
+  'users': instance.users,
 };
 
 GetQuestionForAsyncResponse _$GetQuestionForAsyncResponseFromJson(
@@ -663,6 +667,7 @@ UserResponse _$UserResponseFromJson(Map<String, dynamic> json) => UserResponse(
   json['phone'] as String?,
   json['address'] as String?,
   json['type_name'] as String?,
+  json['notes'] as String?,
 );
 
 Map<String, dynamic> _$UserResponseToJson(UserResponse instance) =>
@@ -673,7 +678,37 @@ Map<String, dynamic> _$UserResponseToJson(UserResponse instance) =>
       'phone': instance.phone,
       'address': instance.address,
       'type_name': instance.type_name,
+      'notes': instance.notes,
     };
+
+GetAllUserForAppBaseResponse _$GetAllUserForAppBaseResponseFromJson(
+  Map<String, dynamic> json,
+) =>
+    GetAllUserForAppBaseResponse(
+        GetAllUserForAppResponse.fromJson(json['data'] as Map<String, dynamic>),
+      )
+      ..status = json['status'] as String?
+      ..message = json['message'] as String?;
+
+Map<String, dynamic> _$GetAllUserForAppBaseResponseToJson(
+  GetAllUserForAppBaseResponse instance,
+) => <String, dynamic>{
+  'status': instance.status,
+  'message': instance.message,
+  'data': instance.data,
+};
+
+GetAllUserForAppResponse _$GetAllUserForAppResponseFromJson(
+  Map<String, dynamic> json,
+) => GetAllUserForAppResponse(
+  (json['users'] as List<dynamic>)
+      .map((e) => UserResponse.fromJson(e as Map<String, dynamic>))
+      .toList(),
+);
+
+Map<String, dynamic> _$GetAllUserForAppResponseToJson(
+  GetAllUserForAppResponse instance,
+) => <String, dynamic>{'users': instance.users};
 
 GetAllUserBaseResponse _$GetAllUserBaseResponseFromJson(
   Map<String, dynamic> json,
@@ -901,6 +936,63 @@ QuestionsStatisticsBaseResponse _$QuestionsStatisticsBaseResponseFromJson(
 
 Map<String, dynamic> _$QuestionsStatisticsBaseResponseToJson(
   QuestionsStatisticsBaseResponse instance,
+) => <String, dynamic>{
+  'status': instance.status,
+  'message': instance.message,
+  'data': instance.data,
+};
+
+SpecificationResponse _$SpecificationResponseFromJson(
+  Map<String, dynamic> json,
+) => SpecificationResponse(
+  (json['id'] as num?)?.toInt(),
+  json['title'] as String?,
+);
+
+Map<String, dynamic> _$SpecificationResponseToJson(
+  SpecificationResponse instance,
+) => <String, dynamic>{'id': instance.id, 'title': instance.title};
+
+AllSpecificationResponse _$AllSpecificationResponseFromJson(
+  Map<String, dynamic> json,
+) => AllSpecificationResponse(
+  (json['specifications'] as List<dynamic>)
+      .map((e) => SpecificationResponse.fromJson(e as Map<String, dynamic>))
+      .toList(),
+);
+
+Map<String, dynamic> _$AllSpecificationResponseToJson(
+  AllSpecificationResponse instance,
+) => <String, dynamic>{'specifications': instance.specifications};
+
+AllSpecificationBaseResponse _$AllSpecificationBaseResponseFromJson(
+  Map<String, dynamic> json,
+) =>
+    AllSpecificationBaseResponse(
+        AllSpecificationResponse.fromJson(json['data'] as Map<String, dynamic>),
+      )
+      ..status = json['status'] as String?
+      ..message = json['message'] as String?;
+
+Map<String, dynamic> _$AllSpecificationBaseResponseToJson(
+  AllSpecificationBaseResponse instance,
+) => <String, dynamic>{
+  'status': instance.status,
+  'message': instance.message,
+  'data': instance.data,
+};
+
+SpecificationBaseResponse _$SpecificationBaseResponseFromJson(
+  Map<String, dynamic> json,
+) =>
+    SpecificationBaseResponse(
+        SpecificationResponse.fromJson(json['data'] as Map<String, dynamic>),
+      )
+      ..status = json['status'] as String?
+      ..message = json['message'] as String?;
+
+Map<String, dynamic> _$SpecificationBaseResponseToJson(
+  SpecificationBaseResponse instance,
 ) => <String, dynamic>{
   'status': instance.status,
   'message': instance.message,

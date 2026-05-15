@@ -4,11 +4,11 @@ import 'package:formify/data/network/failure.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/repostitory/repository_sql.dart';
 
-class GetDoctorsSqlUsecase extends Equatable {
+class InsertAllUserAppUsecase extends Equatable {
   final RepositorySql _repository;
-  const GetDoctorsSqlUsecase(this._repository);
-  Future<Either<Failure, List<UserModel>>> execute() async {
-    return await _repository.getDoctors();
+  const InsertAllUserAppUsecase(this._repository);
+  Future<Either<Failure, void>> execute(List<UserModel> users) async {
+    return await _repository.insertAllUsers(users);
   }
 
   @override

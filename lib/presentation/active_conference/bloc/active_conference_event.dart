@@ -47,12 +47,7 @@ class GetCompletedSurveyEvent extends ActiveConferenceEvent {
   @override
   List<Object?> get props => [];
 }
-class GetDoctorsAsMapEvent extends ActiveConferenceEvent {
-  GetDoctorsAsMapEvent();
 
-  @override
-  List<Object?> get props => [];
-}
 class FilterDoctorEvent extends ActiveConferenceEvent {
   final int filterType;
   final List<UserModel> users;

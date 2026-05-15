@@ -5,7 +5,7 @@ import 'package:formify/presentation/active_conference/page/all_active_conferenc
 import 'package:formify/presentation/active_conference/page/view_active_conference_page.dart';
 import 'package:formify/presentation/active_conference/page/view_completed_survey.dart';
 import 'package:formify/presentation/conference/pages/Update_conference_page.dart';
-import 'package:formify/presentation/conference/pages/conference_exel_page.dart';
+import 'package:formify/presentation/excel/page/conference_exel_page.dart';
 import 'package:formify/presentation/conference/pages/link_survey_by_id.dart';
 import 'package:formify/presentation/conference/pages/create_conference_page.dart';
 import 'package:formify/presentation/conference/pages/view_conference_page.dart';
@@ -23,6 +23,7 @@ import 'package:formify/presentation/survey/pages/create_survey_page.dart';
 import 'package:formify/presentation/survey/pages/update_survey_page.dart';
 import 'package:formify/presentation/survey/pages/view_all_survey_page.dart';
 import 'package:formify/presentation/survey/pages/view_survey.dart';
+import 'package:formify/presentation/sync/page/edite_user_page.dart';
 import 'package:formify/presentation/sync/page/finished_input_surveys.dart';
 import 'package:formify/presentation/sync/page/game_input_page.dart';
 import 'package:formify/presentation/sync/page/insert_doctor_page.dart';
@@ -65,6 +66,7 @@ class Routes {
   static const String dashboardSurvey = "/dashboardSurvey";
   static const String insertDoctor = "/insertDoctor";
   static const String exelBaseConference = "/exelBaseConference";
+  static const String editUser= "/editUser";
 
 }
 
@@ -129,6 +131,7 @@ class RouteGenerator {
       case Routes.viewUserSurvey:
         return _animatedRoute(ViewUserSurveyPage());
       case Routes.exelConference:
+
         final filename = settings.arguments as String;
         return _animatedRoute(SurveyExcelPage(
           filename: filename,
@@ -138,6 +141,10 @@ class RouteGenerator {
         return _animatedRoute(DoctorExcelPage(
           allDoctors: users,
         ));
+      case Routes.editUser:
+    final user = settings.arguments as UserModel;
+
+    return _animatedRoute(EditUserPage(userModel: user ));
       case Routes.finishedSurvey:
         return _animatedRoute(FinishedInputSurveysPage());
       case Routes.updateSurvey:

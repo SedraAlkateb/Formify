@@ -267,6 +267,7 @@ extension GetAllAsyncByConferenceMapper
       data.questions.toDomain(),
       data.answers.toDomain(),
       data.survey_conference.toDomain(),
+      this.data.users.toDomain()
     );
   }
 }
@@ -367,6 +368,17 @@ extension GetAllAsyncSurveyConferenceMapper
   }
 }
 
+extension GetAllBaseUserMapper
+on List<UserResponse>? {
+  List<UserModel> toDomain() {
+    List<UserModel> users =
+    (this?.map((response) => response.toDomain()) ?? const Iterable.empty())
+        .cast<UserModel>()
+        .toList();
+    return users;
+  }
+}
+
 extension GetAllAsyncSurveyMapper on List<GetSurveyResponse>? {
   List<MainSurveyModel> toDomain() {
     List<MainSurveyModel> allSurvey =
@@ -403,12 +415,13 @@ extension GetAllConferenceModelMapper on GetAllSurveyWithActiveBaseResponse {
 extension GetUserModelMapper on UserResponse? {
   UserModel toDomain() {
     return UserModel(
-      this?.id ?? Constants.zero,
+    id:  this?.id ?? Constants.zero,
       this?.fullName ?? Constants.empty,
       this?.email ?? Constants.empty,
       this?.phone ?? Constants.empty,
       this?.address ?? Constants.empty,
       userTypeFromString(this?.type_name ?? Constants.empty),
+      this?.notes ?? Constants.empty,
     );
   }
 }
@@ -421,7 +434,14 @@ extension GetAllUserModelMapper on GetAllUserBaseResponse {
     return allSurvey;
   }
 }
-
+extension GetAllUserForAppModelMapper on GetAllUserForAppBaseResponse {
+  List<UserModel> toDomain() {
+    List<UserModel> allSurvey = (data.users.map(
+          (response) => response.toDomain(),
+    )).cast<UserModel>().toList();
+    return allSurvey;
+  }
+}
 ////////////////////////////Exel
 extension SurveyQuestionModelMapper on SurveyQuestionResponse? {
   SurveyQuestionModel toDomain() {
@@ -538,5 +558,29 @@ extension CountResponseMapper on CountStatResponse? {
       this?.type_name ?? Constants.empty,
       this?.count ?? Constants.zero,
     );
+  }
+}
+extension GetSpecModelMapper on SpecificationResponse? {
+  SpecModel toDomain() {
+    return SpecModel(
+      this?.id ?? Constants.zero,
+      this?.title ?? Constants.empty,
+    );
+  }
+}
+extension GetSpecBaseModelMapper on SpecificationBaseResponse? {
+  SpecModel toDomain() {
+    return SpecModel(
+      this?.data.id ?? Constants.zero,
+      this?.data.title ?? Constants.empty,
+    );
+  }
+}
+extension GetAllSpoecModelMapper on AllSpecificationBaseResponse {
+  List<SpecModel> toDomain() {
+    List<SpecModel> allSpec = (data.specifications.map(
+          (response) => response.toDomain(),
+    )).cast<SpecModel>().toList();
+    return allSpec;
   }
 }

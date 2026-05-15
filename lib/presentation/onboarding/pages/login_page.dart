@@ -143,20 +143,35 @@ class LoginPage extends StatelessWidget {
                               } else if (state is LoginLoadingState) {
                                 loading(context);
                               } else if (state is LoginSuccessState) {
+                                BlocProvider.of<OnboardingBloc>(context).add(GetUserEvent());
+                              }
+                              else if (state is GetAllUserSuccessState) {
+                                BlocProvider.of<OnboardingBloc>(context).add(InsertUserEvent(state.users));
+                              }
+                              if (state is GetAllUserErrorState) {
+                                error(
+                                  context,
+                                  state.failure.massage,
+                                  state.failure.code,
+                                );
+                              }
+                              if (state is InsertUserErrorState) {
+                                error(
+                                  context,
+                                  state.failure.massage,
+                                  state.failure.code,
+                                );
+                              }
+                              if(state is InsertUserSuccessState){
                                 instance<AppPreferences>().setPassword(
                                   passwordController.text,
                                 );
                                 Constants.password=passwordController.text;
                                 instance<AppPreferences>().setLoggedIn(1);
-                                BlocProvider.of<OnboardingBloc>(context).add(GoToHomeEvent());
-                              }
-                              if(state is GoToHomeState){
                                 success(context);
                                 Navigator.of(
                                   context,
                                 ).pushReplacementNamed(Routes.home);
-
-
                               }
                             },
                             child: bottomAnimation(

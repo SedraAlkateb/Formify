@@ -199,6 +199,9 @@ class _SurveyDashboardPageState extends State<SurveyDashboardPage> {
                                     widgetStat: q.question.groupType == 1
                                         ? ListView.separated(
                                             itemBuilder: (context, index) =>
+                                            q
+                                                .userAnswers[index]
+                                                .content.isEmpty?SizedBox():
                                                 Tooltip(
                                                   padding: const EdgeInsets.all(
                                                     8,
@@ -247,6 +250,9 @@ class _SurveyDashboardPageState extends State<SurveyDashboardPage> {
                                                 ),
                                             separatorBuilder:
                                                 (context, index) =>
+                                                q
+                                                    .userAnswers[index]
+                                                    .content.isEmpty?SizedBox():
                                                     const SizedBox(height: 10),
                                             shrinkWrap: true,
                                             physics:
