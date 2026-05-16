@@ -393,6 +393,9 @@ GetAllConferenceResponse _$GetAllConferenceResponseFromJson(
   json['start_date'] as String?,
   json['end_date'] as String?,
   json['isActive'] as bool?,
+  (json['specifications'] as List<dynamic>)
+      .map((e) => SpecificationResponse.fromJson(e as Map<String, dynamic>))
+      .toList(),
 );
 
 Map<String, dynamic> _$GetAllConferenceResponseToJson(
@@ -405,6 +408,7 @@ Map<String, dynamic> _$GetAllConferenceResponseToJson(
   'start_date': instance.start_date,
   'end_date': instance.end_date,
   'isActive': instance.is_active,
+  'specifications': instance.spec,
 };
 
 GetAllConferenceByIdResponse _$GetAllConferenceByIdResponseFromJson(
@@ -423,6 +427,9 @@ GetAllConferenceByIdResponse _$GetAllConferenceByIdResponseFromJson(
             GetSurveyToConferenceResponse.fromJson(e as Map<String, dynamic>),
       )
       .toList(),
+  (json['specifications'] as List<dynamic>)
+      .map((e) => SpecificationResponse.fromJson(e as Map<String, dynamic>))
+      .toList(),
 );
 
 Map<String, dynamic> _$GetAllConferenceByIdResponseToJson(
@@ -436,6 +443,7 @@ Map<String, dynamic> _$GetAllConferenceByIdResponseToJson(
   'end_date': instance.end_date,
   'is_active': instance.is_active,
   'surveys': instance.surveys,
+  'specifications': instance.spec,
 };
 
 GetAllConferenceBaseResponse _$GetAllConferenceBaseResponseFromJson(
@@ -587,6 +595,9 @@ GetAsyncConferenceResponse _$GetAsyncConferenceResponseFromJson(
   (json['users'] as List<dynamic>)
       .map((e) => UserResponse.fromJson(e as Map<String, dynamic>))
       .toList(),
+  (json['specifications'] as List<dynamic>)
+      .map((e) => SpecificationResponse.fromJson(e as Map<String, dynamic>))
+      .toList(),
 );
 
 Map<String, dynamic> _$GetAsyncConferenceResponseToJson(
@@ -598,6 +609,7 @@ Map<String, dynamic> _$GetAsyncConferenceResponseToJson(
   'answers': instance.answers,
   'survey_conference': instance.survey_conference,
   'users': instance.users,
+  'specifications': instance.spec,
 };
 
 GetQuestionForAsyncResponse _$GetQuestionForAsyncResponseFromJson(
@@ -668,6 +680,11 @@ UserResponse _$UserResponseFromJson(Map<String, dynamic> json) => UserResponse(
   json['address'] as String?,
   json['type_name'] as String?,
   json['notes'] as String?,
+  json['specification'] == null
+      ? null
+      : SpecificationResponse.fromJson(
+          json['specification'] as Map<String, dynamic>,
+        ),
 );
 
 Map<String, dynamic> _$UserResponseToJson(UserResponse instance) =>
@@ -679,6 +696,7 @@ Map<String, dynamic> _$UserResponseToJson(UserResponse instance) =>
       'address': instance.address,
       'type_name': instance.type_name,
       'notes': instance.notes,
+      'specification': instance.spec,
     };
 
 GetAllUserForAppBaseResponse _$GetAllUserForAppBaseResponseFromJson(

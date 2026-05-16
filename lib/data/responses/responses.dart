@@ -407,6 +407,8 @@ class GetAllConferenceResponse {
   String? end_date;
   @JsonKey(name: "isActive")
   bool? is_active;
+  @JsonKey(name: "specifications")
+  List<SpecificationResponse> spec;
 
   GetAllConferenceResponse(
     this.id,
@@ -416,6 +418,7 @@ class GetAllConferenceResponse {
     this.start_date,
     this.end_date,
     this.is_active,
+      this.spec
   ); // from json
   factory GetAllConferenceResponse.fromJson(Map<String, dynamic> json) =>
       _$GetAllConferenceResponseFromJson(json);
@@ -442,6 +445,8 @@ class GetAllConferenceByIdResponse {
   bool? is_active;
   @JsonKey(name: "surveys")
   List<GetSurveyToConferenceResponse> surveys;
+  @JsonKey(name: "specifications")
+  List<SpecificationResponse> spec;
   GetAllConferenceByIdResponse(
     this.id,
     this.name,
@@ -451,6 +456,7 @@ class GetAllConferenceByIdResponse {
     this.end_date,
     this.is_active,
     this.surveys,
+      this.spec
   ); // from json
   factory GetAllConferenceByIdResponse.fromJson(Map<String, dynamic> json) =>
       _$GetAllConferenceByIdResponseFromJson(json);
@@ -588,13 +594,16 @@ class GetAsyncConferenceResponse {
   List<SurveyConferenceForAsyncResponse> survey_conference;
   @JsonKey(name: "users")
   List<UserResponse> users;
+  @JsonKey(name: "specifications")
+  List<SpecificationResponse> spec;
   GetAsyncConferenceResponse(
     this.conference,
     this.survey,
     this.questions,
     this.answers,
     this.survey_conference,
-      this.users
+      this.users,
+      this.spec
   ); // from json
   factory GetAsyncConferenceResponse.fromJson(Map<String, dynamic> json) =>
       _$GetAsyncConferenceResponseFromJson(json);
@@ -702,6 +711,9 @@ class UserResponse {
   String? type_name;
   @JsonKey(name: "notes")
   String? notes;
+  @JsonKey(name: "specification")
+  SpecificationResponse? spec;
+
   UserResponse(
     this.id,
     this.fullName,
@@ -709,7 +721,8 @@ class UserResponse {
     this.phone,
     this.address,
     this.type_name,
-      this.notes
+      this.notes,
+      this.spec
   ); // from json
   factory UserResponse.fromJson(Map<String, dynamic> json) =>
       _$UserResponseFromJson(json);

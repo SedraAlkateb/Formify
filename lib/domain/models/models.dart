@@ -308,6 +308,7 @@ class UserModel {
   // جعل القيمة غير قابلة لـ null لضمان استقرار التطبيق
   int isUpload;
   int? userId;
+  SpecModel? spec;
 
   UserModel(
 
@@ -319,7 +320,8 @@ class UserModel {
       this.notes,
       { this.id,
         this.userId,
-        this.isUpload = 0} // القيمة الافتراضية 0
+        this.isUpload = 0,
+      this.spec} // القيمة الافتراضية 0
       );
 
   // وظيفة لإنشاء نسخة معدلة من الكائن
@@ -333,6 +335,7 @@ class UserModel {
     UserType? userType,
     int? isUpload,
     int? userId,
+    SpecModel ? spec
 
   }) {
     return UserModel(
@@ -345,7 +348,8 @@ class UserModel {
       notes ?? this.notes,
       isUpload: isUpload ?? this.isUpload,
       id:   id ?? this.id,
-      userId: userId??this.userId
+      userId: userId??this.userId,
+        spec:spec?? this.spec
     );
   }
 
@@ -358,7 +362,9 @@ class UserModel {
       'type_id': userType.id,
       'notes': notes,
       'isUpload': isUpload,
-      'user_id':userId
+      'user_id':userId,
+      'specId':spec?.id
+
     };
   }
   Map<String, dynamic> toJsonSql() {
@@ -381,6 +387,7 @@ class UserModel {
         map['address'],
         userTypeFromId(map['type_id']),
         map['notes'],
+    spec: map['spec'],
     );
   }
 
@@ -395,7 +402,8 @@ class UserModel {
       map['notes'],
       // التأكد من عدم وجود قيمة null عند القراءة
       isUpload: map['isUpload'] ?? 0,
-        userId:map['userId']
+        userId:map['userId'],
+      spec: map['spec'],
     );
   }
 }
@@ -407,16 +415,20 @@ class GetAllConferenceModel {
   String startDate;
   String endDate;
   bool isActive;
+  List<SpecModel> spec; // قائمة الاختصاصات المضافة للمؤتمر
 
   GetAllConferenceModel(
-    this.id,
-    this.name,
-    this.description,
-    this.address,
-    this.startDate,
-    this.endDate,
-    this.isActive,
-  );
+      this.id,
+      this.name,
+      this.description,
+      this.address,
+      this.startDate,
+      this.endDate,
+      this.isActive,
+      this.spec,
+      );
+
+  // تحويل الكائن إلى Map لإرساله للسيرفر أو لحفظه في قاعدة البيانات
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -426,25 +438,35 @@ class GetAllConferenceModel {
       'start_date': startDate,
       'end_date': endDate,
       'is_active': isActive ? 1 : 0,
+      // تحويل كل كائن اختصاص داخل القائمة إلى Map أيضاً
+     // 'spec': spec.map((e) => e.toJson()).toList(),
     };
   }
 
+  // بناء الكائن من الـ Map القادم من الـ API أو الـ SQLite
   factory GetAllConferenceModel.fromMap(Map<String, dynamic> map) {
     return GetAllConferenceModel(
-      map['id'],
-      map['name'],
-      map['description'],
-      map['address'],
-      map['start_date'],
-      map['end_date'],
-      map['is_active'] == 1 ? true : false,
+      map['id'] ?? 0,
+      map['name'] ?? "",
+      map['description'] ?? "",
+      map['address'] ?? "",
+      map['start_date'] ?? "",
+      map['end_date'] ?? "",
+      map['is_active'] == 1, // سيُعيد true إذا كان 1، وغير ذلك سيعيد false
+      // معالجة القائمة بشكل آمن وفحص الـ null
+      map['spec'] != null
+          ? List<SpecModel>.from(
+        (map['spec'] as List).map((specMap) => SpecModel.fromMap(specMap)),
+      )
+          : [], // إذا كانت القائمة فارغة أو نل، نضع قائمة فارغة افتراضية
     );
   }
+
+  // دالة لإنشاء كائن فارغ افتراضي (تُستخدم غالباً في التهيئة بالـ Bloc)
   static GetAllConferenceModel create() {
-    return GetAllConferenceModel(0, "", "", "", "", "", false);
+    return GetAllConferenceModel(0, "", "", "", "", "", false, []);
   }
 }
-
 class GetAllConferenceByIdModel {
   int id;
   String name;
@@ -453,6 +475,7 @@ class GetAllConferenceByIdModel {
   String startDate;
   String endDate;
   bool isActive;
+  List<SpecModel> spec;
   List<SurveyToConferenceModel> surveys;
   GetAllConferenceByIdModel(
     this.id,
@@ -463,6 +486,7 @@ class GetAllConferenceByIdModel {
     this.endDate,
     this.isActive,
     this.surveys,
+      this.spec
   );
 }
 
@@ -484,7 +508,30 @@ class SurveyToConferenceModel {
     this.survey_order,
   );
 }
+class SpecModel{
+  int id;
+  String title;
+  SpecModel(this.id,this.title);
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'title': title,
+    };
+  }
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+    };
+  }
+  factory SpecModel.fromMap(Map<String, dynamic> map) {
+    return SpecModel(
+         map['id'],
+        map['title'],
 
+    );
+  }
+}
 class GetAsyncModel {
   GetAllConferenceModel conferenceModel;
   List<MainSurveyModel> surveys;
@@ -492,6 +539,7 @@ class GetAsyncModel {
   List<AnswerModel> answers;
   List<SurveyConferenceAsyncModel> surveyConference;
   List<UserModel> users;
+  List<SpecModel> spec;
 
   GetAsyncModel(
     this.conferenceModel,
@@ -499,11 +547,13 @@ class GetAsyncModel {
     this.questions,
     this.answers,
     this.surveyConference,
-      this.users
+      this.users,
+      this.spec
   );
   static GetAsyncModel create() {
-    return GetAsyncModel(GetAllConferenceModel.create(), [], [], [], [],[]);
+    return GetAsyncModel(GetAllConferenceModel.create(), [], [], [], [],[],[]);
   }
+
 }
 
 class AsyncQuestionModel {
@@ -822,9 +872,4 @@ class QuestionForStatModel {
     this.groupType,
       { this.descAi}
   );
-}
-class SpecModel {
-  int id;
-  String title;
-  SpecModel(this.id, this.title);
 }

@@ -149,12 +149,49 @@ class AppSqlApi extends AppSqlApiAbs {
       await db.transaction((txn) async {
         final batch = txn.batch();
 
+        // 1. إدخال الاختصاصات العامة القادمة من السيرفر
+        for (final sp in asyncData.spec) {
+          batch.insert(
+            'spec',
+            sp.toMap(),
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
+        }
+
+        // 🔥 تعديل حماية 1: إدخال الاختصاصات الخاصة بالمؤتمر نفسه في جدول 'spec' أولاً
+        // لضمان وجود المعرف (مثل ID 1) في الجدول الأب قبل عملية الربط
+        if (asyncData.conferenceModel.spec != null) {
+          for (final sp in asyncData.conferenceModel.spec!) {
+            batch.insert(
+              'spec',
+              sp.toMap(), // ندرجه كـ اختصاص رئيسي أولاً لمنع فشل الـ Foreign Key
+              conflictAlgorithm: ConflictAlgorithm.replace,
+            );
+          }
+        }
+
+        // 2. إدخال المؤتمر بأمان الآن
         batch.insert(
           'conference',
           asyncData.conferenceModel.toMap(),
           conflictAlgorithm: ConflictAlgorithm.replace,
         );
 
+        // 3. إدخال جدول الربط (sp_conference) - الآن الاختصاص ID 1 موجود حتماً في الأعلى!
+        if (asyncData.conferenceModel.spec != null) {
+          for (final sp in asyncData.conferenceModel.spec!) {
+            batch.insert(
+              'sp_conference',
+              {
+                'specId': sp.id,
+                'conferenceId': asyncData.conferenceModel.id
+              },
+              conflictAlgorithm: ConflictAlgorithm.replace,
+            );
+          }
+        }
+
+        // 4. إدخال بقية الجداول المرتبطة بالترتيب الصحيح
         for (final survey in asyncData.surveys) {
           batch.insert(
             'survey',
@@ -186,6 +223,7 @@ class AppSqlApi extends AppSqlApiAbs {
             conflictAlgorithm: ConflictAlgorithm.replace,
           );
         }
+
         for (final at in asyncData.users) {
           batch.insert(
             'all_users',
@@ -193,15 +231,17 @@ class AppSqlApi extends AppSqlApiAbs {
             conflictAlgorithm: ConflictAlgorithm.replace,
           );
         }
+
+        // تنفيذ كل العمليات المترابطة دفعة واحدة ككتلة سليمة
         await batch.commit(noResult: true);
       });
 
-      return "";
+      return ""; // المزامنة تمت بنجاح تام
     } catch (e) {
+      print("❌ خطأ المزامنة الضخمة: $e");
       return e.toString();
     }
   }
-
   @override
   Future<void> deleteData() async {
     final db = await databaseHelper.database;
@@ -214,6 +254,8 @@ class AppSqlApi extends AppSqlApiAbs {
       'answers',
       'users_answers',
       'survey_conference',
+      'spec',
+      'sp_conference',
     ];
     Batch batch = db.batch();
     for (var table in tables) {
@@ -286,58 +328,81 @@ class AppSqlApi extends AppSqlApiAbs {
   // }
   @override
   Future<List<UserSqlModel>> getDataSql() async {
-    final db = await databaseHelper.database;
+    try {
+      final db = await databaseHelper.database;
 
-    // 1. استخدام LEFT JOIN لجلب المستخدمين حتى لو لم تكن هناك إجابات مرتبطة بهم
-    final maps = await db.rawQuery('''
-  SELECT 
-    users.id            AS user_id,
-    users.fullname      AS fullname,
-    users.email         AS email,
-    users.phone         AS phone,
-    users.address       AS address,
-    users.type_id       AS type_id,
-    users_answers.answer_id AS answer_id,
-    users_answers.content   AS content,
-    users_answers.isCorrect AS isCorrect
-    FROM users
-    LEFT JOIN users_answers ON users.id = users_answers.user_id
-    WHERE users.isUpload = 0;
-''');
+      // 1. استعلام الـ SQL مع الفلترة
+      final maps = await db.rawQuery('''
+      SELECT 
+        users.id            AS user_id,
+        users.fullname      AS fullname,
+        users.email         AS email,
+        users.phone         AS phone,
+        users.address       AS address,
+        users.notes       AS notes,
+        users.type_id       AS type_id,
+        users.user_id       AS user_type_id,
+        users_answers.answer_id AS answer_id,
+        users_answers.content   AS content,
+        users_answers.isCorrect AS isCorrect
+      FROM users
+      LEFT JOIN users_answers ON users.id = users_answers.user_id
+      WHERE users.isUpload = 0;
+    ''');
 
-    final Map<int, UserSqlModel> usersMap = {};
+      // إذا لم تكن هناك بيانات، نختصر الوقت ونعيد قائمة فارغة مباشرة
+      if (maps.isEmpty) {
+        return <UserSqlModel>[];
+      }
 
-    for (final row in maps) {
-      final int userId = row['user_id'] as int;
+      final Map<int, UserSqlModel> usersMap = {};
 
-      usersMap.putIfAbsent(
-        userId,
-        () => UserSqlModel(
-          fullName: row['fullname'] as String,
-          email: row['email'] as String?,
-          phone: (row['phone'] as String).isEmpty
-              ? "09"
-              : row['phone'] as String,
-          address: row['address'] as String?,
-          userType: userTypeFromId(row['type_id'] as int),
-          answerModel: <AnswerUserModel>[],
-        ),
-      );
+      for (final row in maps) {
+        // حماية إضافية في حال كان الـ ID مفقوداً أو ليس رقماً صريحاً
+        final dynamic rawUserId = row['user_id'];
+        if (rawUserId == null) continue; // تخطي السطر الفاسد بأمان
 
-      // 2. التحقق من أن حقل الإجابة ليس فارغاً (NULL) قبل محاولة الإضافة
-      // إذا كان المستخدم ليس لديه إجابة، سيكون row['answer_id'] قيمته null
-      if (row['answer_id'] != null) {
-        usersMap[userId]!.answerModel.add(
-          AnswerUserModel(
-            row['answer_id'] as int,
-            row['content'] as String,
-            row['isCorrect'] as int,
+        final int userId = rawUserId as int;
+
+        usersMap.putIfAbsent(
+          userId,
+              () => UserSqlModel(
+            fullName: (row['fullname'] ?? "مستخدم بدون اسم") as String,
+            email: row['email'] as String?,
+            phone: (row['phone'] as String? ?? "").isEmpty
+                ? "09"
+                : row['phone'] as String,
+            address: row['address'] as String?,
+            // تحصين تحويل الـ type_id لتجنب خطأ الـ NullPointerException
+            userType: userTypeFromId((row['type_id'] ?? 0) as int),
+            userId: row['user_type_id']as int,
+            answerModel: <AnswerUserModel>[],
+                notes: row['notes']  as String?
           ),
         );
-      }
-    }
 
-    return usersMap.values.toList();
+        // 2. التحقق من حقل الإجابة بشكل آمن
+        if (row['answer_id'] != null) {
+          usersMap[userId]!.answerModel.add(
+            AnswerUserModel(
+              row['answer_id'] as int,
+              (row['content'] ?? "") as String,
+              (row['isCorrect'] ?? 0) as int,
+            ),
+          );
+        }
+      }
+
+      return usersMap.values.toList();
+
+    } catch (e, stackTrace) {
+      // التقاط الخطأ وطباعته في الـ Console لمعرفته وحله أثناء التطوير
+      print("❌ حدث خطأ أثناء جلب البيانات من SQL (getDataSql): $e");
+      print("StackTrace: $stackTrace");
+
+      // إعادة قائمة فارغة بدلاً من جعل التطبيق ينهار (Crash)
+      return <UserSqlModel>[];
+    }
   }
   //  @override
   //   Future<List<UserSqlModel>> getDataSql() async {
@@ -365,16 +430,64 @@ class AppSqlApi extends AppSqlApiAbs {
 
   @override
   Future<GetAllConferenceModel?> getConference() async {
-    final db = await databaseHelper.database;
+    try {
+      final db = await databaseHelper.database;
 
-    final List<Map<String, dynamic>> maps = await db.query('conference');
+      // 1. جلب أول مؤتمر فقط من جدول المؤتمرات (أصغر ID)
+      final List<Map<String, dynamic>> conferenceMaps = await db.query(
+        'conference',
+        limit: 1,
+        orderBy: 'id ASC', // ترتيب تصاعدي لضمان جلب أول مؤتمر تم إدخاله
+      );
 
-    if (maps.isEmpty) {
-      return null;
+      // إذا كان جدول المؤتمرات فارغاً تماماً، نخرج ونعيد null
+      if (conferenceMaps.isEmpty) {
+        return null;
+      }
+
+      // تحويل السطر المرجّع إلى كائن المؤتمر الأساسي (وقائمة الاختصاصات فارغة حالياً)
+      final Map<String, dynamic> firstConfRow = conferenceMaps.first;
+      final GetAllConferenceModel conference = GetAllConferenceModel(
+        firstConfRow['id'] as int,
+        (firstConfRow['name'] ?? "") as String,
+        (firstConfRow['description'] ?? "") as String,
+        (firstConfRow['address'] ?? "") as String,
+        (firstConfRow['start_date'] ?? "") as String,
+        (firstConfRow['end_date'] ?? "") as String,
+        (firstConfRow['is_active'] ?? 0) == 1,
+        <SpecModel>[], // قائمة فارغة سنملؤها في الخطوة التالية
+      );
+
+      // 2. جلب الاختصاصات المرتبطة بهذا المؤتمر المحدد عبر الـ ID الخاص به
+      final List<Map<String, dynamic>> specMaps = await db.rawQuery('''
+      SELECT 
+        spec.id     AS spec_id,
+        spec.title  AS spec_title
+      FROM sp_conference
+      INNER JOIN spec ON sp_conference.specId = spec.id
+      WHERE sp_conference.conferenceId = ?;
+    ''', [conference.id]); // تمرير ID أول مؤتمر جلبناه
+
+      // 3. الدوران حول الاختصاصات المسترجعة (إن وجدت) وحقنها داخل المؤتمر
+      for (final row in specMaps) {
+        conference.spec.add(
+          SpecModel(
+             row['spec_id'] as int,
+           (row['spec_title'] ?? "") as String, // مطابقة حقل title مع خاصية name في الـ Model
+          ),
+        );
+      }
+
+      // إعادة كائن أول مؤتمر بعد أن أصبحت قائمة اختصاصاته مكتملة
+      return conference;
+
+    } catch (e, stackTrace) {
+      print("❌ خطأ أثناء جلب أول مؤتمر واختصاصاته: $e");
+      print("StackTrace: $stackTrace");
+      return null; // ضمان عدم انهيار التطبيق
     }
-
-    return GetAllConferenceModel.fromMap(maps.first);
   }
+
 
   @override
   Future<List<MainSurveyModel>> getSurveys() async {

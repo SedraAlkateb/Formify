@@ -55,7 +55,6 @@ class SettingPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // أزرار التحكم (إضافة، حفظ، رفع، خروج)
               _buildActionCard(
                 context,
                 "إضافة طبيب مهم",
@@ -271,7 +270,7 @@ class SettingPage extends StatelessWidget {
 
                   return AnimationContainerWidget(
                     child: InkWell(
-                      onTap: () {
+                      onTap:u.isUpload==1?null: () {
                         Navigator.pushNamed(context, Routes.editUser,arguments: u);
                       },
                       child: Container(
@@ -299,7 +298,9 @@ class SettingPage extends StatelessWidget {
                                 child: Row(
                                   children: [
                                     // أيقونة الحالة (تم التحقق)
-                                    Icon(Icons.edit, color:
+                                    Icon(
+                                        u.isUpload==1?Icons.check_circle_outline:
+                                        Icons.edit, color:
                                     u.isUpload!=0?Colors.grey:
                                     Colors.green.shade400, size: 20),
 

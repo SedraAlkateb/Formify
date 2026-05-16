@@ -82,7 +82,7 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                   Breakpoints.isMobilePortrait(context);
                               return Container(
                                 height: (isTabletPortrait || isMobilePortrait)
-                                    ? screenHeight * 0.7
+                                    ? screenHeight * 0.9
                                     : null,
                                 width: double.infinity,
                                 padding: EdgeInsets.only(
@@ -366,6 +366,121 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                                               fontWeight:
                                                                   FontWeight
                                                                       .bold,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 20.sp),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(height: 5.sp),
+                                          AnimationContainerWidget(
+                                            child: Container(
+                                              width: double.infinity,
+                                              padding: EdgeInsets.all(12.sp),
+                                              margin: EdgeInsets.symmetric(
+                                                vertical: 12.sp,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                  color: ColorManager.border,
+                                                ),
+                                                color: ColorManager.primaryShadow.withOpacity(0.2),
+                                                borderRadius: BorderRadius.circular(25),
+                                              ),
+                                              child: Row(
+                                                crossAxisAlignment: CrossAxisAlignment.start, // لجعل الأيقونة في الأعلى إذا تعددت الأسطر
+                                                children: [
+                                                  // كارت الأيقونة (تم تعديل الأيقونة لتناسب الاختصاصات الطبية)
+                                                  Card(
+                                                    margin: EdgeInsets.all(5.sp),
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.circular(12),
+                                                    ),
+                                                    color: ColorManager.primary,
+                                                    child: Padding(
+                                                      padding: EdgeInsets.all(10.sp),
+                                                      child: Icon(
+                                                        Icons.bookmarks_outlined, // أيقونة الاختصاصات والتصنيفات
+                                                        color: const Color(0xffffffff),
+                                                        size: 30.sp,
+                                                      ),
+                                                    ),
+                                                  ),
+
+                                                  // قسم النصوص وعرض المصفوفة
+                                                  Expanded(
+                                                    child: Padding(
+                                                      padding: EdgeInsets.all(8.0.sp),
+                                                      child: Column(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                          // العنوان الثابت
+                                                          Text(
+                                                            "الاختصاصات الطبية",
+                                                            textAlign: TextAlign.right,
+                                                            style: TextStyle(
+                                                              color: ColorManager.textSecondary,
+                                                              fontSize: FontResponsive.font(
+                                                                context,
+                                                                mobile: 15,
+                                                                tablet: 21,
+                                                              ),
+                                                              fontWeight: FontWeight.w500,
+                                                            ),
+                                                          ),
+                                                          SizedBox(height: 8.sp),
+
+                                                          // 🔥 عرض قائمة الاختصاصات بشكل ديناميكي مرن
+                                                          conferenceModel.spec != null && conferenceModel.spec.isNotEmpty
+                                                              ? Wrap(
+                                                            spacing: 8.0.sp,    // المسافة الأفقية بين كل اختصاص والآخر
+                                                            runSpacing: 6.0.sp, // المسافة الرأسية عند النزول لسطر جديد
+                                                            children: conferenceModel.spec.map((specItem) {
+                                                              return Container(
+                                                                padding: EdgeInsets.symmetric(
+                                                                  horizontal: 12.sp,
+                                                                  vertical: 6.sp,
+                                                                ),
+                                                                decoration: BoxDecoration(
+                                                                  color: ColorManager.primary.withOpacity(0.15), // لون متناسق مع الهوية
+                                                                  borderRadius: BorderRadius.circular(15),
+                                                                  border: Border.all(
+                                                                    color: ColorManager.primary.withOpacity(0.3),
+                                                                    width: 1,
+                                                                  ),
+                                                                ),
+                                                                child: Text(
+                                                                  specItem.title, // اسم الاختصاص القادم من الـ Model
+                                                                  style: TextStyle(
+                                                                    color: ColorManager.primary,
+                                                                    fontWeight: FontWeight.bold,
+                                                                    fontSize: FontResponsive.font(
+                                                                      context,
+                                                                      mobile: 14,
+                                                                      tablet: 19,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              );
+                                                            }).toList(),
+                                                          )
+                                                              : Text(
+                                                            "لا توجد اختصاصات محددة",
+                                                            textAlign: TextAlign.right,
+                                                            style: TextStyle(
+                                                              color: Colors.grey.shade600,
+                                                              fontSize: FontResponsive.font(
+                                                                context,
+                                                                mobile: 16,
+                                                                tablet: 22,
+                                                              ),
+                                                              fontWeight: FontWeight.bold,
+                                                              fontStyle: FontStyle.italic,
                                                             ),
                                                           ),
                                                         ],

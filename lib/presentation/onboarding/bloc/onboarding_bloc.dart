@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:formify/data/network/failure.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/models/request.dart';
+import 'package:formify/domain/usecase/get_all_spec_usecase.dart';
 import 'package:formify/domain/usecase/get_all_user_for_app_usecase.dart';
 import 'package:formify/domain/usecase/insert_all_user_app_usecase.dart';
 import 'package:formify/domain/usecase/login_usecase.dart';
@@ -18,11 +19,14 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   LoginUsecase loginUsecase;
   GetAllUserForAppUsecase getAllUserForAppUsecase;
   InsertAllUserAppUsecase insertAllUserAppUsecase;
+//  GetAllSpecUsecase getAllSpecUsecase;
+
   bool isLastPageFun(int index) => isLastPage = index == 2;
   OnboardingBloc(
     this.loginUsecase,
     this.getAllUserForAppUsecase,
     this.insertAllUserAppUsecase,
+    //  this.getAllSpecUsecase
   ) : super(OnboardingInitial()) {
     on<OnboardingEvent>((event, emit) async {
       if (event is LoginRequestEvent) {

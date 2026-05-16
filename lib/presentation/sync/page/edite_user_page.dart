@@ -257,7 +257,7 @@ class _EditUserPageState extends State<EditUserPage>
                                       index: 7,
                                       child: bottomAnimation(
                                         context,
-                                        _submit,
+                                        widget.userModel.isUpload==1?null:   _submit,
                                         const Row(
                                           mainAxisAlignment: MainAxisAlignment.center,
                                           children: [

@@ -254,6 +254,8 @@ extension GetConferenceMapper on GetAllConferenceResponse? {
       this?.start_date ?? Constants.empty,
       this?.end_date ?? Constants.empty,
       this?.is_active ?? false,
+      this?.spec.toDomain()??[]
+
     );
   }
 }
@@ -267,7 +269,8 @@ extension GetAllAsyncByConferenceMapper
       data.questions.toDomain(),
       data.answers.toDomain(),
       data.survey_conference.toDomain(),
-      this.data.users.toDomain()
+      data.users.toDomain(),
+       []
     );
   }
 }
@@ -282,7 +285,8 @@ extension GetConferenceByIdMapper on GetConferenceByIdBaseResponse? {
       this?.data.start_date ?? Constants.empty,
       this?.data.end_date ?? Constants.empty,
       this?.data.is_active ?? false,
-      this!.data.surveys.toDomain(),
+      this?.data.surveys.toDomain()??[],
+      this?.data.spec.toDomain()??[]
     );
   }
 }
@@ -422,6 +426,7 @@ extension GetUserModelMapper on UserResponse? {
       this?.address ?? Constants.empty,
       userTypeFromString(this?.type_name ?? Constants.empty),
       this?.notes ?? Constants.empty,
+      spec: this?.spec.toDomain()
     );
   }
 }
@@ -579,6 +584,14 @@ extension GetSpecBaseModelMapper on SpecificationBaseResponse? {
 extension GetAllSpoecModelMapper on AllSpecificationBaseResponse {
   List<SpecModel> toDomain() {
     List<SpecModel> allSpec = (data.specifications.map(
+          (response) => response.toDomain(),
+    )).cast<SpecModel>().toList();
+    return allSpec;
+  }
+}
+extension GetAllSpoecModelsMapper on List<SpecificationResponse> {
+  List<SpecModel> toDomain() {
+    List<SpecModel> allSpec = (map(
           (response) => response.toDomain(),
     )).cast<SpecModel>().toList();
     return allSpec;

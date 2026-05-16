@@ -263,7 +263,7 @@ final class GetUserConferenceState extends SyncState {
 
  const GetUserConferenceState(this.users,this.filterUsers);
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [filterUsers];
 }
 final class GetUserConferenceEmptyState extends SyncState {
 
