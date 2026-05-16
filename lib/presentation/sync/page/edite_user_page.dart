@@ -65,6 +65,9 @@ class _EditUserPageState extends State<EditUserPage>
         addressController.text,
        userTypeFromId(_selectedUserType.id),
          noteController.text,
+          isUpload: 0,
+        userId: widget.userModel.userId,
+
       );
 
       BlocProvider.of<SyncBloc>(context).add(EditUserEvent(user));
@@ -245,6 +248,9 @@ class _EditUserPageState extends State<EditUserPage>
                                   listener: (context, state) {
                                     if (state is EditUserState) {
                                       Navigator.pop(context);
+                                      BlocProvider.of<SyncBloc>(
+                                        context,
+                                      ).add(GetAllUserEvent());
                                     } else if (state
                                     is EditUserErrorState) {
                                 error(context, state.failure.massage, state.failure.code);

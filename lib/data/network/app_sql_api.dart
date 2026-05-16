@@ -599,19 +599,15 @@ Future<void> updateUser(UserModel user) async {
     // 2. تحويل كائن المستخدم وتجهيز البيانات للتحديث
     final Map<String, dynamic> userMap = {
       ...user.toJson(),
-      'isUpload': 1, // سنفترض أن أي تعديل محلي يجعل السجل بحاجة للرفع مجدداً
+   //   'isUpload': 1, // سنفترض أن أي تعديل محلي يجعل السجل بحاجة للرفع مجدداً
     };
 
-    // 3. محاولة التحديث وتخزين عدد الصفوف المتأثرة
-    // الشرط: id مطابق و isUpload الحالي يجب أن يكون 0
     int count = await db.update(
       'users',
       userMap,
       where: 'id = ? AND isUpload = ?',
       whereArgs: [user.id, 0],
     );
-
-    // 4. التحقق من نجاح التعديل
     if (count == 0) {
       // إذا كان count يساوي 0، فهذا يعني أن الشرط لم يتحقق (السجل مرفوع مسبقاً أو غير موجود)
       throw Exception(
