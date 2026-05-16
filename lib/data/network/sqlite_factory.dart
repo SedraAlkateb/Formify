@@ -27,23 +27,22 @@ class DatabaseHelper {
     );
   }
 
-
-
   Future<void> _onCreate(Database db, int version) async {
-// تصحيح جدول all_users بإضافة PRIMARY KEY
     await db.execute('''
   CREATE TABLE IF NOT EXISTS all_users (
-    id INTEGER PRIMARY KEY, -- ضروري جداً لإصلاح الخطأ
+    id INTEGER PRIMARY KEY, 
     fullname TEXT NOT NULL,
     email TEXT,
     phone TEXT NOT NULL,
     address TEXT,
     type_id INTEGER NOT NULL,
-    notes TEXT
+    notes TEXT,
+    specId INTEGER,
+    FOREIGN KEY (specId) REFERENCES spec(id) 
   )
 ''');
 
-// جدول users (يبقى كما هو، الربط الآن صحيح)
+    // جدول users (يبقى كما هو، الربط الآن صحيح)
     await db.execute('''
   CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -55,7 +54,8 @@ class DatabaseHelper {
     user_id INTEGER,
     notes TEXT, 
     isUpload INTEGER DEFAULT 0,
-    FOREIGN KEY (user_id) REFERENCES all_users(id) 
+    specId INTEGER,
+    FOREIGN KEY (specId) REFERENCES spec(id) 
   );
 ''');
 
@@ -68,6 +68,16 @@ class DatabaseHelper {
         start_date TEXT,
         end_date TEXT,
         is_active INTEGER DEFAULT 0
+      );
+    ''');
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS sp_conference (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        conferenceId INTEGER NOT NULL,
+        specId INTEGER NOT NULL,
+        FOREIGN KEY (specId) REFERENCES spec(id) ON DELETE CASCADE,
+        FOREIGN KEY (conferenceId) REFERENCES conference(id) ON DELETE CASCADE
+
       );
     ''');
 
@@ -132,9 +142,13 @@ class DatabaseHelper {
         FOREIGN KEY (conference_id) REFERENCES conference(id) ON DELETE CASCADE
       );
     ''');
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS spec (
+        id INTEGER PRIMARY KEY,
+       title TEXT
+      );
+    ''');
   }
-
-
 }
 
 /*

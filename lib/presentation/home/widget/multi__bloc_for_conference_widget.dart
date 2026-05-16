@@ -14,6 +14,7 @@ Widget multiBlocConferenceWidget(){
     listeners: [
       BlocListener<SyncBloc, SyncState>(
         listener: (context, state) {
+
           if(state is CheckoutState){
             initOnBoardingModule();
             Navigator.pushNamedAndRemoveUntil(
@@ -61,6 +62,19 @@ Widget multiBlocConferenceWidget(){
           }
         },
       ),
+      // BlocListener<ConferenceBloc, ConferenceState>(
+      //   listener: (context, state) {
+      //
+      //
+      //     if(state is DeleteConferenceErrorState){
+      //       error(context, state.failure.massage, state.failure.code);
+      //     }
+      //     if(state is DeleteConferenceLoadingState){
+      //    loading(context);
+      //     }
+      //
+      //   },
+      // ),
     ],
 
     child: BlocBuilder<ConferenceBloc, ConferenceState>(

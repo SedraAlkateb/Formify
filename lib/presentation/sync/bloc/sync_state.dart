@@ -263,7 +263,7 @@ final class GetUserConferenceState extends SyncState {
 
  const GetUserConferenceState(this.users,this.filterUsers);
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [filterUsers];
 }
 final class GetUserConferenceEmptyState extends SyncState {
 
@@ -290,11 +290,10 @@ final class NavigateToConferenceState extends SyncState {
 }
 
 final class EditUserState extends SyncState {
-  final List<IsActiveMainSurveyModel> surveys;
-  const EditUserState(this.surveys);
+  const EditUserState();
 
   @override
-  List<Object?> get props => [surveys];
+  List<Object?> get props => [];
 }
 
 final class EditUserLoadingState extends SyncState {

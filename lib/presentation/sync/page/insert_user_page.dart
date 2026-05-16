@@ -194,6 +194,7 @@ class _InsertUserPageState extends State<InsertUserPage>
                                     context.read<SyncBloc>().add(
                                       SelectDoctorEvent(doctor),
                                     );
+                                    _selectedUserType=UserType.importantDoctor;
                                     fullNameController.text = doctor.fullName;
                                     addressController.text = doctor.address??"";
                                     noteController.text = doctor.notes??"";
