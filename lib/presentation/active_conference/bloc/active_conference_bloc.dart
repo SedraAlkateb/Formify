@@ -89,15 +89,12 @@ class ActiveConferenceBloc
           filteredList = allUsers;
           newTitle = "الكل";
           break;
-
-        case 1: // المهمين (الذين حضروا)
-          // هم المستخدمون الموجود أسماؤهم في الـ Map الخاصة بالأطباء المهمين
+        case 1:
           filteredList = allUsers.where((user) {
             return user.userType==UserType.importantDoctor;
           }).toList();
           newTitle = "المهمين - حضروا";
           break;
-
         case 2:
           (await allImportantDoctorNotComeSqlUsecase.execute(event.users)).fold(
                 (failure) {
