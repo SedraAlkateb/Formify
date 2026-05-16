@@ -428,7 +428,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     await checkResult.fold(
           (failure) async => emit(EditUserErrorState(failure: failure)),
           (data) async {
-        emit(EditUserState(surveys));
+        emit(EditUserState());
       },
     );
   }

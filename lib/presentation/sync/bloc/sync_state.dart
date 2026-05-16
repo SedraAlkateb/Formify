@@ -290,11 +290,10 @@ final class NavigateToConferenceState extends SyncState {
 }
 
 final class EditUserState extends SyncState {
-  final List<IsActiveMainSurveyModel> surveys;
-  const EditUserState(this.surveys);
+  const EditUserState();
 
   @override
-  List<Object?> get props => [surveys];
+  List<Object?> get props => [];
 }
 
 final class EditUserLoadingState extends SyncState {
