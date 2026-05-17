@@ -29,6 +29,7 @@ class _DoctorsAttendancePageState extends State<DoctorsAttendancePage> {
     super.initState();
     BlocProvider.of<SyncBloc>(context).add(GetConferenceAsyncEvent());
     context.read<SyncBloc>().add(DoctorsAttendanceEvent());
+    instance<AppPreferences>().setLoggedIn(4);
   }
 
   @override
