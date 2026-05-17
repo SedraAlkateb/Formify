@@ -9,9 +9,7 @@ const String PREFS_KEY_IS_CONFERENCE = "PREFS_KEY_IS_CONFERENCE";
 class AppPreferences {
   final SharedPreferences _sharedPreferences;
   AppPreferences(this._sharedPreferences);
-  int isLoggedIn() {
-    return _sharedPreferences.getInt(PREFS_KEY_LS_USER_LOGGED_IN) ?? 0;
-  }
+
 
   String routLogin() {
     int isLog = _sharedPreferences.getInt(PREFS_KEY_LS_USER_LOGGED_IN) ?? 0;
@@ -24,6 +22,9 @@ class AppPreferences {
       startRoute = Routes.showConference;
     } else if (isLog == 3) {
       startRoute = Routes.showConference;
+    }
+    else if (isLog == 4) {
+      startRoute = Routes.doctorsAttendance;
     }
     return startRoute;
   }

@@ -5,11 +5,13 @@ import 'package:formify/app/app_preferences.dart';
 import 'package:formify/app/di.dart';
 import 'package:formify/data/mapper/mapper.dart';
 import 'package:formify/data/network/failure.dart';
+import 'package:formify/domain/models/mock_users.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/usecase/add_async_data_sql_usecase.dart';
 import 'package:formify/domain/usecase/check_password_usecase.dart';
 import 'package:formify/domain/usecase/delete_data_sql_usecase.dart';
 import 'package:formify/domain/usecase/delete_user_sql_usecase.dart';
+import 'package:formify/domain/usecase/doctors_attendance_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_all_async_info_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_info_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_sql_usecase.dart';
@@ -21,6 +23,7 @@ import 'package:formify/domain/usecase/get_users_conference_usecase.dart';
 import 'package:formify/domain/usecase/insert_doctor_sql_usecase.dart';
 import 'package:formify/domain/usecase/insert_user_and_answer_usecase.dart';
 import 'package:formify/domain/usecase/synchronize_users_answers_usecase.dart';
+import 'package:formify/domain/usecase/updateIs_done_usecase.dart';
 import 'package:formify/domain/usecase/update_user_sql_usecase.dart';
 import 'package:meta/meta.dart';
 
@@ -44,6 +47,9 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   final CheckPasswordUsecase checkPasswordUsecase;
   final GetUsersConferenceUsecase getUsersConferenceUsecase;
   final  UpdateUserSqlUsecase updateUserSqlUsecase;
+  final DoctorsAttendanceSqlUsecase doctorsAttendanceSqlUsecase;
+  final UpdateDoneUsecase updateDoneUsecase;
+
   // القوائم المخزنة في الذاكرة
   List<IsActiveMainSurveyModel> surveys = [];
   List<IsActiveMainSurveyModel> surveysBase = [];
@@ -58,6 +64,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   int finished = 0;
 
   SyncBloc(
+      this.updateDoneUsecase,
     this.getAllAsyncInfoUsecase,
     this.addAsyncDataSqlUsecase,
     this.getUserAnswerSqlUsecase,
@@ -74,7 +81,8 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     this.insertDoctorSqlUsecase,
 
     this.getUsersConferenceUsecase,
-      this.updateUserSqlUsecase
+      this.updateUserSqlUsecase,
+      this.doctorsAttendanceSqlUsecase
   ) : super(const SyncInitial()) {
     // الأحداث الأساسية
     on<AsyncDataEvent>(_onAsyncData);
@@ -88,7 +96,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     on<GetSurveyAsyncEvent>(_onGetSurveys);
     on<CheckEvent>(_onCheck);
     on<EditUserEvent>(_onEditUser);
-
+    on<UpdateDoneDoctorEvent>(_onIsDone);
     // أحداث إدخال المستخدم
     on<InputUserSqlEvent>((e, emit) async {
       userSqlModel = e.userSqlModel;
@@ -173,6 +181,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     on<GetAllUserEvent>(_onGetAllUserEvent);
     on<SearchInUsersEvent>(_searchInUsersEvent);
     on<InsertUserSqlEvent>(_onInsertUserSql);
+    on<DoctorsAttendanceEvent>(_onDoctorsAttendance);
 
   }
 
@@ -433,6 +442,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     );
   }
 
+
   Future<void> _onSurveySubmit(
     SurveySubmitEvent event,
     Emitter<SyncState> emit,
@@ -467,6 +477,29 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     } catch (e) {
       emit(SurveySubmitErrorState(failure: Failure(0, e.toString())));
     }
+  } Future<void> _onDoctorsAttendance(
+      DoctorsAttendanceEvent event,
+      Emitter<SyncState> emit,
+      ) async {
+    emit(const DoctorsAttendanceLoadingState());
+    (await doctorsAttendanceSqlUsecase.execute()).fold(
+          (failure) => emit(DoctorsAttendanceErrorState(failure: failure)),
+          (data) {
+        //   emit(DoctorsAttendanceSuccessState());
+        emit(DoctorsAttendanceState(data));
+      },
+    );
+  }
+  Future<void> _onIsDone(UpdateDoneDoctorEvent event, Emitter<SyncState> emit) async {
+    emit(const DoctorsAttendanceLoadingState());
+    final checkResult = await updateDoneUsecase.execute(event.doctorMockItem.isDone,event.doctorMockItem.id);
+    await checkResult.fold(
+          (failure) async => emit(DoctorsAttendanceErrorState(failure: failure)),
+          (data) async {
+
+     emit(DoctorsAttendanceState(event.doctors));
+      },
+    );
   }
   Future<void> _onInsertUserSql(
       InsertUserSqlEvent event,

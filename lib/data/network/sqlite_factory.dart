@@ -1,3 +1,4 @@
+import 'package:formify/domain/models/mock_users.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -6,6 +7,7 @@ class DatabaseHelper {
   static Database? _database;
 
   factory DatabaseHelper() => _instance;
+
   DatabaseHelper._internal();
 
   Future<Database> get database async {
@@ -148,111 +150,41 @@ class DatabaseHelper {
        title TEXT
       );
     ''');
-  }
+
+    // 7. 🔥 جدول doctor الجديد المخصص لعرض وحفظ حضور الدكاترة من الـ Mock
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS doctor (
+        id INTEGER PRIMARY KEY,
+        name TEXT NOT NULL,
+        isDone INTEGER DEFAULT 0
+      );
+    ''');
+
+// ✨ استدعاء تابع حقن الدكاترة الافتراضيين تلقائياً هنا باستخدام كائن الـ db الممرر حالياً
+  await _seedDoctorsOnFirstCreate(db);
+}
 }
 
-/*
-  Future<List<UserSqlModel>> getDataSql() async {
+// 🔥 تابع خاص ومحمي لحقن الدكاترة داخل الـ onCreate مباشرة لحماية الجلسة من الـ Deadlock
+Future<void> _seedDoctorsOnFirstCreate(Database db) async {
+  try {
+    final batch = db.batch();
 
-    final db = await databaseHelper.database;
-
-
-
-    // 1. استخدام LEFT JOIN لجلب المستخدمين حتى لو لم تكن هناك إجابات مرتبطة بهم
-
-    final maps = await db.rawQuery('''
-
-  SELECT
-
-    users.id            AS user_id,
-
-    users.fullname      AS fullname,
-
-    users.email         AS email,
-
-    users.phone         AS phone,
-
-    users.address       AS address,
-
-    users.type_id       AS type_id,
-
-    users_answers.answer_id AS answer_id,
-
-    users_answers.content   AS content,
-
-    users_answers.isCorrect AS isCorrect
-
-  FROM users
-
-  LEFT JOIN users_answers ON users.id = users_answers.user_id;
-
-''');
-
-
-
-    final Map<int, UserSqlModel> usersMap = {};
-
-
-
-    for (final row in maps) {
-
-      final int userId = row['user_id'] as int;
-
-
-
-      usersMap.putIfAbsent(
-
-        userId,
-
-            () => UserSqlModel(
-
-          fullName: row['fullname'] as String,
-
-          email: row['email'] as String?,
-
-          phone: (row['phone'] as String).isEmpty?"09":row['phone'] as String,
-
-          address: row['address'] as String?,
-
-          doctorId: row['doctor_id'] as int?,
-
-          userType: userTypeFromId(row['type_id'] as int),
-
-          answerModel: <AnswerUserModel>[],
-
-        ),
-
+    for (final user in MockModel.usersList) {
+      batch.insert(
+        'doctor',
+        {
+          'id': user.id,
+          'name': user.name, // استخلاص الـ fullName المتوافق مع الموديل
+          'isDone': 0,           // غير حاضر افتراضياً
+        },
+        conflictAlgorithm: ConflictAlgorithm.replace,
       );
-
-
-
-      // 2. التحقق من أن حقل الإجابة ليس فارغاً (NULL) قبل محاولة الإضافة
-
-      // إذا كان المستخدم ليس لديه إجابة، سيكون row['answer_id'] قيمته null
-
-      if (row['answer_id'] != null) {
-
-        usersMap[userId]!.answerModel.add(
-
-          AnswerUserModel(
-
-            row['answer_id'] as int,
-
-            row['content'] as String,
-
-            row['isCorrect'] as int,
-
-          ),
-
-        );
-
-      }
-
     }
 
-
-
-    return usersMap.values.toList();
-
-  } اجلب لي isUpload =0 فقط  للمستخدم users_answers و users
- */
+    await batch.commit(noResult: true);
+    print("✅ تم إدخال 59 دكتوراً بنجاح إلى جدول 'doctor' عند تأسيس قاعدة البيانات.");
+  } catch (e) {
+    print("❌ خطأ أثناء إدخال الدكاترة في الـ onCreate: $e");
+  }
+}

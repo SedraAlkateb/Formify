@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/app/app_preferences.dart';
 import 'package:formify/app/di.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
+import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
 
 Future<void> showDialogGameSurveyWidget({
   required BuildContext context,
@@ -17,9 +19,7 @@ Future<void> showDialogGameSurveyWidget({
     builder: (dialogContext) {
       return AlertDialog(
         backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
           title,
           style: const TextStyle(
@@ -33,10 +33,7 @@ Future<void> showDialogGameSurveyWidget({
           children: [
             Text(
               message,
-              style: const TextStyle(
-                color: Colors.black87,
-                fontSize: 15,
-              ),
+              style: const TextStyle(color: Colors.black87, fontSize: 15),
             ),
             const SizedBox(height: 12),
             ValueListenableBuilder<int?>(
@@ -64,7 +61,10 @@ Future<void> showDialogGameSurveyWidget({
             ),
           ],
         ),
-        actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        actionsPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ),
         actions: [
           ValueListenableBuilder<int?>(
             valueListenable: selected,
@@ -85,33 +85,67 @@ Future<void> showDialogGameSurveyWidget({
                   onPressed: value == null
                       ? null
                       : () async {
-                    // 1. حفظ التفضيلات أولاً
-                    await instance<AppPreferences>().setGameORSurvey(value);
+                          // 1. حفظ التفضيلات أولاً
+                          await instance<AppPreferences>().setGameORSurvey(
+                            value,
+                          );
 
-                    // 2. إغلاق الحوار
-                    if (dialogContext.mounted) {
-                      Navigator.of(dialogContext).pop();
-                    }
+                          // 2. إغلاق الحوار
+                          if (dialogContext.mounted) {
+                            Navigator.of(dialogContext).pop();
+                          }
 
-                    // 3. الانتقال للصفحة التالية باستخدام اصل الـ context
-                    if (context.mounted) {
+                          // 3. الانتقال للصفحة التالية باستخدام اصل الـ context
+                          if (context.mounted) {
+                            Navigator.pushNamedAndRemoveUntil(
+                              context,
+                              Routes.showConference,
+                              (route) => false,
+                            );
+                          }
 
-
-                      Navigator.pushNamedAndRemoveUntil(
-                        context,
-                        Routes.showConference,
-                            (route) => false,
-                      );
-                    }
-
-                    // ملاحظة: لا تستدعي selected.dispose() هنا لأنها قد تسبب خطأ
-                    // إذا حاول الـ Builder الوصول إليها أثناء الإغلاق.
-                    // الفلاتر سيتكفل بها أو يفضل تركها للـ Garbage Collector في هذه الحالة.
-                  },
+                          // ملاحظة: لا تستدعي selected.dispose() هنا لأنها قد تسبب خطأ
+                          // إذا حاول الـ Builder الوصول إليها أثناء الإغلاق.
+                          // الفلاتر سيتكفل بها أو يفضل تركها للـ Garbage Collector في هذه الحالة.
+                        },
                   child: const Text("عرض"),
                 ),
               );
             },
+          ),
+          SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity, // جعل الزر بعرض الحوار
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: ColorManager.primary,
+                foregroundColor: Colors.white,
+                disabledBackgroundColor: Colors.grey.shade300,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              onPressed: ()async {
+                      if (dialogContext.mounted) {
+                        Navigator.of(dialogContext).pop();
+                      }
+
+                      // 3. الانتقال للصفحة التالية باستخدام اصل الـ context
+                      if (context.mounted) {
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          Routes.doctorsAttendance,
+                          (route) => false,
+                        );
+                      }
+                      await    instance<AppPreferences>().setLoggedIn(4);
+                      // ملاحظة: لا تستدعي selected.dispose() هنا لأنها قد تسبب خطأ
+                      // إذا حاول الـ Builder الوصول إليها أثناء الإغلاق.
+                      // الفلاتر سيتكفل بها أو يفضل تركها للـ Garbage Collector في هذه الحالة.
+                    },
+              child: const Text("عرض كتسجيل حضور"),
+            ),
           ),
         ],
       );

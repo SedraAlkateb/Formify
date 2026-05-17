@@ -1,4 +1,5 @@
 import 'package:formify/data/network/sqlite_factory.dart';
+import 'package:formify/domain/models/mock_users.dart';
 import 'package:formify/domain/models/model_q.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/models/user_type.dart';
@@ -23,11 +24,17 @@ abstract class AppSqlApiAbs {
   Future<List<UserModel>> getUserConference();
   Future<void> updateUser(UserModel user);
   Future<List<UserModel>> getAllImportantDoctorNotCome(List<UserModel> users);
+  Future<List<DoctorMockItem>> refreshAndSyncUsers();
+  Future<void> updateIsDone(int isDone,int doctorId);
 }
 
 class AppSqlApi extends AppSqlApiAbs {
   DatabaseHelper databaseHelper;
+
   AppSqlApi(this.databaseHelper);
+
+  List<DoctorMockItem> usersList = MockModel.usersList;
+
   Future<void> initializeDatabase() async {
     await databaseFactory.debugSetLogLevel(sqfliteLogLevelVerbose);
   }
@@ -67,8 +74,7 @@ class AppSqlApi extends AppSqlApiAbs {
 
   @override
   Future<List<QuestionModel>> getSurveyQuestionsWithAnswers(
-    int surveyId,
-  ) async {
+      int surveyId,) async {
     final db = await databaseHelper.database;
 
     final rows = await db.rawQuery(
@@ -164,7 +170,8 @@ class AppSqlApi extends AppSqlApiAbs {
           for (final sp in asyncData.conferenceModel.spec!) {
             batch.insert(
               'spec',
-              sp.toMap(), // ندرجه كـ اختصاص رئيسي أولاً لمنع فشل الـ Foreign Key
+              sp.toMap(),
+              // ندرجه كـ اختصاص رئيسي أولاً لمنع فشل الـ Foreign Key
               conflictAlgorithm: ConflictAlgorithm.replace,
             );
           }
@@ -242,6 +249,7 @@ class AppSqlApi extends AppSqlApiAbs {
       return e.toString();
     }
   }
+
   @override
   Future<void> deleteData() async {
     final db = await databaseHelper.database;
@@ -366,19 +374,20 @@ class AppSqlApi extends AppSqlApiAbs {
 
         usersMap.putIfAbsent(
           userId,
-              () => UserSqlModel(
-            fullName: (row['fullname'] ?? "مستخدم بدون اسم") as String,
-            email: row['email'] as String?,
-            phone: (row['phone'] as String? ?? "").isEmpty
-                ? "09"
-                : row['phone'] as String,
-            address: row['address'] as String?,
-            // تحصين تحويل الـ type_id لتجنب خطأ الـ NullPointerException
-            userType: userTypeFromId((row['type_id'] ?? 0) as int),
-            userId: row['user_type_id']as int,
-            answerModel: <AnswerUserModel>[],
-                notes: row['notes']  as String?
-          ),
+              () =>
+              UserSqlModel(
+                  fullName: (row['fullname'] ?? "مستخدم بدون اسم") as String,
+                  email: row['email'] as String?,
+                  phone: (row['phone'] as String? ?? "").isEmpty
+                      ? "09"
+                      : row['phone'] as String,
+                  address: row['address'] as String?,
+                  // تحصين تحويل الـ type_id لتجنب خطأ الـ NullPointerException
+                  userType: userTypeFromId((row['type_id'] ?? 0) as int),
+                  userId: row['user_type_id'] as int,
+                  answerModel: <AnswerUserModel>[],
+                  notes: row['notes'] as String?
+              ),
         );
 
         // 2. التحقق من حقل الإجابة بشكل آمن
@@ -394,7 +403,6 @@ class AppSqlApi extends AppSqlApiAbs {
       }
 
       return usersMap.values.toList();
-
     } catch (e, stackTrace) {
       // التقاط الخطأ وطباعته في الـ Console لمعرفته وحله أثناء التطوير
       print("❌ حدث خطأ أثناء جلب البيانات من SQL (getDataSql): $e");
@@ -404,6 +412,7 @@ class AppSqlApi extends AppSqlApiAbs {
       return <UserSqlModel>[];
     }
   }
+
   //  @override
   //   Future<List<UserSqlModel>> getDataSql() async {
   //     final db = await databaseHelper.database;
@@ -472,15 +481,15 @@ class AppSqlApi extends AppSqlApiAbs {
       for (final row in specMaps) {
         conference.spec.add(
           SpecModel(
-             row['spec_id'] as int,
-           (row['spec_title'] ?? "") as String, // مطابقة حقل title مع خاصية name في الـ Model
+            row['spec_id'] as int,
+            (row['spec_title'] ??
+                "") as String, // مطابقة حقل title مع خاصية name في الـ Model
           ),
         );
       }
 
       // إعادة كائن أول مؤتمر بعد أن أصبحت قائمة اختصاصاته مكتملة
       return conference;
-
     } catch (e, stackTrace) {
       print("❌ خطأ أثناء جلب أول مؤتمر واختصاصاته: $e");
       print("StackTrace: $stackTrace");
@@ -499,6 +508,7 @@ class AppSqlApi extends AppSqlApiAbs {
     });
   }
 
+///////////TODO
   @override
   Future<void> insertUserWithAnswer(UserSqlModel user) async {
     final db = await databaseHelper.database;
@@ -599,7 +609,7 @@ Future<void> updateUser(UserModel user) async {
     // 2. تحويل كائن المستخدم وتجهيز البيانات للتحديث
     final Map<String, dynamic> userMap = {
       ...user.toJson(),
-   //   'isUpload': 1, // سنفترض أن أي تعديل محلي يجعل السجل بحاجة للرفع مجدداً
+      //   'isUpload': 1, // سنفترض أن أي تعديل محلي يجعل السجل بحاجة للرفع مجدداً
     };
 
     int count = await db.update(
@@ -621,8 +631,7 @@ Future<void> updateUser(UserModel user) async {
   /// الطريقة الأكثر كفاءة لجلب الأطباء (نوع 6) وتحويلهم مباشرة إلى قائمة UserModel
   @override
   Future<List<UserModel>> getAllImportantDoctorNotCome(
-    List<UserModel> users,
-  ) async {
+      List<UserModel> users,) async {
     // 1. الحصول على نسخة من قاعدة البيانات
     final db = await databaseHelper.database;
 
@@ -654,5 +663,42 @@ Future<void> updateUser(UserModel user) async {
 
     // 5. تحويل النتائج إلى قائمة UserModel وإعادتها
     return results.map((map) => UserModel.fromMapSql(map)).toList();
+  }
+
+  @override
+  Future<List<DoctorMockItem>> refreshAndSyncUsers() async {
+    try {
+      final db = await databaseHelper.database;
+
+      // 🔥 إضافة orderBy لترتيب الحاضرين (1) في البداية تلقائياً
+      final List<Map<String, dynamic>> maps = await db.query(
+        'doctor',
+        orderBy: 'isDone DESC',
+      );
+
+      return maps.map((row) {
+        return DoctorMockItem(
+          id: row['id'] as int,
+          name: row['name'] as String,
+          isDone: row['isDone'] as int,
+        );
+      }).toList();
+    } catch (e, stackTrace) {
+      print("❌ خطأ أثناء جلب قائمة الدكاترة من جدول doctor: $e");
+      print("StackTrace: $stackTrace");
+
+      return <DoctorMockItem>[];
+    }
+  }
+  @override
+  Future<void> updateIsDone(int isDone, int doctorId) async {
+    // تنفيذ استعلام التحديث في قاعدة البيانات
+    final db = await databaseHelper.database;
+    await db.update(
+      'doctor',
+      {'isDone': isDone},
+      where: 'id = ?',
+      whereArgs: [doctorId],
+    );
   }
 }

@@ -178,4 +178,31 @@ Future<Either<Failure, List<UserModel>>> getAllImportantDoctorNotCome(List<UserM
         .failure;
     return Left(failure);
   }
-}}
+}
+
+  @override
+  Future<Either<Failure, List<DoctorMockItem>>> refreshAndSyncUsers() async {
+    try {
+      final response = await _databaseHelper.refreshAndSyncUsers();
+      return Right(response);
+    } catch (e) {
+      Failure failure = ErrorHandler
+          .handle(e)
+          .failure;
+      return Left(failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> updateIsDone(int isDone, int doctorId) async {
+    try {
+      final response = await _databaseHelper.updateIsDone(isDone,doctorId);
+      return Right(response);
+    } catch (e) {
+      Failure failure = ErrorHandler
+          .handle(e)
+          .failure;
+      return Left(failure);
+    }
+  }
+}

@@ -452,7 +452,7 @@ class SettingPage extends StatelessWidget {
       context: context,
       title: title,
       message: "هل أنت متأكد من تنفيذ هذا الإجراء؟ تأكد من اتصالك بالإنترنت.",
-      onConfirm: () =>
+      onConfirm1: () =>
           BlocProvider.of<SyncBloc>(context).add(GetDataEvent(id, type)),
     );
   }

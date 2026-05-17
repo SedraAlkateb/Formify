@@ -150,7 +150,7 @@ class ActiveConferenceWidget extends StatelessWidget {
                     context: context,
                     title: "حذف المؤتمر",
                     message: "هل تريد حقا حذف مؤتمر منتهي ؟؟",
-                    onConfirm: () {
+                    onConfirm1: () {
                       BlocProvider.of<ActiveConferenceBloc>(
                         context,
                       ).add(

@@ -45,7 +45,6 @@ class _MyAppState extends State<MyApp> {
         BlocProvider(create: (_) => instance<ActiveConferenceBloc>()),
         BlocProvider(
           create: (_) => instance<SyncBloc>()
-           // ..add(GetConferenceAsyncEvent())
             ..add(DoctorEvent())
             ..add(CheckEvent(Constants.password)),
         ),
