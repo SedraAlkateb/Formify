@@ -122,60 +122,6 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
         emit(NavigateToSurveyState());
       }
     });
-/*
- if(surveysBase.isEmpty){
-      emit(const InsertUserLoadingState());
-      final insertResult = await insertUserAndAnswerUsecase.execute(
-        userSqlModel??UserSqlModel(fullName: "fullName", phone: "phone", userType: UserType.other, answerModel: []),
-      );
-      insertResult.fold(
-            (failure) => emit(InsertUserErrorState(failure: failure)),
-            (_) => emit(FinishedSurveyState()),
-      );
-    }else{
-      if (surveys.isEmpty) {
-        emit(const InsertUserLoadingState());
-        final insertResult = await insertUserAndAnswerUsecase.execute(
-          userSqlModel!,
-        );
-        insertResult.fold(
-              (failure) => emit(InsertUserErrorState(failure: failure)),
-              (_) => emit(FinishedSurveyState()),
-        );
-      }else{
-        emit(GetSurveyAsyncState(surveys));
-      }
-       emit(const InsertUserLoadingState());
-          final insertResult = await insertUserAndAnswerUsecase.execute(
-            userSqlModel??UserSqlModel(fullName: "fullName", phone: "phone", userType: UserType.other, answerModel: []),
-          );
-          insertResult.fold(
-                (failure) => emit(InsertUserErrorState(failure: failure)),
-                (_) => emit(FinishedSurveyState()),
-          );
-           final result = await getSurveysSqlUsecase.execute();
-      await result.fold(
-            (failure) async => emit(GetSurveyAsyncErrorState(failure: failure)),
-            (data) async {
-          surveysBase=data.toDomain();
-          surveys = surveysBase;
-          if (surveys.isEmpty) {
-            emit(const InsertUserLoadingState());
-            final insertResult = await insertUserAndAnswerUsecase.execute(
-              userSqlModel??UserSqlModel(fullName: "fullName", phone: "phone", userType: UserType.other, answerModel: []),
-            );
-            insertResult.fold(
-                  (failure) => emit(InsertUserErrorState(failure: failure)),
-                  (_) => emit(FinishedSurveyState()),
-            );
-          }else{
-            emit(GetSurveyAsyncState(surveys));
-          }
-
-
-        },
-      );
- */
     // أحداث الأطباء والبحث (المعدلة)
     on<DoctorEvent>(_onGetDoctors);
     on<InsertEvent>(_onInsertDoctors);
