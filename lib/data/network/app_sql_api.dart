@@ -8,20 +8,20 @@ import 'package:sqflite/sqflite.dart';
 abstract class AppSqlApiAbs {
   Future<String> asyncData(GetAsyncModel asyncData);
   Future<void> deleteData();
-  Future<void> deleteUser();
+  Future<void> deleteDataForSave();
+
+  Future<String> insertDataForSave(DataForSaveModel asyncData);
+
   Future<void> insertDoctor(UserModel doctor);
   Future<void> insertAllUsers(List<UserModel> users);
   Future<List<UserSqlModel>> getDataSql();
   Future<GetAllConferenceModel?> getConference();
   Future<List<MainSurveyModel>> getSurveys();
-  // Future<List<AnswerModel>> getAnswers();
-  // Future<List<QuestionModel>> getQuestionAnswers();
   Future<List<QuestionModel>> getSurveyQuestionsWithAnswers(int surveyId);
   Future<void> insertUserWithAnswer(UserSqlModel user);
-  //Future<List<AsyncQuestionModel>> getQuestions();
   Future<InfoConference> getConferenceInfo();
   Future<List<UserModel>> getDoctors();
-  Future<List<UserModel>> getUserConference();
+  Future<List<UserModel>> getUserConference(int conferenceId);
   Future<void> updateUser(UserModel user);
   Future<List<UserModel>> getAllImportantDoctorNotCome(List<UserModel> users);
   Future<List<DoctorMockItem>> refreshAndSyncUsers();
@@ -163,21 +163,6 @@ class AppSqlApi extends AppSqlApiAbs {
             conflictAlgorithm: ConflictAlgorithm.replace,
           );
         }
-
-        // 🔥 تعديل حماية 1: إدخال الاختصاصات الخاصة بالمؤتمر نفسه في جدول 'spec' أولاً
-        // لضمان وجود المعرف (مثل ID 1) في الجدول الأب قبل عملية الربط
-        if (asyncData.conferenceModel.spec != null) {
-          for (final sp in asyncData.conferenceModel.spec!) {
-            batch.insert(
-              'spec',
-              sp.toMap(),
-              // ندرجه كـ اختصاص رئيسي أولاً لمنع فشل الـ Foreign Key
-              conflictAlgorithm: ConflictAlgorithm.replace,
-            );
-          }
-        }
-
-        // 2. إدخال المؤتمر بأمان الآن
         batch.insert(
           'conference',
           asyncData.conferenceModel.toMap(),
@@ -185,8 +170,7 @@ class AppSqlApi extends AppSqlApiAbs {
         );
 
         // 3. إدخال جدول الربط (sp_conference) - الآن الاختصاص ID 1 موجود حتماً في الأعلى!
-        if (asyncData.conferenceModel.spec != null) {
-          for (final sp in asyncData.conferenceModel.spec!) {
+          for (final sp in asyncData.conferenceModel.spec) {
             batch.insert(
               'sp_conference',
               {
@@ -196,7 +180,7 @@ class AppSqlApi extends AppSqlApiAbs {
               conflictAlgorithm: ConflictAlgorithm.replace,
             );
           }
-        }
+
 
         // 4. إدخال بقية الجداول المرتبطة بالترتيب الصحيح
         for (final survey in asyncData.surveys) {
@@ -254,15 +238,15 @@ class AppSqlApi extends AppSqlApiAbs {
   Future<void> deleteData() async {
     final db = await databaseHelper.database;
     final tables = [
-      'users',
       'all_users',
       'conference',
+      'spec',
       'survey',
       'questions',
       'answers',
       'users_answers',
       'survey_conference',
-      'spec',
+      'user_conference',
       'sp_conference',
     ];
     Batch batch = db.batch();
@@ -271,21 +255,65 @@ class AppSqlApi extends AppSqlApiAbs {
     }
     await batch.commit(noResult: true);
   }
+  @override
+  Future<void> deleteDataForSave() async {
+    final db = await databaseHelper.database;
+    final tables = [
+      'all_users',
+      'users_answers',
+      'user_conference',
+    ];
+    Batch batch = db.batch();
+    for (var table in tables) {
+      batch.delete(table);
+    }
+    await batch.commit(noResult: true);
+  }
+  @override
+  Future<String> insertDataForSave(DataForSaveModel asyncData) async {
+    try {
+      final db = await databaseHelper.database;
+
+      await db.transaction((txn) async {
+        final batch = txn.batch();
+
+        for (final at in asyncData.users) {
+          batch.insert(
+            'all_users',
+            at.toJsonSql(),
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
+        }
+        for (final at in asyncData.answerUser) {
+          batch.insert(
+            'users_answers',
+            at.toJsonSql(),
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
+        }
+        for (final at in asyncData.userConference) {
+          batch.insert(
+            'user_conference',
+            at.toJsonSql(),
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
+        }
+
+        await batch.commit(noResult: true);
+      });
+
+      return ""; // المزامنة تمت بنجاح تام
+    } catch (e) {
+      print("❌ خطأ المزامنة الضخمة: $e");
+      return e.toString();
+    }
+  }
 
   @override
   Future<void> deleteUser() async {
-    // 1. الحصول على نسخة من قاعدة البيانات المحلية
     final db = await databaseHelper.database;
-
-    // 2. إنشاء Batch لتجميع العمليات البرمجية وتنفيذها دفعة واحدة
     Batch batch = db.batch();
-
-    // العملية الأولى: تحديث حالة الرفع في جدول المستخدمين الأساسي
-    // نضع قيمة 1 في حقل isUpload لجميع الأسطر
     batch.update("users", {'isUpload': 1});
-
-    // العملية الثانية: حذف (تفريغ) كافة البيانات من جدول all_users
-    // استخدام batch.delete بدون شرط (where) يؤدي لحذف جميع السجلات في الجدول
     batch.delete("all_users");
 
     // 3. تنفيذ كافة العمليات المخزنة في الـ Batch
@@ -508,7 +536,7 @@ class AppSqlApi extends AppSqlApiAbs {
     });
   }
 
-///////////TODO
+
   @override
   Future<void> insertUserWithAnswer(UserSqlModel user) async {
     final db = await databaseHelper.database;
@@ -570,53 +598,51 @@ class AppSqlApi extends AppSqlApiAbs {
 
   /// جلب كحل المستخدمين الخاصين بالكونفيرنس
   @override
-  Future<List<UserModel>> getUserConference() async {
+  /// جلب كل المستخدمين المسجلين في مؤتمر معين بناءً على الـ conferenceId
+  @override
+  Future<List<UserModel>> getUserConference(int conferenceId) async {
     final db = await databaseHelper.database;
-    List<Map<String, dynamic>> maps;
-    maps = await db.query('users');
+
+    // نقوم بعمل JOIN وتصفية النتائج باستخدام حقل الـ conferenceId
+    final List<Map<String, dynamic>> maps = await db.rawQuery('''
+    SELECT 
+      u.id, 
+      u.server_user_id, 
+      u.fullname, 
+      u.phone, 
+      u.email, 
+      u.address, 
+      u.type_id, 
+      u.notes, 
+      u.specId,
+      u.is_local_new,
+      u.is_modified,
+      u.is_uploaded
+    FROM user_conference uc
+    INNER JOIN all_users u ON uc.user_id = u.id
+    WHERE uc.conference_id = ?
+  ''', [conferenceId]);
+
+    // تحويل البيانات المسترجعة إلى قائمة من UserModel
     return List.generate(maps.length, (i) {
       return UserModel.fromMap(maps[i]);
     });
   }
 
-  /*
-  @override
-
-Future<void> updateUser(UserModel user) async {
-
-  final db = await databaseHelper.database;
-
-   await db.update(
-
-    'users',
-
-    user.toJson(),
-
-    where: 'id = ?',
-
-    whereArgs: [user.id],
-
-  );
-
-} اريد المافقة على التعديل اذا كان  isUpload=0 ,  اريد تحديثه الى  1
-   */
-  ////////////////////// تحديث المستخدم
   @override
   Future<void> updateUser(UserModel user) async {
-    // 1. الحصول على نسخة من قاعدة البيانات
     final db = await databaseHelper.database;
 
-    // 2. تحويل كائن المستخدم وتجهيز البيانات للتحديث
     final Map<String, dynamic> userMap = {
       ...user.toJson(),
       //   'isUpload': 1, // سنفترض أن أي تعديل محلي يجعل السجل بحاجة للرفع مجدداً
     };
 
     int count = await db.update(
-      'users',
+      'all_users',
       userMap,
-      where: 'id = ? AND isUpload = ?',
-      whereArgs: [user.id, 0],
+      where: 'id = ?',
+      whereArgs: [user.id],
     );
     if (count == 0) {
       // إذا كان count يساوي 0، فهذا يعني أن الشرط لم يتحقق (السجل مرفوع مسبقاً أو غير موجود)
@@ -631,7 +657,7 @@ Future<void> updateUser(UserModel user) async {
   /// الطريقة الأكثر كفاءة لجلب الأطباء (نوع 6) وتحويلهم مباشرة إلى قائمة UserModel
   @override
   Future<List<UserModel>> getAllImportantDoctorNotCome(
-      List<UserModel> users,) async {
+      List<UserModel> users ) async {
     // 1. الحصول على نسخة من قاعدة البيانات
     final db = await databaseHelper.database;
 

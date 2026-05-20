@@ -1016,3 +1016,154 @@ Map<String, dynamic> _$SpecificationBaseResponseToJson(
   'message': instance.message,
   'data': instance.data,
 };
+
+UserForSaveResponse _$UserForSaveResponseFromJson(Map<String, dynamic> json) =>
+    UserForSaveResponse(
+      (json['id'] as num?)?.toInt(),
+      json['fullname'] as String?,
+      json['email'] as String?,
+      json['phone'] as String?,
+      json['address'] as String?,
+      (json['user_types_id'] as num?)?.toInt(),
+      json['notes'] as String?,
+      (json['specification_id'] as num?)?.toInt(),
+    );
+
+Map<String, dynamic> _$UserForSaveResponseToJson(
+  UserForSaveResponse instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'fullname': instance.fullName,
+  'email': instance.email,
+  'phone': instance.phone,
+  'address': instance.address,
+  'user_types_id': instance.user_types_id,
+  'notes': instance.notes,
+  'specification_id': instance.spec_id,
+};
+
+UserConferenceResponse _$UserConferenceResponseFromJson(
+  Map<String, dynamic> json,
+) => UserConferenceResponse(
+  (json['id'] as num?)?.toInt(),
+  (json['user_id'] as num?)?.toInt(),
+  (json['conference_id'] as num?)?.toInt(),
+);
+
+Map<String, dynamic> _$UserConferenceResponseToJson(
+  UserConferenceResponse instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'user_id': instance.user_id,
+  'conference_id': instance.conference_id,
+};
+
+UserAnswerForSaveResponse _$UserAnswerForSaveResponseFromJson(
+  Map<String, dynamic> json,
+) => UserAnswerForSaveResponse(
+  (json['id'] as num?)?.toInt(),
+  (json['answer_id'] as num?)?.toInt(),
+  json['content'] as String?,
+  (json['isCorrect'] as num?)?.toInt(),
+);
+
+Map<String, dynamic> _$UserAnswerForSaveResponseToJson(
+  UserAnswerForSaveResponse instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'answer_id': instance.answer_id,
+  'content': instance.content,
+  'isCorrect': instance.isCorrect,
+};
+
+CountForSaveResponse _$CountForSaveResponseFromJson(
+  Map<String, dynamic> json,
+) => CountForSaveResponse(
+  (json['total_users'] as num?)?.toInt(),
+  json['linked_users'] as String?,
+  (json['total_answers'] as num?)?.toInt(),
+);
+
+Map<String, dynamic> _$CountForSaveResponseToJson(
+  CountForSaveResponse instance,
+) => <String, dynamic>{
+  'total_users': instance.total_users,
+  'linked_users': instance.linked_users,
+  'total_answers': instance.total_answers,
+};
+
+AllSaveDataResponse _$AllSaveDataResponseFromJson(
+  Map<String, dynamic> json,
+) => AllSaveDataResponse(
+  (json['users'] as List<dynamic>)
+      .map((e) => UserForSaveResponse.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  (json['users_conference'] as List<dynamic>)
+      .map((e) => UserConferenceResponse.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  (json['users_answers'] as List<dynamic>)
+      .map((e) => UserAnswerForSaveResponse.fromJson(e as Map<String, dynamic>))
+      .toList(),
+);
+
+Map<String, dynamic> _$AllSaveDataResponseToJson(
+  AllSaveDataResponse instance,
+) => <String, dynamic>{
+  'users': instance.users,
+  'users_conference': instance.users_conference,
+  'users_answers': instance.users_answers,
+};
+
+AllSaveDataBaseResponse _$AllSaveDataBaseResponseFromJson(
+  Map<String, dynamic> json,
+) =>
+    AllSaveDataBaseResponse(
+        AllSaveDataResponse.fromJson(json['data'] as Map<String, dynamic>),
+        CountForSaveResponse.fromJson(json['count'] as Map<String, dynamic>),
+      )
+      ..status = json['status'] as String?
+      ..message = json['message'] as String?;
+
+Map<String, dynamic> _$AllSaveDataBaseResponseToJson(
+  AllSaveDataBaseResponse instance,
+) => <String, dynamic>{
+  'status': instance.status,
+  'message': instance.message,
+  'data': instance.data,
+  'count': instance.count,
+};
+
+AddAndModifyBaseResponse _$AddAndModifyBaseResponseFromJson(
+  Map<String, dynamic> json,
+) =>
+    AddAndModifyBaseResponse(
+        (json['data'] as List<dynamic>)
+            .map(
+              (e) => AddAndModifyResponse.fromJson(e as Map<String, dynamic>),
+            )
+            .toList(),
+      )
+      ..status = json['status'] as String?
+      ..message = json['message'] as String?;
+
+Map<String, dynamic> _$AddAndModifyBaseResponseToJson(
+  AddAndModifyBaseResponse instance,
+) => <String, dynamic>{
+  'status': instance.status,
+  'message': instance.message,
+  'data': instance.data,
+};
+
+AddAndModifyResponse _$AddAndModifyResponseFromJson(
+  Map<String, dynamic> json,
+) => AddAndModifyResponse(
+  (json['local_id'] as num?)?.toInt(),
+  json['user_id'] as String?,
+);
+
+Map<String, dynamic> _$AddAndModifyResponseToJson(
+  AddAndModifyResponse instance,
+) => <String, dynamic>{
+  'local_id': instance.localId,
+  'user_id': instance.userId,
+};

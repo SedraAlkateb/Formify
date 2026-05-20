@@ -1050,3 +1050,147 @@ class SpecificationBaseResponse extends BaseResponse {
       _$SpecificationBaseResponseToJson(this);
 }
 
+@JsonSerializable()
+class UserForSaveResponse {
+  @JsonKey(name: "id")
+  int? id;
+  @JsonKey(name: "fullname")
+  String? fullName;
+  @JsonKey(name: "email")
+  String? email;
+  @JsonKey(name: "phone")
+  String? phone;
+  @JsonKey(name: "address")
+  String? address;
+  @JsonKey(name: "user_types_id")
+  int? user_types_id;
+  @JsonKey(name: "notes")
+  String? notes;
+  @JsonKey(name: "specification_id")
+  int? spec_id;
+
+  UserForSaveResponse(
+      this.id,
+      this.fullName,
+      this.email,
+      this.phone,
+      this.address,
+      this.user_types_id,
+      this.notes,
+      this.spec_id
+      ); // from json
+  factory UserForSaveResponse.fromJson(Map<String, dynamic> json) =>
+      _$UserForSaveResponseFromJson(json);
+  // to json
+  Map<String, dynamic> toJson() => _$UserForSaveResponseToJson(this);
+}
+@JsonSerializable()
+class UserConferenceResponse {
+  @JsonKey(name: "id")
+  int? id;
+  @JsonKey(name: "user_id")
+  int? user_id;
+  @JsonKey(name: "conference_id")
+  int? conference_id;
+  UserConferenceResponse(this.id,this.user_id,this.conference_id);
+
+  factory UserConferenceResponse.fromJson(Map<String, dynamic> json) =>
+      _$UserConferenceResponseFromJson(json);
+  // to json
+  Map<String, dynamic> toJson() => _$UserConferenceResponseToJson(this);
+}
+@JsonSerializable()
+class UserAnswerForSaveResponse {
+  @JsonKey(name: "id")
+  int? id;
+  @JsonKey(name: "answer_id")
+  int? answer_id;
+  @JsonKey(name: "content")
+  String? content;
+  @JsonKey(name: "isCorrect")
+  int? isCorrect;
+  UserAnswerForSaveResponse(this.id, this.answer_id, this.content, this.isCorrect);
+  // from json
+  factory UserAnswerForSaveResponse.fromJson(Map<String, dynamic> json) =>
+      _$UserAnswerForSaveResponseFromJson(json);
+  // to json
+  Map<String, dynamic> toJson() => _$UserAnswerForSaveResponseToJson(this);
+}
+@JsonSerializable()
+class CountForSaveResponse {
+  @JsonKey(name: "total_users")
+  int? total_users;
+  @JsonKey(name: "linked_users")
+  int? linked_users;
+  @JsonKey(name: "total_answers")
+  int? total_answers;
+  CountForSaveResponse(this.total_users, this.linked_users, this.total_answers);
+  // from json
+  factory CountForSaveResponse.fromJson(Map<String, dynamic> json) =>
+      _$CountForSaveResponseFromJson(json);
+  // to json
+  Map<String, dynamic> toJson() => _$CountForSaveResponseToJson(this);
+}
+
+@JsonSerializable()
+class AllSaveDataResponse {
+  @JsonKey(name: "users")
+  List<UserForSaveResponse> users;
+  @JsonKey(name: "users_conference")
+  List<UserConferenceResponse> users_conference;
+  @JsonKey(name: "users_answers")
+  List<UserAnswerForSaveResponse> users_answers;
+
+  AllSaveDataResponse(this.users,this.users_conference,this.users_answers);
+
+  factory AllSaveDataResponse.fromJson(Map<String, dynamic> json) =>
+      _$AllSaveDataResponseFromJson(json);
+  // to json
+  Map<String, dynamic> toJson() =>
+      _$AllSaveDataResponseToJson(this);
+}
+
+@JsonSerializable()
+class AllSaveDataBaseResponse extends BaseResponse {
+  @JsonKey(name: "data")
+  AllSaveDataResponse data;
+  CountForSaveResponse count;
+  AllSaveDataBaseResponse(this.data,this.count);
+  // from json
+  factory AllSaveDataBaseResponse.fromJson(
+      Map<String, dynamic> json,
+      ) => _$AllSaveDataBaseResponseFromJson(json);
+
+  // to json
+  Map<String, dynamic> toJson() =>
+      _$AllSaveDataBaseResponseToJson(this);
+}
+
+@JsonSerializable()
+class AddAndModifyBaseResponse extends BaseResponse {
+  @JsonKey(name: "data")
+  List<AddAndModifyResponse> data;
+  AddAndModifyBaseResponse(this.data);
+  // from json
+  factory AddAndModifyBaseResponse.fromJson(
+      Map<String, dynamic> json,
+      ) => _$AddAndModifyBaseResponseFromJson(json);
+
+  // to json
+  Map<String, dynamic> toJson() =>
+      _$AddAndModifyBaseResponseToJson(this);
+}
+
+@JsonSerializable()
+class AddAndModifyResponse {
+  @JsonKey(name: "local_id")
+  int? localId;
+  @JsonKey(name: "user_id")
+  String? userId;
+  AddAndModifyResponse(this.localId, this.userId);
+  // from json
+  factory AddAndModifyResponse.fromJson(Map<String, dynamic> json) =>
+      _$AddAndModifyResponseFromJson(json);
+  // to json
+  Map<String, dynamic> toJson() => _$AddAndModifyResponseToJson(this);
+}

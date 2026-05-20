@@ -43,7 +43,27 @@ class AnswerUserSurveyModel {
   int answer_id;
   String content;
   int isCorrect;
+  Map<String, dynamic> toJsonSql() {
+    return {
+      'id': id,
+      'answer_id': answer_id,
+      'content': content,
+      'isCorrect': isCorrect,
+    };
+  }
+
   AnswerUserSurveyModel(this.id, this.answer_id, this.content, this.isCorrect);
+}
+
+class UserConferenceModel {
+  int id;
+  int user_id;
+  int isUpload;
+  Map<String, dynamic> toJsonSql() {
+    return {'id': id, 'user_id': user_id, 'isUpload': isUpload};
+  }
+
+  UserConferenceModel(this.id, this.user_id, this.isUpload);
 }
 
 class QuestionModel {
@@ -212,9 +232,9 @@ class ConferenceModel {
     this.address,
     this.startDate,
     this.endDate,
-    this.isActive,
-      { this.specification_ids}
-  );
+    this.isActive, {
+    this.specification_ids,
+  });
 
   Map<String, dynamic> toJson() {
     return {
@@ -224,7 +244,7 @@ class ConferenceModel {
       'start_date': startDate,
       'end_date': endDate,
       'is_active': isActive,
-      'specification_ids':specification_ids
+      'specification_ids': specification_ids,
     };
   }
 
@@ -236,7 +256,7 @@ class ConferenceModel {
       map['start_date'],
       map['end_date'],
       map['is_active'],
-        specification_ids: map['specification_ids']
+      specification_ids: map['specification_ids'],
     );
   }
 }
@@ -266,17 +286,15 @@ class AnswerUserModel {
     return AnswerUserModel(map['answer_id'], map['content'], map['isCorrect']);
   }
 }
+
 class DoctorMockItem {
   final int id;
   final String name;
-   int isDone;
+  int isDone;
 
-   DoctorMockItem({
-    required this.id,
-    required this.name,
-    this.isDone = 0,
-  });
+  DoctorMockItem({required this.id, required this.name, this.isDone = 0});
 }
+
 class UseAnswerModel {
   int user_id;
   List<AnswerUserModel> answersModel;
@@ -316,23 +334,26 @@ class UserModel {
   UserType userType;
 
   // جعل القيمة غير قابلة لـ null لضمان استقرار التطبيق
-  int isUpload;
-  int? userId;
+  int? isUpload;
+  int? is_local_new;
+  int? is_modified;
+
   SpecModel? spec;
 
   UserModel(
-
-      this.fullName,
-      this.email,
-      this.phone,
-      this.address,
-      this.userType,
-      this.notes,
-      { this.id,
-        this.userId,
-        this.isUpload = 0,
-      this.spec} // القيمة الافتراضية 0
-      );
+    //
+    this.fullName,
+    this.email,
+    this.phone,
+    this.address,
+    this.userType,
+    this.notes, {
+    this.id,
+    this.isUpload = 0,
+    this.is_local_new = 0,
+    this.is_modified = 0,
+    this.spec, // القيمة الافتراضية 0
+  });
 
   // وظيفة لإنشاء نسخة معدلة من الكائن
   UserModel copyWith({
@@ -345,11 +366,9 @@ class UserModel {
     UserType? userType,
     int? isUpload,
     int? userId,
-    SpecModel ? spec
-
+    SpecModel? spec,
   }) {
     return UserModel(
-
       fullName ?? this.fullName,
       email ?? this.email,
       phone ?? this.phone,
@@ -357,11 +376,38 @@ class UserModel {
       userType ?? this.userType,
       notes ?? this.notes,
       isUpload: isUpload ?? this.isUpload,
-      id:   id ?? this.id,
-      userId: userId??this.userId,
-        spec:spec?? this.spec
+      id: id ?? this.id,
+      spec: spec ?? this.spec,
+      is_local_new: is_local_new,
+      is_modified: is_modified,
+
     );
   }
+  Map<String, dynamic> toJsonNew() {
+    return {
+      'local_id': id,
+      'fullname': fullName,
+      'email': email,
+      'phone': phone,
+      'address': address,
+      'user_types_id': userType.id,
+      'notes': notes,
+      'specification_id': spec?.id,
+    };
+  }
+  Map<String, dynamic> toJsonModify() {
+    return {
+      'id': id,
+      'fullname': fullName,
+      'email': email,
+      'phone': phone,
+      'address': address,
+      'user_types_id': userType.id,
+      'notes': notes,
+      'specification_id': spec?.id,
+    };
+  }
+
 
   Map<String, dynamic> toJson() {
     return {
@@ -372,51 +418,58 @@ class UserModel {
       'type_id': userType.id,
       'notes': notes,
       'isUpload': isUpload,
-      'user_id':userId,
-      'specId':spec?.id
-
+      'is_local_new': is_local_new,
+      'is_modified': is_modified,
+      'specId': spec?.id,
     };
   }
+
   Map<String, dynamic> toJsonSql() {
     return {
-      'id':id,
+      'id': id,
       'fullname': fullName,
       'email': email,
       'phone': phone,
       'address': address,
       'type_id': userType.id,
       'notes': notes,
+      'isUpload': isUpload,
+      'is_local_new': is_local_new,
+      'is_modified': is_modified,
+      'specId': spec?.id,
     };
   }
+
   factory UserModel.fromMapSql(Map<String, dynamic> map) {
     return UserModel(
-        id:  map['id'],
-        map['fullname'],
-        map['email'],
-        map['phone'],
-        map['address'],
-        userTypeFromId(map['type_id']),
-        map['notes'],
-    spec: map['spec'],
-    );
-  }
-
-  factory UserModel.fromMap(Map<String, dynamic> map) {
-    return UserModel(
-    id:  map['id'],
+      id: map['id'],
       map['fullname'],
       map['email'],
       map['phone'],
       map['address'],
       userTypeFromId(map['type_id']),
       map['notes'],
-      // التأكد من عدم وجود قيمة null عند القراءة
-      isUpload: map['isUpload'] ?? 0,
-        userId:map['userId'],
+      spec: map['spec'],
+    );
+  }
+
+  factory UserModel.fromMap(Map<String, dynamic> map) {
+    return UserModel(
+      id: map['id'],
+      map['fullname'],
+      map['email'],
+      map['phone'],
+      map['address'],
+      userTypeFromId(map['type_id']),
+      map['notes'],
+      isUpload: map['is_uploaded'] ?? 0,
+      is_modified: map['is_modified'],
+      is_local_new: map['is_local_new'],
       spec: map['spec'],
     );
   }
 }
+
 class GetAllConferenceModel {
   int id;
   String name;
@@ -428,15 +481,15 @@ class GetAllConferenceModel {
   List<SpecModel> spec; // قائمة الاختصاصات المضافة للمؤتمر
 
   GetAllConferenceModel(
-      this.id,
-      this.name,
-      this.description,
-      this.address,
-      this.startDate,
-      this.endDate,
-      this.isActive,
-      this.spec,
-      );
+    this.id,
+    this.name,
+    this.description,
+    this.address,
+    this.startDate,
+    this.endDate,
+    this.isActive,
+    this.spec,
+  );
 
   // تحويل الكائن إلى Map لإرساله للسيرفر أو لحفظه في قاعدة البيانات
   Map<String, dynamic> toMap() {
@@ -449,7 +502,7 @@ class GetAllConferenceModel {
       'end_date': endDate,
       'is_active': isActive ? 1 : 0,
       // تحويل كل كائن اختصاص داخل القائمة إلى Map أيضاً
-     // 'spec': spec.map((e) => e.toJson()).toList(),
+      // 'spec': spec.map((e) => e.toJson()).toList(),
     };
   }
 
@@ -466,8 +519,10 @@ class GetAllConferenceModel {
       // معالجة القائمة بشكل آمن وفحص الـ null
       map['spec'] != null
           ? List<SpecModel>.from(
-        (map['spec'] as List).map((specMap) => SpecModel.fromMap(specMap)),
-      )
+              (map['spec'] as List).map(
+                (specMap) => SpecModel.fromMap(specMap),
+              ),
+            )
           : [], // إذا كانت القائمة فارغة أو نل، نضع قائمة فارغة افتراضية
     );
   }
@@ -477,6 +532,7 @@ class GetAllConferenceModel {
     return GetAllConferenceModel(0, "", "", "", "", "", false, []);
   }
 }
+
 class GetAllConferenceByIdModel {
   int id;
   String name;
@@ -496,7 +552,7 @@ class GetAllConferenceByIdModel {
     this.endDate,
     this.isActive,
     this.surveys,
-      this.spec
+    this.spec,
   );
 }
 
@@ -518,30 +574,24 @@ class SurveyToConferenceModel {
     this.survey_order,
   );
 }
-class SpecModel{
+
+class SpecModel {
   int id;
   String title;
-  SpecModel(this.id,this.title);
+  SpecModel(this.id, this.title);
   Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'title': title,
-    };
+    return {'id': id, 'title': title};
   }
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'title': title,
-    };
-  }
-  factory SpecModel.fromMap(Map<String, dynamic> map) {
-    return SpecModel(
-         map['id'],
-        map['title'],
 
-    );
+  Map<String, dynamic> toJson() {
+    return {'id': id, 'title': title};
+  }
+
+  factory SpecModel.fromMap(Map<String, dynamic> map) {
+    return SpecModel(map['id'], map['title']);
   }
 }
+
 class GetAsyncModel {
   GetAllConferenceModel conferenceModel;
   List<MainSurveyModel> surveys;
@@ -557,13 +607,40 @@ class GetAsyncModel {
     this.questions,
     this.answers,
     this.surveyConference,
-      this.users,
-      this.spec
+    this.users,
+    this.spec,
   );
   static GetAsyncModel create() {
-    return GetAsyncModel(GetAllConferenceModel.create(), [], [], [], [],[],[]);
+    return GetAsyncModel(
+      GetAllConferenceModel.create(),
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+    );
   }
+}
 
+class DataForSaveModel {
+  List<UserModel> users;
+  List<AnswerUserSurveyModel> answerUser;
+
+  List<UserConferenceModel> userConference;
+
+  DataForSaveModel(this.users, this.answerUser, this.userConference);
+  static GetAsyncModel create() {
+    return GetAsyncModel(
+      GetAllConferenceModel.create(),
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+    );
+  }
 }
 
 class AsyncQuestionModel {
@@ -714,7 +791,7 @@ class UserSqlModel {
       'type_id': userType.id,
       'answers': answerModel.map((user) => user.toJson()).toList(),
       'isUpload': isUpload,
-      'user_id':userId ?? -1
+      'user_id': userId ?? -1,
     };
   }
 
@@ -727,7 +804,7 @@ class UserSqlModel {
       'notes': notes,
       'type_id': userType.id,
       'isUpload': isUpload,
-      'user_id':userId
+      'user_id': userId,
     };
   }
 
@@ -749,13 +826,14 @@ class UserSqlModel {
   }
 
   static List<AnswerUserModel> _mapAnswers(
-      int answerId,
-      String content,
-      int isCorrect,
-      ) {
+    int answerId,
+    String content,
+    int isCorrect,
+  ) {
     return [AnswerUserModel(answerId, content, isCorrect)];
   }
-}//
+} //
+
 class AllUserModel {
   List<UserSqlModel> users; // قائمة من المستخدمين (UserModel)
   int conference_id;
@@ -857,12 +935,14 @@ class QuestionsStatisticsModel {
   QuestionsStatisticsModel(this.question, this.userAnswers, this.statistics);
   bool get hasTextAnswers => userAnswers.isNotEmpty;
 }
-class StatisticsModel{
+
+class StatisticsModel {
   List<QuestionsStatisticsModel> questions;
-  List<CountModel>counts;
+  List<CountModel> counts;
 
   StatisticsModel(this.questions, this.counts);
 }
+
 class QuestionForStatModel {
   int? id;
   String title;
@@ -871,7 +951,7 @@ class QuestionForStatModel {
   QuestionType type;
   int survey_id;
   int groupType;
-  String ?descAi;
+  String? descAi;
   QuestionForStatModel(
     this.id,
     this.title,
@@ -879,7 +959,141 @@ class QuestionForStatModel {
     this.isRequired,
     this.type,
     this.survey_id,
-    this.groupType,
-      { this.descAi}
-  );
+    this.groupType, {
+    this.descAi,
+  });
+}
+
+class SyncUsersRequest {
+  int conference_id;
+  List<UsersAnswersRequest> answers;
+  SyncUsersRequest(this.conference_id, this.answers);
+
+  Map<String, dynamic> toJson() {
+    return {
+      'conference_id': conference_id,
+      'answers': answers.map((e) => e.toJson()).toList(),
+    };
+  }
+
+  factory SyncUsersRequest.fromMap(Map<String, dynamic> map) {
+    return SyncUsersRequest(map['conference_id'], map['answers']);
+  }
+}
+
+class UsersAnswersRequest {
+  int user_id;
+  int answer_id;
+  String content;
+
+  UsersAnswersRequest(this.user_id, this.answer_id, this.content);
+
+  Map<String, dynamic> toJson() {
+    return {'user_id': user_id, 'answer_id': answer_id, 'content': content};
+  }
+
+  factory UsersAnswersRequest.fromMap(Map<String, dynamic> map) {
+    return UsersAnswersRequest(
+      map['user_id'],
+      map['answer_id'],
+      map['content'],
+    );
+  }
+}
+
+class AddAndModifyUsersRequest {
+  List<UserModel> modifyUsers;
+  List<UserModel> newUsers;
+  AddAndModifyUsersRequest(this.modifyUsers, this.newUsers);
+
+  Map<String, dynamic> toJson() {
+    return {
+      'modify_users': modifyUsers.map((e) => e.toJson()).toList(),
+      'new_users': newUsers.map((e) => e.toJson()).toList(),
+    };
+  }
+
+  factory AddAndModifyUsersRequest.fromMap(Map<String, dynamic> map) {
+    return AddAndModifyUsersRequest(map['modify_users'], map['new_users']);
+  }
+}
+
+class AddModifyUser {
+  int localId;
+  String userId;
+  AddModifyUser(this.localId, this.userId);
+}
+
+class SaveDataModel {
+  List<UserSaveDataModel> users;
+  List<UserConferenceModel> userConference;
+  List<AnswerUserSurveyModel> answerUser;
+
+  SaveDataModel(this.users, this.userConference, this.answerUser);
+}
+class SaveDataBaseModel{
+  SaveDataModel data;
+  CountForSaveModel count;
+  SaveDataBaseModel(this.data,this.count);
+}
+class CountForSaveModel {
+  int? total_users;
+  int? linked_users;
+  int? total_answers;
+
+  CountForSaveModel(this.total_users, this.linked_users, this.total_answers);
+}
+class UserSaveDataModel {
+  int id;
+  String fullName;
+  String? email;
+  String phone;
+  String? address;
+  String? notes;
+  int userTypeId;
+
+  // جعل القيمة غير قابلة لـ null لضمان استقرار التطبيق
+  int? isUpload;
+  int? is_local_new;
+  int? is_modified;
+
+  int? specId;
+
+  UserSaveDataModel(
+      this.id,
+      this.fullName,
+      this.email,
+      this.phone,
+      this.address,
+      this.userTypeId,
+      this.notes, {
+        this.isUpload = 0,
+        this.is_local_new = 0,
+        this.is_modified = 0,
+        this.specId, // القيمة الافتراضية 0
+      });
+  Map<String, dynamic> toJsonNew() {
+    return {
+      'local_id': id,
+      'fullname': fullName,
+      'email': email,
+      'phone': phone,
+      'address': address,
+      'user_types_id': userTypeId,
+      'notes': notes,
+      'specification_id': specId,
+    };
+  }
+  Map<String, dynamic> toJsonModify() {
+    return {
+      'id': id,
+      'fullname': fullName,
+      'email': email,
+      'phone': phone,
+      'address': address,
+      'user_types_id': userTypeId,
+      'notes': notes,
+      'specification_id': specId,
+    };
+  }
 }

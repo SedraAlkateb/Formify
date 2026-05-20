@@ -32,32 +32,28 @@ class DatabaseHelper {
   Future<void> _onCreate(Database db, int version) async {
     await db.execute('''
   CREATE TABLE IF NOT EXISTS all_users (
-    id INTEGER PRIMARY KEY, 
+    id INTEGER PRIMARY KEY AUTOINCREMENT, -- معرف محلي تلقائي (Local ID)
+    server_user_id INTEGER NULL,         -- معرف السيرفر (يكون NULL للمسجلين الجدد محلياً)
     fullname TEXT NOT NULL,
-    email TEXT,
     phone TEXT NOT NULL,
+    email TEXT,
     address TEXT,
-    type_id INTEGER NOT NULL,
+    type_id INTEGER NOT NULL,            -- 6: طبيب مهم، 5: مختص، 4: طالب...
     notes TEXT,
     specId INTEGER,
-    FOREIGN KEY (specId) REFERENCES spec(id) 
+    is_local_new INTEGER DEFAULT 0,      -- 1: مستخدم جديد مضاف من الموبايل، 0: قادم من السيرفر
+    is_modified INTEGER DEFAULT 0,       -- 1: مستخدم قديم تم تعديل بياناته محلياً
+    is_uploaded INTEGER DEFAULT 1        -- 0: يحتاج رفع/تحديث، 1: مزامن بالكامل    FOREIGN KEY (specId) REFERENCES spec(id) 
   )
 ''');
 
     // جدول users (يبقى كما هو، الربط الآن صحيح)
     await db.execute('''
-  CREATE TABLE IF NOT EXISTS users (
+  CREATE TABLE IF NOT EXISTS user_conference (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    fullname TEXT NOT NULL,
-    email TEXT,
-    phone TEXT NOT NULL,
-    address TEXT,
-    type_id INTEGER NOT NULL,
     user_id INTEGER,
-    notes TEXT, 
-    isUpload INTEGER DEFAULT 0,
-    specId INTEGER,
-    FOREIGN KEY (specId) REFERENCES spec(id) 
+    is_uploaded INTEGER DEFAULT 0,
+    FOREIGN KEY (user_id) REFERENCES all_users(id) 
   );
 ''');
 
@@ -128,6 +124,7 @@ class DatabaseHelper {
         answer_id INTEGER,
         content TEXT,
         isCorrect INTEGER NULL,
+        is_uploaded INTEGER DEFAULT 0,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
         FOREIGN KEY (answer_id) REFERENCES answers(id) ON DELETE CASCADE
       );
@@ -160,9 +157,9 @@ class DatabaseHelper {
       );
     ''');
 
-// ✨ استدعاء تابع حقن الدكاترة الافتراضيين تلقائياً هنا باستخدام كائن الـ db الممرر حالياً
-  await _seedDoctorsOnFirstCreate(db);
-}
+    // ✨ استدعاء تابع حقن الدكاترة الافتراضيين تلقائياً هنا باستخدام كائن الـ db الممرر حالياً
+    await _seedDoctorsOnFirstCreate(db);
+  }
 }
 
 // 🔥 تابع خاص ومحمي لحقن الدكاترة داخل الـ onCreate مباشرة لحماية الجلسة من الـ Deadlock
@@ -171,19 +168,17 @@ Future<void> _seedDoctorsOnFirstCreate(Database db) async {
     final batch = db.batch();
 
     for (final user in MockModel.usersList) {
-      batch.insert(
-        'doctor',
-        {
-          'id': user.id,
-          'name': user.name, // استخلاص الـ fullName المتوافق مع الموديل
-          'isDone': 0,           // غير حاضر افتراضياً
-        },
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
+      batch.insert('doctor', {
+        'id': user.id,
+        'name': user.name, // استخلاص الـ fullName المتوافق مع الموديل
+        'isDone': 0, // غير حاضر افتراضياً
+      }, conflictAlgorithm: ConflictAlgorithm.replace);
     }
 
     await batch.commit(noResult: true);
-    print("✅ تم إدخال 59 دكتوراً بنجاح إلى جدول 'doctor' عند تأسيس قاعدة البيانات.");
+    print(
+      "✅ تم إدخال 59 دكتوراً بنجاح إلى جدول 'doctor' عند تأسيس قاعدة البيانات.",
+    );
   } catch (e) {
     print("❌ خطأ أثناء إدخال الدكاترة في الـ onCreate: $e");
   }

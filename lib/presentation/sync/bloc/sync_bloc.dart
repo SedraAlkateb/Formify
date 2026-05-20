@@ -518,7 +518,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     GetAllUserEvent event,
     Emitter<SyncState> emit,
   ) async {
-    (await getUsersConferenceUsecase.execute()).fold(
+    (await getUsersConferenceUsecase.execute(conferenceId??0)).fold(
       (failure) => emit(GetUserConferenceErrorState(failure: failure)),
       (data) {
         if (data.isEmpty) {

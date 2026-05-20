@@ -134,9 +134,9 @@ class RepositroySqlImp extends RepositorySql {
   }
 
 @override
-Future<Either<Failure, List<UserModel>>> getUserConference()async {
+Future<Either<Failure, List<UserModel>>> getUserConference(int conferenceId)async {
   try {
-    final response =await _databaseHelper.getUserConference();
+    final response =await _databaseHelper.getUserConference(conferenceId);
     return Right(response);
   } catch (e) {
     Failure failure = ErrorHandler.handle(e).failure;
