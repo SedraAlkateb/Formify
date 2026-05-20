@@ -1080,7 +1080,7 @@ CountForSaveResponse _$CountForSaveResponseFromJson(
   Map<String, dynamic> json,
 ) => CountForSaveResponse(
   (json['total_users'] as num?)?.toInt(),
-  json['linked_users'] as String?,
+  (json['linked_users'] as num?)?.toInt(),
   (json['total_answers'] as num?)?.toInt(),
 );
 

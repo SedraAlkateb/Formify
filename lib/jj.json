@@ -1,0 +1,13 @@
+{
+  "status": "success",
+  "message": "تمت الإضافة بنجاح",
+  "data": [
+    {
+    "local_id": 1,
+    "user_id": 471
+  }, {
+    "local_id": 2,
+    "user_id": 472
+  }
+  ]
+}

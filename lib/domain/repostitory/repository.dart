@@ -49,7 +49,7 @@ abstract class Repository {
   Future<Either<Failure, List<UserModel>>> getAllUsers();
   Future<Either<Failure, List<SpecModel>>>  getAllSpecification();
   Future<Either<Failure, SpecModel>>  addSpecification(String title);
-  Future<Either<Failure, List<UserModel>>>getAllUsersForSync(
+  Future<Either<Failure, SaveDataBaseModel>>getAllUsersForSync(
       int conferenceId,
       );
   Future<Either<Failure,void>> updatedSyncUsersAnswers(

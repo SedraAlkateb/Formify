@@ -16,6 +16,7 @@ import 'package:formify/domain/repostitory/repository.dart';
 import 'package:formify/domain/repostitory/repository_sql.dart';
 import 'package:formify/domain/repostitory/statistics_repository.dart';
 import 'package:formify/domain/usecase/add_async_data_sql_usecase.dart';
+import 'package:formify/domain/usecase/add_or_modify_users_usecase.dart';
 import 'package:formify/domain/usecase/add_spec_usecase.dart';
 import 'package:formify/domain/usecase/all_important_doctor_not_come_sql_usecase.dart';
 import 'package:formify/domain/usecase/check_password_usecase.dart';
@@ -34,6 +35,7 @@ import 'package:formify/domain/usecase/get_all_survey_and_active_usecase.dart';
 import 'package:formify/domain/usecase/get_all_survey_usecase.dart';
 import 'package:formify/domain/usecase/get_all_user_for_app_usecase.dart';
 import 'package:formify/domain/usecase/get_all_user_usecase.dart';
+import 'package:formify/domain/usecase/get_all_users_for_sync_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_by_id_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_info_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_sql_usecase.dart';
@@ -56,6 +58,7 @@ import 'package:formify/domain/usecase/updateIs_done_usecase.dart';
 import 'package:formify/domain/usecase/update_conference_usecase.dart';
 import 'package:formify/domain/usecase/update_survey_usecase.dart';
 import 'package:formify/domain/usecase/update_user_sql_usecase.dart';
+import 'package:formify/domain/usecase/updated_sync_users_answers_usecase.dart';
 import 'package:formify/presentation/active_conference/bloc/active_conference_bloc.dart';
 import 'package:formify/presentation/ai_desc/bloc/ai_bloc.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
@@ -360,8 +363,20 @@ Future<void> initSyncModule() async {
     instance.registerFactory<UpdateDoneUsecase>(
       () => UpdateDoneUsecase(instance()),
     );
+    instance.registerFactory<AddOrModifyUsersUsecase>(
+          () => AddOrModifyUsersUsecase(instance()),
+    );
+    instance.registerFactory<GetAllUsersForSyncUsecase>(
+          () => GetAllUsersForSyncUsecase(instance()),
+    );
+    instance.registerFactory<UpdatedSyncUsersAnswersUsecase>(
+          () => UpdatedSyncUsersAnswersUsecase(instance()),
+    );
     instance.registerFactory<SyncBloc>(
       () => SyncBloc(
+        instance(),
+        instance(),
+        instance(),
         instance(),
         instance(),
         instance(),

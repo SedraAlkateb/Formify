@@ -5,14 +5,17 @@ import 'package:formify/app/app_preferences.dart';
 import 'package:formify/app/di.dart';
 import 'package:formify/data/mapper/mapper.dart';
 import 'package:formify/data/network/failure.dart';
+import 'package:formify/data/responses/responses.dart';
 import 'package:formify/domain/models/mock_users.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/usecase/add_async_data_sql_usecase.dart';
+import 'package:formify/domain/usecase/add_or_modify_users_usecase.dart';
 import 'package:formify/domain/usecase/check_password_usecase.dart';
 import 'package:formify/domain/usecase/delete_data_sql_usecase.dart';
 import 'package:formify/domain/usecase/delete_user_sql_usecase.dart';
 import 'package:formify/domain/usecase/doctors_attendance_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_all_async_info_usecase.dart';
+import 'package:formify/domain/usecase/get_all_users_for_sync_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_info_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_doctors_sql_usecase.dart';
@@ -25,6 +28,7 @@ import 'package:formify/domain/usecase/insert_user_and_answer_usecase.dart';
 import 'package:formify/domain/usecase/synchronize_users_answers_usecase.dart';
 import 'package:formify/domain/usecase/updateIs_done_usecase.dart';
 import 'package:formify/domain/usecase/update_user_sql_usecase.dart';
+import 'package:formify/domain/usecase/updated_sync_users_answers_usecase.dart';
 import 'package:meta/meta.dart';
 
 part 'sync_event.dart';
@@ -49,6 +53,9 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   final  UpdateUserSqlUsecase updateUserSqlUsecase;
   final DoctorsAttendanceSqlUsecase doctorsAttendanceSqlUsecase;
   final UpdateDoneUsecase updateDoneUsecase;
+  final UpdatedSyncUsersAnswersUsecase updatedSyncUsersAnswersUsecase;
+  final GetAllUsersForSyncUsecase getAllUsersForSyncUsecase;
+  final AddOrModifyUsersUsecase addOrModifyUsersUsecase;
 
   // القوائم المخزنة في الذاكرة
   List<IsActiveMainSurveyModel> surveys = [];
@@ -82,7 +89,10 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
 
     this.getUsersConferenceUsecase,
       this.updateUserSqlUsecase,
-      this.doctorsAttendanceSqlUsecase
+      this.doctorsAttendanceSqlUsecase,
+      this.addOrModifyUsersUsecase,
+      this.getAllUsersForSyncUsecase,
+      this.updatedSyncUsersAnswersUsecase
   ) : super(const SyncInitial()) {
     // الأحداث الأساسية
     on<AsyncDataEvent>(_onAsyncData);
