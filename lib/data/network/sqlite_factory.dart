@@ -47,7 +47,6 @@ class DatabaseHelper {
   )
 ''');
 
-    // جدول users (يبقى كما هو، الربط الآن صحيح)
     await db.execute('''
   CREATE TABLE IF NOT EXISTS user_conference (
     id INTEGER PRIMARY KEY ,
@@ -125,7 +124,7 @@ class DatabaseHelper {
         content TEXT,
         isCorrect INTEGER NULL,
         isUpload INTEGER DEFAULT 0,
-        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (user_id) REFERENCES all_users(id) ON DELETE CASCADE,
         FOREIGN KEY (answer_id) REFERENCES answers(id) ON DELETE CASCADE
       );
     ''');
