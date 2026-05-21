@@ -17,7 +17,9 @@ import 'package:formify/domain/repostitory/repository_sql.dart';
 import 'package:formify/domain/repostitory/statistics_repository.dart';
 import 'package:formify/domain/usecase/add_async_data_sql_usecase.dart';
 import 'package:formify/domain/usecase/add_or_modify_users_usecase.dart';
+import 'package:formify/domain/usecase/add_server_id_user_sql_usecase.dart';
 import 'package:formify/domain/usecase/add_spec_usecase.dart';
+import 'package:formify/domain/usecase/add_sync_data_sql_usecase.dart';
 import 'package:formify/domain/usecase/all_important_doctor_not_come_sql_usecase.dart';
 import 'package:formify/domain/usecase/check_password_usecase.dart';
 import 'package:formify/domain/usecase/create_conference_usecase.dart';
@@ -25,6 +27,7 @@ import 'package:formify/domain/usecase/create_survey_question_usecase.dart';
 import 'package:formify/domain/usecase/create_survey_usecase.dart';
 import 'package:formify/domain/usecase/delete_conference_usecase.dart';
 import 'package:formify/domain/usecase/delete_data_sql_usecase.dart';
+import 'package:formify/domain/usecase/delete_sync_data_sql_usecase.dart';
 import 'package:formify/domain/usecase/delete_user_sql_usecase.dart';
 import 'package:formify/domain/usecase/doctors_attendance_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_ai_usecase.dart';
@@ -36,6 +39,7 @@ import 'package:formify/domain/usecase/get_all_survey_usecase.dart';
 import 'package:formify/domain/usecase/get_all_user_for_app_usecase.dart';
 import 'package:formify/domain/usecase/get_all_user_usecase.dart';
 import 'package:formify/domain/usecase/get_all_users_for_sync_usecase.dart';
+import 'package:formify/domain/usecase/get_conference_and_answers_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_by_id_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_info_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_sql_usecase.dart';
@@ -43,6 +47,7 @@ import 'package:formify/domain/usecase/get_doctors_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_question_answers_usecase.dart';
 import 'package:formify/domain/usecase/get_survey_question_id_usecase.dart';
 import 'package:formify/domain/usecase/get_surveys_sql_usecase.dart';
+import 'package:formify/domain/usecase/get_user_add_modify_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_user_answer_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_user_answers_survey_usecase.dart';
 import 'package:formify/domain/usecase/get_users_conference_usecase.dart';
@@ -63,6 +68,7 @@ import 'package:formify/presentation/active_conference/bloc/active_conference_bl
 import 'package:formify/presentation/ai_desc/bloc/ai_bloc.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 import 'package:formify/presentation/excel/bloc/excel_st_bloc.dart';
+import 'package:formify/presentation/offline_sync/bloc/offline_sync_bloc.dart';
 import 'package:formify/presentation/onboarding/bloc/onboarding_bloc.dart';
 import 'package:formify/presentation/resources/theme_bloc/theme_bloc.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
@@ -307,15 +313,7 @@ Future<void> initSurveyModule() async {
 
 Future<void> initSyncModule() async {
   if (!GetIt.I.isRegistered<GetUserAnswerSqlUsecase>()) {
-    instance.registerFactory<GetUserAnswerSqlUsecase>(
-      () => GetUserAnswerSqlUsecase(instance()),
-    );
-    instance.registerFactory<AddAsyncDataSqlUsecase>(
-      () => AddAsyncDataSqlUsecase(instance()),
-    );
-    instance.registerFactory<GetAllAsyncInfoUsecase>(
-      () => GetAllAsyncInfoUsecase(instance()),
-    );
+
     instance.registerFactory<SynchronizeUsersAnswersUsecase>(
       () => SynchronizeUsersAnswersUsecase(instance()),
     );
@@ -363,15 +361,7 @@ Future<void> initSyncModule() async {
     instance.registerFactory<UpdateDoneUsecase>(
       () => UpdateDoneUsecase(instance()),
     );
-    instance.registerFactory<AddOrModifyUsersUsecase>(
-          () => AddOrModifyUsersUsecase(instance()),
-    );
-    instance.registerFactory<GetAllUsersForSyncUsecase>(
-          () => GetAllUsersForSyncUsecase(instance()),
-    );
-    instance.registerFactory<UpdatedSyncUsersAnswersUsecase>(
-          () => UpdatedSyncUsersAnswersUsecase(instance()),
-    );
+
     instance.registerFactory<SyncBloc>(
       () => SyncBloc(
         instance(),
@@ -385,6 +375,53 @@ Future<void> initSyncModule() async {
         instance(),
         instance(),
         instance(),
+        instance(),
+        instance(),
+        instance(),
+        instance(),
+        instance(),
+      ),
+    );
+  }
+}
+
+Future<void> initSyncOfflineModule() async {
+  if (!GetIt.I.isRegistered<GetAllUsersForSyncUsecase>()) {
+    instance.registerFactory<GetAllUsersForSyncUsecase>(
+      () => GetAllUsersForSyncUsecase(instance()),
+    );
+    instance.registerFactory<AddOrModifyUsersUsecase>(
+      () => AddOrModifyUsersUsecase(instance()),
+    );
+    instance.registerFactory<AddAsyncDataSqlUsecase>(
+      () => AddAsyncDataSqlUsecase(instance()),
+    );
+    instance.registerFactory<GetAllAsyncInfoUsecase>(
+      () => GetAllAsyncInfoUsecase(instance()),
+    );
+
+    instance.registerFactory<GetUserAddModifySqlUsecase>(
+          () => GetUserAddModifySqlUsecase(instance()),
+    );
+
+    instance.registerFactory<UpdatedSyncUsersAnswersUsecase>(
+          () => UpdatedSyncUsersAnswersUsecase(instance()),
+    );
+    instance.registerFactory<AddServerIdUserSqlUsecase>(
+      () => AddServerIdUserSqlUsecase(instance()),
+    );
+    instance.registerFactory<GetConferenceAndAnswersSqlUsecase>(
+      () => GetConferenceAndAnswersSqlUsecase(instance()),
+    );
+    instance.registerFactory<DeleteSyncDataSqlUsecase>(
+      () => DeleteSyncDataSqlUsecase(instance()),
+    );
+    instance.registerFactory<AddSyncDataSqlUsecase>(
+      () => AddSyncDataSqlUsecase(instance()),
+    );
+
+    instance.registerFactory<OfflineSyncBloc>(
+      () => OfflineSyncBloc(
         instance(),
         instance(),
         instance(),

@@ -82,7 +82,7 @@ class RouteGenerator {
         return _animatedRoute(LoginPage());
       case Routes.home:
        initConferenceModule();
-        initSyncModule();
+       initSyncOfflineModule();
         return _animatedRoute(HomePage());
       case Routes.createConference:
         return _animatedRoute(CreateConferencePage());

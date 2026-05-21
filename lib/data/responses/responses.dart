@@ -1105,10 +1105,14 @@ class UserAnswerForSaveResponse {
   int? id;
   @JsonKey(name: "answer_id")
   int? answer_id;
+  @JsonKey(name: "user_id")
+  int? user_id;
   @JsonKey(name: "content")
   String? content;
-  @JsonKey(name: "isCorrect")
+  @JsonKey(name: "is_correct")
   int? isCorrect;
+  @JsonKey(name: "conference_id")
+  int? conference_id;
   UserAnswerForSaveResponse(this.id, this.answer_id, this.content, this.isCorrect);
   // from json
   factory UserAnswerForSaveResponse.fromJson(Map<String, dynamic> json) =>

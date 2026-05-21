@@ -41,8 +41,10 @@ class SurveyUserModel {
 class AnswerUserSurveyModel {
   int id;
   int answer_id;
+  int ?user_id;
   String content;
   int isCorrect;
+
   Map<String, dynamic> toJsonSql() {
     return {
       'id': id,
@@ -51,19 +53,32 @@ class AnswerUserSurveyModel {
       'isCorrect': isCorrect,
     };
   }
-
-  AnswerUserSurveyModel(this.id, this.answer_id, this.content, this.isCorrect);
+  Map<String, dynamic> toJsonSaveData() {
+    return {
+      'id': id,
+      'answer_id': answer_id,
+      'user_id': user_id,
+      'content': content,
+      'isCorrect': isCorrect,
+    };
+  }
+  AnswerUserSurveyModel(this.id, this.answer_id, this.content, this.isCorrect,
+      {this.user_id});
 }
 
 class UserConferenceModel {
   int id;
   int user_id;
+  int? conference_id;
+
   int isUpload;
   Map<String, dynamic> toJsonSql() {
     return {'id': id, 'user_id': user_id, 'isUpload': isUpload};
   }
-
-  UserConferenceModel(this.id, this.user_id, this.isUpload);
+  Map<String, dynamic> toJsonApiUpdate() {
+    return {'id': id, 'user_id': user_id, 'conference_id': conference_id};
+  }
+  UserConferenceModel(this.id, this.user_id, this.isUpload,{this.conference_id});
 }
 
 class QuestionModel {
@@ -462,7 +477,7 @@ class UserModel {
       map['address'],
       userTypeFromId(map['type_id']),
       map['notes'],
-      isUpload: map['is_uploaded'] ?? 0,
+      isUpload: map['isUpload'] ?? 0,
       is_modified: map['is_modified'],
       is_local_new: map['is_local_new'],
       spec: map['spec'],
@@ -965,19 +980,19 @@ class QuestionForStatModel {
 }
 
 class SyncUsersRequest {
-  int conference_id;
+  List<UserConferenceModel> userConference;
   List<UsersAnswersRequest> answers;
-  SyncUsersRequest(this.conference_id, this.answers);
+  SyncUsersRequest(this.userConference, this.answers);
 
   Map<String, dynamic> toJson() {
     return {
-      'conference_id': conference_id,
-      'answers': answers.map((e) => e.toJson()).toList(),
+      'users_answers': answers.map((e) => e.toJson()).toList(),
+      'users_conference':userConference.map((e) => e.toJsonApiUpdate(),).toList()
     };
   }
 
   factory SyncUsersRequest.fromMap(Map<String, dynamic> map) {
-    return SyncUsersRequest(map['conference_id'], map['answers']);
+    return SyncUsersRequest(map['users_conference'], map['users_answers']);
   }
 }
 
@@ -985,11 +1000,12 @@ class UsersAnswersRequest {
   int user_id;
   int answer_id;
   String content;
+  int conference_id;
 
-  UsersAnswersRequest(this.user_id, this.answer_id, this.content);
+  UsersAnswersRequest(this.user_id, this.answer_id, this.content,this.conference_id);
 
   Map<String, dynamic> toJson() {
-    return {'user_id': user_id, 'answer_id': answer_id, 'content': content};
+    return {'user_id': user_id, 'answer_id': answer_id, 'content': content,'conference_id':conference_id};
   }
 
   factory UsersAnswersRequest.fromMap(Map<String, dynamic> map) {
@@ -997,9 +1013,11 @@ class UsersAnswersRequest {
       map['user_id'],
       map['answer_id'],
       map['content'],
+      map['conference_id']
     );
   }
 }
+
 
 class AddAndModifyUsersRequest {
   List<UserModel> modifyUsers;

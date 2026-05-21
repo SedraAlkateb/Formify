@@ -32,7 +32,7 @@ class DatabaseHelper {
   Future<void> _onCreate(Database db, int version) async {
     await db.execute('''
   CREATE TABLE IF NOT EXISTS all_users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT, -- معرف محلي تلقائي (Local ID)
+    id INTEGER PRIMARY KEY , -- معرف محلي تلقائي (Local ID)
     server_user_id INTEGER NULL,         -- معرف السيرفر (يكون NULL للمسجلين الجدد محلياً)
     fullname TEXT NOT NULL,
     phone TEXT NOT NULL,
@@ -43,23 +43,23 @@ class DatabaseHelper {
     specId INTEGER,
     is_local_new INTEGER DEFAULT 0,      -- 1: مستخدم جديد مضاف من الموبايل، 0: قادم من السيرفر
     is_modified INTEGER DEFAULT 0,       -- 1: مستخدم قديم تم تعديل بياناته محلياً
-    is_uploaded INTEGER DEFAULT 1        -- 0: يحتاج رفع/تحديث، 1: مزامن بالكامل    FOREIGN KEY (specId) REFERENCES spec(id) 
+    isUpload INTEGER DEFAULT 1        -- 0: يحتاج رفع/تحديث، 1: مزامن بالكامل    FOREIGN KEY (specId) REFERENCES spec(id) 
   )
 ''');
 
     // جدول users (يبقى كما هو، الربط الآن صحيح)
     await db.execute('''
   CREATE TABLE IF NOT EXISTS user_conference (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY ,
     user_id INTEGER,
-    is_uploaded INTEGER DEFAULT 0,
+    isUpload INTEGER DEFAULT 0,
     FOREIGN KEY (user_id) REFERENCES all_users(id) 
   );
 ''');
 
     await db.execute('''
       CREATE TABLE IF NOT EXISTS conference (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id INTEGER PRIMARY KEY ,
         name TEXT NOT NULL,
         description TEXT,
         address TEXT,
@@ -70,7 +70,7 @@ class DatabaseHelper {
     ''');
     await db.execute('''
       CREATE TABLE IF NOT EXISTS sp_conference (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id INTEGER PRIMARY KEY ,
         conferenceId INTEGER NOT NULL,
         specId INTEGER NOT NULL,
         FOREIGN KEY (specId) REFERENCES spec(id) ON DELETE CASCADE,
@@ -82,7 +82,7 @@ class DatabaseHelper {
     // 5. جدول الاستبيانات
     await db.execute('''
       CREATE TABLE IF NOT EXISTS survey (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id INTEGER PRIMARY KEY,
         title TEXT NOT NULL,
         description TEXT,
         timer TEXT,
@@ -93,7 +93,7 @@ class DatabaseHelper {
     // 6. جدول الأسئلة
     await db.execute('''
       CREATE TABLE IF NOT EXISTS questions (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id INTEGER PRIMARY KEY ,
         survey_id INTEGER,
         question TEXT,
         question_order INTEGER,
@@ -107,7 +107,7 @@ class DatabaseHelper {
     // 7. جدول الخيارات (الإجابات المقترحة)
     await db.execute('''
       CREATE TABLE IF NOT EXISTS answers (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id INTEGER PRIMARY KEY ,
         title TEXT,
         img TEXT NULL,
         question_id INTEGER,
@@ -119,12 +119,12 @@ class DatabaseHelper {
     // 8. جدول إجابات المستخدمين
     await db.execute('''
       CREATE TABLE IF NOT EXISTS users_answers (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id INTEGER PRIMARY KEY ,
         user_id INTEGER,
         answer_id INTEGER,
         content TEXT,
         isCorrect INTEGER NULL,
-        is_uploaded INTEGER DEFAULT 0,
+        isUpload INTEGER DEFAULT 0,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
         FOREIGN KEY (answer_id) REFERENCES answers(id) ON DELETE CASCADE
       );
@@ -133,7 +133,7 @@ class DatabaseHelper {
     // 9. جدول الربط بين الاستبيان والمؤتمر
     await db.execute('''
       CREATE TABLE IF NOT EXISTS survey_conference (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id INTEGER PRIMARY KEY ,
         survey_id INTEGER,
         conference_id INTEGER,
         survey_order INTEGER,

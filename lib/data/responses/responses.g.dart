@@ -1060,20 +1060,25 @@ Map<String, dynamic> _$UserConferenceResponseToJson(
 
 UserAnswerForSaveResponse _$UserAnswerForSaveResponseFromJson(
   Map<String, dynamic> json,
-) => UserAnswerForSaveResponse(
-  (json['id'] as num?)?.toInt(),
-  (json['answer_id'] as num?)?.toInt(),
-  json['content'] as String?,
-  (json['isCorrect'] as num?)?.toInt(),
-);
+) =>
+    UserAnswerForSaveResponse(
+        (json['id'] as num?)?.toInt(),
+        (json['answer_id'] as num?)?.toInt(),
+        json['content'] as String?,
+        (json['is_correct'] as num?)?.toInt(),
+      )
+      ..user_id = (json['user_id'] as num?)?.toInt()
+      ..conference_id = (json['conference_id'] as num?)?.toInt();
 
 Map<String, dynamic> _$UserAnswerForSaveResponseToJson(
   UserAnswerForSaveResponse instance,
 ) => <String, dynamic>{
   'id': instance.id,
   'answer_id': instance.answer_id,
+  'user_id': instance.user_id,
   'content': instance.content,
-  'isCorrect': instance.isCorrect,
+  'is_correct': instance.isCorrect,
+  'conference_id': instance.conference_id,
 };
 
 CountForSaveResponse _$CountForSaveResponseFromJson(

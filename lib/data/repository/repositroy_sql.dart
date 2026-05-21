@@ -205,4 +205,65 @@ Future<Either<Failure, List<UserModel>>> getAllImportantDoctorNotCome(List<UserM
       return Left(failure);
     }
   }
+
+  @override
+  Future<Either<Failure, AddAndModifyUsersRequest>> getUserAddAndModify() async {
+    try {
+      final response = await _databaseHelper.getUserAddAndModify();
+      return Right(response);
+    } catch (e) {
+      Failure failure = ErrorHandler
+          .handle(e)
+          .failure;
+      return Left(failure);
+    }
+  }
+  @override
+  Future<Either<Failure, void>> addServerIdToUser(List<AddModifyUser>syncedUsers) async {
+    try {
+      final response = await _databaseHelper.addServerIdToUser(syncedUsers);
+      return Right(response);
+    } catch (e) {
+      Failure failure = ErrorHandler
+          .handle(e)
+          .failure;
+      return Left(failure);
+    }
+  }
+  @override
+  Future<Either<Failure,SyncUsersRequest>>getConferenceAndAnswers(int conferenceId)  async {
+    try {
+      final response = await _databaseHelper.getConferenceAndAnswers(conferenceId);
+      return Right(response);
+    } catch (e) {
+      Failure failure = ErrorHandler
+          .handle(e)
+          .failure;
+      return Left(failure);
+    }
+  }
+  @override
+  Future<Either<Failure,void>>deleteSyncData() async {
+    try {
+      final response = await _databaseHelper.deleteSyncData();
+      return Right(response);
+    } catch (e) {
+      Failure failure = ErrorHandler
+          .handle(e)
+          .failure;
+      return Left(failure);
+    }
+  }
+  @override
+  Future<Either<Failure,void>>addSyncData(SaveDataBaseModel baseData) async {
+    try {
+      final response = await _databaseHelper.addSyncData(baseData);
+      return Right(response);
+    } catch (e) {
+      Failure failure = ErrorHandler
+          .handle(e)
+          .failure;
+      return Left(failure);
+    }
+  }
 }

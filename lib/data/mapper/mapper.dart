@@ -647,6 +647,7 @@ extension AnswerForSaveModelMapper on UserAnswerForSaveResponse? {
     return AnswerUserSurveyModel(
       this?.id ?? Constants.zero,
       this?.answer_id ?? Constants.zero,
+     user_id:  this?.user_id ?? Constants.zero,
       this?.content ?? Constants.empty,
       this?.isCorrect ?? Constants.zero,
     );

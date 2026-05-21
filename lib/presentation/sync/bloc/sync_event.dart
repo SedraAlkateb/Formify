@@ -8,17 +8,8 @@ abstract class SyncEvent extends Equatable {
 }
 
 // ===== Existing app events =====
-final class AsyncDataEvent extends SyncEvent {
-  const AsyncDataEvent();
-}
 
-final class InsertDataSqlEvent extends SyncEvent {
-  final GetAsyncModel asyncModel;
-  const InsertDataSqlEvent(this.asyncModel);
 
-  @override
-  List<Object?> get props => [asyncModel];
-}
 final class InsertUserSqlEvent extends SyncEvent {
 
   @override
