@@ -19,7 +19,7 @@ Widget multiBlocConferenceWidget(){
           if (state is DataOfflineLoadingState) {
             loading(context);
           }
-          if (state is DataOfflineErrorState) {
+        else  if (state is DataOfflineErrorState) {
             error(
               context,
               state.failure.massage,
