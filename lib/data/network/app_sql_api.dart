@@ -67,8 +67,8 @@ class AppSqlApi extends AppSqlApiAbs {
 
   @override
   Future<List<QuestionModel>> getSurveyQuestionsWithAnswers(
-    int surveyId,
-  ) async {
+      int surveyId,
+      ) async {
     final db = await databaseHelper.database;
 
     final rows = await db.rawQuery(
@@ -367,17 +367,17 @@ class AppSqlApi extends AppSqlApiAbs {
         usersMap.putIfAbsent(
           userId,
               () => UserSqlModel(
-            fullName: (row['fullname'] ?? "مستخدم بدون اسم") as String,
-            email: row['email'] as String?,
-            phone: (row['phone'] as String? ?? "").isEmpty
-                ? "09"
-                : row['phone'] as String,
-            address: row['address'] as String?,
-            // تحصين تحويل الـ type_id لتجنب خطأ الـ NullPointerException
-            userType: userTypeFromId((row['type_id'] ?? 0) as int),
-            userId: row['user_type_id']as int,
-            answerModel: <AnswerUserModel>[],
-                notes: row['notes']  as String?
+              fullName: (row['fullname'] ?? "مستخدم بدون اسم") as String,
+              email: row['email'] as String?,
+              phone: (row['phone'] as String? ?? "").isEmpty
+                  ? "09"
+                  : row['phone'] as String,
+              address: row['address'] as String?,
+              // تحصين تحويل الـ type_id لتجنب خطأ الـ NullPointerException
+              userType: userTypeFromId((row['type_id'] ?? 0) as int),
+              userId: row['user_type_id']as int,
+              answerModel: <AnswerUserModel>[],
+              notes: row['notes']  as String?
           ),
         );
 
@@ -472,8 +472,8 @@ class AppSqlApi extends AppSqlApiAbs {
       for (final row in specMaps) {
         conference.spec.add(
           SpecModel(
-             row['spec_id'] as int,
-           (row['spec_title'] ?? "") as String, // مطابقة حقل title مع خاصية name في الـ Model
+            row['spec_id'] as int,
+            (row['spec_title'] ?? "") as String, // مطابقة حقل title مع خاصية name في الـ Model
           ),
         );
       }
@@ -599,7 +599,7 @@ Future<void> updateUser(UserModel user) async {
     // 2. تحويل كائن المستخدم وتجهيز البيانات للتحديث
     final Map<String, dynamic> userMap = {
       ...user.toJson(),
-   //   'isUpload': 1, // سنفترض أن أي تعديل محلي يجعل السجل بحاجة للرفع مجدداً
+      //   'isUpload': 1, // سنفترض أن أي تعديل محلي يجعل السجل بحاجة للرفع مجدداً
     };
 
     int count = await db.update(
@@ -621,8 +621,8 @@ Future<void> updateUser(UserModel user) async {
   /// الطريقة الأكثر كفاءة لجلب الأطباء (نوع 6) وتحويلهم مباشرة إلى قائمة UserModel
   @override
   Future<List<UserModel>> getAllImportantDoctorNotCome(
-    List<UserModel> users,
-  ) async {
+      List<UserModel> users,
+      ) async {
     // 1. الحصول على نسخة من قاعدة البيانات
     final db = await databaseHelper.database;
 
