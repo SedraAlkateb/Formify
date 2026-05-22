@@ -7,6 +7,7 @@ import 'package:formify/presentation/active_conference/bloc/active_conference_bl
 import 'package:formify/presentation/ai_desc/bloc/ai_bloc.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 import 'package:formify/presentation/excel/bloc/excel_st_bloc.dart';
+import 'package:formify/presentation/offline_sync/bloc/offline_sync_bloc.dart';
 import 'package:formify/presentation/onboarding/bloc/onboarding_bloc.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/responsive/breakpoints.dart';
@@ -41,6 +42,7 @@ class _MyAppState extends State<MyApp> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => instance<OnboardingBloc>()),
+        BlocProvider(create: (_) => instance<OfflineSyncBloc>()),
         BlocProvider(create: (_) => instance<AiBloc>()),
         BlocProvider(create: (_) => instance<ActiveConferenceBloc>()),
         BlocProvider(

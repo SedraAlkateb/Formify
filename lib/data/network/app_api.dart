@@ -135,4 +135,17 @@ abstract class AppServiceClient {
   Future<SpecificationBaseResponse> addSpecification(
       @Part(name: "title") String title,
       );
+  @POST("synchronize/get_all_usersForSync.php")
+  Future<AllSaveDataBaseResponse> getAllUsersForSync(
+      @Part(name: "conference_id") int conferenceId,
+      );
+  @POST("synchronize/Updated_SyncUsersAnswers.php")
+  Future<Message1Response> updatedSyncUsersAnswers(
+      @Body() SyncUsersRequest conference,
+      );
+  @POST("synchronize/addOrModify_users.php")
+  Future<AddAndModifyBaseResponse> addOrModifyUsers(
+      @Body() AddAndModifyUsersRequest users,
+      );
+
 }

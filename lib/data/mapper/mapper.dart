@@ -270,7 +270,7 @@ extension GetAllAsyncByConferenceMapper
       data.answers.toDomain(),
       data.survey_conference.toDomain(),
       data.users.toDomain(),
-       []
+      data.spec.toDomain()
     );
   }
 }
@@ -342,11 +342,11 @@ extension GetAsyncAnswerMapper on GetAnswerForAsyncResponse? {
 
 extension GetAllAsyncAnswerMapper on List<GetAnswerForAsyncResponse>? {
   List<AnswerModel> toDomain() {
-    List<AnswerModel> allAnswer =
+    List<AnswerModel> allUserAnswer =
         (this?.map((response) => response.toDomain()) ?? const Iterable.empty())
             .cast<AnswerModel>()
             .toList();
-    return allAnswer;
+    return allUserAnswer;
   }
 }
 
@@ -581,6 +581,22 @@ extension GetSpecBaseModelMapper on SpecificationBaseResponse? {
     );
   }
 }
+extension AddAndModifyModelMapper on AddAndModifyResponse? {
+  AddModifyUser toDomain() {
+    return AddModifyUser(
+      this?.localId ?? Constants.zero,
+      this?.userId ?? Constants.empty,
+    );
+  }
+}
+extension AddAndModifyBaseModelMapper on AddAndModifyBaseResponse {
+  List<AddModifyUser> toDomain() {
+    List<AddModifyUser> userIds = (data.map(
+          (response) => response.toDomain(),
+    )).cast<AddModifyUser>().toList();
+    return userIds;
+  }
+}
 extension GetAllSpoecModelMapper on AllSpecificationBaseResponse {
   List<SpecModel> toDomain() {
     List<SpecModel> allSpec = (data.specifications.map(
@@ -595,5 +611,99 @@ extension GetAllSpoecModelsMapper on List<SpecificationResponse> {
           (response) => response.toDomain(),
     )).cast<SpecModel>().toList();
     return allSpec;
+  }
+}
+
+extension GetUserSaveDataModelMapper on UserForSaveResponse? {
+  UserSaveDataModel toDomain() {
+    return UserSaveDataModel(
+          this?.id ?? Constants.zero,
+        this?.fullName ?? Constants.empty,
+        this?.email ?? Constants.empty,
+        this?.phone ?? Constants.empty,
+        this?.address ?? Constants.empty,
+        this?.user_types_id ?? Constants.zero,
+        this?.notes ?? Constants.empty,
+     specId:   this?.spec_id ?? Constants.zero,
+      is_local_new: 0,
+      isUpload: 0,
+      is_modified: 0,
+    );
+  }
+}
+extension GetAllUserSaveDataModelMapper on List<UserForSaveResponse> {
+  List<UserSaveDataModel> toDomain() {
+    List<UserSaveDataModel> users = (map(
+          (response) => response.toDomain(),
+    )).cast<UserSaveDataModel>().toList();
+    return users;
+  }
+}
+
+
+
+extension AnswerForSaveModelMapper on UserAnswerForSaveResponse? {
+  AnswerUserSurveyModel toDomain() {
+    return AnswerUserSurveyModel(
+      this?.id ?? Constants.zero,
+      this?.answer_id ?? Constants.zero,
+     user_id:  this?.user_id ?? Constants.zero,
+      this?.content ?? Constants.empty,
+      this?.isCorrect ?? Constants.zero,
+    );
+  }
+}
+extension AllAnswerForSaveModelMapper on List<UserAnswerForSaveResponse> {
+  List<AnswerUserSurveyModel> toDomain() {
+    List<AnswerUserSurveyModel> userConference = (map(
+          (response) => response.toDomain(),
+    )).cast<AnswerUserSurveyModel>().toList();
+    return userConference;
+  }
+}
+
+
+extension UserConferenceModelMapper on UserConferenceResponse? {
+  UserConferenceModel toDomain() {
+    return UserConferenceModel(
+      this?.id ?? Constants.zero,
+      this?.user_id ?? Constants.zero,
+      this?.conference_id ?? Constants.zero,
+    );
+  }
+}
+extension AllUserConferenceModelMapper on List<UserConferenceResponse> {
+  List<UserConferenceModel> toDomain() {
+    List<UserConferenceModel> userConference = (map(
+          (response) => response.toDomain(),
+    )).cast<UserConferenceModel>().toList();
+    return userConference;
+  }
+}
+extension AllSaveDataResponseMapper on AllSaveDataResponse? {
+  SaveDataModel toDomain() {
+    return SaveDataModel(
+        this?.users.toDomain()??[],
+        this?.users_conference.toDomain()??[],
+        this?.users_answers.toDomain()??[],
+
+    );
+  }
+}
+extension CountForSaveModelMapper on CountForSaveResponse? {
+  CountForSaveModel toDomain() {
+    return CountForSaveModel(
+      this?.total_users ?? Constants.zero,
+      this?.linked_users ?? Constants.zero,
+      this?.total_answers ?? Constants.zero,
+    );
+  }
+}
+extension AllSaveDataBaseResponseMapper on AllSaveDataBaseResponse? {
+  SaveDataBaseModel toDomain() {
+    return SaveDataBaseModel(
+      this!.data.toDomain(),
+      this!.count.toDomain(),
+    );
   }
 }

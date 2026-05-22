@@ -12,19 +12,15 @@ final class SyncInitial extends SyncState {
 }
 
 // ===== Existing states =====
-final class AsyncConferenceState extends SyncState {
-  final GetAsyncModel asyncModel;
-  const AsyncConferenceState(this.asyncModel);
 
-  @override
-  List<Object?> get props => [asyncModel];
-}
+
 class DoctorsState extends SyncState {
   final List<UserModel> data;
   final UserModel? selectedDoctor; // الطبيب المختار حالياً
 
   const DoctorsState(this.data, {this.selectedDoctor});
 }
+
 final class DataErrorState extends SyncState {
   final Failure failure;
   const DataErrorState({required this.failure});
@@ -41,31 +37,29 @@ final class DeleteDataState extends SyncState {
   final int isActive;
   const DeleteDataState(this.isActive);
 }
+
 final class DeleteUserState extends SyncState {
   const DeleteUserState();
 }
-final class InsertSucState extends SyncState {
-  final int conferenceId;
-  const InsertSucState(this.conferenceId);
-}
+
 
 final class UploadDataState extends SyncState {
   final int isUpload;
   const UploadDataState(this.isUpload);
   @override
   List<Object?> get props => [isUpload];
-
 }
 
 final class GetDataState extends SyncState {
   final int conference_id;
   final int isActive;
   final List<UserSqlModel> users;
-  const GetDataState(this.users,this.conference_id,this.isActive);
+  const GetDataState(this.users, this.conference_id, this.isActive);
 
   @override
-  List<Object?> get props => [users,conference_id];
+  List<Object?> get props => [users, conference_id];
 }
+
 final class AsyncConferenceErrorState extends SyncState {
   final Failure failure;
   const AsyncConferenceErrorState({required this.failure});
@@ -81,14 +75,16 @@ final class GetConferenceAsyncState extends SyncState {
   @override
   List<Object?> get props => [conferenceModel];
 }
-final class GetConferenceAsyncEmptyState extends SyncState {
 
+final class GetConferenceAsyncEmptyState extends SyncState {
   @override
   List<Object?> get props => [];
 }
+
 final class GetConferenceAsyncLoadingState extends SyncState {
   const GetConferenceAsyncLoadingState();
 }
+
 final class GetConferenceAsyncErrorState extends SyncState {
   final Failure failure;
   const GetConferenceAsyncErrorState({required this.failure});
@@ -108,9 +104,11 @@ final class GetSurveyAsyncState extends SyncState {
 final class GetSurveyAsyncLoadingState extends SyncState {
   const GetSurveyAsyncLoadingState();
 }
+
 final class GetSurveyAsyncEmptyState extends SyncState {
   const GetSurveyAsyncEmptyState();
 }
+
 final class GetSurveyAsyncErrorState extends SyncState {
   final Failure failure;
   const GetSurveyAsyncErrorState({required this.failure});
@@ -146,7 +144,7 @@ final class SurveyReadyState extends SyncState {
   /// for UI header/progress only
   final int currentIndex;
   final int index;
-  final String ? time;
+  final String? time;
 
   const SurveyReadyState({
     required this.surveyName,
@@ -155,8 +153,7 @@ final class SurveyReadyState extends SyncState {
     required this.answers,
     required this.currentIndex,
     required this.index,
-    required this.time
-
+    required this.time,
   });
 
   SurveyReadyState copyWith({
@@ -170,12 +167,18 @@ final class SurveyReadyState extends SyncState {
       answers: answers ?? this.answers,
       currentIndex: currentIndex ?? this.currentIndex,
       index: index,
-        time: time
+      time: time,
     );
   }
 
   @override
-  List<Object?> get props => [surveyName, questions, answers, currentIndex,time];
+  List<Object?> get props => [
+    surveyName,
+    questions,
+    answers,
+    currentIndex,
+    time,
+  ];
 }
 
 final class SurveySubmittingState extends SyncState {
@@ -201,6 +204,7 @@ final class SurveySubmitErrorState extends SyncState {
   @override
   List<Object?> get props => [failure];
 }
+
 final class InsertUserSuccessState extends SyncState {
   const InsertUserSuccessState();
 }
@@ -212,17 +216,20 @@ final class InsertUserErrorState extends SyncState {
   @override
   List<Object?> get props => [failure];
 }
+
 final class InsertUserLoadingState extends SyncState {
   const InsertUserLoadingState();
 }
+
 final class FinishedSurveyState extends SyncState {
   const FinishedSurveyState();
 }
+
 final class GetInfoConferenceSuccessState extends SyncState {
-final  InfoConference infoConference;
+  final InfoConference infoConference;
   const GetInfoConferenceSuccessState(this.infoConference);
-@override
-List<Object?> get props => [infoConference];
+  @override
+  List<Object?> get props => [infoConference];
 }
 
 final class GetInfoConferenceErrorState extends SyncState {
@@ -232,10 +239,12 @@ final class GetInfoConferenceErrorState extends SyncState {
   @override
   List<Object?> get props => [failure];
 }
+
 final class CheckoutState extends SyncState {
   CheckoutState();
   List<Object?> get props => [];
 }
+
 final class InsertDoctorErrorState extends SyncState {
   final Failure failure;
   const InsertDoctorErrorState({required this.failure});
@@ -243,14 +252,15 @@ final class InsertDoctorErrorState extends SyncState {
   @override
   List<Object?> get props => [failure];
 }
-final class InsertDoctorSucState extends SyncState {
 
+final class InsertDoctorSucState extends SyncState {
   const InsertDoctorSucState();
 
   @override
   List<Object?> get props => [];
-}final class InsertDoctorLoadingState extends SyncState {
+}
 
+final class InsertDoctorLoadingState extends SyncState {
   const InsertDoctorLoadingState();
 
   @override
@@ -258,18 +268,19 @@ final class InsertDoctorSucState extends SyncState {
 }
 
 final class GetUserConferenceState extends SyncState {
- final List<UserModel> users;
- final List<UserModel> filterUsers;
+  final List<UserModel> users;
+  final List<UserModel> filterUsers;
 
- const GetUserConferenceState(this.users,this.filterUsers);
+  const GetUserConferenceState(this.users, this.filterUsers);
   @override
   List<Object?> get props => [filterUsers];
 }
-final class GetUserConferenceEmptyState extends SyncState {
 
+final class GetUserConferenceEmptyState extends SyncState {
   @override
   List<Object?> get props => [];
 }
+
 final class GetUserConferenceErrorState extends SyncState {
   final Failure failure;
   const GetUserConferenceErrorState({required this.failure});
@@ -279,12 +290,11 @@ final class GetUserConferenceErrorState extends SyncState {
 }
 
 final class NavigateToSurveyState extends SyncState {
-
   @override
   List<Object?> get props => [];
 }
-final class NavigateToConferenceState extends SyncState {
 
+final class NavigateToConferenceState extends SyncState {
   @override
   List<Object?> get props => [];
 }
@@ -299,9 +309,11 @@ final class EditUserState extends SyncState {
 final class EditUserLoadingState extends SyncState {
   const EditUserLoadingState();
 }
+
 final class EditUserEmptyState extends SyncState {
   const EditUserEmptyState();
 }
+
 final class EditUserErrorState extends SyncState {
   final Failure failure;
   const EditUserErrorState({required this.failure});

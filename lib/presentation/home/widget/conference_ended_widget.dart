@@ -5,6 +5,7 @@ import 'package:formify/app/di.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 import 'package:formify/presentation/conference/widget/conferm_dialog.dart';
+import 'package:formify/presentation/offline_sync/bloc/offline_sync_bloc.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/responsive/breakpoints.dart';
 import 'package:formify/presentation/resources/responsive/font_responseve.dart';
@@ -181,7 +182,6 @@ class ConferenceEndedWidget extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      // زر الحذف الدائري الأنيق
                       Material(
                         color: ColorManager.error.withOpacity(0.08),
                         shape: const CircleBorder(),
@@ -206,8 +206,6 @@ class ConferenceEndedWidget extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 10),
-
-                      // زر راديو التفعيل السريع المطور بلمسة بصرية تفاعلية
                       Material(
                         color: ColorManager.success.withOpacity(0.08),
                         shape: const CircleBorder(),
@@ -223,8 +221,8 @@ class ConferenceEndedWidget extends StatelessWidget {
                                 title: "تخزين المؤتمر داخلياً",
                                 message: "هل أنت متأكد من تفعيل المؤتمر، وتخزينه داخلياً لبدء العمل عليه ورفع المؤتمر السابق إذا كان موجوداً؟",
                                 onConfirm1: () {
-                                  BlocProvider.of<SyncBloc>(context).add(
-                                    GetDataEvent(conference.id, 0),
+                                  BlocProvider.of<OfflineSyncBloc>(context).add(
+                                    AsyncDataEvent(conference.id),
                                   );
                                 },
                               );

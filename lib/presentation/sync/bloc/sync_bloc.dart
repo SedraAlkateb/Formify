@@ -5,7 +5,6 @@ import 'package:formify/app/app_preferences.dart';
 import 'package:formify/app/di.dart';
 import 'package:formify/data/mapper/mapper.dart';
 import 'package:formify/data/network/failure.dart';
-import 'package:formify/domain/models/mock_users.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/usecase/add_async_data_sql_usecase.dart';
 import 'package:formify/domain/usecase/check_password_usecase.dart';
@@ -26,13 +25,11 @@ import 'package:formify/domain/usecase/synchronize_users_answers_usecase.dart';
 import 'package:formify/domain/usecase/updateIs_done_usecase.dart';
 import 'package:formify/domain/usecase/update_user_sql_usecase.dart';
 import 'package:meta/meta.dart';
-
 part 'sync_event.dart';
 part 'sync_state.dart';
 
 class SyncBloc extends Bloc<SyncEvent, SyncState> {
-  final GetAllAsyncInfoUsecase getAllAsyncInfoUsecase;
-  final AddAsyncDataSqlUsecase addAsyncDataSqlUsecase;
+
   final GetUserAnswerSqlUsecase getUserAnswerSqlUsecase;
   final DeleteDataSqlUsecase deleteDataSqlUsecase;
   final DeleteUserSqlUsecase deleteUserSqlUsecase;
@@ -49,14 +46,11 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   final  UpdateUserSqlUsecase updateUserSqlUsecase;
   final DoctorsAttendanceSqlUsecase doctorsAttendanceSqlUsecase;
   final UpdateDoneUsecase updateDoneUsecase;
-
   // القوائم المخزنة في الذاكرة
+
   List<IsActiveMainSurveyModel> surveys = [];
   List<IsActiveMainSurveyModel> surveysBase = [];
-
   List<UserModel> doctor = [];
-
-  // الطبيب المختار حالياً (المصدر الوحيد للحقيقة لـ doctorId)
   UserModel? selectedDoctor;
 
   UserSqlModel? userSqlModel;
@@ -65,8 +59,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
 
   SyncBloc(
       this.updateDoneUsecase,
-    this.getAllAsyncInfoUsecase,
-    this.addAsyncDataSqlUsecase,
+
     this.getUserAnswerSqlUsecase,
     this.deleteDataSqlUsecase,
     this.synchronizeUsersAnswersUsecase,
@@ -82,11 +75,12 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
 
     this.getUsersConferenceUsecase,
       this.updateUserSqlUsecase,
-      this.doctorsAttendanceSqlUsecase
+      this.doctorsAttendanceSqlUsecase,
+
+
   ) : super(const SyncInitial()) {
     // الأحداث الأساسية
-    on<AsyncDataEvent>(_onAsyncData);
-    on<InsertDataSqlEvent>(_onInsertSql);
+
     on<DeleteDataEvent>(_onDeleteData);
     on<DeleteUserEvent>(_onDeleteUser);
     on<GetDataEvent>(_onGetData);
@@ -97,6 +91,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     on<CheckEvent>(_onCheck);
     on<EditUserEvent>(_onEditUser);
     on<UpdateDoneDoctorEvent>(_onIsDone);
+
     // أحداث إدخال المستخدم
     on<InputUserSqlEvent>((e, emit) async {
       userSqlModel = e.userSqlModel;
@@ -112,60 +107,6 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
         emit(NavigateToSurveyState());
       }
     });
-/*
- if(surveysBase.isEmpty){
-      emit(const InsertUserLoadingState());
-      final insertResult = await insertUserAndAnswerUsecase.execute(
-        userSqlModel??UserSqlModel(fullName: "fullName", phone: "phone", userType: UserType.other, answerModel: []),
-      );
-      insertResult.fold(
-            (failure) => emit(InsertUserErrorState(failure: failure)),
-            (_) => emit(FinishedSurveyState()),
-      );
-    }else{
-      if (surveys.isEmpty) {
-        emit(const InsertUserLoadingState());
-        final insertResult = await insertUserAndAnswerUsecase.execute(
-          userSqlModel!,
-        );
-        insertResult.fold(
-              (failure) => emit(InsertUserErrorState(failure: failure)),
-              (_) => emit(FinishedSurveyState()),
-        );
-      }else{
-        emit(GetSurveyAsyncState(surveys));
-      }
-       emit(const InsertUserLoadingState());
-          final insertResult = await insertUserAndAnswerUsecase.execute(
-            userSqlModel??UserSqlModel(fullName: "fullName", phone: "phone", userType: UserType.other, answerModel: []),
-          );
-          insertResult.fold(
-                (failure) => emit(InsertUserErrorState(failure: failure)),
-                (_) => emit(FinishedSurveyState()),
-          );
-           final result = await getSurveysSqlUsecase.execute();
-      await result.fold(
-            (failure) async => emit(GetSurveyAsyncErrorState(failure: failure)),
-            (data) async {
-          surveysBase=data.toDomain();
-          surveys = surveysBase;
-          if (surveys.isEmpty) {
-            emit(const InsertUserLoadingState());
-            final insertResult = await insertUserAndAnswerUsecase.execute(
-              userSqlModel??UserSqlModel(fullName: "fullName", phone: "phone", userType: UserType.other, answerModel: []),
-            );
-            insertResult.fold(
-                  (failure) => emit(InsertUserErrorState(failure: failure)),
-                  (_) => emit(FinishedSurveyState()),
-            );
-          }else{
-            emit(GetSurveyAsyncState(surveys));
-          }
-
-
-        },
-      );
- */
     // أحداث الأطباء والبحث (المعدلة)
     on<DoctorEvent>(_onGetDoctors);
     on<InsertEvent>(_onInsertDoctors);
@@ -249,25 +190,6 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
 
   // --- Async & Cloud Handlers ---
 
-  Future<void> _onAsyncData(
-    AsyncDataEvent event,
-    Emitter<SyncState> emit,
-  ) async {
-    (await getAllAsyncInfoUsecase.execute(conferenceId ?? -1)).fold(
-      (failure) => emit(DataErrorState(failure: failure)),
-      (data) => emit(AsyncConferenceState(data)),
-    );
-  }
-
-  Future<void> _onInsertSql(
-    InsertDataSqlEvent event,
-    Emitter<SyncState> emit,
-  ) async {
-    (await addAsyncDataSqlUsecase.execute(event.asyncModel)).fold(
-      (failure) => emit(DataErrorState(failure: failure)),
-      (_) => emit(InsertSucState(event.asyncModel.conferenceModel.id)),
-    );
-  }
 
   Future<void> _onDeleteData(
     DeleteDataEvent event,
@@ -518,7 +440,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     GetAllUserEvent event,
     Emitter<SyncState> emit,
   ) async {
-    (await getUsersConferenceUsecase.execute()).fold(
+    (await getUsersConferenceUsecase.execute(conferenceId??0)).fold(
       (failure) => emit(GetUserConferenceErrorState(failure: failure)),
       (data) {
         if (data.isEmpty) {
@@ -550,4 +472,5 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
 
     emit(GetUserConferenceState(allUsers, filteredList));
   }
+
 }

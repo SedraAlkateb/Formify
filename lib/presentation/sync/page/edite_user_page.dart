@@ -66,7 +66,6 @@ class _EditUserPageState extends State<EditUserPage>
        userTypeFromId(_selectedUserType.id),
          noteController.text,
           isUpload: 0,
-        userId: widget.userModel.userId,
 
       );
 

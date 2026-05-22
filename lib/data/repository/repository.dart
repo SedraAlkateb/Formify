@@ -698,4 +698,90 @@ class RepositoryImp implements Repository {
       return Left(failure);
     }
   }
+
+  @override
+  Future<Either<Failure, List<AddModifyUser>>> addOrModifyUsers(AddAndModifyUsersRequest users) async {
+    try {
+      if (await _networkInfo.isConnected) {
+        final response = await _remoteDataSource.addOrModifyUsers(users
+        );
+
+        if (response.status == "200" ||
+            response.status == ApiInternalStatus.SUCCESS) {
+          return Right(response.toDomain());
+        } else {
+          Failure failure = Failure(
+            ApiInternalStatus.FAILURE,
+            response.message ?? ResponseMassage.DEFAULT,
+          );
+          return Left(failure);
+
+          // return Left(Failure(ApiInternalStatus.FAILURE,
+          //     response.message ?? ResponseMassage.DEFAULT));
+        }
+      } else {
+        return Left(DataSource.NO_INTERNET_CONNECTION.getFailure());
+      }
+    } catch (error) {
+      Failure failure = ErrorHandler.handle(error).failure;
+      return Left(failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, SaveDataBaseModel>> getAllUsersForSync(int conferenceId) async {
+    try {
+      if (await _networkInfo.isConnected) {
+        final response = await _remoteDataSource.getAllUsersForSync(conferenceId
+        );
+
+        if (response.status == "200" ||
+            response.status == ApiInternalStatus.SUCCESS) {
+          return Right(response.toDomain());
+        } else {
+          Failure failure = Failure(
+            ApiInternalStatus.FAILURE,
+            response.message ?? ResponseMassage.DEFAULT,
+          );
+          return Left(failure);
+
+          // return Left(Failure(ApiInternalStatus.FAILURE,
+          //     response.message ?? ResponseMassage.DEFAULT));
+        }
+      } else {
+        return Left(DataSource.NO_INTERNET_CONNECTION.getFailure());
+      }
+    } catch (error) {
+      Failure failure = ErrorHandler.handle(error).failure;
+      return Left(failure);
+    }
+  }
+  @override
+  Future<Either<Failure, void>> updatedSyncUsersAnswers(SyncUsersRequest conference) async {
+    try {
+      if (await _networkInfo.isConnected) {
+        final response = await _remoteDataSource.updatedSyncUsersAnswers(conference
+        );
+
+        if (response.status == "200" ||
+            response.status == ApiInternalStatus.SUCCESS) {
+          return Right(null);
+        } else {
+          Failure failure = Failure(
+            ApiInternalStatus.FAILURE,
+            response.message ?? ResponseMassage.DEFAULT,
+          );
+          return Left(failure);
+
+          // return Left(Failure(ApiInternalStatus.FAILURE,
+          //     response.message ?? ResponseMassage.DEFAULT));
+        }
+      } else {
+        return Left(DataSource.NO_INTERNET_CONNECTION.getFailure());
+      }
+    } catch (error) {
+      Failure failure = ErrorHandler.handle(error).failure;
+      return Left(failure);
+    }
+  }
 }

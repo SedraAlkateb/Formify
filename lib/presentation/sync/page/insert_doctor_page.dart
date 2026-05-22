@@ -161,9 +161,7 @@ class _AddDoctorPageState extends State<AddDoctorPage> {
         _regionController.text.trim(),
           UserType.importantDoctor,
         _descController.text.trim(),
-        userId: -2,
           isUpload: 0,
-
       );
 
       // استدعاء البلوك

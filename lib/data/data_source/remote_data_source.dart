@@ -56,6 +56,16 @@ abstract class RemoteDataSource {
       );
   Future<AllSpecificationBaseResponse> getAllSpecification();
   Future<SpecificationBaseResponse> addSpecification(String title,);
+
+  Future<AllSaveDataBaseResponse> getAllUsersForSync(
+      int conferenceId,
+      );
+  Future<Message1Response> updatedSyncUsersAnswers(
+     SyncUsersRequest conference,
+      );
+  Future<AddAndModifyBaseResponse> addOrModifyUsers(
+      AddAndModifyUsersRequest users,
+      );
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -243,6 +253,23 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   Future<SpecificationBaseResponse> addSpecification(String title) async {
     return await _appServiceClient.addSpecification(title);
   }
+
+  @override
+  Future<AddAndModifyBaseResponse> addOrModifyUsers(AddAndModifyUsersRequest users) async {
+    return await _appServiceClient.addOrModifyUsers(users);
+  }
+
+
+  @override
+  Future<AllSaveDataBaseResponse> getAllUsersForSync(int conferenceId) async {
+    return await _appServiceClient.getAllUsersForSync(conferenceId);
+  }
+
+  @override
+  Future<Message1Response> updatedSyncUsersAnswers(SyncUsersRequest conference) async {
+    return await _appServiceClient.updatedSyncUsersAnswers(conference);
+  }
+
 
 
 }
