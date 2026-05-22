@@ -1,4 +1,5 @@
 import 'package:formify/data/network/sqlite_factory.dart';
+import 'package:formify/domain/models/mock_users.dart';
 import 'package:formify/domain/models/model_q.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/models/user_type.dart';
@@ -7,27 +8,38 @@ import 'package:sqflite/sqflite.dart';
 abstract class AppSqlApiAbs {
   Future<String> asyncData(GetAsyncModel asyncData);
   Future<void> deleteData();
-  Future<void> deleteUser();
+  Future<void> deleteDataForSave();
+
+  Future<String> insertDataForSave(DataForSaveModel asyncData);
+
   Future<void> insertDoctor(UserModel doctor);
   Future<void> insertAllUsers(List<UserModel> users);
   Future<List<UserSqlModel>> getDataSql();
   Future<GetAllConferenceModel?> getConference();
   Future<List<MainSurveyModel>> getSurveys();
-  // Future<List<AnswerModel>> getAnswers();
-  // Future<List<QuestionModel>> getQuestionAnswers();
   Future<List<QuestionModel>> getSurveyQuestionsWithAnswers(int surveyId);
   Future<void> insertUserWithAnswer(UserSqlModel user);
-  //Future<List<AsyncQuestionModel>> getQuestions();
   Future<InfoConference> getConferenceInfo();
   Future<List<UserModel>> getDoctors();
-  Future<List<UserModel>> getUserConference();
+  Future<List<UserModel>> getUserConference(int conferenceId);
   Future<void> updateUser(UserModel user);
   Future<List<UserModel>> getAllImportantDoctorNotCome(List<UserModel> users);
+  Future<List<DoctorMockItem>> refreshAndSyncUsers();
+  Future<void> updateIsDone(int isDone,int doctorId);
+  Future<AddAndModifyUsersRequest> getUserAddAndModify();
+  Future<void> addServerIdToUser(List<AddModifyUser>usersId);
+  Future<SyncUsersRequest> getConferenceAndAnswers(int conferenceId);
+  Future<void> deleteSyncData();
+  Future<void> addSyncData(SaveDataBaseModel baseData);
 }
 
 class AppSqlApi extends AppSqlApiAbs {
   DatabaseHelper databaseHelper;
+
   AppSqlApi(this.databaseHelper);
+
+  List<DoctorMockItem> usersList = MockModel.usersList;
+
   Future<void> initializeDatabase() async {
     await databaseFactory.debugSetLogLevel(sqfliteLogLevelVerbose);
   }
@@ -37,7 +49,7 @@ class AppSqlApi extends AppSqlApiAbs {
     final db = await databaseHelper.database;
 
     final usersResult = await db.rawQuery(
-      'SELECT COUNT(*) AS count FROM users',
+      'SELECT COUNT(*) AS count FROM all_users',
     );
     final totalUsers = (usersResult.first['count'] as num?)?.toInt() ?? 0;
 
@@ -67,8 +79,7 @@ class AppSqlApi extends AppSqlApiAbs {
 
   @override
   Future<List<QuestionModel>> getSurveyQuestionsWithAnswers(
-      int surveyId,
-      ) async {
+      int surveyId,) async {
     final db = await databaseHelper.database;
 
     final rows = await db.rawQuery(
@@ -146,7 +157,9 @@ class AppSqlApi extends AppSqlApiAbs {
     try {
       final db = await databaseHelper.database;
 
+      // استخدام الـ Transaction لضمان (إما نجاح كل شيء أو إلغاء كل شيء)
       await db.transaction((txn) async {
+        // نربط الـ batch بالـ txn مباشرة ليكون جزءاً من الترانزاكشن
         final batch = txn.batch();
 
         // 1. إدخال الاختصاصات العامة القادمة من السيرفر
@@ -158,26 +171,14 @@ class AppSqlApi extends AppSqlApiAbs {
           );
         }
 
-        // 🔥 تعديل حماية 1: إدخال الاختصاصات الخاصة بالمؤتمر نفسه في جدول 'spec' أولاً
-        // لضمان وجود المعرف (مثل ID 1) في الجدول الأب قبل عملية الربط
-        if (asyncData.conferenceModel.spec != null) {
-          for (final sp in asyncData.conferenceModel.spec!) {
-            batch.insert(
-              'spec',
-              sp.toMap(), // ندرجه كـ اختصاص رئيسي أولاً لمنع فشل الـ Foreign Key
-              conflictAlgorithm: ConflictAlgorithm.replace,
-            );
-          }
-        }
-
-        // 2. إدخال المؤتمر بأمان الآن
+        // 2. إدخال المؤتمر
         batch.insert(
           'conference',
           asyncData.conferenceModel.toMap(),
           conflictAlgorithm: ConflictAlgorithm.replace,
         );
 
-        // 3. إدخال جدول الربط (sp_conference) - الآن الاختصاص ID 1 موجود حتماً في الأعلى!
+        // 3. إدخال جدول الربط (sp_conference)
         if (asyncData.conferenceModel.spec != null) {
           for (final sp in asyncData.conferenceModel.spec!) {
             batch.insert(
@@ -224,6 +225,10 @@ class AppSqlApi extends AppSqlApiAbs {
           );
         }
 
+        // 🔥 هنا التعديل: حذف كافة المستخدمين القدامى محلياً قبل حقن القائمة الجديدة
+        batch.delete('all_users');
+
+        // 5. حقن قائمة المستخدمين الجديدة النظيفة القادمة من السيرفر
         for (final at in asyncData.users) {
           batch.insert(
             'all_users',
@@ -231,8 +236,81 @@ class AppSqlApi extends AppSqlApiAbs {
             conflictAlgorithm: ConflictAlgorithm.replace,
           );
         }
+        await batch.commit(noResult: true);
+      });
 
-        // تنفيذ كل العمليات المترابطة دفعة واحدة ككتلة سليمة
+      return ""; // المزامنة تمت بنجاح تام
+    } catch (e) {
+      // إذا حدث أي خطأ في الإدخال بعد الحذف، سيتراجع الترانزاكشن تلقائياً وتعود البيانات المحذوفة!
+      print("❌ خطأ المزامنة الضخمة وتم عمل Rollback تلقائي: $e");
+      return e.toString();
+    }
+  }
+  @override
+  Future<void> deleteData() async {
+    final db = await databaseHelper.database;
+    final tables = [
+      'all_users',
+      'conference',
+      'spec',
+      'survey',
+      'questions',
+      'answers',
+      'users_answers',
+      'survey_conference',
+      'user_conference',
+      'sp_conference',
+    ];
+    Batch batch = db.batch();
+    for (var table in tables) {
+      batch.delete(table);
+    }
+    await batch.commit(noResult: true);
+  }
+  @override
+  Future<void> deleteDataForSave() async {
+    final db = await databaseHelper.database;
+    final tables = [
+      'all_users',
+      'users_answers',
+      'user_conference',
+    ];
+    Batch batch = db.batch();
+    for (var table in tables) {
+      batch.delete(table);
+    }
+    await batch.commit(noResult: true);
+  }
+  @override
+  Future<String> insertDataForSave(DataForSaveModel asyncData) async {
+    try {
+      final db = await databaseHelper.database;
+
+      await db.transaction((txn) async {
+        final batch = txn.batch();
+
+        for (final at in asyncData.users) {
+          batch.insert(
+            'all_users',
+            at.toJsonSql(),
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
+        }
+        for (final at in asyncData.answerUser) {
+          batch.insert(
+            'users_answers',
+            at.toJsonSql(),
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
+        }
+        for (final at in asyncData.userConference) {
+          batch.insert(
+            'user_conference',
+            at.toJsonSql(),
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
+        }
+
         await batch.commit(noResult: true);
       });
 
@@ -242,42 +320,12 @@ class AppSqlApi extends AppSqlApiAbs {
       return e.toString();
     }
   }
-  @override
-  Future<void> deleteData() async {
-    final db = await databaseHelper.database;
-    final tables = [
-      'users',
-      'all_users',
-      'conference',
-      'survey',
-      'questions',
-      'answers',
-      'users_answers',
-      'survey_conference',
-      'spec',
-      'sp_conference',
-    ];
-    Batch batch = db.batch();
-    for (var table in tables) {
-      batch.delete(table);
-    }
-    await batch.commit(noResult: true);
-  }
 
   @override
   Future<void> deleteUser() async {
-    // 1. الحصول على نسخة من قاعدة البيانات المحلية
     final db = await databaseHelper.database;
-
-    // 2. إنشاء Batch لتجميع العمليات البرمجية وتنفيذها دفعة واحدة
     Batch batch = db.batch();
-
-    // العملية الأولى: تحديث حالة الرفع في جدول المستخدمين الأساسي
-    // نضع قيمة 1 في حقل isUpload لجميع الأسطر
-    batch.update("users", {'isUpload': 1});
-
-    // العملية الثانية: حذف (تفريغ) كافة البيانات من جدول all_users
-    // استخدام batch.delete بدون شرط (where) يؤدي لحذف جميع السجلات في الجدول
+    batch.update("all_users", {'isUpload': 1});
     batch.delete("all_users");
 
     // 3. تنفيذ كافة العمليات المخزنة في الـ Batch
@@ -334,20 +382,20 @@ class AppSqlApi extends AppSqlApiAbs {
       // 1. استعلام الـ SQL مع الفلترة
       final maps = await db.rawQuery('''
       SELECT 
-        users.id            AS user_id,
-        users.fullname      AS fullname,
-        users.email         AS email,
-        users.phone         AS phone,
-        users.address       AS address,
-        users.notes       AS notes,
-        users.type_id       AS type_id,
-        users.user_id       AS user_type_id,
+        all_users.id            AS user_id,
+        all_users.fullname      AS fullname,
+        all_users.email         AS email,
+        all_users.phone         AS phone,
+        all_users.address       AS address,
+        all_users.notes       AS notes,
+        all_users.type_id       AS type_id,
+        all_users.user_id       AS user_type_id,
         users_answers.answer_id AS answer_id,
         users_answers.content   AS content,
         users_answers.isCorrect AS isCorrect
-      FROM users
-      LEFT JOIN users_answers ON users.id = users_answers.user_id
-      WHERE users.isUpload = 0;
+      FROM all_users
+      LEFT JOIN users_answers ON all_users.id = users_answers.user_id
+      WHERE all_users.isUpload = 0;
     ''');
 
       // إذا لم تكن هناك بيانات، نختصر الوقت ونعيد قائمة فارغة مباشرة
@@ -366,19 +414,20 @@ class AppSqlApi extends AppSqlApiAbs {
 
         usersMap.putIfAbsent(
           userId,
-              () => UserSqlModel(
-              fullName: (row['fullname'] ?? "مستخدم بدون اسم") as String,
-              email: row['email'] as String?,
-              phone: (row['phone'] as String? ?? "").isEmpty
-                  ? "09"
-                  : row['phone'] as String,
-              address: row['address'] as String?,
-              // تحصين تحويل الـ type_id لتجنب خطأ الـ NullPointerException
-              userType: userTypeFromId((row['type_id'] ?? 0) as int),
-              userId: row['user_type_id']as int,
-              answerModel: <AnswerUserModel>[],
-              notes: row['notes']  as String?
-          ),
+              () =>
+              UserSqlModel(
+                  fullName: (row['fullname'] ?? "مستخدم بدون اسم") as String,
+                  email: row['email'] as String?,
+                  phone: (row['phone'] as String? ?? "").isEmpty
+                      ? "09"
+                      : row['phone'] as String,
+                  address: row['address'] as String?,
+                  // تحصين تحويل الـ type_id لتجنب خطأ الـ NullPointerException
+                  userType: userTypeFromId((row['type_id'] ?? 0) as int),
+                  userId: row['user_type_id'] as int,
+                  answerModel: <AnswerUserModel>[],
+                  notes: row['notes'] as String?
+              ),
         );
 
         // 2. التحقق من حقل الإجابة بشكل آمن
@@ -394,7 +443,6 @@ class AppSqlApi extends AppSqlApiAbs {
       }
 
       return usersMap.values.toList();
-
     } catch (e, stackTrace) {
       // التقاط الخطأ وطباعته في الـ Console لمعرفته وحله أثناء التطوير
       print("❌ حدث خطأ أثناء جلب البيانات من SQL (getDataSql): $e");
@@ -404,6 +452,48 @@ class AppSqlApi extends AppSqlApiAbs {
       return <UserSqlModel>[];
     }
   }
+
+  @override
+  Future<AddAndModifyUsersRequest> getUserAddAndModify() async {
+    try {
+      final db = await databaseHelper.database;
+
+      // 1️⃣ جلب مصفوفة المستخدمين الجدد كلياً للإضافة (is_local_new = 1)
+      final List<Map<String, dynamic>> newUsersMaps = await db.query(
+        'all_users',
+        where: 'is_local_new = ? AND isUpload = ?',
+        whereArgs: [1, 0], // 1: جديد محلياً، 0: لم يرفع بعد
+      );
+
+      // 2️⃣ جلب مصفوفة المستخدمين الموجودين سابقاً وتم تعديلهم (is_modified = 1)
+      final List<Map<String, dynamic>> modifyUsersMaps = await db.query(
+        'all_users',
+        where: 'server_user_id IS NOT NULL AND is_modified = ? AND isUpload = ?',
+        whereArgs: [1, 0], // 1: تم تعديله، 0: لم يرفع بعد التعديل
+      );
+
+      // 3️⃣ تحويل الـ Maps القادمة من الداتا بيز إلى قائمة من UserModel
+      final List<UserModel> newUsersList = List.generate(newUsersMaps.length, (i) {
+        return UserModel.fromMap(newUsersMaps[i]);
+      });
+
+      final List<UserModel> modifyUsersList = List.generate(modifyUsersMaps.length, (i) {
+        return UserModel.fromMap(modifyUsersMaps[i]);
+      });
+
+      // 4️⃣ إعادة الكائن المطلوب محقوناً بالقوائم الصحيحة
+      return AddAndModifyUsersRequest(modifyUsersList, newUsersList);
+
+    } catch (e, stackTrace) {
+      // التقاط الخطأ وطباعته في الـ Console لمعرفته وحله أثناء التطوير
+      print("❌ حدث خطأ أثناء جلب بيانات الإضافة والتعديل من SQL: $e");
+      print("StackTrace: $stackTrace");
+
+      // إعادة كائن يحتوي على قوائم فارغة بدلاً من تدمير التطبيق (Crash)
+      return AddAndModifyUsersRequest(<UserModel>[], <UserModel>[]);
+    }
+  }
+
   //  @override
   //   Future<List<UserSqlModel>> getDataSql() async {
   //     final db = await databaseHelper.database;
@@ -473,14 +563,14 @@ class AppSqlApi extends AppSqlApiAbs {
         conference.spec.add(
           SpecModel(
             row['spec_id'] as int,
-            (row['spec_title'] ?? "") as String, // مطابقة حقل title مع خاصية name في الـ Model
+            (row['spec_title'] ??
+                "") as String, // مطابقة حقل title مع خاصية name في الـ Model
           ),
         );
       }
 
       // إعادة كائن أول مؤتمر بعد أن أصبحت قائمة اختصاصاته مكتملة
       return conference;
-
     } catch (e, stackTrace) {
       print("❌ خطأ أثناء جلب أول مؤتمر واختصاصاته: $e");
       print("StackTrace: $stackTrace");
@@ -499,11 +589,12 @@ class AppSqlApi extends AppSqlApiAbs {
     });
   }
 
+
   @override
   Future<void> insertUserWithAnswer(UserSqlModel user) async {
     final db = await databaseHelper.database;
     await db.transaction((txn) async {
-      int userId = await txn.insert('users', user.toJsonSql());
+      int userId = await txn.insert('all_users', user.toJsonSql());
       for (var answer in user.answerModel) {
         await txn.insert('users_answers', answer.toJsonSql(userId));
       }
@@ -514,7 +605,7 @@ class AppSqlApi extends AppSqlApiAbs {
   Future<void> insertDoctor(UserModel doctor) async {
     final db = await databaseHelper.database;
     await db.transaction((txn) async {
-      await txn.insert('users', doctor.toJson());
+      await txn.insert('all_users', doctor.toJson());
     });
   }
 
@@ -560,53 +651,51 @@ class AppSqlApi extends AppSqlApiAbs {
 
   /// جلب كحل المستخدمين الخاصين بالكونفيرنس
   @override
-  Future<List<UserModel>> getUserConference() async {
+  /// جلب كل المستخدمين المسجلين في مؤتمر معين بناءً على الـ conferenceId
+  @override
+  Future<List<UserModel>> getUserConference(int conferenceId) async {
     final db = await databaseHelper.database;
-    List<Map<String, dynamic>> maps;
-    maps = await db.query('users');
+
+    // نقوم بعمل JOIN وتصفية النتائج باستخدام حقل الـ conferenceId
+    final List<Map<String, dynamic>> maps = await db.rawQuery('''
+    SELECT 
+      u.id, 
+      u.server_user_id, 
+      u.fullname, 
+      u.phone, 
+      u.email, 
+      u.address, 
+      u.type_id, 
+      u.notes, 
+      u.specId,
+      u.is_local_new,
+      u.is_modified,
+      u.isUpload
+    FROM user_conference uc
+    INNER JOIN all_users u ON uc.user_id = u.id
+    WHERE uc.conference_id = ?
+  ''', [conferenceId]);
+
+    // تحويل البيانات المسترجعة إلى قائمة من UserModel
     return List.generate(maps.length, (i) {
       return UserModel.fromMap(maps[i]);
     });
   }
 
-  /*
-  @override
-
-Future<void> updateUser(UserModel user) async {
-
-  final db = await databaseHelper.database;
-
-   await db.update(
-
-    'users',
-
-    user.toJson(),
-
-    where: 'id = ?',
-
-    whereArgs: [user.id],
-
-  );
-
-} اريد المافقة على التعديل اذا كان  isUpload=0 ,  اريد تحديثه الى  1
-   */
-  ////////////////////// تحديث المستخدم
   @override
   Future<void> updateUser(UserModel user) async {
-    // 1. الحصول على نسخة من قاعدة البيانات
     final db = await databaseHelper.database;
 
-    // 2. تحويل كائن المستخدم وتجهيز البيانات للتحديث
     final Map<String, dynamic> userMap = {
       ...user.toJson(),
       //   'isUpload': 1, // سنفترض أن أي تعديل محلي يجعل السجل بحاجة للرفع مجدداً
     };
 
     int count = await db.update(
-      'users',
+      'all_users',
       userMap,
-      where: 'id = ? AND isUpload = ?',
-      whereArgs: [user.id, 0],
+      where: 'id = ?',
+      whereArgs: [user.id],
     );
     if (count == 0) {
       // إذا كان count يساوي 0، فهذا يعني أن الشرط لم يتحقق (السجل مرفوع مسبقاً أو غير موجود)
@@ -621,8 +710,7 @@ Future<void> updateUser(UserModel user) async {
   /// الطريقة الأكثر كفاءة لجلب الأطباء (نوع 6) وتحويلهم مباشرة إلى قائمة UserModel
   @override
   Future<List<UserModel>> getAllImportantDoctorNotCome(
-      List<UserModel> users,
-      ) async {
+      List<UserModel> users ) async {
     // 1. الحصول على نسخة من قاعدة البيانات
     final db = await databaseHelper.database;
 
@@ -654,5 +742,244 @@ Future<void> updateUser(UserModel user) async {
 
     // 5. تحويل النتائج إلى قائمة UserModel وإعادتها
     return results.map((map) => UserModel.fromMapSql(map)).toList();
+  }
+
+  @override
+  Future<List<DoctorMockItem>> refreshAndSyncUsers() async {
+    try {
+      final db = await databaseHelper.database;
+
+      // 🔥 إضافة orderBy لترتيب الحاضرين (1) في البداية تلقائياً
+      final List<Map<String, dynamic>> maps = await db.query(
+        'doctor',
+        orderBy: 'isDone DESC',
+      );
+
+      return maps.map((row) {
+        return DoctorMockItem(
+          id: row['id'] as int,
+          name: row['name'] as String,
+          isDone: row['isDone'] as int,
+        );
+      }).toList();
+    } catch (e, stackTrace) {
+      print("❌ خطأ أثناء جلب قائمة الدكاترة من جدول doctor: $e");
+      print("StackTrace: $stackTrace");
+
+      return <DoctorMockItem>[];
+    }
+  }
+  @override
+  Future<void> updateIsDone(int isDone, int doctorId) async {
+    // تنفيذ استعلام التحديث في قاعدة البيانات
+    final db = await databaseHelper.database;
+    await db.update(
+      'doctor',
+      {'isDone': isDone},
+      where: 'id = ?',
+      whereArgs: [doctorId],
+    );
+  }
+
+  /// تحديث الـ server_user_id للمستخدمين الجدد بناءً على الـ localId الراجع من السيرفر
+  @override
+  Future<void>addServerIdToUser(List<AddModifyUser>syncedUsers) async {
+    // إذا كانت القائمة فارغة، ننهي الدالة فوراً لتوفير الموارد
+    if (syncedUsers.isEmpty) return;
+
+    final db = await databaseHelper.database;
+
+    // 💡 نفتح Batch لتنفيذ التحديثات دفعة واحدة في الذاكرة لتسريع الأداء
+    final batch = db.batch();
+
+    for (final user in syncedUsers) {
+      batch.update(
+        'all_users',
+        {
+          'server_user_id': int.tryParse(user.userId) ?? user.userId,
+
+          // 2️⃣ نُعيد تصفير العدادات (Flags) لأن المستخدم أصبح مطابقاً تماماً للسيرفر الآن
+          'is_local_new': 0,
+          'is_modified': 0,
+          'isUpload': 1,
+        },
+        // الشرط: نقوم بالتحديث بناءً على الـ Local ID الفريد للموبايل
+        where: 'id = ?',
+        whereArgs: [user.localId],
+      );
+    }
+
+    try {
+      // 🚀 تنفيذ كافة العمليات في قاعدة البيانات دفعة واحدة دون إبطاء التطبيق
+      await batch.commit(noResult: true);
+      print("✅ تم تحديث معرفات السيرفر وتصفير علامات المزامنة لـ ${syncedUsers.length} مستخدم بنجاح.");
+    } catch (e) {
+      print("❌ خطأ أثناء تحديث المعرفات المحلية بعد المزامنة: $e");
+    }
+  }
+
+  @override
+  Future<SyncUsersRequest> getConferenceAndAnswers(int conferenceId) async {
+    try {
+      final db = await databaseHelper.database;
+
+      // 1️⃣ جلب سجلات الحضور التي لم ترفع بعد مع استبدال الـ user_id بـ server_user_id
+      // نستخدم INNER JOIN لضمان أننا نرسل فقط المستخدمين الذين يملكون معرف سيرفر حقيقي حالياً
+      final List<Map<String, dynamic>> conferenceMaps = await db.rawQuery('''
+      SELECT 
+        uc.id,
+        u.server_user_id AS user_id,
+        uc.isUpload AS isUpload
+      FROM user_conference uc
+      INNER JOIN all_users u ON uc.user_id = u.id
+      WHERE uc.isUpload = 0 AND u.server_user_id IS NOT NULL
+    ''');
+
+      // 2️⃣ جلب سجلات الإجابات التي لم ترفع بعد مع استبدال الـ user_id بـ server_user_id
+      final List<Map<String, dynamic>> answerMaps = await db.rawQuery('''
+      SELECT 
+        u.server_user_id AS user_id,
+        ua.answer_id,
+        ua.content
+      FROM users_answers ua
+      INNER JOIN all_users u ON ua.user_id = u.id
+      WHERE ua.isUpload = 0 AND u.server_user_id IS NOT NULL
+    ''');
+
+      // 3️⃣ تحويل البيانات المسترجعة إلى الكلاسات البرمجية المقابلة لها (Mapping)
+      final List<UserConferenceModel> userConferenceList = List.generate(
+        conferenceMaps.length,
+            (i) {
+          return UserConferenceModel(
+            conferenceMaps[i]['id'] as int,
+            conferenceMaps[i]['user_id'] as int,
+            conferenceMaps[i]['isUpload'] as int,
+            conference_id: conferenceId, // إسناد معرف المؤتمر النشط لتجهيز الـ API
+          );
+        },
+      );
+
+      final List<UsersAnswersRequest> answersList = List.generate(
+        answerMaps.length,
+            (i) {
+          return UsersAnswersRequest(
+            answerMaps[i]['user_id'] as int,
+            answerMaps[i]['answer_id'] as int,
+            answerMaps[i]['content'] as String,
+            conferenceId, // ربط الإجابة بالمؤتمر الحالي
+          );
+        },
+      );
+
+      // 4️⃣ إعادة الحزمة الكاملة جاهزة للتحويل إلى JSON والرفع
+      return SyncUsersRequest(userConferenceList, answersList);
+
+    } catch (e, stackTrace) {
+      print("❌ خطأ أثناء تجهيز حزمة الحضور والإجابات للمزامنة: $e");
+      print("StackTrace: $stackTrace");
+
+      // إرجاع كائن فارغ لحماية التطبيق من الانهيار في حالة وجود خطأ
+      return SyncUsersRequest(<UserConferenceModel>[], <UsersAnswersRequest>[]);
+    }
+  }
+
+  @override
+  Future<void> deleteSyncData() async {
+    try {
+      final db = await databaseHelper.database;
+
+      // 💡 نفتح Batch لدمج عمليات الحذف وتسريع التنفيذ في قاعدة البيانات
+      final batch = db.batch();
+
+      // 1️⃣ حذف كل إجابات المستخدمين
+      batch.delete('users_answers');
+
+      // 2️⃣ حذف كل سجلات حضور المؤتمرات
+      batch.delete('user_conference');
+
+      // 3️⃣ حذف كل المستخدمين (القدامى، الجدد، والأطباء المهمين المزامنين)
+      batch.delete('all_users');
+
+      // 🚀 تنفيذ الحذف الجماعي فوراً
+      await batch.commit(noResult: true);
+
+      print("🗑️ تم تفريغ جداول all_users و user_conference و users_answers بنجاح. التطبيق جاهز الآن للجلب الكامل.");
+
+    } catch (e, stackTrace) {
+      print("❌ خطأ أثناء محاولة تفريغ بيانات التزامن الموضعية (deleteSyncData): $e");
+      print("StackTrace: $stackTrace");
+
+      // إعادة رمي الخطأ إذا كنت بحاجة لمعالجته في طبقة الـ Bloc / Provider
+      rethrow;
+    }
+  }
+  @override
+  Future<void> addSyncData(SaveDataBaseModel baseData) async {
+    try {
+      final db = await databaseHelper.database;
+      final batch = db.batch();
+      final syncData = baseData.data;
+      if (syncData.users.isNotEmpty) {
+        for (final user in syncData.users) {
+          batch.insert(
+            'all_users',
+            {
+              'id': user.id,
+              'server_user_id': user.id,
+              'fullname': user.fullName,
+              'phone': user.phone,
+              'email': user.email,
+              'address': user.address,
+              'type_id': user.userTypeId,
+              'notes': user.notes,
+              'specId': user.specId,
+              'is_local_new': 0,
+              'is_modified': 0,
+              'isUpload': 1,
+            },
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
+        }
+      }
+
+      // 2️⃣ ثانياً: حقن حضور المؤتمر (user_conference) مباشرة
+      if (syncData.userConference.isNotEmpty) {
+        for (final conf in syncData.userConference) {
+          batch.insert(
+            'user_conference',
+            {
+              'conference_id': conf.conference_id ?? baseData.count.linked_users ?? 0,
+              'user_id': conf.user_id,
+              'isUpload': 1,
+            },
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
+        }
+      }
+
+      // 3️⃣ ثالثاً: حقن إجابات المستخدمين (users_answers) بالاعتماد الكامل على toJsonSaveData()
+      if (syncData.answerUser.isNotEmpty) {
+        for (final ans in syncData.answerUser) {
+          batch.insert(
+            'users_answers',
+            {
+              ...ans.toJsonSaveData(),     // 🔥 فرد الخريطة كاملة بما فيها الـ id القادم من السيرفر
+              'isUpload': 1,           // إضافة حقل الأمان للمزامنة المحلية فقط
+            },
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
+        }
+      }
+
+      // 🚀 إرسال كل الأوامر دفعة واحدة لقاعدة البيانات
+      await batch.commit(noResult: true);
+
+      print("🚀 تم اكتمال المزامنة العكسية بنجاح مبهر! الجداول الثلاثة محقونة الآن ببيانات السيرفر وتطابق المعرفات 100%.");
+
+    } catch (e, stackTrace) {
+      print("❌ خطأ أثناء حقن البيانات بالمعرفات المتطابقة: $e");
+      print("StackTrace: $stackTrace");
+      rethrow;
+    }
   }
 }

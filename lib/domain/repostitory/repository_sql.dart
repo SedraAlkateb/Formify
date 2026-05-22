@@ -19,4 +19,7 @@ abstract class RepositorySql {
   Future<Either<Failure,void>> updateUser(UserModel user);
   Future<Either<Failure,void>> insertAllUsers(List<UserModel> users);
   Future<Either<Failure,List<UserModel>>> getAllImportantDoctorNotCome(List<UserModel> users);
+  Future<Either<Failure,List<DoctorMockItem>>> refreshAndSyncUsers();
+  Future<Either<Failure,void>> updateIsDone(int isDone,int doctorId);
+
 }

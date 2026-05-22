@@ -266,7 +266,17 @@ class AnswerUserModel {
     return AnswerUserModel(map['answer_id'], map['content'], map['isCorrect']);
   }
 }
+class DoctorMockItem {
+  final int id;
+  final String name;
+   int isDone;
 
+   DoctorMockItem({
+    required this.id,
+    required this.name,
+    this.isDone = 0,
+  });
+}
 class UseAnswerModel {
   int user_id;
   List<AnswerUserModel> answersModel;

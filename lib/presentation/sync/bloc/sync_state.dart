@@ -309,3 +309,27 @@ final class EditUserErrorState extends SyncState {
   @override
   List<Object?> get props => [failure];
 }
+
+final class DoctorsAttendanceState extends SyncState {
+  final List<DoctorMockItem> users;
+  const DoctorsAttendanceState(this.users);
+
+  @override
+  List<Object?> get props => [users];
+}
+
+final class DoctorsAttendanceLoadingState extends SyncState {
+  const DoctorsAttendanceLoadingState();
+}
+
+final class DoctorsAttendanceEmptyState extends SyncState {
+  const DoctorsAttendanceEmptyState();
+}
+
+final class DoctorsAttendanceErrorState extends SyncState {
+  final Failure failure;
+  const DoctorsAttendanceErrorState({required this.failure});
+
+  @override
+  List<Object?> get props => [failure];
+}

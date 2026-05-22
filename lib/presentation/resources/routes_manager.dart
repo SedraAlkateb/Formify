@@ -23,6 +23,7 @@ import 'package:formify/presentation/survey/pages/create_survey_page.dart';
 import 'package:formify/presentation/survey/pages/update_survey_page.dart';
 import 'package:formify/presentation/survey/pages/view_all_survey_page.dart';
 import 'package:formify/presentation/survey/pages/view_survey.dart';
+import 'package:formify/presentation/sync/page/doctors_attendance_page.dart';
 import 'package:formify/presentation/sync/page/edite_user_page.dart';
 import 'package:formify/presentation/sync/page/finished_input_surveys.dart';
 import 'package:formify/presentation/sync/page/game_input_page.dart';
@@ -67,6 +68,7 @@ class Routes {
   static const String insertDoctor = "/insertDoctor";
   static const String exelBaseConference = "/exelBaseConference";
   static const String editUser= "/editUser";
+  static const String doctorsAttendance= "/doctorsAttendancePage";
 
 }
 
@@ -146,7 +148,11 @@ class RouteGenerator {
 
     return _animatedRoute(EditUserPage(userModel: user ));
       case Routes.finishedSurvey:
+
         return _animatedRoute(FinishedInputSurveysPage());
+      case Routes.doctorsAttendance:
+        initSyncModule();
+        return _animatedRoute(DoctorsAttendancePage());
       case Routes.updateSurvey:
         final id = settings.arguments as int;
         return _animatedRoute(UpdateSurveyPage(id: id));

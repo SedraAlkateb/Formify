@@ -25,6 +25,7 @@ import 'package:formify/domain/usecase/create_survey_usecase.dart';
 import 'package:formify/domain/usecase/delete_conference_usecase.dart';
 import 'package:formify/domain/usecase/delete_data_sql_usecase.dart';
 import 'package:formify/domain/usecase/delete_user_sql_usecase.dart';
+import 'package:formify/domain/usecase/doctors_attendance_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_ai_usecase.dart';
 import 'package:formify/domain/usecase/get_all_async_info_usecase.dart';
 import 'package:formify/domain/usecase/get_all_conference_usecase.dart';
@@ -51,6 +52,7 @@ import 'package:formify/domain/usecase/login_usecase.dart';
 import 'package:formify/domain/usecase/statistics_for_users_answers_usecase.dart';
 import 'package:formify/domain/usecase/statistics_survey_usecase.dart';
 import 'package:formify/domain/usecase/synchronize_users_answers_usecase.dart';
+import 'package:formify/domain/usecase/updateIs_done_usecase.dart';
 import 'package:formify/domain/usecase/update_conference_usecase.dart';
 import 'package:formify/domain/usecase/update_survey_usecase.dart';
 import 'package:formify/domain/usecase/update_user_sql_usecase.dart';
@@ -63,8 +65,9 @@ import 'package:formify/presentation/resources/theme_bloc/theme_bloc.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:google_generative_ai/google_generative_ai.dart'as prefix;
+import 'package:google_generative_ai/google_generative_ai.dart' as prefix;
 import 'package:shared_preferences/shared_preferences.dart';
+
 GetIt instance = GetIt.instance;
 Future<void> initAppModule() async {
   final sharedPrefs = await SharedPreferences.getInstance();
@@ -97,53 +100,59 @@ Future<void> initAppModule() async {
 }
 // features/statistics/presentation/di/statistics_injector.dart
 
-Future<void> initAiModule()async {
+Future<void> initAiModule() async {
   if (!dotenv.isInitialized) {
-   await  dotenv.load(fileName: ".env");
+    await dotenv.load(fileName: ".env");
   }
   if (!instance.isRegistered<prefix.GenerativeModel>()) {
     final apiKey = AppSecrets.geminiApiKey;
     instance.registerLazySingleton<prefix.GenerativeModel>(
-          () => prefix.GenerativeModel(model:'gemini-2.5-flash', apiKey: apiKey,
+      () => prefix.GenerativeModel(
+        model: 'gemini-2.5-flash',
+        apiKey: apiKey,
 
-          //  requestOptions: const prefix.RequestOptions(apiVersion: 'v1'),
-          ),
+        //  requestOptions: const prefix.RequestOptions(apiVersion: 'v1'),
+      ),
     );
   }
 
   // 2. تسجيل الـ Remote Data Source الخاص بالإحصائيات
   if (!instance.isRegistered<GeminiRemoteDataSource>()) {
     instance.registerLazySingleton<GeminiRemoteDataSource>(
-          () => GeminiRemoteDataSourceImpl(instance()),
+      () => GeminiRemoteDataSourceImpl(instance()),
     );
   }
 
   // 3. تسجيل الـ Repository والـ UseCase
   if (!instance.isRegistered<RepositoryAi>()) {
     instance.registerLazySingleton<RepositoryAi>(
-          () => RepositoryAiImp(instance(), instance()), // يأخذ الـ Remote والـ Local (SQL)
+      () => RepositoryAiImp(
+        instance(),
+        instance(),
+      ), // يأخذ الـ Remote والـ Local (SQL)
     );
     instance.registerLazySingleton<GetAiUsecase>(
-          () => GetAiUsecase(instance()), // يأخذ الـ Remote والـ Local (SQL)
+      () => GetAiUsecase(instance()), // يأخذ الـ Remote والـ Local (SQL)
     );
-
   }
   if (!instance.isRegistered<AiBloc>()) {
-
-     instance.registerFactory<AiBloc>(
-            () => AiBloc(instance()));
-
+    instance.registerFactory<AiBloc>(() => AiBloc(instance()));
   }
-
-
 }
+
 Future<void> initOnBoardingModule() async {
   if (!GetIt.I.isRegistered<LoginUsecase>()) {
     instance.registerFactory<LoginUsecase>(() => LoginUsecase(instance()));
-    instance.registerFactory<GetAllUserForAppUsecase>(() => GetAllUserForAppUsecase(instance()));
-    instance.registerFactory<InsertAllUserAppUsecase>(() => InsertAllUserAppUsecase(instance()));
+    instance.registerFactory<GetAllUserForAppUsecase>(
+      () => GetAllUserForAppUsecase(instance()),
+    );
+    instance.registerFactory<InsertAllUserAppUsecase>(
+      () => InsertAllUserAppUsecase(instance()),
+    );
 
-    instance.registerFactory<OnboardingBloc>(() => OnboardingBloc(instance(),instance(),instance()));
+    instance.registerFactory<OnboardingBloc>(
+      () => OnboardingBloc(instance(), instance(), instance()),
+    );
   }
 }
 
@@ -174,10 +183,10 @@ Future<void> initConferenceModule() async {
       () => LinkSurveyConferenceUsecase(instance()),
     );
     if (!GetIt.I.isRegistered<DeleteConferenceUsecase>()) {
-
       instance.registerFactory<DeleteConferenceUsecase>(
-            () => DeleteConferenceUsecase(instance()),
-      );}
+        () => DeleteConferenceUsecase(instance()),
+      );
+    }
     instance.registerFactory<GetAllSurveyUsecase>(
       () => GetAllSurveyUsecase(instance()),
     );
@@ -191,11 +200,9 @@ Future<void> initConferenceModule() async {
       () => UpdateConferenceUsecase(instance()),
     );
     instance.registerFactory<GetAllSpecUsecase>(
-          () => GetAllSpecUsecase(instance()),
+      () => GetAllSpecUsecase(instance()),
     );
-    instance.registerFactory<AddSpecUsecase>(
-          () => AddSpecUsecase(instance()),
-    );
+    instance.registerFactory<AddSpecUsecase>(() => AddSpecUsecase(instance()));
 
     instance.registerFactory<ConferenceBloc>(
       () => ConferenceBloc(
@@ -243,16 +250,22 @@ Future<void> initActiveConferenceModule() async {
 
   if (!GetIt.I.isRegistered<ActiveConferenceBloc>()) {
     instance.registerFactory<AllImportantDoctorNotComeSqlUsecase>(
-          () => AllImportantDoctorNotComeSqlUsecase(instance()),
+      () => AllImportantDoctorNotComeSqlUsecase(instance()),
     );
     if (!GetIt.I.isRegistered<DeleteConferenceUsecase>()) {
-
       instance.registerFactory<DeleteConferenceUsecase>(
-          () => DeleteConferenceUsecase(instance()),
-    );}
+        () => DeleteConferenceUsecase(instance()),
+      );
+    }
     instance.registerFactory<ActiveConferenceBloc>(
-      () =>
-          ActiveConferenceBloc(instance(), instance(), instance(), instance(), instance(), instance()),
+      () => ActiveConferenceBloc(
+        instance(),
+        instance(),
+        instance(),
+        instance(),
+        instance(),
+        instance(),
+      ),
     );
   }
 }
@@ -305,7 +318,7 @@ Future<void> initSyncModule() async {
     );
     if (!GetIt.I.isRegistered<DeleteDataSqlUsecase>()) {
       instance.registerFactory<DeleteDataSqlUsecase>(
-            () => DeleteDataSqlUsecase(instance()),
+        () => DeleteDataSqlUsecase(instance()),
       );
     }
     instance.registerFactory<DeleteUserSqlUsecase>(
@@ -327,22 +340,30 @@ Future<void> initSyncModule() async {
       () => GetConferenceInfoSqlUsecase(instance()),
     );
     instance.registerFactory<CheckPasswordUsecase>(
-          () => CheckPasswordUsecase(instance()),
+      () => CheckPasswordUsecase(instance()),
     );
     instance.registerFactory<GetDoctorsSqlUsecase>(
-          () => GetDoctorsSqlUsecase(instance()),
+      () => GetDoctorsSqlUsecase(instance()),
     );
     instance.registerFactory<InsertDoctorSqlUsecase>(
-          () => InsertDoctorSqlUsecase(instance()),
+      () => InsertDoctorSqlUsecase(instance()),
     );
     instance.registerFactory<GetUsersConferenceUsecase>(
-          () => GetUsersConferenceUsecase(instance()),
+      () => GetUsersConferenceUsecase(instance()),
     );
     instance.registerFactory<UpdateUserSqlUsecase>(
-          () => UpdateUserSqlUsecase(instance()),
+      () => UpdateUserSqlUsecase(instance()),
+    );
+    instance.registerFactory<DoctorsAttendanceSqlUsecase>(
+      () => DoctorsAttendanceSqlUsecase(instance()),
+    );
+    instance.registerFactory<UpdateDoneUsecase>(
+      () => UpdateDoneUsecase(instance()),
     );
     instance.registerFactory<SyncBloc>(
       () => SyncBloc(
+        instance(),
+        instance(),
         instance(),
         instance(),
         instance(),

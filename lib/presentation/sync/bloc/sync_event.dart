@@ -182,3 +182,15 @@ final class SearchInUsersEvent extends SyncEvent {
   final String search;
   const SearchInUsersEvent(this.users,this.search);
 }
+final class DoctorsAttendanceEvent extends SyncEvent {
+
+}
+// حدث تحديث حالة طبيب واحد في قاعدة البيانات
+class UpdateDoneDoctorEvent extends SyncEvent {
+  final DoctorMockItem doctorMockItem;
+  final List<DoctorMockItem> doctors;
+ // List<DoctorMockItem> doctors;
+  const UpdateDoneDoctorEvent({required this.doctorMockItem, required this.doctors
+    //,required this.doctors
+  });
+}
