@@ -10,8 +10,10 @@ class DoctorAutocompleteField extends StatelessWidget {
   final TextEditingController controller;
   final FocusNode? focusNode; // إضافة هذا الحقل
   final int index;
+  final String lable;
   final AnimationController animationController;
-  final Widget Function({required Widget child, required int index, required AnimationController controller}) buildAnimatedField;
+  final Widget Function({
+  required Widget child, required int index, required AnimationController controller}) buildAnimatedField;
 
   const DoctorAutocompleteField({
     super.key,
@@ -22,6 +24,7 @@ class DoctorAutocompleteField extends StatelessWidget {
     required this.index,
     required this.animationController,
     required this.buildAnimatedField,
+    required this.lable
   });
 
   @override
@@ -35,7 +38,7 @@ class DoctorAutocompleteField extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("الاسم الكامل", style: Theme.of(context).textTheme.titleMedium),
+          Text(lable, style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 10),
           RawAutocomplete<UserModel>(
             textEditingController: controller,

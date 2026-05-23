@@ -19,6 +19,7 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   LoginUsecase loginUsecase;
   GetAllUserForAppUsecase getAllUserForAppUsecase;
   InsertAllUserAppUsecase insertAllUserAppUsecase;
+
 //  GetAllSpecUsecase getAllSpecUsecase;
 
   bool isLastPageFun(int index) => isLastPage = index == 2;

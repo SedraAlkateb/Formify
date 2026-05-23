@@ -9,6 +9,8 @@ abstract class AppSqlApiAbs {
   Future<String> asyncData(GetAsyncModel asyncData);
   Future<void> deleteData();
   Future<void> deleteDataForSave();
+  Future<List<SpecModel>> getSpec();
+  Future<List<UserModel>> getUsersBySpecIdAndName(int specId, String name);
 
   Future<String> insertDataForSave(DataForSaveModel asyncData);
 
@@ -232,7 +234,7 @@ class AppSqlApi extends AppSqlApiAbs {
         for (final at in asyncData.users) {
           batch.insert(
             'all_users',
-            at.toJsonSql(),
+            at.toJsonSqlForFirst(),
             conflictAlgorithm: ConflictAlgorithm.replace,
           );
         }
@@ -292,7 +294,7 @@ class AppSqlApi extends AppSqlApiAbs {
         for (final at in asyncData.users) {
           batch.insert(
             'all_users',
-            at.toJsonSql(),
+            at.toJsonSqlForFirst(),
             conflictAlgorithm: ConflictAlgorithm.replace,
           );
         }
@@ -416,17 +418,16 @@ class AppSqlApi extends AppSqlApiAbs {
           userId,
               () =>
               UserSqlModel(
-                  fullName: (row['fullname'] ?? "مستخدم بدون اسم") as String,
-                  email: row['email'] as String?,
-                  phone: (row['phone'] as String? ?? "").isEmpty
-                      ? "09"
-                      : row['phone'] as String,
-                  address: row['address'] as String?,
-                  // تحصين تحويل الـ type_id لتجنب خطأ الـ NullPointerException
-                  userType: userTypeFromId((row['type_id'] ?? 0) as int),
-                  userId: row['user_type_id'] as int,
+                user: UserModel(  (row['fullname'] ?? "مستخدم بدون اسم") as String,
+                    row['email'] as String?,
+                     (row['phone'] as String? ?? "").isEmpty
+                        ? "09"
+                        : row['phone'] as String,
+                     row['address'] as String?, userTypeFromId((row['type_id'] ?? 0) as int)
+                    , row['notes'] as String?),
+
                   answerModel: <AnswerUserModel>[],
-                  notes: row['notes'] as String?
+
               ),
         );
 
@@ -592,15 +593,75 @@ class AppSqlApi extends AppSqlApiAbs {
 
   @override
   Future<void> insertUserWithAnswer(UserSqlModel user) async {
+    // 📥 [المدخلات - INPUT]: طباعة البيانات القادمة إلى التابع قبل المعالجة
+    print("================ 📥 بداية عملية الحفظ 📥 ================");
+    print("ID المحلي الحالي: ${user.user.id}");
+    print("ID المحلي الحالي: ${user.user.server_user_id}");
+    print("اسم المستخدم/الطبيب: ${user.user.fullName}");
+    print("بيانات الـ SQL المرسلة لجدول المستخدمين: ${user.toJsonSql()}");
+    print("عدد الإجابات المرتبطة المراد حفظها: ${user.answerModel.length}");
+    print("-------------------------------------------------------");
+
+    // 1️⃣ الحصول على نسخة من قاعدة البيانات المحلية
     final db = await databaseHelper.database;
+
+    // 2️⃣ بدء معاملة موحدة (Transaction) لضمان أمان وحفظ البيانات بالكامل معاً
     await db.transaction((txn) async {
-      int userId = await txn.insert('all_users', user.toJsonSql());
+      int userId;
+
+      // 3️⃣ فحص ما إذا كان المستخدم يمتلك معرفاً محلياً (أي حالة تعديل لطبيب موجود)
+      if (user.user.id != null) {
+        // أ) تثبيت المعرف الحالي لاستخدامه لاحقاً مع الإجابات
+        userId = user.user.id!;
+
+        // ب) تحديث السجل الحالي للمستخدم بالبيانات والأعلام الجديدة بناءً على الـ id
+        int updatedRowsCount = await txn.update(
+          'all_users',
+          user.toJsonSql(),
+          where: 'id = ?',
+          whereArgs: [userId],
+        );
+
+        // 📤 [المخرجات - OUTPUT]: طباعة نتيجة التحديث
+        print("🔄 [تعديل]: تم تحديث بيانات المستخدم بنجاح في جدول 'all_users'. ID المحلي هو: $userId (عدد السجلات المتأثرة: $updatedRowsCount)");
+
+        // ج) مسح الإجابات القديمة لهذا المستخدم لمنع تكرارها قبل إدخل الجديدة
+        int deletedAnswersCount = await txn.delete(
+          'users_answers',
+          where: 'user_id = ?',
+          whereArgs: [userId],
+        );
+        print("🗑️ [تنظيف]: تم مسح ($deletedAnswersCount) من الإجابات القديمة للمستخدم $userId لمنع التكرار.");
+
+      } else {
+        // 4️⃣ حالة مستخدم جديد كلياً (user.user.id == null)
+        // نقوم بعملية إدراج جديدة، وتوليد معرف محلي تلقائي (userId) من قاعدة البيانات
+        userId = await txn.insert(
+          'all_users',
+          user.toJsonSql(),
+        );
+
+        // 📤 [المخرجات - OUTPUT]: طباعة نتيجة الإدراج الجديد والمعرف المتولد
+        print("🆕 [إضافة]: تم إدراج مستخدم جديد كلياً في جدول 'all_users'. تم توليد ID محلي جديد تلقائياً وهو: $userId");
+      }
+
+      // 5️⃣ الحفاظ على منطق حفظ الإجابات كما هو دون تغيير
+      print("📝 البدء في حفظ الإجابات في جدول 'users_answers' للمعرف ($userId):");
       for (var answer in user.answerModel) {
-        await txn.insert('users_answers', answer.toJsonSql(userId));
+        final Map<String, dynamic> answerData = answer.toJsonSql(userId);
+
+        await txn.insert(
+          'users_answers',
+          answerData,
+        );
+
+        // 📤 [المخرجات - OUTPUT]: طباعة تفاصيل كل إجابة يتم إدخالها
+        print("   🔹 تم إدراج إجابة مرتبطة -> البيانات: $answerData");
       }
     });
-  }
 
+    print("================ 📤 نهاية عملية الحفظ بنجاح 📤 ================");
+  }
   @override
   Future<void> insertDoctor(UserModel doctor) async {
     final db = await databaseHelper.database;
@@ -623,7 +684,7 @@ class AppSqlApi extends AppSqlApiAbs {
         // يتم تحويل الـ Model إلى Map باستخدام toJson()
         await txn.insert(
           'all_users',
-          user.toJsonSql(),
+          user.toJsonSqlForFirst(),
           // استخدام conflictAlgorithm يمنع توقف التطبيق في حال تكرار نفس المستخدم
           conflictAlgorithm: ConflictAlgorithm.replace,
         );
@@ -982,4 +1043,80 @@ class AppSqlApi extends AppSqlApiAbs {
       rethrow;
     }
   }
+
+  @override
+  Future<List<SpecModel>> getSpec() async {
+    try {
+      final db = await databaseHelper.database;
+
+      final List<Map<String, dynamic>> maps = await db.query('spec');
+
+      final SpecModel allSpecialtiesOption = SpecModel(-1, "الكل");
+
+      if (maps.isEmpty) {
+        return [allSpecialtiesOption];
+      }
+
+      final List<SpecModel> fetchedSpecs = maps.map((specMap) => SpecModel.fromMap(specMap)).toList();
+      return [
+        allSpecialtiesOption,
+        ...fetchedSpecs,
+      ];
+
+    } catch (e) {
+      print("❌ خطأ أثناء جلب الاختصاصات من قاعدة البيانات المحلية: $e");
+      return [SpecModel(-1, "الكل")];
+    }
+  }
+
+  @override
+  @override
+  Future<List<UserModel>> getUsersBySpecIdAndName(int specId, String name) async {
+    try {
+      // 1️⃣ الحصول على نسخة نشطة من قاعدة البيانات المحلية
+      final db = await databaseHelper.database;
+
+      // 2️⃣ بناء نص الاستعلام المشترك (LEFT JOIN) الصحيح
+      // تم تغيير 'specifications' إلى 'spec' ليطابق اسم جدولك الحقيقي
+      String query = '''
+    SELECT 
+      u.*, 
+      s.id AS spec_id_joined, 
+      s.title AS spec_title_joined
+    FROM all_users u
+    LEFT JOIN spec s ON u.specId = s.id
+    WHERE 
+  ''';
+
+      List<dynamic> whereArguments = [];
+
+      // 3️⃣ التحقق من قيمة specId لتحديد نطاق البحث
+      if (specId == -1) {
+        // البحث بالاسم فقط عبر جميع الاختصاصات (استخدام u.fullname بحروف صغيرة مطابقة لجدولك)
+        query += ' u.fullname LIKE ?';
+        whereArguments.add('%$name%');
+      } else {
+        // دمج شرط الاختصاص المحدد مع الاسم
+        query += ' u.specId = ? AND u.fullname LIKE ?';
+        whereArguments.addAll([specId, '%$name%']);
+      }
+
+      // 4️⃣ تنفيذ الاستعلام المباشر الآمن باستخدام المعاملات الممررة
+      final List<Map<String, dynamic>> maps = await db.rawQuery(query, whereArguments);
+
+      // 5️⃣ التحقق مما إذا كانت المصفوفة فارغة
+      if (maps.isEmpty) {
+        return [];
+      }
+
+      // 6️⃣ تحويل البيانات الناتجة إلى قائمة مستخدمين من نوع UserModel
+      return maps.map((userMap) => UserModel.fromMap(userMap)).toList();
+
+    } catch (e) {
+      // توثيق الخطأ بالتفصيل في السجل في حال حدوث استثناء
+      print("❌ خطأ أثناء جلب المستخدمين مع الاختصاص: $e");
+      return [];
+    }
+  }  /// تابع مخصص لطباعة مصفوفة المستخدمين وتنسيق الخرج النهائي بشكل مقروء
+
 }
