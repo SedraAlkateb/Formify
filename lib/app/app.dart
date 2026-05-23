@@ -42,14 +42,14 @@ class _MyAppState extends State<MyApp> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => instance<OnboardingBloc>()),
-        BlocProvider(create: (_) => instance<OfflineSyncBloc>()),
+        BlocProvider(create: (_) => instance<OfflineSyncBloc>() ..add(CheckEvent(Constants.password))),
         BlocProvider(create: (_) => instance<AiBloc>()),
         BlocProvider(create: (_) => instance<ActiveConferenceBloc>()),
         BlocProvider(
           create: (_) => instance<SyncBloc>()
            // ..add(GetConferenceAsyncEvent())
             ..add(DoctorEvent())
-            ..add(CheckEvent(Constants.password)),
+
         ),
         BlocProvider(create: (_) => instance<ConferenceBloc>()),
 

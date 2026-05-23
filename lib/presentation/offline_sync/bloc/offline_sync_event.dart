@@ -61,3 +61,10 @@ class AddSaveDataEvent extends OfflineSyncEvent {
   @override
   List<Object?> get props => [data];
 }
+class CheckEvent extends OfflineSyncEvent {
+  final String password;
+  CheckEvent(this.password);
+
+  @override
+  List<Object?> get props => [password];
+}

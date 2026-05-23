@@ -314,20 +314,12 @@ Future<void> initSurveyModule() async {
 }
 
 Future<void> initSyncModule() async {
-  if (!GetIt.I.isRegistered<GetUserAnswerSqlUsecase>()) {
-    instance.registerFactory<GetUserAnswerSqlUsecase>(
-          () => GetUserAnswerSqlUsecase(instance()),
-    );
+  if (!GetIt.I.isRegistered<GetConferenceSqlUsecase>()) {
+
     // instance.registerFactory<SynchronizeUsersAnswersUsecase>(
     //   () => SynchronizeUsersAnswersUsecase(instance()),
     // );
-      instance.registerFactory<DeleteDataSqlUsecase>(
-        () => DeleteDataSqlUsecase(instance()),
-      );
 
-    instance.registerFactory<DeleteUserSqlUsecase>(
-      () => DeleteUserSqlUsecase(instance()),
-    );
     instance.registerFactory<GetConferenceSqlUsecase>(
       () => GetConferenceSqlUsecase(instance()),
     );
@@ -342,9 +334,6 @@ Future<void> initSyncModule() async {
     );
     instance.registerFactory<GetConferenceInfoSqlUsecase>(
       () => GetConferenceInfoSqlUsecase(instance()),
-    );
-    instance.registerFactory<CheckPasswordUsecase>(
-      () => CheckPasswordUsecase(instance()),
     );
     instance.registerFactory<GetDoctorsSqlUsecase>(
       () => GetDoctorsSqlUsecase(instance()),
@@ -365,17 +354,16 @@ Future<void> initSyncModule() async {
       () => UpdateDoneUsecase(instance()),
     );
     if (!GetIt.I.isRegistered<GetDoctorsSqlUsecase>()) {
-
       instance.registerFactory<GetDoctorsSqlUsecase>(
-            () => GetDoctorsSqlUsecase(instance()),
+        () => GetDoctorsSqlUsecase(instance()),
       );
     }
 
     instance.registerFactory<GetSpecSqlUsecase>(
-          () => GetSpecSqlUsecase(instance()),
+      () => GetSpecSqlUsecase(instance()),
     );
     instance.registerFactory<GetUsersBySpecIdNameSqlUsecase>(
-          () => GetUsersBySpecIdNameSqlUsecase(instance()),
+      () => GetUsersBySpecIdNameSqlUsecase(instance()),
     );
     instance.registerFactory<SyncBloc>(
       () => SyncBloc(
@@ -392,10 +380,6 @@ Future<void> initSyncModule() async {
         instance(),
         instance(),
         instance(),
-        instance(),
-        instance(),
-        instance(),
-       instance(),
       ),
     );
   }
@@ -417,11 +401,11 @@ Future<void> initSyncOfflineModule() async {
     );
 
     instance.registerFactory<GetUserAddModifySqlUsecase>(
-          () => GetUserAddModifySqlUsecase(instance()),
+      () => GetUserAddModifySqlUsecase(instance()),
     );
 
     instance.registerFactory<UpdatedSyncUsersAnswersUsecase>(
-          () => UpdatedSyncUsersAnswersUsecase(instance()),
+      () => UpdatedSyncUsersAnswersUsecase(instance()),
     );
     instance.registerFactory<AddServerIdUserSqlUsecase>(
       () => AddServerIdUserSqlUsecase(instance()),
@@ -435,12 +419,17 @@ Future<void> initSyncOfflineModule() async {
     instance.registerFactory<AddSyncDataSqlUsecase>(
       () => AddSyncDataSqlUsecase(instance()),
     );
-    if (!GetIt.I.isRegistered<DeleteDataSqlUsecase>()) {
+    instance.registerFactory<CheckPasswordUsecase>(
+      () => CheckPasswordUsecase(instance()),
+    );
+
     instance.registerFactory<DeleteDataSqlUsecase>(
-          () => DeleteDataSqlUsecase(instance()),
-    );}
+      () => DeleteDataSqlUsecase(instance()),
+    );
+
     instance.registerFactory<OfflineSyncBloc>(
       () => OfflineSyncBloc(
+        instance(),
         instance(),
         instance(),
         instance(),

@@ -97,3 +97,7 @@ final class InsertSucState extends OfflineSyncState {
 final class SyncLoadingState extends OfflineSyncState {
   const SyncLoadingState();
 }
+final class CheckoutState extends OfflineSyncState {
+  CheckoutState();
+  List<Object?> get props => [];
+}

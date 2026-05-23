@@ -23,37 +23,16 @@ final class InputUserSqlEvent extends SyncEvent {
   List<Object?> get props => [userSqlModel];
 }
 
-final class DeleteDataEvent extends SyncEvent {
-  const DeleteDataEvent();
-}
 
-final class DeleteUserEvent extends SyncEvent {
-  const DeleteUserEvent();
-}
 
-final class UploadDataEvent extends SyncEvent {
-  final List<UserSqlModel> userRequest;
-  final int conference_id;
-  final int isActive;
-  const UploadDataEvent(this.userRequest, this.conference_id, this.isActive);
 
-  @override
-  List<Object?> get props => [userRequest, conference_id, isActive];
-}
 
 final class GetInfoConferenceEvent extends SyncEvent {
   @override
   List<Object?> get props => [];
 }
 
-final class GetDataEvent extends SyncEvent {
-  final int conferenceId;
-  final int isActive;
-  const GetDataEvent(this.conferenceId, this.isActive);
 
-  @override
-  List<Object?> get props => [conferenceId, isActive];
-}
 
 final class GetConferenceAsyncEvent extends SyncEvent {
   const GetConferenceAsyncEvent();
@@ -63,9 +42,6 @@ final class GetSurveyAsyncEvent extends SyncEvent {
   const GetSurveyAsyncEvent();
 }
 
-final class CreateUserAnswerEvent extends SyncEvent {
-  const CreateUserAnswerEvent();
-}
 
 // ===== Survey Flow events (professional) =====
 /// fetch questions from server/db
@@ -112,13 +88,7 @@ final class SurveySubmitEvent extends SyncEvent {
   const SurveySubmitEvent();
 }
 
-class CheckEvent extends SyncEvent {
-  final String password;
-  CheckEvent(this.password);
 
-  @override
-  List<Object?> get props => [password];
-}
 class EditUserEvent extends SyncEvent {
   final UserModel user;
   EditUserEvent(this.user);

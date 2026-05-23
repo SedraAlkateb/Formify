@@ -37,10 +37,7 @@ final class DataLoadingState extends SyncState {
   const DataLoadingState();
 }
 
-final class DeleteDataState extends SyncState {
-  final int isActive;
-  const DeleteDataState(this.isActive);
-}
+
 
 final class DeleteUserState extends SyncState {
   const DeleteUserState();
@@ -54,15 +51,7 @@ final class UploadDataState extends SyncState {
   List<Object?> get props => [isUpload];
 }
 
-final class GetDataState extends SyncState {
-  final int conference_id;
-  final int isActive;
-  final List<UserSqlModel> users;
-  const GetDataState(this.users, this.conference_id, this.isActive);
 
-  @override
-  List<Object?> get props => [users, conference_id];
-}
 
 final class AsyncConferenceErrorState extends SyncState {
   final Failure failure;
@@ -244,10 +233,7 @@ final class GetInfoConferenceErrorState extends SyncState {
   List<Object?> get props => [failure];
 }
 
-final class CheckoutState extends SyncState {
-  CheckoutState();
-  List<Object?> get props => [];
-}
+
 
 final class InsertDoctorErrorState extends SyncState {
   final Failure failure;
