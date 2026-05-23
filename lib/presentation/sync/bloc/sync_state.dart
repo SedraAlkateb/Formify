@@ -20,7 +20,11 @@ class DoctorsState extends SyncState {
 
   const DoctorsState(this.data, {this.selectedDoctor});
 }
+class SpecState extends SyncState {
+  final List<SpecModel> data;
 
+  const SpecState(this.data);
+}
 final class DataErrorState extends SyncState {
   final Failure failure;
   const DataErrorState({required this.failure});
@@ -344,4 +348,12 @@ final class DoctorsAttendanceErrorState extends SyncState {
 
   @override
   List<Object?> get props => [failure];
+}
+class UserFilterState extends SyncState {
+  final List<UserModel> data;
+
+  const UserFilterState(this.data);
+
+  @override
+  List<Object?> get props => [data];
 }

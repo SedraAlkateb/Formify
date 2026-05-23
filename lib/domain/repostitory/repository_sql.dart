@@ -26,5 +26,7 @@ abstract class RepositorySql {
   Future<Either<Failure,SyncUsersRequest>>getConferenceAndAnswers(int conferenceId) ;
   Future<Either<Failure,void>>deleteSyncData() ;
   Future<Either<Failure,void>>addSyncData(SaveDataBaseModel baseData);
+  Future<Either<Failure,List<SpecModel>>>getSpec();
+  Future<Either<Failure,List<UserModel>>>getUsersBySpecIdAndName(int specId, String name);
 
 }

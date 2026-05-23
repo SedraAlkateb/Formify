@@ -3,6 +3,7 @@ import 'package:formify/data/network/app_sql_api.dart';
 import 'package:formify/data/network/error_handler.dart';
 import 'package:formify/data/network/failure.dart';
 import 'package:formify/domain/models/models.dart';
+import 'package:formify/domain/models/user_type.dart';
 import 'package:formify/domain/repostitory/repository_sql.dart';
 
 class RepositroySqlImp extends RepositorySql {
@@ -266,4 +267,32 @@ Future<Either<Failure, List<UserModel>>> getAllImportantDoctorNotCome(List<UserM
       return Left(failure);
     }
   }
+
+  @override
+  Future<Either<Failure, List<SpecModel>>> getSpec() async {
+    try {
+      final response = await _databaseHelper.getSpec();
+      return Right(response);
+    } catch (e) {
+      Failure failure = ErrorHandler
+          .handle(e)
+          .failure;
+      return Left(failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure,List<UserModel>>>getUsersBySpecIdAndName(int specId, String name) async {
+    try {
+      final response = await _databaseHelper.getUsersBySpecIdAndName(specId,name);
+
+      return Right(response);
+    } catch (e) {
+      Failure failure = ErrorHandler
+          .handle(e)
+          .failure;
+      return Left(failure);
+    }
+  }
+
 }

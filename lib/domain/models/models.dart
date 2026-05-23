@@ -341,6 +341,7 @@ class UserInputModel {
 
 class UserModel {
   int? id;
+  int? server_user_id;
   String fullName;
   String? email;
   String phone;
@@ -364,6 +365,7 @@ class UserModel {
     this.userType,
     this.notes, {
     this.id,
+        this.server_user_id,
     this.isUpload = 0,
     this.is_local_new = 0,
     this.is_modified = 0,
@@ -373,6 +375,7 @@ class UserModel {
   // وظيفة لإنشاء نسخة معدلة من الكائن
   UserModel copyWith({
     int? id,
+    int? server_user_id,
     String? fullName,
     String? email,
     String? phone,
@@ -392,6 +395,7 @@ class UserModel {
       notes ?? this.notes,
       isUpload: isUpload ?? this.isUpload,
       id: id ?? this.id,
+      server_user_id:server_user_id??this.server_user_id,
       spec: spec ?? this.spec,
       is_local_new: is_local_new,
       is_modified: is_modified,
@@ -442,6 +446,7 @@ class UserModel {
   Map<String, dynamic> toJsonSql() {
     return {
       'id': id,
+      'server_user_id':server_user_id,
       'fullname': fullName,
       'email': email,
       'phone': phone,
@@ -454,10 +459,26 @@ class UserModel {
       'specId': spec?.id,
     };
   }
-
+  Map<String, dynamic> toJsonSqlForFirst() {
+    return {
+      'id': id,
+      'server_user_id':id,
+      'fullname': fullName,
+      'email': email,
+      'phone': phone,
+      'address': address,
+      'type_id': userType.id,
+      'notes': notes,
+      'isUpload': 1,
+      'is_local_new': 0,
+      'is_modified': 0,
+      'specId': spec?.id,
+    };
+  }
   factory UserModel.fromMapSql(Map<String, dynamic> map) {
     return UserModel(
       id: map['id'],
+      server_user_id:map['server_user_id'],
       map['fullname'],
       map['email'],
       map['phone'],
@@ -467,10 +488,18 @@ class UserModel {
       spec: map['spec'],
     );
   }
-
   factory UserModel.fromMap(Map<String, dynamic> map) {
+    SpecModel? associatedSpec;
+    if (map['spec_id_joined'] != null && map['spec_title_joined'] != null) {
+      associatedSpec = SpecModel(
+        map['spec_id_joined'] as int,
+        map['spec_title_joined'] as String,
+      );
+    }
+
     return UserModel(
       id: map['id'],
+      server_user_id:map['server_user_id'],
       map['fullname'],
       map['email'],
       map['phone'],
@@ -480,7 +509,8 @@ class UserModel {
       isUpload: map['isUpload'] ?? 0,
       is_modified: map['is_modified'],
       is_local_new: map['is_local_new'],
-      spec: map['spec'],
+      // إسناد الاختصاص الذي قمنا ببنائه، أو تركه كما هو إذا لم يتوفر
+      spec: associatedSpec ?? (map['spec'] is SpecModel ? map['spec'] : null),
     );
   }
 }
@@ -775,63 +805,49 @@ class SurveyConferenceAsyncModel {
 }
 
 class UserSqlModel {
-  String fullName;
-  String? email;
-  String phone;
-  String? address;
-  String? notes;
-  UserType userType;
+ UserModel user;
   List<AnswerUserModel> answerModel;
-  int isUpload; // قيمة صحيحة ثابتة
-  int? userId;
+
   UserSqlModel({
-    required this.fullName,
-    this.userId,
-    this.email,
-    required this.phone,
-    this.address,
-    this.notes,
-    required this.userType,
+    required this.user,
     required this.answerModel,
-    this.isUpload = 0, // القيمة المبدأية 0
+
   });
 
   Map<String, dynamic> toJson() {
     return {
-      'fullname': fullName,
-      'email': email,
-      'phone': phone,
-      'address': address,
-      'notes': notes,
-      'type_id': userType.id,
+      'fullname': user.fullName,
+      'email': user.email,
+      'phone': user.phone,
+      'address': user.address,
+      'type_id': user.userType.id,
+      'notes': user.notes,
+      'isUpload': user.isUpload,
+      'is_local_new': user.is_local_new,
+      'is_modified': user.is_modified,
+      'specId': user.spec?.id,
       'answers': answerModel.map((user) => user.toJson()).toList(),
-      'isUpload': isUpload,
-      'user_id': userId ?? -1,
     };
   }
 
   Map<String, dynamic> toJsonSql() {
     return {
-      'fullname': fullName,
-      'email': email,
-      'phone': phone,
-      'address': address,
-      'notes': notes,
-      'type_id': userType.id,
-      'isUpload': isUpload,
-      'user_id': userId,
+      'fullname': user.fullName,
+      'email': user.email,
+      'phone': user.phone,
+      'address': user.address,
+      'type_id': user.userType.id,
+      'notes': user.notes,
+      'isUpload': user.isUpload,
+      'is_local_new': user.is_local_new,
+      'is_modified': user.is_modified,
+      'specId': user.spec?.id,
     };
   }
 
   factory UserSqlModel.fromMap(Map<String, dynamic> map) {
     return UserSqlModel(
-      fullName: map['fullname'],
-      email: map['email'],
-      phone: map['phone'],
-      address: map['address'],
-      notes: map['notes'],
-      userType: userTypeFromId(map['type_id']),
-      isUpload: map['isUpload'] ?? 0,
+      user: UserModel.fromMap(map),
       answerModel: _mapAnswers(
         map['answer_id'],
         map['content'],

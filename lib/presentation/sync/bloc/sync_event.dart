@@ -144,7 +144,7 @@ class InsertEvent extends SyncEvent {
 }
 
 /// البحث في قائمة الأطباء (Memory-based search)
-class SearchDoctorEvent extends DoctorEvent {
+class SearchDoctorEvent extends SyncEvent {
   final String query;
   const SearchDoctorEvent(this.query);
 
@@ -184,4 +184,19 @@ class UpdateDoneDoctorEvent extends SyncEvent {
   const UpdateDoneDoctorEvent({required this.doctorMockItem, required this.doctors
     //,required this.doctors
   });
+}
+/// جلب قائمة الأطباء من قاعدة البيانات
+class SpecEvent extends SyncEvent {
+  const SpecEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+class FilterDoctorBySpecAndNameEvent extends SyncEvent {
+ final String doctorName;
+ final int spId;
+  const FilterDoctorBySpecAndNameEvent(this.doctorName,this.spId);
+
+  @override
+  List<Object?> get props => [];
 }

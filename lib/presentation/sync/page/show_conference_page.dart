@@ -28,6 +28,8 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
   void initState() {
     BlocProvider.of<SyncBloc>(context).add(GetConferenceAsyncEvent());
     BlocProvider.of<SyncBloc>(context).add(GetSurveyAsyncEvent());
+    BlocProvider.of<SyncBloc>(context).add(SpecEvent());
+    BlocProvider.of<SyncBloc>(context).add(DoctorEvent());
 
     super.initState();
   }

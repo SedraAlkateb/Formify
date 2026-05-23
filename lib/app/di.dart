@@ -45,11 +45,13 @@ import 'package:formify/domain/usecase/get_conference_info_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_doctors_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_question_answers_usecase.dart';
+import 'package:formify/domain/usecase/get_spec_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_survey_question_id_usecase.dart';
 import 'package:formify/domain/usecase/get_surveys_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_user_add_modify_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_user_answer_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_user_answers_survey_usecase.dart';
+import 'package:formify/domain/usecase/get_users_by_specId_name_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_users_conference_usecase.dart';
 import 'package:formify/domain/usecase/insert_all_user_app_usecase.dart';
 import 'package:formify/domain/usecase/insert_doctor_sql_usecase.dart';
@@ -313,15 +315,16 @@ Future<void> initSurveyModule() async {
 
 Future<void> initSyncModule() async {
   if (!GetIt.I.isRegistered<GetUserAnswerSqlUsecase>()) {
-
-    instance.registerFactory<SynchronizeUsersAnswersUsecase>(
-      () => SynchronizeUsersAnswersUsecase(instance()),
+    instance.registerFactory<GetUserAnswerSqlUsecase>(
+          () => GetUserAnswerSqlUsecase(instance()),
     );
-    if (!GetIt.I.isRegistered<DeleteDataSqlUsecase>()) {
+    // instance.registerFactory<SynchronizeUsersAnswersUsecase>(
+    //   () => SynchronizeUsersAnswersUsecase(instance()),
+    // );
       instance.registerFactory<DeleteDataSqlUsecase>(
         () => DeleteDataSqlUsecase(instance()),
       );
-    }
+
     instance.registerFactory<DeleteUserSqlUsecase>(
       () => DeleteUserSqlUsecase(instance()),
     );
@@ -361,7 +364,19 @@ Future<void> initSyncModule() async {
     instance.registerFactory<UpdateDoneUsecase>(
       () => UpdateDoneUsecase(instance()),
     );
+    if (!GetIt.I.isRegistered<GetDoctorsSqlUsecase>()) {
 
+      instance.registerFactory<GetDoctorsSqlUsecase>(
+            () => GetDoctorsSqlUsecase(instance()),
+      );
+    }
+
+    instance.registerFactory<GetSpecSqlUsecase>(
+          () => GetSpecSqlUsecase(instance()),
+    );
+    instance.registerFactory<GetUsersBySpecIdNameSqlUsecase>(
+          () => GetUsersBySpecIdNameSqlUsecase(instance()),
+    );
     instance.registerFactory<SyncBloc>(
       () => SyncBloc(
         instance(),
@@ -380,6 +395,7 @@ Future<void> initSyncModule() async {
         instance(),
         instance(),
         instance(),
+       instance(),
       ),
     );
   }

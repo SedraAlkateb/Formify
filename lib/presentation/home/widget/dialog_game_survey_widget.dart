@@ -85,17 +85,13 @@ Future<void> showDialogGameSurveyWidget({
                   onPressed: value == null
                       ? null
                       : () async {
-                          // 1. حفظ التفضيلات أولاً
                           await instance<AppPreferences>().setGameORSurvey(
                             value,
                           );
-
-                          // 2. إغلاق الحوار
                           if (dialogContext.mounted) {
                             Navigator.of(dialogContext).pop();
                           }
 
-                          // 3. الانتقال للصفحة التالية باستخدام اصل الـ context
                           if (context.mounted) {
                             Navigator.pushNamedAndRemoveUntil(
                               context,
@@ -103,10 +99,6 @@ Future<void> showDialogGameSurveyWidget({
                               (route) => false,
                             );
                           }
-
-                          // ملاحظة: لا تستدعي selected.dispose() هنا لأنها قد تسبب خطأ
-                          // إذا حاول الـ Builder الوصول إليها أثناء الإغلاق.
-                          // الفلاتر سيتكفل بها أو يفضل تركها للـ Garbage Collector في هذه الحالة.
                         },
                   child: const Text("عرض"),
                 ),

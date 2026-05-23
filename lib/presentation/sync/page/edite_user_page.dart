@@ -140,6 +140,7 @@ class _EditUserPageState extends State<EditUserPage>
                               children: [
                                 DoctorAutocompleteField(
                                   allDoctors: context.read<SyncBloc>().doctor,
+                                  lable: "الاسم الكامل",
                                   controller: fullNameController,
                                   focusNode:
                                   _doctorFocusNode, // تمريره هنا يحل المشكلة
