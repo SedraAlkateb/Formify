@@ -25,6 +25,7 @@ class _EditUserPageState extends State<EditUserPage>
     with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final FocusNode _doctorFocusNode = FocusNode();
+
   // وحدات التحكم بالنصوص
   late final TextEditingController fullNameController;
   late final TextEditingController emailController;
@@ -34,6 +35,10 @@ class _EditUserPageState extends State<EditUserPage>
 
   late final AnimationController _controller;
   late UserType _selectedUserType;
+  SpecModel? _currentSpecialty;
+
+  // جلب القائمة من الـ Bloc مباشرة
+  List<SpecModel> get specialties => context.read<SyncBloc>().spec;
 
   @override
   void initState() {
@@ -48,6 +53,15 @@ class _EditUserPageState extends State<EditUserPage>
     // 2. تهيئة نوع المستخدم
     _selectedUserType = widget.userModel.userType;
 
+    // ✨ التعديل الذكي هنا:
+    // بدلاً من أخذ الكائن مباشرة، نبحث عن الكائن المطابق له داخل قائمة الـ Bloc بالاعتماد على الـ id
+    if (widget.userModel.spec != null) {
+      final matches = specialties.where((s) => s.id == widget.userModel.spec!.id).toList();
+      if (matches.isNotEmpty) {
+        _currentSpecialty = matches.first; // نأخذ نفس مرجع الذاكرة التابع للـ Bloc
+      }
+    }
+
     // 3. تهيئة الأنيميشن
     _controller = AnimationController(
       vsync: this,
@@ -55,23 +69,27 @@ class _EditUserPageState extends State<EditUserPage>
     );
     _controller.forward();
   }
+
   void _submit() {
     if (_formKey.currentState!.validate()) {
       final user = UserModel(
-     id:   widget.userModel.id,
-         fullNameController.text,
-         emailController.text,
+        id: widget.userModel.id,
+        fullNameController.text,
+        emailController.text,
         phoneController.text,
         addressController.text,
-       userTypeFromId(_selectedUserType.id),
-         noteController.text,
-          isUpload: 0,
-
+        userTypeFromId(_selectedUserType.id),
+        noteController.text,
+        isUpload: 0,
+        spec: _currentSpecialty,
+        is_modified: 1,
+        is_local_new: 0,
+        server_user_id: widget.userModel.id,
       );
-
       BlocProvider.of<SyncBloc>(context).add(EditUserEvent(user));
     }
   }
+
   @override
   void dispose() {
     fullNameController.dispose();
@@ -80,16 +98,19 @@ class _EditUserPageState extends State<EditUserPage>
     addressController.dispose();
     noteController.dispose();
     _controller.dispose();
-    _doctorFocusNode.dispose(); // تدمير الـ node عند الخروج
-
+    _doctorFocusNode.dispose();
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
+    // ✨ حماية احترازية إضافية:
+    // نتأكد أن الكائن المختار موجود بالفعل داخل القائمة البرمجية لمنع الكراش نهائياً
+    final bool isCurrentSpecInList = specialties.any((element) => element.id == _currentSpecialty?.id);
+    final SpecModel? safeValue = isCurrentSpecInList ? _currentSpecialty : null;
+
     return Scaffold(
-      backgroundColor: ColorManager.primary, // الحفاظ على نفس هوية صفحة الإدخال
+      backgroundColor: ColorManager.primary,
       appBar: AppBar(
         title: const Text("تعديل البيانات"),
         elevation: 0,
@@ -104,7 +125,7 @@ class _EditUserPageState extends State<EditUserPage>
                 builder: (_, c) {
                   return Container(
                     width: double.infinity,
-                    margin: EdgeInsets.all(25),
+                    margin: const EdgeInsets.all(25),
                     decoration: BoxDecoration(
                       color: ColorManager.white,
                       borderRadius: BorderRadius.circular(25),
@@ -122,7 +143,6 @@ class _EditUserPageState extends State<EditUserPage>
                         key: _formKey,
                         child: Column(
                           children: [
-                            // أيقونة المستخدم العلوية
                             buildAnimatedField(
                               controller: _controller,
                               index: 1,
@@ -136,14 +156,13 @@ class _EditUserPageState extends State<EditUserPage>
                             const SizedBox(height: 20),
                             ListView(
                               shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
+                              physics: const NeverScrollableScrollPhysics(),
                               children: [
                                 DoctorAutocompleteField(
                                   allDoctors: context.read<SyncBloc>().doctor,
                                   lable: "الاسم الكامل",
                                   controller: fullNameController,
-                                  focusNode:
-                                  _doctorFocusNode, // تمريره هنا يحل المشكلة
+                                  focusNode: _doctorFocusNode,
                                   index: 4,
                                   animationController: _controller,
                                   buildAnimatedField: buildAnimatedField,
@@ -152,15 +171,12 @@ class _EditUserPageState extends State<EditUserPage>
                                       SelectDoctorEvent(doctor),
                                     );
                                     fullNameController.text = doctor.fullName;
-                                    addressController.text = doctor.address??"";
-                                    noteController.text = doctor.notes??"";
-                                    _doctorFocusNode
-                                        .unfocus(); // إغلاق الكيبورد بعد الاختيار
+                                    addressController.text = doctor.address ?? "";
+                                    noteController.text = doctor.notes ?? "";
+                                    _doctorFocusNode.unfocus();
                                   },
                                 ),
 
-                                // نصيحة إضافية لحل الـ Overflow:
-                                // في الـ Container الأساسي، اجعلي الارتفاع هكذا:
                                 buildAnimatedField(
                                   controller: _controller,
                                   index: 5,
@@ -171,17 +187,13 @@ class _EditUserPageState extends State<EditUserPage>
                                     icon: Icons.phone_outlined,
                                     keyboardType: TextInputType.phone,
                                     validator: (v) {
-                                      // 1. إذا كان الحقل فارغاً تماماً أو يحتوي مسافات فقط
                                       if (v == null || v.trim().isEmpty) {
-                                        return null; // مقبول لأنه ليس إجبارياً
+                                        return null;
                                       }
-
-                                      // 2. إذا كتب المستخدم رقماً، نتحقق من الطول
                                       if (v.trim().length < 8) {
                                         return 'الرقم قصير جداً، يجب أن يكون 8 أرقام على الأقل';
                                       }
-
-                                      return null; // مقبول إذا تجاوز الشرط
+                                      return null;
                                     },
                                   ),
                                 ),
@@ -230,8 +242,7 @@ class _EditUserPageState extends State<EditUserPage>
                                     value: _selectedUserType,
                                     onChanged: (value) {
                                       setState(() {
-                                        _selectedUserType =
-                                            value ?? UserType.other;
+                                        _selectedUserType = value ?? UserType.other;
                                       });
                                     },
                                     validator: (value) {
@@ -242,28 +253,58 @@ class _EditUserPageState extends State<EditUserPage>
                                     },
                                   ),
                                 ),
+                                const SizedBox(height: 20),
 
-                                SizedBox(height: AppSize.s20),
+                                // ✨ حقل الاختصاص الطبي بعد الإصلاح الكامل والحماية
+                                DropdownButtonFormField<SpecModel>(
+                                  decoration: InputDecoration(
+                                    labelText: "اختر الاختصاص الطبي",
+                                    prefixIcon: const Icon(Icons.biotech_outlined),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 12,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    filled: true,
+                                    fillColor: ColorManager.white,
+                                  ),
+                                  // استخدام المعامل value الصحيح بدلاً من initialValue المرفوض
+                                  value: safeValue,
+                                  hint: const Text("كل الاختصاصات"),
+                                  items: specialties.map((specialty) {
+                                    return DropdownMenuItem<SpecModel>(
+                                      value: specialty,
+                                      child: Text(
+                                        specialty.title,
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                    );
+                                  }).toList(),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _currentSpecialty = value;
+                                    });
+                                  },
+                                ),
+                                const SizedBox(height: 20),
                                 BlocConsumer<SyncBloc, SyncState>(
                                   listener: (context, state) {
                                     if (state is EditUserState) {
                                       Navigator.pop(context);
-                                      BlocProvider.of<SyncBloc>(
-                                        context,
-                                      ).add(GetAllUserEvent());
-                                    } else if (state
-                                    is EditUserErrorState) {
-                                error(context, state.failure.massage, state.failure.code);
+                                      BlocProvider.of<SyncBloc>(context).add(GetAllUserEvent());
+                                    } else if (state is EditUserErrorState) {
+                                      error(context, state.failure.massage, state.failure.code);
                                     }
                                   },
                                   builder: (context, state) {
-
-                                    return    buildAnimatedField(
+                                    return buildAnimatedField(
                                       controller: _controller,
                                       index: 7,
                                       child: bottomAnimation(
                                         context,
-                                        widget.userModel.isUpload==1?null:   _submit,
+                                        widget.userModel.isUpload == 1 ? null : _submit,
                                         const Row(
                                           mainAxisAlignment: MainAxisAlignment.center,
                                           children: [
@@ -276,10 +317,9 @@ class _EditUserPageState extends State<EditUserPage>
                                     );
                                   },
                                 ),
-                                SizedBox(height: AppSize.s20),
+                                const SizedBox(height: 20),
                               ],
                             ),
-
                           ],
                         ),
                       ),

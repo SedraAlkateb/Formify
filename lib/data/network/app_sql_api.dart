@@ -252,9 +252,7 @@ class AppSqlApi extends AppSqlApiAbs {
   Future<void> deleteData() async {
     final db = await databaseHelper.database;
     final tables = [
-      'all_users',
       'conference',
-      'spec',
       'survey',
       'questions',
       'answers',
@@ -483,7 +481,7 @@ class AppSqlApi extends AppSqlApiAbs {
       });
 
       // 4️⃣ إعادة الكائن المطلوب محقوناً بالقوائم الصحيحة
-      return AddAndModifyUsersRequest(modifyUsersList, newUsersList);
+      return AddAndModifyUsersRequest(modifyUsers: modifyUsersList, newUsers: newUsersList);
 
     } catch (e, stackTrace) {
       // التقاط الخطأ وطباعته في الـ Console لمعرفته وحله أثناء التطوير
@@ -491,7 +489,7 @@ class AppSqlApi extends AppSqlApiAbs {
       print("StackTrace: $stackTrace");
 
       // إعادة كائن يحتوي على قوائم فارغة بدلاً من تدمير التطبيق (Crash)
-      return AddAndModifyUsersRequest(<UserModel>[], <UserModel>[]);
+      return AddAndModifyUsersRequest(modifyUsers:<UserModel>[],newUsers: <UserModel>[]);
     }
   }
 
@@ -590,16 +588,12 @@ class AppSqlApi extends AppSqlApiAbs {
     });
   }
 
-
   @override
   Future<void> insertUserWithAnswer(UserSqlModel user) async {
     // 📥 [المدخلات - INPUT]: طباعة البيانات القادمة إلى التابع قبل المعالجة
-    print("================ 📥 بداية عملية الحفظ 📥 ================");
+    print("================ 📥 بداية عملية الحفظ (المفصولة والمحسنة) 📥 ================");
     print("ID المحلي الحالي: ${user.user.id}");
-    print("ID المحلي الحالي: ${user.user.server_user_id}");
     print("اسم المستخدم/الطبيب: ${user.user.fullName}");
-    print("بيانات الـ SQL المرسلة لجدول المستخدمين: ${user.toJsonSql()}");
-    print("عدد الإجابات المرتبطة المراد حفظها: ${user.answerModel.length}");
     print("-------------------------------------------------------");
 
     // 1️⃣ الحصول على نسخة من قاعدة البيانات المحلية
@@ -609,53 +603,63 @@ class AppSqlApi extends AppSqlApiAbs {
     await db.transaction((txn) async {
       int userId;
 
-      // 3️⃣ فحص ما إذا كان المستخدم يمتلك معرفاً محلياً (أي حالة تعديل لطبيب موجود)
+      // ================= الجزء الأول: معالجة بيانات المستخدم والإجابات القديمة =================
       if (user.user.id != null) {
-        // أ) تثبيت المعرف الحالي لاستخدامه لاحقاً مع الإجابات
+        // 📑 حالة تعديل مستخدم موجود مسبقاً
         userId = user.user.id!;
 
-        // ب) تحديث السجل الحالي للمستخدم بالبيانات والأعلام الجديدة بناءً على الـ id
+        // أ) تحديث بيانات المستخدم في جدول 'all_users'
         int updatedRowsCount = await txn.update(
           'all_users',
           user.toJsonSql(),
           where: 'id = ?',
           whereArgs: [userId],
         );
+        print("🔄 [تعديل]: تم تحديث بيانات المستخدم في 'all_users'. ID: $userId (السجلات المتأثرة: $updatedRowsCount)");
 
-        // 📤 [المخرجات - OUTPUT]: طباعة نتيجة التحديث
-        print("🔄 [تعديل]: تم تحديث بيانات المستخدم بنجاح في جدول 'all_users'. ID المحلي هو: $userId (عدد السجلات المتأثرة: $updatedRowsCount)");
-
-        // ج) مسح الإجابات القديمة لهذا المستخدم لمنع تكرارها قبل إدخل الجديدة
+        // ب) مسح الإجابات القديمة لهذا المستخدم لمنع تكرارها
         int deletedAnswersCount = await txn.delete(
           'users_answers',
           where: 'user_id = ?',
           whereArgs: [userId],
         );
-        print("🗑️ [تنظيف]: تم مسح ($deletedAnswersCount) من الإجابات القديمة للمستخدم $userId لمنع التكرار.");
+        print("🗑️ [تنظيف]: تم مسح ($deletedAnswersCount) من الإجابات القديمة للمستخدم $userId.");
 
       } else {
-        // 4️⃣ حالة مستخدم جديد كلياً (user.user.id == null)
-        // نقوم بعملية إدراج جديدة، وتوليد معرف محلي تلقائي (userId) من قاعدة البيانات
+        // 📑 حالة مستخدم جديد كلياً
+        // أ) نقوم بإدراج المستخدم الجديد وتوليد معرف محلي (userId) تلقائياً
         userId = await txn.insert(
           'all_users',
           user.toJsonSql(),
         );
-
-        // 📤 [المخرجات - OUTPUT]: طباعة نتيجة الإدراج الجديد والمعرف المتولد
-        print("🆕 [إضافة]: تم إدراج مستخدم جديد كلياً في جدول 'all_users'. تم توليد ID محلي جديد تلقائياً وهو: $userId");
+        print("🆕 [إضافة]: تم إدراج مستخدم جديد في جدول 'all_users'. تم توليد ID محلي جديد: $userId");
       }
 
-      // 5️⃣ الحفاظ على منطق حفظ الإجابات كما هو دون تغيير
+      // ================= الجزء الثاني: خطوة المؤتمر الموحدة (مرة واحدة لكافة الحالات) =================
+      // 🔍 نقوم بفحص وجود المستخدم في جدول user_conference مرة واحدة فقط هنا، لأن userId أصبح جاهزاً ومضموناً من الخطوة السابقة
+      final List<Map<String, dynamic>> existingConference = await txn.query(
+        'user_conference',
+        where: 'user_id = ?',
+        whereArgs: [userId],
+      );
+
+      // ✨ إذا لم يجد السجل (المصفوفة فارغة) يقوم بالإدخال، وإلا يتخطى العملية تماماً في حال وجوده مسبقاً
+      if (existingConference.isEmpty) {
+        final Map<String, dynamic> conferenceRow = {
+          'user_id': userId,
+          'isUpload': 0 // 0 تعني ارتباط محلي بحاجة للمزامنة
+        };
+        await txn.insert('user_conference', conferenceRow);
+        print("🎯 [خطوة المؤتمر الموحدة]: لم يكن مسجلاً، تم إدراجه الآن بنجاح للمعرّف: $userId");
+      } else {
+        print("⏭️ [خطوة المؤتمر الموحدة]: المستخدم مسجّل مسبقاً في المؤتمر، تم التخطي بدون تعديل.");
+      }
+
+      // ================= الجزء الثالث: حفظ الإجابات الجديدة =================
       print("📝 البدء في حفظ الإجابات في جدول 'users_answers' للمعرف ($userId):");
       for (var answer in user.answerModel) {
         final Map<String, dynamic> answerData = answer.toJsonSql(userId);
-
-        await txn.insert(
-          'users_answers',
-          answerData,
-        );
-
-        // 📤 [المخرجات - OUTPUT]: طباعة تفاصيل كل إجابة يتم إدخالها
+        await txn.insert('users_answers', answerData);
         print("   🔹 تم إدراج إجابة مرتبطة -> البيانات: $answerData");
       }
     });
@@ -712,12 +716,13 @@ class AppSqlApi extends AppSqlApiAbs {
 
   /// جلب كحل المستخدمين الخاصين بالكونفيرنس
   @override
-  /// جلب كل المستخدمين المسجلين في مؤتمر معين بناءً على الـ conferenceId
-  @override
-  Future<List<UserModel>> getUserConference(int conferenceId) async {
+  /// تابع جلب جميع المستخدمين المشاركين في المؤتمر الحالي مع جلب اختصاصاتهم الطبية
+  Future<List<UserModel>> getUserConference(int conf) async {
+    // 1️⃣ الحصول على نسخة من قاعدة البيانات المحلية
     final db = await databaseHelper.database;
 
-    // نقوم بعمل JOIN وتصفية النتائج باستخدام حقل الـ conferenceId
+    // 2️⃣ إجراء عملية الدمج (JOIN) لجلب المستخدمين مع تفاصيل اختصاصاتهم الطبية
+    // قمنا بإضافة LEFT JOIN مع جدول spec للتأكد من جلب اسم الاختصاص حتى لو لم يكن للطبيب اختصاص محدد
     final List<Map<String, dynamic>> maps = await db.rawQuery('''
     SELECT 
       u.id, 
@@ -728,21 +733,25 @@ class AppSqlApi extends AppSqlApiAbs {
       u.address, 
       u.type_id, 
       u.notes, 
-      u.specId,
       u.is_local_new,
       u.is_modified,
-      u.isUpload
+      u.isUpload,
+      -- ✨ جلب بيانات الاختصاص وتسميتها لتطابق دالة UserModel.fromMap
+      s.id AS spec_id_joined,
+      s.title AS spec_title_joined
     FROM user_conference uc
     INNER JOIN all_users u ON uc.user_id = u.id
-    WHERE uc.conference_id = ?
-  ''', [conferenceId]);
+    LEFT JOIN spec s ON u.specId = s.id
+  ''');
 
-    // تحويل البيانات المسترجعة إلى قائمة من UserModel
+    print("📊 [قاعدة البيانات]: تم جلب (${maps.length}) مستخدمين مرتبطيين بالمؤتمر مع اختصاصاتهم الطبية.");
+
+    // 3️⃣ تحويل البيانات المسترجعة (قائمة الخرائط Maps) إلى قائمة من الموديلات UserModel
+    // الدالة المصنعية fromMap ستتلقى الآن spec_id_joined و spec_title_joined وتبني كائن SpecModel تلقائياً
     return List.generate(maps.length, (i) {
       return UserModel.fromMap(maps[i]);
     });
   }
-
   @override
   Future<void> updateUser(UserModel user) async {
     final db = await databaseHelper.database;
@@ -844,41 +853,60 @@ class AppSqlApi extends AppSqlApiAbs {
 
   /// تحديث الـ server_user_id للمستخدمين الجدد بناءً على الـ localId الراجع من السيرفر
   @override
-  Future<void>addServerIdToUser(List<AddModifyUser>syncedUsers) async {
-    // إذا كانت القائمة فارغة، ننهي الدالة فوراً لتوفير الموارد
-    if (syncedUsers.isEmpty) return;
+  Future<void> addServerIdToUser(List<AddModifyUser> syncedUsers) async {
+    if (syncedUsers.isEmpty) {
+      print("⏭️ [المزامنة]: قائمة المستخدمين القادمين من السيرفر فارغة تماماً، تم تخطي العملية.");
+      return;
+    }
 
     final db = await databaseHelper.database;
 
     // 💡 نفتح Batch لتنفيذ التحديثات دفعة واحدة في الذاكرة لتسريع الأداء
     final batch = db.batch();
 
-    for (final user in syncedUsers) {
-      batch.update(
-        'all_users',
-        {
-          'server_user_id': int.tryParse(user.userId) ?? user.userId,
+    int addedToBatchCount = 0; // عداد لحساب العمليات الصالحة فعلياً
 
-          // 2️⃣ نُعيد تصفير العدادات (Flags) لأن المستخدم أصبح مطابقاً تماماً للسيرفر الآن
-          'is_local_new': 0,
-          'is_modified': 0,
-          'isUpload': 1,
-        },
-        // الشرط: نقوم بالتحديث بناءً على الـ Local ID الفريد للموبايل
-        where: 'id = ?',
-        whereArgs: [user.localId],
-      );
+    for (final user in syncedUsers) {
+
+      // ✨ [التحقق من البيانات الفارغة]: نتأكد أن معرّف السيرفر ليس null وليس فارغاً
+      if (user.userId != null) {
+
+        batch.update(
+          'all_users',
+          {
+            'server_user_id': user.userId, // حفظ المعرف الحقيقي القادم من السيرفر
+
+            // 2️⃣ نُعيد تصفير العدادات (Flags) لأن المستخدم أصبح مطابقاً تماماً للسيرفر الآن
+            'is_local_new': 0,
+            'is_modified': 0,
+            'isUpload': 1, // تم الرفع بنجاح
+          },
+          // الشرط: نقوم بالتحديث بناءً على الـ Local ID الفريد للموبايل
+          where: 'id = ?',
+          whereArgs: [user.localId],
+        );
+
+        addedToBatchCount++; // زيادة عدد العمليات الجاهزة للتنفيذ
+
+      } else {
+        // ⚠️ في حال كان معرف السيرفر "فاضي"، نتخطى تعديله لحماية منطق البيانات
+        print("⚠️ [تحذير]: تم تخطي المستخدم ذو المعرف المحلي (${user.localId}) لأن معرف السيرفر (userId) قادم بقيمة فارغة!");
+      }
     }
 
-    try {
-      // 🚀 تنفيذ كافة العمليات في قاعدة البيانات دفعة واحدة دون إبطاء التطبيق
-      await batch.commit(noResult: true);
-      print("✅ تم تحديث معرفات السيرفر وتصفير علامات المزامنة لـ ${syncedUsers.length} مستخدم بنجاح.");
-    } catch (e) {
-      print("❌ خطأ أثناء تحديث المعرفات المحلية بعد المزامنة: $e");
+    // 3️⃣ تنفيذ العمليات إذا كان هناك سجلات صالحة فقط داخل الـ Batch
+    if (addedToBatchCount > 0) {
+      try {
+        // 🚀 تنفيذ كافة العمليات في قاعدة البيانات دفعة واحدة دون إبطاء التطبيق
+        await batch.commit(noResult: true);
+        print("✅ تم تحديث معرفات السيرفر وتصفير علامات المزامنة لـ $addedToBatchCount مستخدم بنجاح.");
+      } catch (e) {
+        print("❌ خطأ أثناء تنفيذ الـ Batch في قاعدة البيانات المحلية: $e");
+      }
+    } else {
+      print("⏭️ [تنبيه]: لم يتم إرسال أي تحديثات لقاعدة البيانات لأن كل المعرفات القادمة كانت فارغة.");
     }
   }
-
   @override
   Future<SyncUsersRequest> getConferenceAndAnswers(int conferenceId) async {
     try {
@@ -1009,7 +1037,6 @@ class AppSqlApi extends AppSqlApiAbs {
           batch.insert(
             'user_conference',
             {
-              'conference_id': conf.conference_id ?? baseData.count.linked_users ?? 0,
               'user_id': conf.user_id,
               'isUpload': 1,
             },

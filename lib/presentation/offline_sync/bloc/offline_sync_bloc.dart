@@ -6,6 +6,7 @@ import 'package:formify/domain/usecase/add_async_data_sql_usecase.dart';
 import 'package:formify/domain/usecase/add_or_modify_users_usecase.dart';
 import 'package:formify/domain/usecase/add_server_id_user_sql_usecase.dart';
 import 'package:formify/domain/usecase/add_sync_data_sql_usecase.dart';
+import 'package:formify/domain/usecase/delete_data_sql_usecase.dart';
 import 'package:formify/domain/usecase/delete_sync_data_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_all_async_info_usecase.dart';
 import 'package:formify/domain/usecase/get_all_users_for_sync_usecase.dart';
@@ -28,9 +29,12 @@ class OfflineSyncBloc extends Bloc<OfflineSyncEvent, OfflineSyncState> {
   final GetConferenceAndAnswersSqlUsecase getConferenceAndAnswersSqlUsecase;
   final DeleteSyncDataSqlUsecase deleteSyncDataSqlUsecase;
   final AddSyncDataSqlUsecase addSyncDataSqlUsecase;
-   int ? conferenceId;
-  OfflineSyncBloc(
+  final DeleteDataSqlUsecase deleteDataSqlUsecase;
 
+  int ? conferenceId;
+   int type=0;///0  save < 1 upload
+  OfflineSyncBloc(
+      this.deleteDataSqlUsecase,
       this.getAllAsyncInfoUsecase,
       this.addAsyncDataSqlUsecase,
       this.addOrModifyUsersUsecase,
@@ -49,6 +53,8 @@ class OfflineSyncBloc extends Bloc<OfflineSyncEvent, OfflineSyncState> {
       on<GetUserAnswerAndUserConferenceEvent>(_getConferenceAndAnswerUser);
       on<UploadUserAnswerAndUserConferenceEvent>(_uploadConferenceAndAnswerUser);
       on<DeleteSyncDataEvent>(_deleteSavaData);
+      on<DeleteAllDataEvent>(_onDeleteData);
+
       on<GetSaveDataEvent>(_getSaveData);
       on<AddSaveDataEvent>(_addSaveData);
       on<AsyncDataEvent>(_onAsyncData);
@@ -80,6 +86,9 @@ class OfflineSyncBloc extends Bloc<OfflineSyncEvent, OfflineSyncState> {
   }
 
   Future<void> _onAddAndModifyUser(AddAndModifyUserEvent event, Emitter<OfflineSyncState> emit) async {
+    type=event.type;
+    conferenceId=event.id;
+    emit(SyncLoadingState());
     (await getUserAddModifySqlUsecase.execute()).fold(
           (failure) => emit(DataOfflineErrorState(failure: failure)),
           (data) {
@@ -103,6 +112,7 @@ class OfflineSyncBloc extends Bloc<OfflineSyncEvent, OfflineSyncState> {
       },
     );
   }
+
   Future<void> _getConferenceAndAnswerUser(GetUserAnswerAndUserConferenceEvent event, Emitter<OfflineSyncState> emit) async {
     (await getConferenceAndAnswersSqlUsecase.execute(conferenceId??0)).fold(
           (failure) => emit(DataOfflineErrorState(failure: failure)),
@@ -115,16 +125,26 @@ class OfflineSyncBloc extends Bloc<OfflineSyncEvent, OfflineSyncState> {
     (await updatedSyncUsersAnswersUsecase.execute(event.data)).fold(
           (failure) => emit(DataOfflineErrorState(failure: failure)),
           (data) {
-        emit(UploadUserAnswerAndUserConferenceState());
+        emit(UploadUserAnswerAndUserConferenceState(type));
       },
     );
   }
+  //////TODO
   Future<void> _deleteSavaData(DeleteSyncDataEvent event, Emitter<OfflineSyncState> emit) async {
     (await deleteSyncDataSqlUsecase.execute()).fold(
           (failure) => emit(DataOfflineErrorState(failure: failure)),
           (data) {
         emit(DeleteSyncDataState());
       },
+    );
+  }
+  Future<void> _onDeleteData(
+      DeleteAllDataEvent event,
+      Emitter<OfflineSyncState> emit,
+      ) async {
+    (await deleteDataSqlUsecase.execute()).fold(
+          (failure) => emit(DataOfflineErrorState(failure: failure)),
+          (_) => emit( DeleteAllDataState(type)),
     );
   }
   Future<void> _getSaveData(GetSaveDataEvent event, Emitter<OfflineSyncState> emit) async {
@@ -139,7 +159,7 @@ class OfflineSyncBloc extends Bloc<OfflineSyncEvent, OfflineSyncState> {
     (await addSyncDataSqlUsecase.execute(event.data)).fold(
           (failure) => emit(DataOfflineErrorState(failure: failure)),
           (data) {
-        emit(AddSaveDataSqlState());
+        emit(AddSaveDataSqlState(type));
       },
     );
   }
