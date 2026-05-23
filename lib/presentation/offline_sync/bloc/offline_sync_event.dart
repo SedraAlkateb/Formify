@@ -20,7 +20,9 @@ final class InsertDataSqlEvent extends OfflineSyncEvent {
 }
 
 class AddAndModifyUserEvent extends OfflineSyncEvent {
-
+final int id;
+final int type;
+const AddAndModifyUserEvent(this.id,this.type);
 }
 class UploadUserEvent extends OfflineSyncEvent {
   final AddAndModifyUsersRequest users;
@@ -45,11 +47,13 @@ class DeleteSyncDataEvent extends OfflineSyncEvent {
 
 
 }
+class DeleteAllDataEvent extends OfflineSyncEvent {
+
+
+}
 class GetSaveDataEvent extends OfflineSyncEvent {
-  final SaveDataBaseModel data;
-  const GetSaveDataEvent(this.data);
   @override
-  List<Object?> get props => [data];
+  List<Object?> get props => [];
 }
 class AddSaveDataEvent extends OfflineSyncEvent {
   final SaveDataBaseModel data;

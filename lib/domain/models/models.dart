@@ -430,6 +430,7 @@ class UserModel {
 
   Map<String, dynamic> toJson() {
     return {
+      'id':id,
       'fullname': fullName,
       'email': email,
       'phone': phone,
@@ -489,7 +490,7 @@ class UserModel {
     );
   }
   factory UserModel.fromMap(Map<String, dynamic> map) {
-    SpecModel? associatedSpec;
+    SpecModel? associatedSpec;//
     if (map['spec_id_joined'] != null && map['spec_title_joined'] != null) {
       associatedSpec = SpecModel(
         map['spec_id_joined'] as int,
@@ -513,6 +514,7 @@ class UserModel {
       spec: associatedSpec ?? (map['spec'] is SpecModel ? map['spec'] : null),
     );
   }
+
 }
 
 class GetAllConferenceModel {
@@ -1038,23 +1040,23 @@ class UsersAnswersRequest {
 class AddAndModifyUsersRequest {
   List<UserModel> modifyUsers;
   List<UserModel> newUsers;
-  AddAndModifyUsersRequest(this.modifyUsers, this.newUsers);
+  AddAndModifyUsersRequest({required this.modifyUsers, required this.newUsers});
 
   Map<String, dynamic> toJson() {
     return {
-      'modify_users': modifyUsers.map((e) => e.toJson()).toList(),
-      'new_users': newUsers.map((e) => e.toJson()).toList(),
+      'modify_users': modifyUsers.map((e) => e.toJsonModify()).toList(),
+      'new_users': newUsers.map((e) => e.toJsonNew()).toList(),
     };
   }
 
   factory AddAndModifyUsersRequest.fromMap(Map<String, dynamic> map) {
-    return AddAndModifyUsersRequest(map['modify_users'], map['new_users']);
+    return AddAndModifyUsersRequest(modifyUsers: map['modify_users'],newUsers:  map['new_users']);
   }
 }
 
 class AddModifyUser {
   int localId;
-  String userId;
+  int userId;
   AddModifyUser(this.localId, this.userId);
 }
 

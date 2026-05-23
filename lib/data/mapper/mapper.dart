@@ -585,7 +585,7 @@ extension AddAndModifyModelMapper on AddAndModifyResponse? {
   AddModifyUser toDomain() {
     return AddModifyUser(
       this?.localId ?? Constants.zero,
-      this?.userId ?? Constants.empty,
+      this?.userId ?? Constants.zero,
     );
   }
 }

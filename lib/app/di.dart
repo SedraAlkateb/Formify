@@ -435,9 +435,13 @@ Future<void> initSyncOfflineModule() async {
     instance.registerFactory<AddSyncDataSqlUsecase>(
       () => AddSyncDataSqlUsecase(instance()),
     );
-
+    if (!GetIt.I.isRegistered<DeleteDataSqlUsecase>()) {
+    instance.registerFactory<DeleteDataSqlUsecase>(
+          () => DeleteDataSqlUsecase(instance()),
+    );}
     instance.registerFactory<OfflineSyncBloc>(
       () => OfflineSyncBloc(
+        instance(),
         instance(),
         instance(),
         instance(),

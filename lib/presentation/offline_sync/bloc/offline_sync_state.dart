@@ -43,15 +43,21 @@ final class GetUserAnswerAndUserConferenceState extends OfflineSyncState {
 }
 
 final class UploadUserAnswerAndUserConferenceState extends OfflineSyncState {
-  const UploadUserAnswerAndUserConferenceState();
-
+  final int type;
+  const UploadUserAnswerAndUserConferenceState(this.type);
   @override
   List<Object?> get props => [
-    //users
+    type
   ];
 }
 
 final class DeleteSyncDataState extends OfflineSyncState {}
+final class DeleteAllDataState extends OfflineSyncState {
+  final int type;
+  const DeleteAllDataState(this.type);
+
+
+}
 
 final class GetSaveDataState extends OfflineSyncState {
   final SaveDataBaseModel data;
@@ -60,6 +66,8 @@ final class GetSaveDataState extends OfflineSyncState {
   List<Object?> get props => [data];
 }
 final class AddSaveDataSqlState extends OfflineSyncState {
+  final int type;
+  const AddSaveDataSqlState(this.type);
   @override
   List<Object?> get props => [];
 }
@@ -85,4 +93,7 @@ final class AsyncConferenceState extends OfflineSyncState {
 final class InsertSucState extends OfflineSyncState {
   final int conferenceId;
   const InsertSucState(this.conferenceId);
+}
+final class SyncLoadingState extends OfflineSyncState {
+  const SyncLoadingState();
 }

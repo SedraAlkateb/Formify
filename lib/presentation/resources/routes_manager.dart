@@ -30,6 +30,7 @@ import 'package:formify/presentation/sync/page/game_input_page.dart';
 import 'package:formify/presentation/sync/page/insert_doctor_page.dart';
 import 'package:formify/presentation/sync/page/insert_user_page.dart';
 import 'package:formify/presentation/sync/page/list_of_surveys_page.dart';
+import 'package:formify/presentation/sync/page/setting1_page.dart';
 import 'package:formify/presentation/sync/page/setting_page.dart';
 import 'package:formify/presentation/sync/page/show_conference_page.dart';
 import 'package:formify/presentation/sync/page/survey_input_page.dart';
@@ -108,6 +109,7 @@ class RouteGenerator {
           ViewActiveConferencePage(conferenceId: conferenceId),
         );
       case Routes.settingPage:
+        initSyncOfflineModule();
         final conferenceId = settings.arguments as int;
         return _animatedRoute(SettingPage(id: conferenceId));
       case Routes.textQuestion:

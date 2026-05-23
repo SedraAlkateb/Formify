@@ -1111,8 +1111,6 @@ class UserAnswerForSaveResponse {
   String? content;
   @JsonKey(name: "is_correct")
   int? isCorrect;
-  @JsonKey(name: "conference_id")
-  int? conference_id;
   UserAnswerForSaveResponse(this.id, this.answer_id, this.content, this.isCorrect);
   // from json
   factory UserAnswerForSaveResponse.fromJson(Map<String, dynamic> json) =>
@@ -1138,6 +1136,9 @@ class CountForSaveResponse {
 
 @JsonSerializable()
 class AllSaveDataResponse {
+
+  @JsonKey(name: "conference_id")
+  int? conference_id;
   @JsonKey(name: "users")
   List<UserForSaveResponse> users;
   @JsonKey(name: "users_conference")
@@ -1158,6 +1159,7 @@ class AllSaveDataResponse {
 class AllSaveDataBaseResponse extends BaseResponse {
   @JsonKey(name: "data")
   AllSaveDataResponse data;
+  @JsonKey(name: "counts")
   CountForSaveResponse count;
   AllSaveDataBaseResponse(this.data,this.count);
   // from json
@@ -1190,7 +1192,7 @@ class AddAndModifyResponse {
   @JsonKey(name: "local_id")
   int? localId;
   @JsonKey(name: "user_id")
-  String? userId;
+  int? userId;
   AddAndModifyResponse(this.localId, this.userId);
   // from json
   factory AddAndModifyResponse.fromJson(Map<String, dynamic> json) =>
