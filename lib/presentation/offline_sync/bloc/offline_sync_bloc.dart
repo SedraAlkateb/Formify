@@ -1,11 +1,14 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:formify/app/app_preferences.dart';
+import 'package:formify/app/di.dart';
 import 'package:formify/data/network/failure.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/usecase/add_async_data_sql_usecase.dart';
 import 'package:formify/domain/usecase/add_or_modify_users_usecase.dart';
 import 'package:formify/domain/usecase/add_server_id_user_sql_usecase.dart';
 import 'package:formify/domain/usecase/add_sync_data_sql_usecase.dart';
+import 'package:formify/domain/usecase/check_password_usecase.dart';
 import 'package:formify/domain/usecase/delete_data_sql_usecase.dart';
 import 'package:formify/domain/usecase/delete_sync_data_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_all_async_info_usecase.dart';
@@ -30,6 +33,7 @@ class OfflineSyncBloc extends Bloc<OfflineSyncEvent, OfflineSyncState> {
   final DeleteSyncDataSqlUsecase deleteSyncDataSqlUsecase;
   final AddSyncDataSqlUsecase addSyncDataSqlUsecase;
   final DeleteDataSqlUsecase deleteDataSqlUsecase;
+  final CheckPasswordUsecase checkPasswordUsecase;
 
   int ? conferenceId;
    int type=0;///0  save < 1 upload
@@ -45,6 +49,7 @@ class OfflineSyncBloc extends Bloc<OfflineSyncEvent, OfflineSyncState> {
       this.getConferenceAndAnswersSqlUsecase,
       this.deleteSyncDataSqlUsecase,
       this.addSyncDataSqlUsecase,
+      this.checkPasswordUsecase,
       ) : super(OfflineSyncInitial()) {
 
       on<AddAndModifyUserEvent>(_onAddAndModifyUser);
@@ -54,7 +59,7 @@ class OfflineSyncBloc extends Bloc<OfflineSyncEvent, OfflineSyncState> {
       on<UploadUserAnswerAndUserConferenceEvent>(_uploadConferenceAndAnswerUser);
       on<DeleteSyncDataEvent>(_deleteSavaData);
       on<DeleteAllDataEvent>(_onDeleteData);
-
+      on<CheckEvent>(_onCheck);
       on<GetSaveDataEvent>(_getSaveData);
       on<AddSaveDataEvent>(_addSaveData);
       on<AsyncDataEvent>(_onAsyncData);
@@ -129,6 +134,18 @@ class OfflineSyncBloc extends Bloc<OfflineSyncEvent, OfflineSyncState> {
       },
     );
   }
+
+  Future<void> _onCheck(CheckEvent event, Emitter<OfflineSyncState> emit) async {
+    final checkResult = await checkPasswordUsecase.execute(event.password);
+    checkResult.fold((failure) => null, (isValid) async {
+      if (!isValid) {
+        await deleteDataSqlUsecase.execute();
+        await instance<AppPreferences>().signOut();
+        if (!emit.isDone) emit(CheckoutState());
+      }
+    });
+  }
+
   //////TODO
   Future<void> _deleteSavaData(DeleteSyncDataEvent event, Emitter<OfflineSyncState> emit) async {
     (await deleteSyncDataSqlUsecase.execute()).fold(

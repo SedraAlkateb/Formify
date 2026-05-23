@@ -4,6 +4,7 @@ import 'package:formify/app/app_preferences.dart';
 import 'package:formify/app/di.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/conference/widget/conferm_dialog.dart';
+import 'package:formify/presentation/offline_sync/bloc/offline_sync_bloc.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/resources/strings_manager.dart';
@@ -12,8 +13,8 @@ import 'package:formify/presentation/unit/animation/animation_container_widget.d
 import 'package:formify/presentation/unit/search_field.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
-class Setting1Page extends StatelessWidget {
-   Setting1Page({super.key, required this.id});
+class SettingPage extends StatelessWidget {
+  SettingPage({super.key, required this.id});
   final TextEditingController searchController = TextEditingController();
 
   final int id;
@@ -23,29 +24,64 @@ class Setting1Page extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xfff4f6f8),
       appBar: _buildAppBar(context),
-      body: BlocListener<SyncBloc, SyncState>(
+      body: BlocListener<OfflineSyncBloc, OfflineSyncState>(
         listener: (context, state) {
-          if (state is DataLoadingState)
-            {
-              loading(context);
-            }
-          else if (state is DataErrorState) {
+          if (state is SyncLoadingState)
+          {
+            loading(context);
+          }
+
+          else if (state is DataOfflineErrorState) {
             error(context, state.failure.massage, state.failure.code);
-          } else if (state is GetDataState) {
-            BlocProvider.of<SyncBloc>(context).add(
-              UploadDataEvent(state.users, state.conference_id, state.isActive),
+          } else if (state is AddAndModifyUserSucState) {
+            BlocProvider.of<OfflineSyncBloc>(context).add(
+              UploadUserEvent(state.users),
             );
-          } else if (state is UploadDataState) {
-            state.isUpload == 0
-                ? BlocProvider.of<SyncBloc>(context).add(DeleteUserEvent())
-                : BlocProvider.of<SyncBloc>(context).add(DeleteDataEvent());
-          } else if (state is DeleteDataState) {
-            instance<AppPreferences>().setIConference(state.isActive != 0);
+          } else if (state is UploadUserSucState) {
+            BlocProvider.of<OfflineSyncBloc>(context).add(UpdateUserIdEvent(state.users));
+
+          }
+          else if (state is UpdateIdUserSucState) {
+            BlocProvider.of<OfflineSyncBloc>(context).add(GetUserAnswerAndUserConferenceEvent());
+
+          }
+          else if (state is GetUserAnswerAndUserConferenceState) {
+            BlocProvider.of<OfflineSyncBloc>(context).add(UploadUserAnswerAndUserConferenceEvent(state.data));
+
+          }
+          else if (state is UploadUserAnswerAndUserConferenceState) {
+            if(state.type==0){
+              BlocProvider.of<OfflineSyncBloc>(context).add(DeleteSyncDataEvent());
+            }else{
+              BlocProvider.of<OfflineSyncBloc>(context).add(DeleteAllDataEvent());
+            }
+
+          }
+          else if (state is DeleteSyncDataState) {
+            BlocProvider.of<OfflineSyncBloc>(context).add(GetSaveDataEvent());
+
+          } else if (state is GetSaveDataState) {
+            BlocProvider.of<OfflineSyncBloc>(context).add(AddSaveDataEvent(state.data));
+
+          }
+          else if (state is AddSaveDataSqlState) {
+            print("state.type");
+            print(state.type == 0);
+            instance<AppPreferences>().setIConference(state.type == 0);
             instance<AppPreferences>().setLoggedIn(1);
             Navigator.pushNamedAndRemoveUntil(
               context,
               Routes.home,
-              (route) => false,
+                  (route) => false,
+            );
+          }
+          else if (state is DeleteAllDataState) {
+            instance<AppPreferences>().setIConference(state.type == 0);
+            instance<AppPreferences>().setLoggedIn(1);
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              Routes.home,
+                  (route) => false,
             );
           }
         },
@@ -61,7 +97,7 @@ class Setting1Page extends StatelessWidget {
                 "إضافة بيانات الاطباء المهمين",
                 Icons.person_add_alt_1,
                 Colors.blue,
-                () => Navigator.pushNamed(context, Routes.insertDoctor),
+                    () => Navigator.pushNamed(context, Routes.insertDoctor),
               ),
               _buildActionCard(
                 context,
@@ -69,7 +105,7 @@ class Setting1Page extends StatelessWidget {
                 StringsManager.uploadConferenceDesc,
                 Icons.save_outlined,
                 Colors.indigo,
-                () => _showConfirm(context, "حفظ البيانات", 0),
+                    () => _showConfirm(context, "حفظ البيانات", 0),
               ),
               _buildActionCard(
                 context,
@@ -77,7 +113,7 @@ class Setting1Page extends StatelessWidget {
                 StringsManager.uploadConferenceDesc,
                 Icons.cloud_upload_outlined,
                 Colors.teal,
-                () => _showConfirm(context, "رفع البيانات", 1),
+                    () => _showConfirm(context, "رفع البيانات", 1),
               ),
               _buildActionCard(
                 context,
@@ -85,12 +121,12 @@ class Setting1Page extends StatelessWidget {
                 StringsManager.logoutConferenceDesc,
                 Icons.logout_rounded,
                 Colors.redAccent,
-                () {
+                    () {
                   instance<AppPreferences>().setLoggedIn(1);
                   Navigator.pushNamedAndRemoveUntil(
                     context,
                     Routes.home,
-                    (route) => false,
+                        (route) => false,
                   );
                 },
               ),
@@ -130,13 +166,13 @@ class Setting1Page extends StatelessWidget {
   }
 
   Widget _buildActionCard(
-    BuildContext context,
-    String title,
-    String desc,
-    IconData icon,
-    Color color,
-    VoidCallback onTap,
-  ) {
+      BuildContext context,
+      String title,
+      String desc,
+      IconData icon,
+      Color color,
+      VoidCallback onTap,
+      ) {
     return AnimationContainerWidget(
       child: GestureDetector(
         onTap: onTap,
@@ -250,12 +286,13 @@ class Setting1Page extends StatelessWidget {
                     context,
                   ).add(
                     SearchInUsersEvent(
-                     state.users,
-                   value,
+                      state.users,
+                      value,
                     ),
                   );
                 },
               ),
+              SizedBox(height: 20,),
               ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -453,7 +490,7 @@ class Setting1Page extends StatelessWidget {
       title: title,
       message: "هل أنت متأكد من تنفيذ هذا الإجراء؟ تأكد من اتصالك بالإنترنت.",
       onConfirm1: () =>
-          BlocProvider.of<SyncBloc>(context).add(GetDataEvent(id, type)),
+          BlocProvider.of<OfflineSyncBloc>(context).add(AddAndModifyUserEvent(id, type)),
     );
   }
 }

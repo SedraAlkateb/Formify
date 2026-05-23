@@ -24,7 +24,6 @@ import 'package:formify/domain/usecase/get_users_by_specId_name_sql_usecase.dart
 import 'package:formify/domain/usecase/get_users_conference_usecase.dart';
 import 'package:formify/domain/usecase/insert_doctor_sql_usecase.dart';
 import 'package:formify/domain/usecase/insert_user_and_answer_usecase.dart';
-import 'package:formify/domain/usecase/synchronize_users_answers_usecase.dart';
 import 'package:formify/domain/usecase/updateIs_done_usecase.dart';
 import 'package:formify/domain/usecase/update_user_sql_usecase.dart';
 import 'package:meta/meta.dart';
@@ -32,9 +31,6 @@ part 'sync_event.dart';
 part 'sync_state.dart';
 
 class SyncBloc extends Bloc<SyncEvent, SyncState> {
-  final GetUserAnswerSqlUsecase getUserAnswerSqlUsecase;
-  final DeleteDataSqlUsecase deleteDataSqlUsecase;
-  final DeleteUserSqlUsecase deleteUserSqlUsecase;
 //  final SynchronizeUsersAnswersUsecase synchronizeUsersAnswersUsecase;
   final GetDoctorsSqlUsecase getDoctorsSqlUsecase;
   final InsertDoctorSqlUsecase insertDoctorSqlUsecase;
@@ -43,7 +39,6 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   final GetQuestionAnswersUsecase getQuestionAnswersUsecase;
   final InsertUserAndAnswerUsecase insertUserAndAnswerUsecase;
   final GetConferenceInfoSqlUsecase getConferenceInfoSqlUsecase;
-  final CheckPasswordUsecase checkPasswordUsecase;
   final GetUsersConferenceUsecase getUsersConferenceUsecase;
   final  UpdateUserSqlUsecase updateUserSqlUsecase;
   final DoctorsAttendanceSqlUsecase doctorsAttendanceSqlUsecase;
@@ -63,13 +58,8 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   int finished = 0;
 
   SyncBloc(
-
       this.getSpecSqlUsecase,
-      this.getUserAnswerSqlUsecase,
-    this.deleteDataSqlUsecase,
   this.getUsersBySpecIdNameSqlUsecase,
-      this.checkPasswordUsecase,
-      this.deleteUserSqlUsecase,
     this.getConferenceSqlUsecase,
     this.getSurveysSqlUsecase,
     this.getQuestionAnswersUsecase,
@@ -87,11 +77,8 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   ) : super(const SyncInitial()) {
     // الأحداث الأساسية
 
-    on<DeleteDataEvent>(_onDeleteData);
-    on<DeleteUserEvent>(_onDeleteUser);
-    on<CheckEvent>(_onCheck);
 
-    on<GetDataEvent>(_onGetData);
+
     on<GetInfoConferenceEvent>(_infoConference);
   //  on<UploadDataEvent>(_onUpload);
     on<GetConferenceAsyncEvent>(_onGetConference);
@@ -235,54 +222,6 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     }
   }
 
-  // --- Async & Cloud Handlers ---
-
-
-  Future<void> _onDeleteData(
-    DeleteDataEvent event,
-    Emitter<SyncState> emit,
-  ) async {
-    (await deleteDataSqlUsecase.execute()).fold(
-      (failure) => emit(DataErrorState(failure: failure)),
-      (_) => emit(const DeleteDataState(0)),
-    );
-  }
-
-  Future<void> _onDeleteUser(
-    DeleteUserEvent event,
-    Emitter<SyncState> emit,
-  ) async {
-    (await deleteUserSqlUsecase.execute()).fold(
-      (failure) => emit(DataErrorState(failure: failure)),
-      (_) => emit(const DeleteDataState(1)),
-    );
-  }
-
-  Future<void> _onGetData(GetDataEvent event, Emitter<SyncState> emit) async {
-    emit(const DataLoadingState());
-    (await getUserAnswerSqlUsecase.execute()).fold(
-      (failure) => emit(DataErrorState(failure: failure)),
-      (data) {
-        conferenceId = event.conferenceId;
-        emit(GetDataState(data, event.conferenceId, event.isActive));
-      },
-    );
-  }
-
-  // Future<void> _onUpload(UploadDataEvent event, Emitter<SyncState> emit) async {
-  //   if (event.userRequest.isNotEmpty) {
-  //     surveysBase = [];
-  //     (await synchronizeUsersAnswersUsecase.execute(
-  //       AllUserModel(event.userRequest, event.conference_id, event.isActive),
-  //     )).fold(
-  //       (failure) => emit(DataErrorState(failure: failure)),
-  //       (_) => emit(UploadDataState(event.isActive)),
-  //     );
-  //   } else {
-  //     emit(UploadDataState(event.isActive));
-  //   }
-  // }
-
   Future<void> _infoConference(
     GetInfoConferenceEvent event,
     Emitter<SyncState> emit,
@@ -391,16 +330,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     return [];
   }
 
-  Future<void> _onCheck(CheckEvent event, Emitter<SyncState> emit) async {
-    final checkResult = await checkPasswordUsecase.execute(event.password);
-    checkResult.fold((failure) => null, (isValid) async {
-      if (!isValid) {
-        await deleteDataSqlUsecase.execute();
-        await instance<AppPreferences>().signOut();
-        if (!emit.isDone) emit(CheckoutState());
-      }
-    });
-  }
+
   Future<void> _onEditUser(EditUserEvent event, Emitter<SyncState> emit) async {
     final checkResult = await updateUserSqlUsecase.execute(event.user);
     await checkResult.fold(
