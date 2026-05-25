@@ -46,6 +46,7 @@ class SettingPage extends StatelessWidget {
 
           }
           else if (state is GetUserAnswerAndUserConferenceState) {
+            state.data.is_active=state.type;
             BlocProvider.of<OfflineSyncBloc>(context).add(UploadUserAnswerAndUserConferenceEvent(state.data));
 
           }

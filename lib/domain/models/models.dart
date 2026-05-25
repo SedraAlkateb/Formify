@@ -998,19 +998,21 @@ class QuestionForStatModel {
 }
 
 class SyncUsersRequest {
+  int is_active ;
   List<UserConferenceModel> userConference;
   List<UsersAnswersRequest> answers;
-  SyncUsersRequest(this.userConference, this.answers);
+  SyncUsersRequest(this.is_active,this.userConference, this.answers);
 
   Map<String, dynamic> toJson() {
     return {
+      'is_active':is_active,
       'users_answers': answers.map((e) => e.toJson()).toList(),
       'users_conference':userConference.map((e) => e.toJsonApiUpdate(),).toList()
     };
   }
 
   factory SyncUsersRequest.fromMap(Map<String, dynamic> map) {
-    return SyncUsersRequest(map['users_conference'], map['users_answers']);
+    return SyncUsersRequest(map['is_active'],map['users_conference'], map['users_answers']);
   }
 }
 

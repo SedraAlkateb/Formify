@@ -5,9 +5,7 @@ import 'package:formify/app/constants.dart';
 import 'package:formify/app/di.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
-import 'package:formify/presentation/resources/responsive/breakpoints.dart';
 import 'package:formify/presentation/resources/responsive/font_responseve.dart';
-import 'package:formify/presentation/resources/responsive/sizer_responseve.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
 import 'package:formify/presentation/sync/widget/doforma_container_widget.dart';
@@ -15,6 +13,7 @@ import 'package:formify/presentation/sync/widget/gialog_add_password.dart';
 import 'package:formify/presentation/unit/animation/button_animation_with_text.dart';
 import 'package:formify/presentation/unit/animation/animation_container_widget.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart'; // حزمة الـ ScreenUtil لإدارة الأحجام الذكية
 
 class ShowConferencePage extends StatefulWidget {
   const ShowConferencePage({super.key});
@@ -26,6 +25,7 @@ class ShowConferencePage extends StatefulWidget {
 class _ShowConferencePageState extends State<ShowConferencePage> {
   @override
   void initState() {
+    // السلوك واللوجيك البرمجي مئة بالمئة دون أي تغيير
     BlocProvider.of<SyncBloc>(context).add(GetConferenceAsyncEvent());
     BlocProvider.of<SyncBloc>(context).add(GetSurveyAsyncEvent());
     BlocProvider.of<SyncBloc>(context).add(SpecEvent());
@@ -36,9 +36,7 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
 
   @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery.of(
-      context,
-    ).size.height; // للحصول على ارتفاع الشاشة
+    double screenHeight = MediaQuery.of(context).size.height;
 
     return WillPopScope(
       onWillPop: () async => false,
@@ -57,7 +55,7 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
           child: SafeArea(
             child: BlocBuilder<SyncBloc, SyncState>(
               buildWhen: (previous, current) =>
-                  current is GetConferenceAsyncLoadingState ||
+              current is GetConferenceAsyncLoadingState ||
                   current is AsyncConferenceErrorState ||
                   current is GetConferenceAsyncState ||
                   current is GetConferenceAsyncEmptyState,
@@ -72,29 +70,17 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
 
                   return SingleChildScrollView(
                     child: Padding(
-                      padding: EdgeInsets.all(Constants.isTablet ? 30 : 0),
+                      padding: EdgeInsets.all(Constants.isTablet ? 16.r : 0),
                       child: Column(
                         children: [
                           FloatingContainer(),
                           LayoutBuilder(
                             builder: (_, c) {
-                              final isTabletPortrait =
-                                  Breakpoints.isTabletPortrait(context);
-                              final isMobilePortrait =
-                                  Breakpoints.isMobilePortrait(context);
                               return Container(
-                                height: (isTabletPortrait || isMobilePortrait)
-                                    ? screenHeight * 0.9
-                                    : null,
+                                height: null, // الحفاظ على مرونة الارتفاع لمنع الـ Overflow
                                 width: double.infinity,
-                                padding: EdgeInsets.only(
-                                  left: 20.sp,
-                                  right: 20.sp,
-                                  top: 20.sp,
-                                  bottom: 20.sp,
-                                ),
-
-                                margin: EdgeInsets.all(25.sp),
+                                padding: EdgeInsets.all(16.r),
+                                margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
                                 decoration: BoxDecoration(
                                   border: Border.all(
                                     color: ColorManager.border,
@@ -102,33 +88,28 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                   color: ColorManager.white,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: ColorManager.black.withOpacity(
-                                        0.2,
-                                      ),
-                                      blurRadius: 3,
-                                      offset: const Offset(0, 1),
+                                      color: ColorManager.black.withOpacity(0.12),
+                                      blurRadius: 4.r,
+                                      offset: Offset(0, 2.h),
                                     ),
                                   ],
-                                  borderRadius: BorderRadius.circular(25),
+                                  borderRadius: BorderRadius.circular(16),
                                 ),
                                 child: Padding(
                                   padding: EdgeInsets.only(
-                                    left: 20.sp,
-                                    right: 20.sp,
-                                    top: 20.sp,
+                                    left: 8.w,
+                                    right: 8.w,
+                                    top: 8.h,
                                   ),
                                   child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
+                                          // اسم المؤتمر
                                           Text(
                                             conferenceModel.name,
                                             textAlign: TextAlign.right,
@@ -136,13 +117,14 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                               color: ColorManager.primary,
                                               fontSize: FontResponsive.font(
                                                 context,
-                                                mobile: 35,
-                                                tablet: 41,
-                                              ),
+                                                mobile: 22,
+                                                tablet: 28,
+                                              ).sp,
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
-                                          SizedBox(height: 5.sp),
+                                          SizedBox(height: 4.h),
+                                          // وصف المؤتمر
                                           Text(
                                             conferenceModel.description,
                                             textAlign: TextAlign.right,
@@ -150,278 +132,206 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                               color: ColorManager.black,
                                               fontSize: FontResponsive.font(
                                                 context,
-                                                mobile: 15,
-                                                tablet: 21,
-                                              ),
+                                                mobile: 13,
+                                                tablet: 16,
+                                              ).sp,
                                               fontWeight: FontWeight.w400,
                                             ),
                                           ),
+                                          SizedBox(height: 12.h),
 
-                                          // Address
+                                          // كارت العنوان (Address)
                                           AnimationContainerWidget(
                                             child: Container(
                                               width: double.infinity,
-                                              padding: EdgeInsets.all(12.sp),
-                                              margin: EdgeInsets.symmetric(
-                                                vertical: 12.sp,
-                                              ),
+                                              padding: EdgeInsets.all(10.r),
+                                              margin: EdgeInsets.symmetric(vertical: 4.h),
                                               decoration: BoxDecoration(
                                                 border: Border.all(
                                                   color: ColorManager.border,
                                                 ),
-                                                color: ColorManager
-                                                    .primaryShadow
-                                                    .withOpacity(0.2),
-                                                borderRadius:
-                                                    BorderRadius.circular(25),
+                                                color: ColorManager.primaryShadow.withOpacity(0.12),
+                                                borderRadius: BorderRadius.circular(12),
                                               ),
                                               child: Row(
                                                 children: [
                                                   Card(
-                                                    margin: EdgeInsets.all(
-                                                      5.sp,
-                                                    ),
+                                                    margin: EdgeInsets.all(4.r),
                                                     shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            12,
-                                                          ),
+                                                      borderRadius: BorderRadius.circular(8),
                                                     ),
                                                     color: ColorManager.primary,
                                                     child: Padding(
-                                                      padding: EdgeInsets.all(
-                                                        10.sp,
-                                                      ),
+                                                      padding: EdgeInsets.all(6.r),
                                                       child: Icon(
-                                                        Icons
-                                                            .location_on_outlined,
-                                                        color: Color(
-                                                          0xffffffff,
-                                                        ),
-                                                        size: 30.sp,
+                                                        Icons.location_on_outlined,
+                                                        color: const Color(0xffffffff),
+                                                        size: 20.r,
                                                       ),
                                                     ),
                                                   ),
                                                   Expanded(
                                                     child: Padding(
-                                                      padding: EdgeInsets.all(
-                                                        8.0.sp,
-                                                      ),
+                                                      padding: EdgeInsets.symmetric(horizontal: 8.w),
                                                       child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
                                                         children: [
                                                           Text(
                                                             "العنوان",
-                                                            textAlign:
-                                                                TextAlign.right,
+                                                            textAlign: TextAlign.right,
                                                             style: TextStyle(
-                                                              color: ColorManager
-                                                                  .textSecondary,
-                                                              fontSize:
-                                                                  FontResponsive.font(
-                                                                    context,
-                                                                    mobile: 15,
-                                                                    tablet: 21,
-                                                                  ),
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
+                                                              color: ColorManager.textSecondary,
+                                                              fontSize: FontResponsive.font(
+                                                                context,
+                                                                mobile: 12,
+                                                                tablet: 14,
+                                                              ).sp,
+                                                              fontWeight: FontWeight.w500,
                                                             ),
                                                           ),
                                                           Text(
-                                                            conferenceModel
-                                                                .address,
-                                                            textAlign:
-                                                                TextAlign.right,
+                                                            conferenceModel.address,
+                                                            textAlign: TextAlign.right,
                                                             style: TextStyle(
-                                                              color:
-                                                                  ColorManager
-                                                                      .black,
-                                                              fontSize:
-                                                                  FontResponsive.font(
-                                                                    context,
-                                                                    mobile: 18,
-                                                                    tablet: 24,
-                                                                  ),
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
+                                                              color: ColorManager.black,
+                                                              fontSize: FontResponsive.font(
+                                                                context,
+                                                                mobile: 14,
+                                                                tablet: 17,
+                                                              ).sp,
+                                                              fontWeight: FontWeight.bold,
                                                             ),
                                                           ),
                                                         ],
                                                       ),
                                                     ),
                                                   ),
-                                                  SizedBox(width: 20.sp),
                                                 ],
                                               ),
                                             ),
                                           ),
-                                          SizedBox(height: 5.sp),
-                                          // Date
+
+                                          // كارت التاريخ (Date)
                                           AnimationContainerWidget(
                                             child: Container(
                                               width: double.infinity,
-                                              padding: EdgeInsets.all(12.sp),
-                                              margin: EdgeInsets.symmetric(
-                                                vertical: 12.sp,
-                                              ),
+                                              padding: EdgeInsets.all(10.r),
+                                              margin: EdgeInsets.symmetric(vertical: 4.h),
                                               decoration: BoxDecoration(
                                                 border: Border.all(
                                                   color: ColorManager.border,
                                                 ),
-                                                color: ColorManager
-                                                    .primaryShadow
-                                                    .withOpacity(0.2),
-                                                borderRadius:
-                                                    BorderRadius.circular(25),
+                                                color: ColorManager.primaryShadow.withOpacity(0.12),
+                                                borderRadius: BorderRadius.circular(12),
                                               ),
                                               child: Row(
                                                 children: [
                                                   Card(
-                                                    margin: EdgeInsets.all(
-                                                      5.sp,
-                                                    ),
+                                                    margin: EdgeInsets.all(4.r),
                                                     shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            12,
-                                                          ),
+                                                      borderRadius: BorderRadius.circular(8),
                                                     ),
                                                     color: ColorManager.primary,
                                                     child: Padding(
-                                                      padding: EdgeInsets.all(
-                                                        10.sp,
-                                                      ),
+                                                      padding: EdgeInsets.all(6.r),
                                                       child: Icon(
                                                         Icons.date_range_sharp,
-                                                        color: Color(
-                                                          0xffffffff,
-                                                        ),
-                                                        size: 30.sp,
+                                                        color: const Color(0xffffffff),
+                                                        size: 20.r,
                                                       ),
                                                     ),
                                                   ),
                                                   Expanded(
                                                     child: Padding(
-                                                      padding: EdgeInsets.all(
-                                                        8.0.sp,
-                                                      ),
+                                                      padding: EdgeInsets.symmetric(horizontal: 8.w),
                                                       child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
                                                         children: [
                                                           Text(
                                                             "التاريخ",
-                                                            textAlign:
-                                                                TextAlign.right,
+                                                            textAlign: TextAlign.right,
                                                             style: TextStyle(
-                                                              color: ColorManager
-                                                                  .textSecondary,
-                                                              fontSize:
-                                                                  FontResponsive.font(
-                                                                    context,
-                                                                    mobile: 15,
-                                                                    tablet: 21,
-                                                                  ),
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
+                                                              color: ColorManager.textSecondary,
+                                                              fontSize: FontResponsive.font(
+                                                                context,
+                                                                mobile: 12,
+                                                                tablet: 14,
+                                                              ).sp,
+                                                              fontWeight: FontWeight.w500,
                                                             ),
                                                           ),
                                                           Text(
                                                             "تاريخ البدء: ${conferenceModel.startDate}",
-                                                            textAlign:
-                                                                TextAlign.right,
+                                                            textAlign: TextAlign.right,
                                                             style: TextStyle(
-                                                              color:
-                                                                  ColorManager
-                                                                      .black,
-                                                              fontSize:
-                                                                  FontResponsive.font(
-                                                                    context,
-                                                                    mobile: 18,
-                                                                    tablet: 24,
-                                                                  ),
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
+                                                              color: ColorManager.black,
+                                                              fontSize: FontResponsive.font(
+                                                                context,
+                                                                mobile: 13,
+                                                                tablet: 16,
+                                                              ).sp,
+                                                              fontWeight: FontWeight.bold,
                                                             ),
                                                           ),
                                                           Text(
                                                             "تاريخ الانتهاء: ${conferenceModel.endDate}",
-                                                            textAlign:
-                                                                TextAlign.right,
+                                                            textAlign: TextAlign.right,
                                                             style: TextStyle(
-                                                              color:
-                                                                  ColorManager
-                                                                      .black,
-                                                              fontSize:
-                                                                  FontResponsive.font(
-                                                                    context,
-                                                                    mobile: 18,
-                                                                    tablet: 24,
-                                                                  ),
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
+                                                              color: ColorManager.black,
+                                                              fontSize: FontResponsive.font(
+                                                                context,
+                                                                mobile: 13,
+                                                                tablet: 16,
+                                                              ).sp,
+                                                              fontWeight: FontWeight.bold,
                                                             ),
                                                           ),
                                                         ],
                                                       ),
                                                     ),
                                                   ),
-                                                  SizedBox(width: 20.sp),
                                                 ],
                                               ),
                                             ),
                                           ),
-                                          SizedBox(height: 5.sp),
+
+                                          // 🛡️ كارت الاختصاصات الطبية (تمت إعادته ليكون داخل حاوية كالعادة)
                                           AnimationContainerWidget(
                                             child: Container(
                                               width: double.infinity,
-                                              padding: EdgeInsets.all(12.sp),
-                                              margin: EdgeInsets.symmetric(
-                                                vertical: 12.sp,
-                                              ),
+                                              padding: EdgeInsets.all(10.r),
+                                              margin: EdgeInsets.symmetric(vertical: 4.h),
                                               decoration: BoxDecoration(
                                                 border: Border.all(
                                                   color: ColorManager.border,
                                                 ),
-                                                color: ColorManager.primaryShadow.withOpacity(0.2),
-                                                borderRadius: BorderRadius.circular(25),
+                                                color: ColorManager.primaryShadow.withOpacity(0.12),
+                                                borderRadius: BorderRadius.circular(12),
                                               ),
                                               child: Row(
-                                                crossAxisAlignment: CrossAxisAlignment.start, // لجعل الأيقونة في الأعلى إذا تعددت الأسطر
+                                                crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: [
-                                                  // كارت الأيقونة (تم تعديل الأيقونة لتناسب الاختصاصات الطبية)
                                                   Card(
-                                                    margin: EdgeInsets.all(5.sp),
+                                                    margin: EdgeInsets.all(4.r),
                                                     shape: RoundedRectangleBorder(
-                                                      borderRadius: BorderRadius.circular(12),
+                                                      borderRadius: BorderRadius.circular(8),
                                                     ),
                                                     color: ColorManager.primary,
                                                     child: Padding(
-                                                      padding: EdgeInsets.all(10.sp),
+                                                      padding: EdgeInsets.all(6.r),
                                                       child: Icon(
-                                                        Icons.bookmarks_outlined, // أيقونة الاختصاصات والتصنيفات
+                                                        Icons.bookmarks_outlined,
                                                         color: const Color(0xffffffff),
-                                                        size: 30.sp,
+                                                        size: 20.r,
                                                       ),
                                                     ),
                                                   ),
-
-                                                  // قسم النصوص وعرض المصفوفة
                                                   Expanded(
                                                     child: Padding(
-                                                      padding: EdgeInsets.all(8.0.sp),
+                                                      padding: EdgeInsets.symmetric(horizontal: 8.w),
                                                       child: Column(
                                                         crossAxisAlignment: CrossAxisAlignment.start,
                                                         children: [
-                                                          // العنوان الثابت
                                                           Text(
                                                             "الاختصاصات الطبية",
                                                             textAlign: TextAlign.right,
@@ -429,47 +339,27 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                                               color: ColorManager.textSecondary,
                                                               fontSize: FontResponsive.font(
                                                                 context,
-                                                                mobile: 15,
-                                                                tablet: 21,
-                                                              ),
+                                                                mobile: 12,
+                                                                tablet: 14,
+                                                              ).sp,
                                                               fontWeight: FontWeight.w500,
                                                             ),
                                                           ),
-                                                          SizedBox(height: 8.sp),
-
-                                                          // 🔥 عرض قائمة الاختصاصات بشكل ديناميكي مرن
+                                                          SizedBox(height: 6.h),
+                                                          // عرض الاختصاصات كـ نص منسق داخل الحاوية السابقة
                                                           conferenceModel.spec != null && conferenceModel.spec.isNotEmpty
-                                                              ? Wrap(
-                                                            spacing: 8.0.sp,    // المسافة الأفقية بين كل اختصاص والآخر
-                                                            runSpacing: 6.0.sp, // المسافة الرأسية عند النزول لسطر جديد
-                                                            children: conferenceModel.spec.map((specItem) {
-                                                              return Container(
-                                                                padding: EdgeInsets.symmetric(
-                                                                  horizontal: 12.sp,
-                                                                  vertical: 6.sp,
-                                                                ),
-                                                                decoration: BoxDecoration(
-                                                                  color: ColorManager.primary.withOpacity(0.15), // لون متناسق مع الهوية
-                                                                  borderRadius: BorderRadius.circular(15),
-                                                                  border: Border.all(
-                                                                    color: ColorManager.primary.withOpacity(0.3),
-                                                                    width: 1,
-                                                                  ),
-                                                                ),
-                                                                child: Text(
-                                                                  specItem.title, // اسم الاختصاص القادم من الـ Model
-                                                                  style: TextStyle(
-                                                                    color: ColorManager.primary,
-                                                                    fontWeight: FontWeight.bold,
-                                                                    fontSize: FontResponsive.font(
-                                                                      context,
-                                                                      mobile: 14,
-                                                                      tablet: 19,
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                              );
-                                                            }).toList(),
+                                                              ? Text(
+                                                            conferenceModel.spec.map((e) => e.title).join(' ، '),
+                                                            textAlign: TextAlign.right,
+                                                            style: TextStyle(
+                                                              color: ColorManager.black,
+                                                              fontSize: FontResponsive.font(
+                                                                context,
+                                                                mobile: 13,
+                                                                tablet: 16,
+                                                              ).sp,
+                                                              fontWeight: FontWeight.bold,
+                                                            ),
                                                           )
                                                               : Text(
                                                             "لا توجد اختصاصات محددة",
@@ -478,9 +368,9 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                                               color: Colors.grey.shade600,
                                                               fontSize: FontResponsive.font(
                                                                 context,
-                                                                mobile: 16,
-                                                                tablet: 22,
-                                                              ),
+                                                                mobile: 12,
+                                                                tablet: 14,
+                                                              ).sp,
                                                               fontWeight: FontWeight.bold,
                                                               fontStyle: FontStyle.italic,
                                                             ),
@@ -489,13 +379,16 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                                       ),
                                                     ),
                                                   ),
-                                                  SizedBox(width: 20.sp),
                                                 ],
                                               ),
                                             ),
                                           ),
                                         ],
                                       ),
+
+                                      SizedBox(height: 16.h),
+
+                                      // أزرار التحكم
                                       Column(
                                         children: [
                                           buttonAnimationWithText(context, () {
@@ -504,17 +397,13 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                               Routes.insertUser,
                                             );
                                           }, "ابدأ الاستبيانات"),
-                                          const SizedBox(height: 10),
+                                          SizedBox(height: 8.h),
                                           buttonAnimationWithText(context, () {
                                             showPasswordDialog(
                                               context: context,
                                               onSuccess: () {
-                                                BlocProvider.of<SyncBloc>(
-                                                  context,
-                                                ).add(GetInfoConferenceEvent());
-                                                BlocProvider.of<SyncBloc>(
-                                                  context,
-                                                ).add(GetAllUserEvent());
+                                                BlocProvider.of<SyncBloc>(context).add(GetInfoConferenceEvent());
+                                                BlocProvider.of<SyncBloc>(context).add(GetAllUserEvent());
 
                                                 Navigator.pushNamed(
                                                   context,
@@ -522,10 +411,7 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                                   arguments: conferenceModel.id,
                                                 );
                                               },
-                                              correctPassword:
-                                                  instance<AppPreferences>()
-                                                      .getPassword() ??
-                                                  "لا يوجد كلمة سر",
+                                              correctPassword: instance<AppPreferences>().getPassword() ?? "لا يوجد كلمة سر",
                                             );
                                           }, "إعدادات المؤتمر"),
                                         ],
@@ -546,25 +432,24 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       emptyFullScreen(context),
-
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: ColorManager.primary,
                           foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 14,
-                            horizontal: 20,
+                          padding: EdgeInsets.symmetric(
+                            vertical: 10.h,
+                            horizontal: 16.w,
                           ),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          elevation: 4,
+                          elevation: 3,
                         ),
                         onPressed: () {
                           Navigator.pushNamedAndRemoveUntil(
                             context,
                             Routes.home,
-                            (route) => false,
+                                (route) => false,
                           );
                         },
                         child: const Text("العودة إلى الرئيسية"),

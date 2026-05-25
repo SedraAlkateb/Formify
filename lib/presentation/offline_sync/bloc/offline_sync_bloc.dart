@@ -27,115 +27,136 @@ class OfflineSyncBloc extends Bloc<OfflineSyncEvent, OfflineSyncState> {
   final UpdatedSyncUsersAnswersUsecase updatedSyncUsersAnswersUsecase;
   final GetAllUsersForSyncUsecase getAllUsersForSyncUsecase;
   final AddOrModifyUsersUsecase addOrModifyUsersUsecase;
-  final  GetUserAddModifySqlUsecase getUserAddModifySqlUsecase;
-  final  AddServerIdUserSqlUsecase  addServerIdUserSqlUsecase;
+  final GetUserAddModifySqlUsecase getUserAddModifySqlUsecase;
+  final AddServerIdUserSqlUsecase addServerIdUserSqlUsecase;
   final GetConferenceAndAnswersSqlUsecase getConferenceAndAnswersSqlUsecase;
   final DeleteSyncDataSqlUsecase deleteSyncDataSqlUsecase;
   final AddSyncDataSqlUsecase addSyncDataSqlUsecase;
   final DeleteDataSqlUsecase deleteDataSqlUsecase;
   final CheckPasswordUsecase checkPasswordUsecase;
 
-  int ? conferenceId;
-   int type=0;///0  save < 1 upload
+  int? conferenceId;
+  int type = 0;
+
+  ///0  save < 1 upload
   OfflineSyncBloc(
-      this.deleteDataSqlUsecase,
-      this.getAllAsyncInfoUsecase,
-      this.addAsyncDataSqlUsecase,
-      this.addOrModifyUsersUsecase,
-      this.getAllUsersForSyncUsecase,
-      this.updatedSyncUsersAnswersUsecase,
-      this.getUserAddModifySqlUsecase,
-      this.addServerIdUserSqlUsecase,
-      this.getConferenceAndAnswersSqlUsecase,
-      this.deleteSyncDataSqlUsecase,
-      this.addSyncDataSqlUsecase,
-      this.checkPasswordUsecase,
-      ) : super(OfflineSyncInitial()) {
-
-      on<AddAndModifyUserEvent>(_onAddAndModifyUser);
-      on<UploadUserEvent>(_onUploadUser);
-      on<UpdateUserIdEvent>(_updateIdUser);
-      on<GetUserAnswerAndUserConferenceEvent>(_getConferenceAndAnswerUser);
-      on<UploadUserAnswerAndUserConferenceEvent>(_uploadConferenceAndAnswerUser);
-      on<DeleteSyncDataEvent>(_deleteSavaData);
-      on<DeleteAllDataEvent>(_onDeleteData);
-      on<CheckEvent>(_onCheck);
-      on<GetSaveDataEvent>(_getSaveData);
-      on<AddSaveDataEvent>(_addSaveData);
-      on<AsyncDataEvent>(_onAsyncData);
-      on<InsertDataSqlEvent>(_onInsertSql);
-
+    this.deleteDataSqlUsecase,
+    this.getAllAsyncInfoUsecase,
+    this.addAsyncDataSqlUsecase,
+    this.addOrModifyUsersUsecase,
+    this.getAllUsersForSyncUsecase,
+    this.updatedSyncUsersAnswersUsecase,
+    this.getUserAddModifySqlUsecase,
+    this.addServerIdUserSqlUsecase,
+    this.getConferenceAndAnswersSqlUsecase,
+    this.deleteSyncDataSqlUsecase,
+    this.addSyncDataSqlUsecase,
+    this.checkPasswordUsecase,
+  ) : super(OfflineSyncInitial()) {
+    on<AddAndModifyUserEvent>(_onAddAndModifyUser);
+    on<UploadUserEvent>(_onUploadUser);
+    on<UpdateUserIdEvent>(_updateIdUser);
+    on<GetUserAnswerAndUserConferenceEvent>(_getConferenceAndAnswerUser);
+    on<UploadUserAnswerAndUserConferenceEvent>(_uploadConferenceAndAnswerUser);
+    on<DeleteSyncDataEvent>(_deleteSavaData);
+    on<DeleteAllDataEvent>(_onDeleteData);
+    on<CheckEvent>(_onCheck);
+    on<GetSaveDataEvent>(_getSaveData);
+    on<AddSaveDataEvent>(_addSaveData);
+    on<AsyncDataEvent>(_onAsyncData);
+    on<InsertDataSqlEvent>(_onInsertSql);
   }
   Future<void> _onAsyncData(
-      AsyncDataEvent event,
-      Emitter<OfflineSyncState> emit,
-      ) async {
+    AsyncDataEvent event,
+    Emitter<OfflineSyncState> emit,
+  ) async {
     emit(const DataOfflineLoadingState());
     (await getAllAsyncInfoUsecase.execute(event.conferenceId)).fold(
-          (failure) => emit(DataOfflineErrorState(failure: failure)),
-          (data) {
-            conferenceId=event.conferenceId;
-            emit(AsyncConferenceState(data));
-          },
+      (failure) => emit(DataOfflineErrorState(failure: failure)),
+      (data) {
+        conferenceId = event.conferenceId;
+        emit(AsyncConferenceState(data));
+      },
     );
   }
 
   Future<void> _onInsertSql(
-      InsertDataSqlEvent event,
-      Emitter<OfflineSyncState> emit,
-      ) async {
+    InsertDataSqlEvent event,
+    Emitter<OfflineSyncState> emit,
+  ) async {
     (await addAsyncDataSqlUsecase.execute(event.asyncModel)).fold(
-          (failure) => emit(DataOfflineErrorState(failure: failure)),
-          (_) => emit(InsertSucState(event.asyncModel.conferenceModel.id)),
+      (failure) => emit(DataOfflineErrorState(failure: failure)),
+      (_) => emit(InsertSucState(event.asyncModel.conferenceModel.id)),
     );
   }
 
-  Future<void> _onAddAndModifyUser(AddAndModifyUserEvent event, Emitter<OfflineSyncState> emit) async {
-    type=event.type;
-    conferenceId=event.id;
+  Future<void> _onAddAndModifyUser(
+    AddAndModifyUserEvent event,
+    Emitter<OfflineSyncState> emit,
+  ) async {
+    type = event.type;
+    conferenceId = event.id;
     emit(SyncLoadingState());
     (await getUserAddModifySqlUsecase.execute()).fold(
-          (failure) => emit(DataOfflineErrorState(failure: failure)),
-          (data) {
+      (failure) => emit(DataOfflineErrorState(failure: failure)),
+      (data) {
         emit(AddAndModifyUserSucState(data));
       },
     );
   }
-  Future<void> _onUploadUser(UploadUserEvent event, Emitter<OfflineSyncState> emit) async {
+
+  Future<void> _onUploadUser(
+    UploadUserEvent event,
+    Emitter<OfflineSyncState> emit,
+  ) async {
     (await addOrModifyUsersUsecase.execute(event.users)).fold(
-          (failure) => emit(DataOfflineErrorState(failure: failure)),
-          (data) {
+      (failure) => emit(DataOfflineErrorState(failure: failure)),
+      (data) {
         emit(UploadUserSucState(data));
       },
     );
   }
-  Future<void> _updateIdUser(UpdateUserIdEvent event, Emitter<OfflineSyncState> emit) async {
+
+  Future<void> _updateIdUser(
+    UpdateUserIdEvent event,
+    Emitter<OfflineSyncState> emit,
+  ) async {
     (await addServerIdUserSqlUsecase.execute(event.syncedUsers)).fold(
-          (failure) => emit(DataOfflineErrorState(failure: failure)),
-          (data) {
+      (failure) => emit(DataOfflineErrorState(failure: failure)),
+      (data) {
         emit(UpdateIdUserSucState());
       },
     );
   }
 
-  Future<void> _getConferenceAndAnswerUser(GetUserAnswerAndUserConferenceEvent event, Emitter<OfflineSyncState> emit) async {
-    (await getConferenceAndAnswersSqlUsecase.execute(conferenceId??0)).fold(
-          (failure) => emit(DataOfflineErrorState(failure: failure)),
-          (data) {
-        emit(GetUserAnswerAndUserConferenceState(data));
+  Future<void> _getConferenceAndAnswerUser(
+    GetUserAnswerAndUserConferenceEvent event,
+    Emitter<OfflineSyncState> emit,
+  ) async {
+    (await getConferenceAndAnswersSqlUsecase.execute(conferenceId ?? 0)).fold(
+      (failure) => emit(DataOfflineErrorState(failure: failure)),
+      (data) {
+        emit(GetUserAnswerAndUserConferenceState(data, type));
       },
     );
   }
-  Future<void> _uploadConferenceAndAnswerUser(UploadUserAnswerAndUserConferenceEvent event, Emitter<OfflineSyncState> emit) async {
+
+  Future<void> _uploadConferenceAndAnswerUser(
+    UploadUserAnswerAndUserConferenceEvent event,
+    Emitter<OfflineSyncState> emit,
+  ) async {
     (await updatedSyncUsersAnswersUsecase.execute(event.data)).fold(
-          (failure) => emit(DataOfflineErrorState(failure: failure)),
-          (data) {
+      (failure) => emit(DataOfflineErrorState(failure: failure)),
+      (data) {
         emit(UploadUserAnswerAndUserConferenceState(type));
       },
     );
   }
 
-  Future<void> _onCheck(CheckEvent event, Emitter<OfflineSyncState> emit) async {
+  Future<void> _onCheck(
+    CheckEvent event,
+    Emitter<OfflineSyncState> emit,
+  ) async {
     final checkResult = await checkPasswordUsecase.execute(event.password);
     checkResult.fold((failure) => null, (isValid) async {
       if (!isValid) {
@@ -147,38 +168,49 @@ class OfflineSyncBloc extends Bloc<OfflineSyncEvent, OfflineSyncState> {
   }
 
   //////TODO
-  Future<void> _deleteSavaData(DeleteSyncDataEvent event, Emitter<OfflineSyncState> emit) async {
+  Future<void> _deleteSavaData(
+    DeleteSyncDataEvent event,
+    Emitter<OfflineSyncState> emit,
+  ) async {
     (await deleteSyncDataSqlUsecase.execute()).fold(
-          (failure) => emit(DataOfflineErrorState(failure: failure)),
-          (data) {
+      (failure) => emit(DataOfflineErrorState(failure: failure)),
+      (data) {
         emit(DeleteSyncDataState());
       },
     );
   }
+
   Future<void> _onDeleteData(
-      DeleteAllDataEvent event,
-      Emitter<OfflineSyncState> emit,
-      ) async {
+    DeleteAllDataEvent event,
+    Emitter<OfflineSyncState> emit,
+  ) async {
     (await deleteDataSqlUsecase.execute()).fold(
-          (failure) => emit(DataOfflineErrorState(failure: failure)),
-          (_) => emit( DeleteAllDataState(type)),
+      (failure) => emit(DataOfflineErrorState(failure: failure)),
+      (_) => emit(DeleteAllDataState(type)),
     );
   }
-  Future<void> _getSaveData(GetSaveDataEvent event, Emitter<OfflineSyncState> emit) async {
-    (await getAllUsersForSyncUsecase.execute(conferenceId??0)).fold(
-          (failure) => emit(DataOfflineErrorState(failure: failure)),
-          (data) {
+
+  Future<void> _getSaveData(
+    GetSaveDataEvent event,
+    Emitter<OfflineSyncState> emit,
+  ) async {
+    (await getAllUsersForSyncUsecase.execute(conferenceId ?? 0)).fold(
+      (failure) => emit(DataOfflineErrorState(failure: failure)),
+      (data) {
         emit(GetSaveDataState(data));
       },
     );
   }
-  Future<void> _addSaveData(AddSaveDataEvent event, Emitter<OfflineSyncState> emit) async {
+
+  Future<void> _addSaveData(
+    AddSaveDataEvent event,
+    Emitter<OfflineSyncState> emit,
+  ) async {
     (await addSyncDataSqlUsecase.execute(event.data)).fold(
-          (failure) => emit(DataOfflineErrorState(failure: failure)),
-          (data) {
+      (failure) => emit(DataOfflineErrorState(failure: failure)),
+      (data) {
         emit(AddSaveDataSqlState(type));
       },
     );
   }
-
 }

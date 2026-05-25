@@ -961,14 +961,14 @@ class AppSqlApi extends AppSqlApiAbs {
       );
 
       // 4️⃣ إعادة الحزمة الكاملة جاهزة للتحويل إلى JSON والرفع
-      return SyncUsersRequest(userConferenceList, answersList);
+      return SyncUsersRequest(0,userConferenceList, answersList);
 
     } catch (e, stackTrace) {
       print("❌ خطأ أثناء تجهيز حزمة الحضور والإجابات للمزامنة: $e");
       print("StackTrace: $stackTrace");
 
       // إرجاع كائن فارغ لحماية التطبيق من الانهيار في حالة وجود خطأ
-      return SyncUsersRequest(<UserConferenceModel>[], <UsersAnswersRequest>[]);
+      return SyncUsersRequest(0,<UserConferenceModel>[], <UsersAnswersRequest>[]);
     }
   }
 
