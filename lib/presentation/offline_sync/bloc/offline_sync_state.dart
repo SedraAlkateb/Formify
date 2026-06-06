@@ -34,7 +34,8 @@ final class UpdateIdUserSucState extends OfflineSyncState {
 
 final class GetUserAnswerAndUserConferenceState extends OfflineSyncState {
   final SyncUsersRequest data;
-  const GetUserAnswerAndUserConferenceState(this.data);
+  final int type;
+  const GetUserAnswerAndUserConferenceState(this.data,this.type);
 
   @override
   List<Object?> get props => [

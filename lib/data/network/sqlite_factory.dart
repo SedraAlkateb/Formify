@@ -43,7 +43,8 @@ class DatabaseHelper {
     specId INTEGER,
     is_local_new INTEGER DEFAULT 0,      -- 1: مستخدم جديد مضاف من الموبايل، 0: قادم من السيرفر
     is_modified INTEGER DEFAULT 0,       -- 1: مستخدم قديم تم تعديل بياناته محلياً
-    isUpload INTEGER DEFAULT 1        -- 0: يحتاج رفع/تحديث، 1: مزامن بالكامل    FOREIGN KEY (specId) REFERENCES spec(id) 
+    isUpload INTEGER DEFAULT 1        -- 0: يحتاج رفع/تحديث، 1: مزامن بالكامل  
+    FOREIGN KEY (specId) REFERENCES spec(id) 
   )
 ''');
 
