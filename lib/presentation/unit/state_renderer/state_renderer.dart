@@ -261,11 +261,14 @@ Widget _getPopupDialog(BuildContext context,List<Widget> children){
     );
 }
 Widget  _getDialogContent (BuildContext context,List<Widget>children){
-  return Column(
-    mainAxisSize: MainAxisSize.min,
-  mainAxisAlignment: MainAxisAlignment.center,
-  crossAxisAlignment: CrossAxisAlignment.center,
-  children: children,
+  return SingleChildScrollView(
+
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+    mainAxisAlignment: MainAxisAlignment.center,
+    crossAxisAlignment: CrossAxisAlignment.center,
+    children: children,
+    ),
   );
 }
 getMessage(String ){
