@@ -568,8 +568,8 @@ extension CountResponseMapper on CountStatResponse? {
 extension GetSpecModelMapper on SpecificationResponse? {
   SpecModel toDomain() {
     return SpecModel(
-      this?.id ?? Constants.zero,
-      this?.title ?? Constants.empty,
+      this?.id ,
+      this?.title  ,
     );
   }
 }
@@ -624,7 +624,7 @@ extension GetUserSaveDataModelMapper on UserForSaveResponse? {
         this?.address ?? Constants.empty,
         this?.user_types_id ?? Constants.zero,
         this?.notes ?? Constants.empty,
-     specId:   this?.spec_id ?? Constants.zero,
+     specId:   this?.spec_id ,
       is_local_new: 0,
       isUpload: 0,
       is_modified: 0,

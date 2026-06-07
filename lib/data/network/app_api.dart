@@ -55,16 +55,16 @@ abstract class AppServiceClient {
   Future<GetAllSurveyWithActiveBaseResponse> getAllSurveyAndActiveSurvey(
     @Part(name: "conference_id") int conference_id,
   );
-  @POST("users-crud/create_user_with_conferenceId.php")
-  Future<CreateUserResponse> createUserWithConferenceId(
-    @Part(name: "fullname") String fullname,
-    @Part(name: "email") String? email,
-    @Part(name: "phone") String phone,
-    @Part(name: "address") String? address,
-    @Part(name: "type_id") int? type_id,
-
-    @Part(name: "conference_id") int conference_id,
-  );
+  // @POST("users-crud/create_user_with_conferenceId.php")
+  // Future<CreateUserResponse> createUserWithConferenceId(
+  //   @Part(name: "fullname") String fullname,
+  //   @Part(name: "email") String? email,
+  //   @Part(name: "phone") String phone,
+  //   @Part(name: "address") String? address,
+  //   @Part(name: "type_id") int? type_id,
+  //
+  //   @Part(name: "conference_id") int conference_id,
+  // );
 //////////////TODO
   @POST("synchronize/get_allInformation_confernce.php")
   Future<GetAllAsyncByConferenceIdBaseResponse> getAllInformationConference(

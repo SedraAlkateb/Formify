@@ -9,7 +9,6 @@ import 'package:formify/presentation/offline_sync/bloc/offline_sync_bloc.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/responsive/breakpoints.dart';
 import 'package:formify/presentation/resources/responsive/font_responseve.dart';
-import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
 
 class ConferenceEndedWidget extends StatelessWidget {
   const ConferenceEndedWidget({
@@ -114,7 +113,7 @@ class ConferenceEndedWidget extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      specItem.title,
+                      specItem.title??"",
                       style: TextStyle(
                         color: ColorManager.primary,
                         fontWeight: FontWeight.bold,

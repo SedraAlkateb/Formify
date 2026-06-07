@@ -29,6 +29,7 @@ class DoctorAutocompleteField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     // حل مشكلة Assertion: إذا لم يوجد FocusNode، ننشئ واحد محلي
     final FocusNode effectiveFocusNode = focusNode ?? FocusNode();
 

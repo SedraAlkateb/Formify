@@ -140,18 +140,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     return await _appServiceClient.getConferenceById(id);
   }
 
-  Future<CreateUserResponse> createUserWithConferenceId(
-    UserInputModel userInputModel,
-  ) async {
-    return await _appServiceClient.createUserWithConferenceId(
-      userInputModel.fullName,
-      userInputModel.email,
-      userInputModel.phone,
-      userInputModel.address,
-      userInputModel.userType.id,
-      userInputModel.conferenceId,
-    );
-  }
+
 
   @override
   Future<GetAllAsyncByConferenceIdBaseResponse> getAllInformationConference(

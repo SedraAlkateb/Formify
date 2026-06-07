@@ -147,15 +147,24 @@ class _InsertUserPageState extends State<InsertUserPage>
                                   animationController: _controller,
                                   onDoctorSelected: (doctor) {
                                     setState(() {
-                                       BlocProvider.of<SyncBloc>(context).selectedDoctor=doctor;
+                                      print("ssssssss");
+                                      print(doctor.spec?.id ?? 9);
+                                      BlocProvider.of<SyncBloc>(context).selectedDoctor = doctor;
                                       _selectedUserType = doctor.userType;
                                       fullNameController.text = doctor.fullName;
                                       addressController.text = doctor.address ?? "";
                                       noteController.text = doctor.notes ?? "";
-                                      emailController.text=doctor.email??"";
-                                       phoneController.text=doctor.phone;
+                                      emailController.text = doctor.email ?? "";
+                                      phoneController.text = doctor.phone;
 
-                                       specialtySearchController.clear();
+                                      // 🌟 التعديل هنا: ابحث عن الاختصاص داخل القائمة المحلية بواسطة الـ id لمنع اختلاف المراجع
+                                      if (doctor.spec != null && _specialties.any((e) => e.id == doctor.spec!.id)) {
+                                        _selectedSpecialty = _specialties.firstWhere((e) => e.id == doctor.spec!.id);
+                                      } else {
+                                        _selectedSpecialty = null; // أو اتركه فارغاً إذا لم يكن مسجلاً له اختصاص
+                                      }
+
+                                      specialtySearchController.clear();
                                     });
                                     _importantDoctorFocusNode.unfocus();
                                   },
@@ -347,7 +356,7 @@ class _InsertUserPageState extends State<InsertUserPage>
             return DropdownMenuItem<SpecModel>(
               value: specialty,
               child: Text(
-                specialty.title,
+                specialty.title??"",
                 style: const TextStyle(fontSize: 14),
               ),
             );

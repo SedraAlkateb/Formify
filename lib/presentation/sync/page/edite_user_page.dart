@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/models/user_type.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
-import 'package:formify/presentation/resources/values_manager.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
 import 'package:formify/presentation/sync/widget/autocomplete.dart';
 import 'package:formify/presentation/unit/animation/animation-in_list.dart';
@@ -277,7 +276,7 @@ class _EditUserPageState extends State<EditUserPage>
                                     return DropdownMenuItem<SpecModel>(
                                       value: specialty,
                                       child: Text(
-                                        specialty.title,
+                                        specialty.title??"",
                                         style: const TextStyle(fontSize: 14),
                                       ),
                                     );

@@ -480,7 +480,7 @@ class _DoctorsAttendancePageState extends State<DoctorsAttendancePage> {
                                         border: Border.all(color: ColorManager.primary.withOpacity(0.12)),
                                       ),
                                       child: Text(
-                                        specialization.title,
+                                        specialization.title??"",
                                         style: TextStyle(
                                           fontSize: FontResponsive.font(context, mobile: 11, tablet: 14),
                                           color: ColorManager.primary,

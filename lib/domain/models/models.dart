@@ -322,22 +322,22 @@ class UseAnswerModel {
   }
 }
 
-class UserInputModel {
-  String fullName;
-  String? email;
-  String phone;
-  String? address;
-  UserType userType;
-  int conferenceId;
-  UserInputModel(
-    this.fullName,
-    this.email,
-    this.phone,
-    this.address,
-    this.userType,
-    this.conferenceId,
-  );
-}
+// class UserInputModel {
+//   String fullName;
+//   String? email;
+//   String phone;
+//   String? address;
+//   UserType userType;
+//   int conferenceId;
+//   UserInputModel(
+//     this.fullName,
+//     this.email,
+//     this.phone,
+//     this.address,
+//     this.userType,
+//     this.conferenceId,
+//   );
+// }
 
 class UserModel {
   int? id;
@@ -496,6 +496,7 @@ class UserModel {
         map['spec_id_joined'] as int,
         map['spec_title_joined'] as String,
       );
+      print("iddddddddddddd:${associatedSpec.id}, nameeeeeeeeee:${associatedSpec.title}");
     }
 
     return UserModel(
@@ -623,8 +624,8 @@ class SurveyToConferenceModel {
 }
 
 class SpecModel {
-  int id;
-  String title;
+  int? id;
+  String? title;
   SpecModel(this.id, this.title);
   Map<String, dynamic> toMap() {
     return {'id': id, 'title': title};
@@ -850,6 +851,7 @@ class UserSqlModel {
   factory UserSqlModel.fromMap(Map<String, dynamic> map) {
     return UserSqlModel(
       user: UserModel.fromMap(map),
+      //
       answerModel: _mapAnswers(
         map['answer_id'],
         map['content'],

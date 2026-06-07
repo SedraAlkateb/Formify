@@ -1,25 +1,17 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:formify/app/app_preferences.dart';
-import 'package:formify/app/di.dart';
 import 'package:formify/data/mapper/mapper.dart';
 import 'package:formify/data/network/failure.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/models/user_type.dart';
-import 'package:formify/domain/usecase/add_async_data_sql_usecase.dart';
-import 'package:formify/domain/usecase/check_password_usecase.dart';
-import 'package:formify/domain/usecase/delete_data_sql_usecase.dart';
-import 'package:formify/domain/usecase/delete_user_sql_usecase.dart';
 import 'package:formify/domain/usecase/doctors_attendance_sql_usecase.dart';
-import 'package:formify/domain/usecase/get_all_async_info_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_info_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_doctors_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_question_answers_usecase.dart';
 import 'package:formify/domain/usecase/get_spec_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_surveys_sql_usecase.dart';
-import 'package:formify/domain/usecase/get_user_answer_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_users_by_specId_name_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_users_conference_usecase.dart';
 import 'package:formify/domain/usecase/insert_doctor_sql_usecase.dart';
@@ -49,6 +41,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   List<IsActiveMainSurveyModel> surveys = [];
   List<IsActiveMainSurveyModel> surveysBase = [];
   List<UserModel> doctor = [];
+  ///
   List<SpecModel> spec = [];
 
   UserModel? selectedDoctor;
@@ -147,6 +140,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
       (failure) => emit(DataErrorState(failure: failure)),
       (data) {
         doctor = data;
+
         emit(DoctorsState(data, selectedDoctor: selectedDoctor));
       },
     );

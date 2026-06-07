@@ -58,7 +58,7 @@ class SpecialtyDropdownField extends StatelessWidget {
           // عرض القائمة فقط في حالة النجاح
           items: (specialties ?? []).map((spec) => DropdownMenuItem<SpecModel>(
             value: spec,
-            child: Text(spec.title),
+            child: Text(spec.title??""),
           )).toList(),
           validator: FormBuilderValidators.required(errorText: 'يرجى اختيار الاختصاص'),
           onChanged: onChanged,
