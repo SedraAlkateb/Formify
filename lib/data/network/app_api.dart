@@ -22,9 +22,9 @@ abstract class AppServiceClient {
   @MultiPart()
   @POST("survey-crud/create_survey_questionsAndAnswers.php")
   Future<CreateSurveyQuestionsBaseResponse> createSurveyQuestionsAndAnswers(
-    @Part(name: "data") String surveyQ,
-    @Part(name: "files[]") List<File> images,
-  );
+      @Part(name: "data") String surveyQ,
+      @Part(name: "files[]") List<MultipartFile> images, // 🌟 التعديل هنا
+      );
   @GET("survey-crud/get_all_survey.php")
   Future<GetAllSurveyBaseResponse> getAllSurvey();
   @POST("survey-crud/get_surveyWithQuestion_by_id.php")

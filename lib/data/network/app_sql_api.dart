@@ -708,12 +708,16 @@ class AppSqlApi extends AppSqlApiAbs {
   Future<List<UserModel>> getDoctors() async {
     final db = await databaseHelper.database;
 
-    // إضافة شرط التصفية (Filter) بناءً على type_id
-    final List<Map<String, dynamic>> maps = await db.query(
-      'all_users',
-      where: 'type_id = ?',
-      whereArgs: [6],
-    );
+    // استخدام rawQuery مع تسمية الأعمدة المستعارة لتطابق الـ Factory لديك
+    final List<Map<String, dynamic>> maps = await db.rawQuery('''
+    SELECT 
+      u.*, 
+      s.id AS spec_id_joined, 
+      s.title AS spec_title_joined
+    FROM all_users u
+    LEFT JOIN spec s ON u.specId = s.id
+    WHERE u.type_id = ?
+  ''', [6]);
 
     return List.generate(maps.length, (i) {
       return UserModel.fromMap(maps[i]);
@@ -967,14 +971,14 @@ class AppSqlApi extends AppSqlApiAbs {
       );
 
       // 4️⃣ إعادة الحزمة الكاملة جاهزة للتحويل إلى JSON والرفع
-      return SyncUsersRequest(0,userConferenceList, answersList);
+      return SyncUsersRequest(0,conferenceId,userConferenceList, answersList);
 
     } catch (e, stackTrace) {
       print("❌ خطأ أثناء تجهيز حزمة الحضور والإجابات للمزامنة: $e");
       print("StackTrace: $stackTrace");
 
       // إرجاع كائن فارغ لحماية التطبيق من الانهيار في حالة وجود خطأ
-      return SyncUsersRequest(0,<UserConferenceModel>[], <UsersAnswersRequest>[]);
+      return SyncUsersRequest(0,conferenceId,<UserConferenceModel>[], <UsersAnswersRequest>[]);
     }
   }
 

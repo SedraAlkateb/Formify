@@ -63,24 +63,14 @@ class _AppServiceClient implements AppServiceClient {
   @override
   Future<CreateSurveyQuestionsBaseResponse> createSurveyQuestionsAndAnswers(
     String surveyQ,
-    List<File> images,
+    List<MultipartFile> images,
   ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = FormData();
     _data.fields.add(MapEntry('data', surveyQ));
-    _data.files.addAll(
-      images.map(
-        (i) => MapEntry(
-          'files[]',
-          MultipartFile.fromFileSync(
-            i.path,
-            filename: i.path.split(Platform.pathSeparator).last,
-          ),
-        ),
-      ),
-    );
+    _data.files.addAll(images.map((i) => MapEntry('files[]', i)));
     final _options = _setStreamType<CreateSurveyQuestionsBaseResponse>(
       Options(
             method: 'POST',

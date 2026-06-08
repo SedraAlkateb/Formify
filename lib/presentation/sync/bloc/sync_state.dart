@@ -257,14 +257,6 @@ final class InsertDoctorLoadingState extends SyncState {
   List<Object?> get props => [];
 }
 
-final class GetUserConferenceState extends SyncState {
-  final List<UserModel> users;
-  final List<UserModel> filterUsers;
-
-  const GetUserConferenceState(this.users, this.filterUsers);
-  @override
-  List<Object?> get props => [filterUsers];
-}
 
 final class GetUserConferenceEmptyState extends SyncState {
   @override
@@ -342,4 +334,19 @@ class UserFilterState extends SyncState {
 
   @override
   List<Object?> get props => [data];
+}
+final class GetAllUserWithFilterState extends SyncState {
+  final List<UserModel> users;
+  final List<UserModel> userFilter;
+  final String newTitle;
+  GetAllUserWithFilterState(this.users, this.newTitle, this.userFilter);
+  List<Object?> get props => [userFilter];
+}
+final class GetUserConferenceState extends SyncState {
+  final List<UserModel> users;
+  final List<UserModel> filterUsers;
+  final String newTitle;
+  const GetUserConferenceState(this.users, this.filterUsers,this.newTitle);
+  @override
+  List<Object?> get props => [filterUsers];
 }

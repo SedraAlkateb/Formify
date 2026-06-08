@@ -3,9 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/app/app_preferences.dart';
 import 'package:formify/app/di.dart';
 import 'package:formify/domain/models/models.dart';
+import 'package:formify/presentation/active_conference/page/view_active_conference_page.dart';
 import 'package:formify/presentation/conference/widget/conferm_dialog.dart';
 import 'package:formify/presentation/offline_sync/bloc/offline_sync_bloc.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
+import 'package:formify/presentation/resources/responsive/font_responseve.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/resources/strings_manager.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
@@ -47,6 +49,7 @@ class SettingPage extends StatelessWidget {
           }
           else if (state is GetUserAnswerAndUserConferenceState) {
             state.data.is_active=state.type;
+            state.data.conference_id=id;
             BlocProvider.of<OfflineSyncBloc>(context).add(UploadUserAnswerAndUserConferenceEvent(state.data));
 
           }
@@ -268,48 +271,146 @@ class SettingPage extends StatelessWidget {
       ),
     );
   }
-
   Widget _buildUsersList() {
     return BlocBuilder<SyncBloc, SyncState>(
-      buildWhen: (previous, current) => current is GetUserConferenceState || current is GetUserConferenceErrorState,
+      buildWhen: (previous, current) =>
+      current is GetUserConferenceState ||
+          current is GetUserConferenceErrorState, // حافظنا على شروط البناء الخاصة بك
       builder: (context, state) {
         if (state is GetUserConferenceErrorState) {
           return errorFullScreen(context);
         } else if (state is GetUserConferenceState) {
+          // قائمة المستخدمين المفلترة الحالية بناءً على تصميم البلوك الخاص بك
           List<UserModel> users = state.filterUsers;
 
           return Column(
             children: [
-              SearchField(
-                searchController: searchController,
-                onPressed: (value) {
-                  BlocProvider.of<SyncBloc >(
-                    context,
-                  ).add(
-                    SearchInUsersEvent(
-                      state.users,
-                      value,
+              // 1️⃣ قسم العناوين والعداد وزر الفلترة المتقدمة (PopupMenuButton)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.group_outlined, size: 30),
+                        const SizedBox(width: 8),
+                        Text(
+                          // افترضت وجود العنوان أو فلتر مخصص بالـ state، أو نص ثابت، تم تعديله ليتوافق ديناميكياً
+                          "قائمة المشاركين",
+                          style: TextStyle(
+                            fontSize: FontResponsive.font(
+                              context,
+                              mobile: 18,
+                              tablet: 22,
+                            ),
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+
+                        // زر الفلترة منسدل موجه للـ SyncBloc
+                        PopupMenuButton<int>(
+                          icon: const Icon(
+                            Icons.filter_list,
+                            color: Colors.blueGrey,
+                          ),
+                          onSelected: (int value) {
+                            // 🌟 توجيه حدث الفلترة إلى الـ SyncBloc الخاص بك
+                            // قم بتغيير اسم الـ Event إذا كان مختلفاً لديك في الـ SyncBloc
+                            BlocProvider.of<SyncBloc>(context).add(
+                              FilterUserEvent(value, state.users),
+                            );
+                          },
+                          itemBuilder: (BuildContext context) => [
+                            const PopupMenuItem(
+                              value: 0,
+                              child: Text("الكل"),
+                            ),
+                            const PopupMenuItem(
+                              value: 1,
+                              child: Text("المهمين - حضروا"),
+                            ),
+                            const PopupMenuItem(
+                              value: 2,
+                              child: Text("المهمين - لم يحضروا"),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                  );
-                },
+
+                    // عداد المشاركين المفلترين ديناميكياً
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        children: [
+                          Text(
+                            users.length.toString(),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue,
+                            ),
+                          ),
+                          const Text(
+                            " مشارك ",
+                            style: TextStyle(fontSize: 12, color: Colors.blueGrey),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              SizedBox(height: 20,),
-              ListView.builder(
+              const SizedBox(height: 4),
+
+              // 2️⃣ قسم البحث المطور مدمجاً بجانبه زر تصدير Excel الرسمي
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SearchField(
+                  searchController: searchController,
+                  onPressed: (value) {
+                    // 🌟 حدث البحث الموجه للـ SyncBloc
+                    BlocProvider.of<SyncBloc>(context).add(
+                      SearchInUsersEvent(
+                        state.users,
+                        value,
+                        state.newTitle
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // 3️⃣ عرض قائمة الـ ListView بناءً على النتيجة أو إظهار شاشة فارغة
+              users.isNotEmpty
+                  ? ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: users.length,
                 itemBuilder: (context, index) {
                   final u = users[index];
 
-                  // تخصيص لون الوسم بناءً على نوع المستخدم
                   Color typeColor = u.userType.name.toLowerCase() == 'doctor'
                       ? Colors.blueAccent
                       : Colors.teal;
 
                   return AnimationContainerWidget(
                     child: InkWell(
-                      onTap:u.isUpload==1?null: () {
-                        Navigator.pushNamed(context, Routes.editUser,arguments: u);
+                      onTap: u.isUpload == 1
+                          ? null
+                          : () {
+                        Navigator.pushNamed(
+                          context,
+                          Routes.editUser,
+                          arguments: u,
+                        );
                       },
                       child: Container(
                         margin: const EdgeInsets.only(bottom: 16),
@@ -328,23 +429,21 @@ class SettingPage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(25),
                           child: Stack(
                             children: [
-                              // لمسة فنية: دائرة ملونة في الخلفية
                               PositionRectangle(typeColor),
-
                               Padding(
                                 padding: const EdgeInsets.all(16),
                                 child: Row(
                                   children: [
-                                    // أيقونة الحالة (تم التحقق)
                                     Icon(
-                                        u.isUpload==1?Icons.check_circle_outline:
-                                        Icons.edit, color:
-                                    u.isUpload!=0?Colors.grey:
-                                    Colors.green.shade400, size: 20),
-
+                                      u.isUpload == 1
+                                          ? Icons.check_circle_outline
+                                          : Icons.edit,
+                                      color: u.isUpload != 0
+                                          ? Colors.grey
+                                          : Colors.green.shade400,
+                                      size: 20,
+                                    ),
                                     const Spacer(),
-
-                                    // تفاصيل المستخدم
                                     Expanded(
                                       flex: 4,
                                       child: Column(
@@ -359,19 +458,12 @@ class SettingPage extends StatelessWidget {
                                             ),
                                           ),
                                           const SizedBox(height: 4),
-
-                                          // رقم الهاتف مع أيقونة صغيرة
                                           _buildInfoRow(u.phone, Icons.phone_android_outlined),
-
                                           if (u.email != null && u.email!.isNotEmpty)
                                             _buildInfoRow(u.email!, Icons.email_outlined),
-
                                           if (u.address != null && u.address!.isNotEmpty)
                                             _buildInfoRow(u.address!, Icons.location_on_outlined),
-
                                           const SizedBox(height: 10),
-
-                                          // وسام نوع المستخدم (Tag)
                                           Container(
                                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                                             decoration: BoxDecoration(
@@ -392,10 +484,7 @@ class SettingPage extends StatelessWidget {
                                         ],
                                       ),
                                     ),
-
                                     const SizedBox(width: 15),
-
-                                    // الصورة الشخصية (Avatar) بتصميم عصري
                                     _buildModernAvatar(u),
                                   ],
                                 ),
@@ -407,16 +496,167 @@ class SettingPage extends StatelessWidget {
                     ),
                   );
                 },
+              )
+                  : buildEmptySurveysWidget(
+                context,
+                "لا يوجد مشاركين",
+                "يبدو أن هذا المؤتمر لا يحتوي على مشاركين بهذا الاسم أو الفلتر",
               ),
             ],
           );
         }
-
-
-        return SizedBox();
+        return const SizedBox();
       },
     );
   }
+  // Widget _buildUsersList() {
+  //   return BlocBuilder<SyncBloc, SyncState>(
+  //     buildWhen: (previous, current) => current is GetUserConferenceState || current is GetUserConferenceErrorState,
+  //     builder: (context, state) {
+  //       if (state is GetUserConferenceErrorState) {
+  //         return errorFullScreen(context);
+  //       } else if (state is GetUserConferenceState) {
+  //         List<UserModel> users = state.filterUsers;
+  //
+  //         return Column(
+  //           children: [
+  //             SearchField(
+  //               searchController: searchController,
+  //               onPressed: (value) {
+  //                 BlocProvider.of<SyncBloc >(
+  //                   context,
+  //                 ).add(
+  //                   SearchInUsersEvent(
+  //                     state.users,
+  //                     value,
+  //                   ),
+  //                 );
+  //               },
+  //             ),
+  //             SizedBox(height: 20,),
+  //             ListView.builder(
+  //               shrinkWrap: true,
+  //               physics: const NeverScrollableScrollPhysics(),
+  //               itemCount: users.length,
+  //               itemBuilder: (context, index) {
+  //                 final u = users[index];
+  //
+  //                 // تخصيص لون الوسم بناءً على نوع المستخدم
+  //                 Color typeColor = u.userType.name.toLowerCase() == 'doctor'
+  //                     ? Colors.blueAccent
+  //                     : Colors.teal;
+  //
+  //                 return AnimationContainerWidget(
+  //                   child: InkWell(
+  //                     onTap:u.isUpload==1?null: () {
+  //                       Navigator.pushNamed(context, Routes.editUser,arguments: u);
+  //                     },
+  //                     child: Container(
+  //                       margin: const EdgeInsets.only(bottom: 16),
+  //                       decoration: BoxDecoration(
+  //                         color: Colors.white,
+  //                         borderRadius: BorderRadius.circular(25),
+  //                         boxShadow: [
+  //                           BoxShadow(
+  //                             color: Colors.black.withOpacity(0.04),
+  //                             blurRadius: 15,
+  //                             offset: const Offset(0, 8),
+  //                           ),
+  //                         ],
+  //                       ),
+  //                       child: ClipRRect(
+  //                         borderRadius: BorderRadius.circular(25),
+  //                         child: Stack(
+  //                           children: [
+  //                             // لمسة فنية: دائرة ملونة في الخلفية
+  //                             PositionRectangle(typeColor),
+  //
+  //                             Padding(
+  //                               padding: const EdgeInsets.all(16),
+  //                               child: Row(
+  //                                 children: [
+  //                                   // أيقونة الحالة (تم التحقق)
+  //                                   Icon(
+  //                                       u.isUpload==1?Icons.check_circle_outline:
+  //                                       Icons.edit, color:
+  //                                   u.isUpload!=0?Colors.grey:
+  //                                   Colors.green.shade400, size: 20),
+  //
+  //                                   const Spacer(),
+  //
+  //                                   // تفاصيل المستخدم
+  //                                   Expanded(
+  //                                     flex: 4,
+  //                                     child: Column(
+  //                                       crossAxisAlignment: CrossAxisAlignment.end,
+  //                                       children: [
+  //                                         Text(
+  //                                           u.fullName,
+  //                                           style: const TextStyle(
+  //                                             fontWeight: FontWeight.bold,
+  //                                             fontSize: 17,
+  //                                             color: Color(0xFF2D3142),
+  //                                           ),
+  //                                         ),
+  //                                         const SizedBox(height: 4),
+  //
+  //                                         // رقم الهاتف مع أيقونة صغيرة
+  //                                         _buildInfoRow(u.phone, Icons.phone_android_outlined),
+  //
+  //                                         if (u.email != null && u.email!.isNotEmpty)
+  //                                           _buildInfoRow(u.email!, Icons.email_outlined),
+  //
+  //                                         if (u.address != null && u.address!.isNotEmpty)
+  //                                           _buildInfoRow(u.address!, Icons.location_on_outlined),
+  //
+  //                                         const SizedBox(height: 10),
+  //
+  //                                         // وسام نوع المستخدم (Tag)
+  //                                         Container(
+  //                                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+  //                                           decoration: BoxDecoration(
+  //                                             color: typeColor.withOpacity(0.1),
+  //                                             borderRadius: BorderRadius.circular(10),
+  //                                             border: Border.all(color: typeColor.withOpacity(0.2)),
+  //                                           ),
+  //                                           child: Text(
+  //                                             u.userType.name.toUpperCase(),
+  //                                             style: TextStyle(
+  //                                               fontSize: 10,
+  //                                               fontWeight: FontWeight.bold,
+  //                                               color: typeColor,
+  //                                               letterSpacing: 1,
+  //                                             ),
+  //                                           ),
+  //                                         ),
+  //                                       ],
+  //                                     ),
+  //                                   ),
+  //
+  //                                   const SizedBox(width: 15),
+  //
+  //                                   // الصورة الشخصية (Avatar) بتصميم عصري
+  //                                   _buildModernAvatar(u),
+  //                                 ],
+  //                               ),
+  //                             ),
+  //                           ],
+  //                         ),
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 );
+  //               },
+  //             ),
+  //           ],
+  //         );
+  //       }
+  //
+  //
+  //       return SizedBox();
+  //     },
+  //   );
+  // }
 // --- توابع مساعدة للديزاين الجديد ---
 
   Widget _buildInfoRow(String text, IconData icon) {

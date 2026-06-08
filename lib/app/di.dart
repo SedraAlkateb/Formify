@@ -362,8 +362,13 @@ Future<void> initSyncModule() async {
     instance.registerFactory<GetUsersBySpecIdNameSqlUsecase>(
       () => GetUsersBySpecIdNameSqlUsecase(instance()),
     );
+    if (!GetIt.I.isRegistered<AllImportantDoctorNotComeSqlUsecase>()) {
+    instance.registerFactory<AllImportantDoctorNotComeSqlUsecase>(
+          () => AllImportantDoctorNotComeSqlUsecase(instance()),
+    );}
     instance.registerFactory<SyncBloc>(
       () => SyncBloc(
+        instance(),
         instance(),
         instance(),
         instance(),

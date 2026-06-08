@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:formify/data/network/app_api.dart';
 import 'package:formify/data/responses/responses.dart';
 import 'package:formify/domain/models/models.dart';
@@ -85,13 +86,25 @@ class RemoteDataSourceImpl implements RemoteDataSource {
 
   @override
   Future<CreateSurveyQuestionsBaseResponse> createSurveyQuestionsAndAnswers(
-    SurveyQuestionAndAnswersModel surveyQ,
-    List<File> images,
-  ) async {
+      SurveyQuestionAndAnswersModel surveyQ,
+      List<File> images,
+      ) async {
     final surveyJson = jsonEncode(surveyQ.toJson());
+
+    // 🌟 تحويل الـ File إلى MultipartFile قبل الإرسال
+    List<MultipartFile> multipartImages = [];
+    for (var file in images) {
+      multipartImages.add(
+        await MultipartFile.fromFile(
+          file.path,
+          filename: file.path.split('/').last, // استخراج اسم الصورة وامتدادها
+        ),
+      );
+    }
+
     return await _appServiceClient.createSurveyQuestionsAndAnswers(
       surveyJson,
-      images,
+      multipartImages, // تمرير القائمة المحولة
     );
   }
 

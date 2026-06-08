@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/models/user_type.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
+import 'package:formify/presentation/unit/text_field.dart'; // تأكد من صحة مسار GlowTextField
 
-// افترضت أن اسم البلوك SyncBloc واسم الموديل DoctorsModel
 class AddDoctorPage extends StatefulWidget {
   const AddDoctorPage({super.key});
 
@@ -15,16 +15,31 @@ class AddDoctorPage extends StatefulWidget {
 class _AddDoctorPageState extends State<AddDoctorPage> {
   final _formKey = GlobalKey<FormState>();
 
-  // تعريف المتحكمات
+  // تعريف المتحكمات الكاملة للحقول
   final _nameController = TextEditingController();
-  final _regionController = TextEditingController();
-  final _descController = TextEditingController();
+  final _regionController = TextEditingController(); // تم ربطه بحقل العنوان/المنطقة
+  final _descController = TextEditingController();   // الملاحظات أو الوصف
+  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
+
+  UserType _selectedUserType = UserType.importantDoctor; // القيمة الافتراضية لطبيب
+  SpecModel? _selectedSpecialty;
+  List<SpecModel> _specialties = [];
+
+  @override
+  void initState() {
+    super.initState();
+    // جلب قائمة الاختصاصات الطبية المتاحة من البلوك عند تهيئة الصفحة
+    _specialties = BlocProvider.of<SyncBloc>(context).spec;
+  }
 
   @override
   void dispose() {
     _nameController.dispose();
     _regionController.dispose();
     _descController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
@@ -38,18 +53,14 @@ class _AddDoctorPageState extends State<AddDoctorPage> {
       body: BlocConsumer<SyncBloc, SyncState>(
         listener: (context, state) {
           if (state is InsertDoctorSucState) {
-            // عند النجاح
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text("تمت إضافة الطبيب بنجاح"),
                 backgroundColor: Colors.green,
               ),
             );
-            // تحديث القائمة المحلية في الصفحة السابقة (اختياري حسب منطقك)
-            // context.read<SyncBloc>().add(const GetLocalDoctorsEvent());
             Navigator.pop(context);
           } else if (state is InsertDoctorErrorState) {
-            // عند الخطأ
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text("خطأ: ${state.failure.massage}"),
@@ -66,27 +77,95 @@ class _AddDoctorPageState extends State<AddDoctorPage> {
               child: ListView(
                 children: [
                   const SizedBox(height: 20),
-                  // حقل الاسم
-                  _buildTextField(
+
+                  // 1️⃣ حقل اسم الدكتور الكامل
+                  GlowTextField(
                     controller: _nameController,
-                    label: "اسم الدكتور *",
+                    label: 'اسم الدكتور *',
                     hint: "مثال: د. محمد علي",
-                    icon: Icons.person_add_alt_1_outlined,
-                    validator: (v) => v!.isEmpty ? "الرجاء إدخال اسم الدكتور" : null,
+                    icon: Icons.badge_outlined,
+                    validator: (v) {
+                      if (v == null || v.trim().isEmpty) {
+                        return 'الرجاء إدخال اسم الدكتور';
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 16),
 
-                  // حقل المنطقة
-                  _buildTextField(
+                  // 2️⃣ حقل رقم الهاتف
+                  GlowTextField(
+                    controller: _phoneController,
+                    label: 'رقم الهاتف *',
+                    hint: "09xxxxxxxx",
+                    icon: Icons.phone_outlined,
+                    keyboardType: TextInputType.phone,
+                    validator: (v) {
+                      if (v == null || v.trim().isEmpty) {
+                        return 'يرجى إدخال رقم الهاتف';
+                      }
+                      if (v.trim().length < 8) {
+                        return 'الرقم قصير جداً، يجب أن يكون 8 أرقام على الأقل';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+
+                  // 3️⃣ حقل البريد الإلكتروني
+                  GlowTextField(
+                    controller: _emailController,
+                    hint: "example@gmail.com",
+                    label: 'البريد الإلكتروني',
+                    icon: Icons.email_outlined,
+                    keyboardType: TextInputType.emailAddress,
+                  ),
+                  const SizedBox(height: 16),
+
+                  // 4️⃣ حقل المنطقة / العنوان
+                  GlowTextField(
                     controller: _regionController,
-                    label: "المنطقة *",
+                    label: "المنطقة / العنوان *",
                     hint: "مثال: حلب، دمشق...",
-                    icon: Icons.map_outlined,
+                    icon: Icons.location_on_outlined,
                     validator: (v) => v!.isEmpty ? "الرجاء إدخال المنطقة" : null,
                   ),
                   const SizedBox(height: 16),
 
-                  // حقل الوصف
+                  // 5️⃣ منسدلة الاختصاصات الطبية
+                  DropdownButtonFormField<SpecModel>(
+                    decoration: InputDecoration(
+                      labelText: "اختر الاختصاص الطبي",
+                      prefixIcon: const Icon(Icons.biotech_outlined),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 12,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey[50],
+                    ),
+                    value: _selectedSpecialty,
+                    hint: const Text("كل الاختصاصات"),
+                    items: _specialties.map((specialty) {
+                      return DropdownMenuItem<SpecModel>(
+                        value: specialty,
+                        child: Text(
+                          specialty.title ?? "",
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedSpecialty = value;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  // 7️⃣ حقل الملاحظات / الوصف
                   _buildTextField(
                     controller: _descController,
                     label: "ملاحظات / وصف",
@@ -96,12 +175,13 @@ class _AddDoctorPageState extends State<AddDoctorPage> {
                   ),
                   const SizedBox(height: 32),
 
-                  // زر الإرسال
+
+                  // زر حفظ الطبيب
                   SizedBox(
                     height: 50,
                     child: ElevatedButton(
                       onPressed: state is InsertDoctorLoadingState
-                          ? null // تعطيل الزر أثناء التحميل
+                          ? null
                           : _submitData,
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(
@@ -150,22 +230,24 @@ class _AddDoctorPageState extends State<AddDoctorPage> {
       validator: validator,
     );
   }
-
   void _submitData() {
     if (_formKey.currentState!.validate()) {
+      // بناء موديل البيانات بجميع القيم المضافة حديثاً من الحقول
       final doctor = UserModel(
-
         _nameController.text.trim(),
-      null,
-        "09",
+        _emailController.text.trim().isEmpty ? null : _emailController.text.trim(),
+        _phoneController.text.trim(),
         _regionController.text.trim(),
-          UserType.importantDoctor,
+        UserType.importantDoctor,
         _descController.text.trim(),
-          isUpload: 0,
+        spec: _selectedSpecialty,
+        isUpload: 0,
+        is_local_new: 1,
+        is_modified: 0,
       );
 
-      // استدعاء البلوك
-      context.read<SyncBloc>().add(InsertEvent( doctor));
+      // إرسال الإيفينت للبلوك الخاص بـ SyncBloc
+      context.read<SyncBloc>().add(InsertEvent(doctor));
     }
   }
 }
