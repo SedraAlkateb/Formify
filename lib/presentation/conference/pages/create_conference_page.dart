@@ -391,7 +391,7 @@ class CreateConferencePage extends StatelessWidget {
                                     ],
                                     rows: specs.map((s) => DataRow(
                                       cells: [
-                                        DataCell(Text(s.title, style: const TextStyle(fontSize: 14))),
+                                        DataCell(Text(s.title??"", style: const TextStyle(fontSize: 14))),
                                         DataCell(
 
                                           IconButton(
@@ -399,7 +399,7 @@ class CreateConferencePage extends StatelessWidget {
                                             icon: const Icon(Icons.delete_outline, color: Colors.redAccent, size: 22),
                                             onPressed: () {
                                               // إرسال حدث الحذف إلى الـ Bloc
-                                              context.read<ConferenceBloc>().add(RemoveSpecialtyFromLocalListEvent(s.id));
+                                              context.read<ConferenceBloc>().add(RemoveSpecialtyFromLocalListEvent(s.id??0));
                                             },
                                           ),
                                         ),

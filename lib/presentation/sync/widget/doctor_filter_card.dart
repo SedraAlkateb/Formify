@@ -115,7 +115,7 @@ class _DoctorFilterCardState extends State<DoctorFilterCard> {
                         return DropdownMenuItem<SpecModel>(
                           value: specialty,
                           child: Text(
-                            specialty.title,
+                            specialty.title??"",
                             style: const TextStyle(fontSize: 14),
                           ),
                         );
@@ -169,7 +169,7 @@ class _DoctorFilterCardState extends State<DoctorFilterCard> {
                                       widget.specialtySearchController.text,
                                       _currentSpecialty == null
                                           ? -1
-                                          : _currentSpecialty!.id,
+                                          : _currentSpecialty!.id??0,
                                     ),
                                   );
                                   // طلب التركيز على الحقل لضمان فتح قائمة الخيارات المنبثقة

@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:formify/data/network/failure.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/models/request.dart';
-import 'package:formify/domain/usecase/get_all_spec_usecase.dart';
 import 'package:formify/domain/usecase/get_all_user_for_app_usecase.dart';
 import 'package:formify/domain/usecase/insert_all_user_app_usecase.dart';
 import 'package:formify/domain/usecase/login_usecase.dart';

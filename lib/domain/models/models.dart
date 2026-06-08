@@ -322,22 +322,22 @@ class UseAnswerModel {
   }
 }
 
-class UserInputModel {
-  String fullName;
-  String? email;
-  String phone;
-  String? address;
-  UserType userType;
-  int conferenceId;
-  UserInputModel(
-    this.fullName,
-    this.email,
-    this.phone,
-    this.address,
-    this.userType,
-    this.conferenceId,
-  );
-}
+// class UserInputModel {
+//   String fullName;
+//   String? email;
+//   String phone;
+//   String? address;
+//   UserType userType;
+//   int conferenceId;
+//   UserInputModel(
+//     this.fullName,
+//     this.email,
+//     this.phone,
+//     this.address,
+//     this.userType,
+//     this.conferenceId,
+//   );
+// }
 
 class UserModel {
   int? id;
@@ -623,8 +623,8 @@ class SurveyToConferenceModel {
 }
 
 class SpecModel {
-  int id;
-  String title;
+  int? id;
+  String? title;
   SpecModel(this.id, this.title);
   Map<String, dynamic> toMap() {
     return {'id': id, 'title': title};
@@ -850,6 +850,7 @@ class UserSqlModel {
   factory UserSqlModel.fromMap(Map<String, dynamic> map) {
     return UserSqlModel(
       user: UserModel.fromMap(map),
+      //
       answerModel: _mapAnswers(
         map['answer_id'],
         map['content'],
@@ -999,12 +1000,14 @@ class QuestionForStatModel {
 
 class SyncUsersRequest {
   int is_active ;
+  int conference_id;
   List<UserConferenceModel> userConference;
   List<UsersAnswersRequest> answers;
-  SyncUsersRequest(this.is_active,this.userConference, this.answers);
+  SyncUsersRequest(this.is_active,this.conference_id,this.userConference, this.answers);
 
   Map<String, dynamic> toJson() {
     return {
+      'conference_id':conference_id,
       'is_active':is_active,
       'users_answers': answers.map((e) => e.toJson()).toList(),
       'users_conference':userConference.map((e) => e.toJsonApiUpdate(),).toList()
@@ -1012,7 +1015,9 @@ class SyncUsersRequest {
   }
 
   factory SyncUsersRequest.fromMap(Map<String, dynamic> map) {
-    return SyncUsersRequest(map['is_active'],map['users_conference'], map['users_answers']);
+    return SyncUsersRequest(map['is_active'],
+        map['conference_id'],
+        map['users_conference'], map['users_answers']);
   }
 }
 

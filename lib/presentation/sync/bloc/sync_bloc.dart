@@ -1,25 +1,18 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:formify/app/app_preferences.dart';
-import 'package:formify/app/di.dart';
 import 'package:formify/data/mapper/mapper.dart';
 import 'package:formify/data/network/failure.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/models/user_type.dart';
-import 'package:formify/domain/usecase/add_async_data_sql_usecase.dart';
-import 'package:formify/domain/usecase/check_password_usecase.dart';
-import 'package:formify/domain/usecase/delete_data_sql_usecase.dart';
-import 'package:formify/domain/usecase/delete_user_sql_usecase.dart';
+import 'package:formify/domain/usecase/all_important_doctor_not_come_sql_usecase.dart';
 import 'package:formify/domain/usecase/doctors_attendance_sql_usecase.dart';
-import 'package:formify/domain/usecase/get_all_async_info_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_info_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_doctors_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_question_answers_usecase.dart';
 import 'package:formify/domain/usecase/get_spec_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_surveys_sql_usecase.dart';
-import 'package:formify/domain/usecase/get_user_answer_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_users_by_specId_name_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_users_conference_usecase.dart';
 import 'package:formify/domain/usecase/insert_doctor_sql_usecase.dart';
@@ -44,11 +37,14 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   final DoctorsAttendanceSqlUsecase doctorsAttendanceSqlUsecase;
   final UpdateDoneUsecase updateDoneUsecase;
   final GetSpecSqlUsecase getSpecSqlUsecase;
+  final AllImportantDoctorNotComeSqlUsecase allImportantDoctorNotComeSqlUsecase;
+
   // القوائم المخزنة في الذاكرة
   GetUsersBySpecIdNameSqlUsecase getUsersBySpecIdNameSqlUsecase;
   List<IsActiveMainSurveyModel> surveys = [];
   List<IsActiveMainSurveyModel> surveysBase = [];
   List<UserModel> doctor = [];
+  ///
   List<SpecModel> spec = [];
 
   UserModel? selectedDoctor;
@@ -73,7 +69,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
       this.updateUserSqlUsecase,
       this.doctorsAttendanceSqlUsecase,
       this.updateDoneUsecase,
-
+      this.allImportantDoctorNotComeSqlUsecase
   ) : super(const SyncInitial()) {
     // الأحداث الأساسية
 
@@ -137,7 +133,51 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     on<SearchInUsersEvent>(_searchInUsersEvent);
     on<InsertUserSqlEvent>(_onInsertUserSql);
     on<DoctorsAttendanceEvent>(_onDoctorsAttendance);
+    on<FilterUserEvent>((event, emit) async {
+      final allUsers = event.users;
+      List<UserModel> filteredList = [];
+      String newTitle = "المشاركون"; // لتحديث العنوان في الـ UI
 
+      // 3. منطق الفلترة بناءً على الـ filterType
+      switch (event.filterType) {
+        case 0: // الكل
+          filteredList = allUsers;
+          newTitle = "الكل";
+          break;
+        case 1:
+          filteredList = allUsers.where((user) {
+            return user.userType==UserType.importantDoctor;
+          }).toList();
+          newTitle = "المهمين - حضروا";
+          break;
+        case 2:
+          (await allImportantDoctorNotComeSqlUsecase.execute(event.users)).fold(
+                (failure) {
+              emit(GetUserConferenceErrorState(failure: failure));
+            },
+                (data) async {
+              filteredList=data;
+            },
+          );
+          newTitle = "المهمين - غائبين";
+          break;
+      }
+      for (var user in filteredList) {
+        print(
+          " | اسم المستخدم: ${user.fullName} | العنوان: ${user.address}  | الرقم: ${user.phone}  | النوع: ${user.userType.name}",
+        );
+      }
+      emit(
+        GetUserConferenceState(
+          allUsers,
+
+          filteredList,
+          newTitle,
+
+          // أضف هذا الحقل للـ State لكي تستخدمه في الـ UI
+        ),
+      );
+    });
   }
 
   // --- Doctor Handlers ---
@@ -147,6 +187,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
       (failure) => emit(DataErrorState(failure: failure)),
       (data) {
         doctor = data;
+
         emit(DoctorsState(data, selectedDoctor: selectedDoctor));
       },
     );
@@ -423,7 +464,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
         if (data.isEmpty) {
           emit(GetUserConferenceEmptyState());
         } else {
-          emit(GetUserConferenceState(data, data));
+          emit(GetUserConferenceState(data, data,"الكل"));
         }
       },
     );
@@ -447,7 +488,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
       return false;
     }).toList();
 
-    emit(GetUserConferenceState(allUsers, filteredList));
+    emit(GetUserConferenceState(allUsers, filteredList,event.nameFilter));
   }
 
 }

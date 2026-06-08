@@ -141,7 +141,8 @@ final class GetAllUserEvent extends SyncEvent {
 final class SearchInUsersEvent extends SyncEvent {
   final List<UserModel> users;
   final String search;
-  const SearchInUsersEvent(this.users,this.search);
+ final  String nameFilter;
+  const SearchInUsersEvent(this.users,this.search,this.nameFilter);
 }
 final class DoctorsAttendanceEvent extends SyncEvent {
 
@@ -167,6 +168,13 @@ class FilterDoctorBySpecAndNameEvent extends SyncEvent {
  final int spId;
   const FilterDoctorBySpecAndNameEvent(this.doctorName,this.spId);
 
+  @override
+  List<Object?> get props => [];
+}
+class FilterUserEvent extends SyncEvent {
+  final int filterType;
+  final List<UserModel> users;
+  FilterUserEvent(this.filterType,this.users);
   @override
   List<Object?> get props => [];
 }

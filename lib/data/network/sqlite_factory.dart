@@ -30,36 +30,47 @@ class DatabaseHelper {
   }
 
   Future<void> _onCreate(Database db, int version) async {
+    // 1. جدول التخصصات (تم نقله للأعلى لأن الجداول الأخرى تعتمد عليه كمفتاح أجنبي)
     await db.execute('''
-  CREATE TABLE IF NOT EXISTS all_users (
-    id INTEGER PRIMARY KEY , -- معرف محلي تلقائي (Local ID)
-    server_user_id INTEGER NULL,         -- معرف السيرفر (يكون NULL للمسجلين الجدد محلياً)
-    fullname TEXT NOT NULL,
-    phone TEXT NOT NULL,
-    email TEXT,
-    address TEXT,
-    type_id INTEGER NOT NULL,            -- 6: طبيب مهم، 5: مختص، 4: طالب...
-    notes TEXT,
-    specId INTEGER,
-    is_local_new INTEGER DEFAULT 0,      -- 1: مستخدم جديد مضاف من الموبايل، 0: قادم من السيرفر
-    is_modified INTEGER DEFAULT 0,       -- 1: مستخدم قديم تم تعديل بياناته محلياً
-    isUpload INTEGER DEFAULT 1        -- 0: يحتاج رفع/تحديث، 1: مزامن بالكامل  
-    FOREIGN KEY (specId) REFERENCES spec(id) 
-  )
-''');
+      CREATE TABLE IF NOT EXISTS spec (
+        id INTEGER PRIMARY KEY,
+        title TEXT
+      );
+    ''');
 
+    // 2. جدول المستخدمين (تم إصلاح الفاصلة والتعليق هنا)
     await db.execute('''
-  CREATE TABLE IF NOT EXISTS user_conference (
-    id INTEGER PRIMARY KEY ,
-    user_id INTEGER,
-    isUpload INTEGER DEFAULT 0,
-    FOREIGN KEY (user_id) REFERENCES all_users(id) 
-  );
-''');
+      CREATE TABLE IF NOT EXISTS all_users (
+        id INTEGER PRIMARY KEY,
+        server_user_id INTEGER NULL,
+        fullname TEXT NOT NULL,
+        phone TEXT NOT NULL,
+        email TEXT,
+        address TEXT,
+        type_id INTEGER NOT NULL,
+        notes TEXT,
+        specId INTEGER,
+        is_local_new INTEGER DEFAULT 0,
+        is_modified INTEGER DEFAULT 0,
+        isUpload INTEGER DEFAULT 1, 
+        FOREIGN KEY (specId) REFERENCES spec(id) 
+      );
+    ''');
 
+    // 3. جدول مؤتمرات المستخدمين
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS user_conference (
+        id INTEGER PRIMARY KEY,
+        user_id INTEGER,
+        isUpload INTEGER DEFAULT 0,
+        FOREIGN KEY (user_id) REFERENCES all_users(id) 
+      );
+    ''');
+
+    // 4. جدول المؤتمرات
     await db.execute('''
       CREATE TABLE IF NOT EXISTS conference (
-        id INTEGER PRIMARY KEY ,
+        id INTEGER PRIMARY KEY,
         name TEXT NOT NULL,
         description TEXT,
         address TEXT,
@@ -68,18 +79,19 @@ class DatabaseHelper {
         is_active INTEGER DEFAULT 0
       );
     ''');
+
+    // 5. جدول ربط المؤتمر بالتخصص
     await db.execute('''
       CREATE TABLE IF NOT EXISTS sp_conference (
-        id INTEGER PRIMARY KEY ,
+        id INTEGER PRIMARY KEY,
         conferenceId INTEGER NOT NULL,
         specId INTEGER NOT NULL,
         FOREIGN KEY (specId) REFERENCES spec(id) ON DELETE CASCADE,
         FOREIGN KEY (conferenceId) REFERENCES conference(id) ON DELETE CASCADE
-
       );
     ''');
 
-    // 5. جدول الاستبيانات
+    // 6. جدول الاستبيانات
     await db.execute('''
       CREATE TABLE IF NOT EXISTS survey (
         id INTEGER PRIMARY KEY,
@@ -90,10 +102,10 @@ class DatabaseHelper {
       );
     ''');
 
-    // 6. جدول الأسئلة
+    // 7. جدول الأسئلة
     await db.execute('''
       CREATE TABLE IF NOT EXISTS questions (
-        id INTEGER PRIMARY KEY ,
+        id INTEGER PRIMARY KEY,
         survey_id INTEGER,
         question TEXT,
         question_order INTEGER,
@@ -104,10 +116,10 @@ class DatabaseHelper {
       );
     ''');
 
-    // 7. جدول الخيارات (الإجابات المقترحة)
+    // 8. جدول الخيارات
     await db.execute('''
       CREATE TABLE IF NOT EXISTS answers (
-        id INTEGER PRIMARY KEY ,
+        id INTEGER PRIMARY KEY,
         title TEXT,
         img TEXT NULL,
         question_id INTEGER,
@@ -116,10 +128,10 @@ class DatabaseHelper {
       );
     ''');
 
-    // 8. جدول إجابات المستخدمين
+    // 9. جدول إجابات المستخدمين
     await db.execute('''
       CREATE TABLE IF NOT EXISTS users_answers (
-        id INTEGER PRIMARY KEY ,
+        id INTEGER PRIMARY KEY,
         user_id INTEGER,
         answer_id INTEGER,
         content TEXT,
@@ -130,10 +142,10 @@ class DatabaseHelper {
       );
     ''');
 
-    // 9. جدول الربط بين الاستبيان والمؤتمر
+    // 10. جدول الربط بين الاستبيان والمؤتمر
     await db.execute('''
       CREATE TABLE IF NOT EXISTS survey_conference (
-        id INTEGER PRIMARY KEY ,
+        id INTEGER PRIMARY KEY,
         survey_id INTEGER,
         conference_id INTEGER,
         survey_order INTEGER,
@@ -141,14 +153,8 @@ class DatabaseHelper {
         FOREIGN KEY (conference_id) REFERENCES conference(id) ON DELETE CASCADE
       );
     ''');
-    await db.execute('''
-      CREATE TABLE IF NOT EXISTS spec (
-        id INTEGER PRIMARY KEY,
-       title TEXT
-      );
-    ''');
 
-    // 7. 🔥 جدول doctor الجديد المخصص لعرض وحفظ حضور الدكاترة من الـ Mock
+    // 11. جدول الأطباء المخصص للحفظ المؤقت من الـ Mock
     await db.execute('''
       CREATE TABLE IF NOT EXISTS doctor (
         id INTEGER PRIMARY KEY,
@@ -157,12 +163,11 @@ class DatabaseHelper {
       );
     ''');
 
-    // ✨ استدعاء تابع حقن الدكاترة الافتراضيين تلقائياً هنا باستخدام كائن الـ db الممرر حالياً
+    // حقن البيانات الافتراضية
     await _seedDoctorsOnFirstCreate(db);
   }
 }
 
-// 🔥 تابع خاص ومحمي لحقن الدكاترة داخل الـ onCreate مباشرة لحماية الجلسة من الـ Deadlock
 Future<void> _seedDoctorsOnFirstCreate(Database db) async {
   try {
     final batch = db.batch();
@@ -170,15 +175,13 @@ Future<void> _seedDoctorsOnFirstCreate(Database db) async {
     for (final user in MockModel.usersList) {
       batch.insert('doctor', {
         'id': user.id,
-        'name': user.name, // استخلاص الـ fullName المتوافق مع الموديل
-        'isDone': 0, // غير حاضر افتراضياً
+        'name': user.name,
+        'isDone': 0,
       }, conflictAlgorithm: ConflictAlgorithm.replace);
     }
 
     await batch.commit(noResult: true);
-    print(
-      "✅ تم إدخال 59 دكتوراً بنجاح إلى جدول 'doctor' عند تأسيس قاعدة البيانات.",
-    );
+    print("✅ تم إدخال الدكاترة بنجاح عند تأسيس قاعدة البيانات.");
   } catch (e) {
     print("❌ خطأ أثناء إدخال الدكاترة في الـ onCreate: $e");
   }

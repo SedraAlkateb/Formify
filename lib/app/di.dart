@@ -28,7 +28,6 @@ import 'package:formify/domain/usecase/create_survey_usecase.dart';
 import 'package:formify/domain/usecase/delete_conference_usecase.dart';
 import 'package:formify/domain/usecase/delete_data_sql_usecase.dart';
 import 'package:formify/domain/usecase/delete_sync_data_sql_usecase.dart';
-import 'package:formify/domain/usecase/delete_user_sql_usecase.dart';
 import 'package:formify/domain/usecase/doctors_attendance_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_ai_usecase.dart';
 import 'package:formify/domain/usecase/get_all_async_info_usecase.dart';
@@ -49,7 +48,6 @@ import 'package:formify/domain/usecase/get_spec_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_survey_question_id_usecase.dart';
 import 'package:formify/domain/usecase/get_surveys_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_user_add_modify_sql_usecase.dart';
-import 'package:formify/domain/usecase/get_user_answer_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_user_answers_survey_usecase.dart';
 import 'package:formify/domain/usecase/get_users_by_specId_name_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_users_conference_usecase.dart';
@@ -60,7 +58,6 @@ import 'package:formify/domain/usecase/link_survey_conference_usecase.dart';
 import 'package:formify/domain/usecase/login_usecase.dart';
 import 'package:formify/domain/usecase/statistics_for_users_answers_usecase.dart';
 import 'package:formify/domain/usecase/statistics_survey_usecase.dart';
-import 'package:formify/domain/usecase/synchronize_users_answers_usecase.dart';
 import 'package:formify/domain/usecase/updateIs_done_usecase.dart';
 import 'package:formify/domain/usecase/update_conference_usecase.dart';
 import 'package:formify/domain/usecase/update_survey_usecase.dart';
@@ -365,8 +362,13 @@ Future<void> initSyncModule() async {
     instance.registerFactory<GetUsersBySpecIdNameSqlUsecase>(
       () => GetUsersBySpecIdNameSqlUsecase(instance()),
     );
+    if (!GetIt.I.isRegistered<AllImportantDoctorNotComeSqlUsecase>()) {
+    instance.registerFactory<AllImportantDoctorNotComeSqlUsecase>(
+          () => AllImportantDoctorNotComeSqlUsecase(instance()),
+    );}
     instance.registerFactory<SyncBloc>(
       () => SyncBloc(
+        instance(),
         instance(),
         instance(),
         instance(),

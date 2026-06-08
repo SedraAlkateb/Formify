@@ -11,7 +11,7 @@ abstract class AppSqlApiAbs {
   Future<void> deleteDataForSave();
   Future<List<SpecModel>> getSpec();
   Future<List<UserModel>> getUsersBySpecIdAndName(int specId, String name);
-
+  Future<void> deleteUser();
   Future<String> insertDataForSave(DataForSaveModel asyncData);
 
   Future<void> insertDoctor(UserModel doctor);
@@ -457,21 +457,30 @@ class AppSqlApi extends AppSqlApiAbs {
     try {
       final db = await databaseHelper.database;
 
-      // 1️⃣ جلب مصفوفة المستخدمين الجدد كلياً للإضافة (is_local_new = 1)
-      final List<Map<String, dynamic>> newUsersMaps = await db.query(
-        'all_users',
-        where: 'is_local_new = ? AND isUpload = ?',
-        whereArgs: [1, 0], // 1: جديد محلياً، 0: لم يرفع بعد
-      );
+      // 1️⃣ جلب المستخدمين الجدد كلياً مع اختصاصاتهم (is_local_new = 1) باستخدام LEFT JOIN
+      final List<Map<String, dynamic>> newUsersMaps = await db.rawQuery('''
+      SELECT 
+        u.*, 
+        s.id AS spec_id_joined, 
+        s.title AS spec_title_joined
+      FROM all_users u
+      LEFT JOIN spec s ON u.specId = s.id
+      WHERE u.is_local_new = ? AND u.isUpload = ?
+    ''', [1, 0]);
 
-      // 2️⃣ جلب مصفوفة المستخدمين الموجودين سابقاً وتم تعديلهم (is_modified = 1)
-      final List<Map<String, dynamic>> modifyUsersMaps = await db.query(
-        'all_users',
-        where: 'server_user_id IS NOT NULL AND is_modified = ? AND isUpload = ?',
-        whereArgs: [1, 0], // 1: تم تعديله، 0: لم يرفع بعد التعديل
-      );
+      // 2️⃣ جلب المستخدمين المعدلين مع اختصاصاتهم (is_modified = 1) باستخدام LEFT JOIN
+      final List<Map<String, dynamic>> modifyUsersMaps = await db.rawQuery('''
+      SELECT 
+        u.*, 
+        s.id AS spec_id_joined, 
+        s.title AS spec_title_joined
+      FROM all_users u
+      LEFT JOIN spec s ON u.specId = s.id
+      WHERE u.server_user_id IS NOT NULL AND u.is_modified = ? AND u.isUpload = ?
+    ''', [1, 0]);
 
       // 3️⃣ تحويل الـ Maps القادمة من الداتا بيز إلى قائمة من UserModel
+      // (الآن أصبح الـ fromMap قادراً على قراءة الاختصاص لأن الأسماء المطابقة تم جلبها بالـ Alias AS)
       final List<UserModel> newUsersList = List.generate(newUsersMaps.length, (i) {
         return UserModel.fromMap(newUsersMaps[i]);
       });
@@ -484,15 +493,12 @@ class AppSqlApi extends AppSqlApiAbs {
       return AddAndModifyUsersRequest(modifyUsers: modifyUsersList, newUsers: newUsersList);
 
     } catch (e, stackTrace) {
-      // التقاط الخطأ وطباعته في الـ Console لمعرفته وحله أثناء التطوير
       print("❌ حدث خطأ أثناء جلب بيانات الإضافة والتعديل من SQL: $e");
       print("StackTrace: $stackTrace");
 
-      // إعادة كائن يحتوي على قوائم فارغة بدلاً من تدمير التطبيق (Crash)
-      return AddAndModifyUsersRequest(modifyUsers:<UserModel>[],newUsers: <UserModel>[]);
+      return AddAndModifyUsersRequest(modifyUsers: <UserModel>[], newUsers: <UserModel>[]);
     }
   }
-
   //  @override
   //   Future<List<UserSqlModel>> getDataSql() async {
   //     final db = await databaseHelper.database;
@@ -702,12 +708,16 @@ class AppSqlApi extends AppSqlApiAbs {
   Future<List<UserModel>> getDoctors() async {
     final db = await databaseHelper.database;
 
-    // إضافة شرط التصفية (Filter) بناءً على type_id
-    final List<Map<String, dynamic>> maps = await db.query(
-      'all_users',
-      where: 'type_id = ?',
-      whereArgs: [6],
-    );
+    // استخدام rawQuery مع تسمية الأعمدة المستعارة لتطابق الـ Factory لديك
+    final List<Map<String, dynamic>> maps = await db.rawQuery('''
+    SELECT 
+      u.*, 
+      s.id AS spec_id_joined, 
+      s.title AS spec_title_joined
+    FROM all_users u
+    LEFT JOIN spec s ON u.specId = s.id
+    WHERE u.type_id = ?
+  ''', [6]);
 
     return List.generate(maps.length, (i) {
       return UserModel.fromMap(maps[i]);
@@ -961,14 +971,14 @@ class AppSqlApi extends AppSqlApiAbs {
       );
 
       // 4️⃣ إعادة الحزمة الكاملة جاهزة للتحويل إلى JSON والرفع
-      return SyncUsersRequest(0,userConferenceList, answersList);
+      return SyncUsersRequest(0,conferenceId,userConferenceList, answersList);
 
     } catch (e, stackTrace) {
       print("❌ خطأ أثناء تجهيز حزمة الحضور والإجابات للمزامنة: $e");
       print("StackTrace: $stackTrace");
 
       // إرجاع كائن فارغ لحماية التطبيق من الانهيار في حالة وجود خطأ
-      return SyncUsersRequest(0,<UserConferenceModel>[], <UsersAnswersRequest>[]);
+      return SyncUsersRequest(0,conferenceId,<UserConferenceModel>[], <UsersAnswersRequest>[]);
     }
   }
 
@@ -1137,7 +1147,8 @@ class AppSqlApi extends AppSqlApiAbs {
       }
 
       // 6️⃣ تحويل البيانات الناتجة إلى قائمة مستخدمين من نوع UserModel
-      return maps.map((userMap) => UserModel.fromMap(userMap)).toList();
+      return maps.map((userMap) =>
+          UserModel.fromMap(userMap)).toList();
 
     } catch (e) {
       // توثيق الخطأ بالتفصيل في السجل في حال حدوث استثناء

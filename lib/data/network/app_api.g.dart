@@ -63,24 +63,14 @@ class _AppServiceClient implements AppServiceClient {
   @override
   Future<CreateSurveyQuestionsBaseResponse> createSurveyQuestionsAndAnswers(
     String surveyQ,
-    List<File> images,
+    List<MultipartFile> images,
   ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = FormData();
     _data.fields.add(MapEntry('data', surveyQ));
-    _data.files.addAll(
-      images.map(
-        (i) => MapEntry(
-          'files[]',
-          MultipartFile.fromFileSync(
-            i.path,
-            filename: i.path.split(Platform.pathSeparator).last,
-          ),
-        ),
-      ),
-    );
+    _data.files.addAll(images.map((i) => MapEntry('files[]', i)));
     final _options = _setStreamType<CreateSurveyQuestionsBaseResponse>(
       Options(
             method: 'POST',
@@ -341,53 +331,6 @@ class _AppServiceClient implements AppServiceClient {
     late GetAllSurveyWithActiveBaseResponse _value;
     try {
       _value = GetAllSurveyWithActiveBaseResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<CreateUserResponse> createUserWithConferenceId(
-    String fullname,
-    String? email,
-    String phone,
-    String? address,
-    int? type_id,
-    int conference_id,
-  ) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    queryParameters.removeWhere((k, v) => v == null);
-    final _headers = <String, dynamic>{};
-    final _data = FormData();
-    _data.fields.add(MapEntry('fullname', fullname));
-    if (email != null) {
-      _data.fields.add(MapEntry('email', email));
-    }
-    _data.fields.add(MapEntry('phone', phone));
-    if (address != null) {
-      _data.fields.add(MapEntry('address', address));
-    }
-    if (type_id != null) {
-      _data.fields.add(MapEntry('type_id', type_id.toString()));
-    }
-    _data.fields.add(MapEntry('conference_id', conference_id.toString()));
-    final _options = _setStreamType<CreateUserResponse>(
-      Options(method: 'POST', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            'users-crud/create_user_with_conferenceId.php',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late CreateUserResponse _value;
-    try {
-      _value = CreateUserResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
       rethrow;

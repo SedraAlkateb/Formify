@@ -145,6 +145,7 @@ class OfflineSyncBloc extends Bloc<OfflineSyncEvent, OfflineSyncState> {
     UploadUserAnswerAndUserConferenceEvent event,
     Emitter<OfflineSyncState> emit,
   ) async {
+
     (await updatedSyncUsersAnswersUsecase.execute(event.data)).fold(
       (failure) => emit(DataOfflineErrorState(failure: failure)),
       (data) {

@@ -133,7 +133,7 @@ class _ViewConferencePageState extends State<ViewConferencePage> {
                                   ),
                                 ),
                                 child: Text(
-                                  specItem.title,
+                                  specItem.title??"",
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w500,

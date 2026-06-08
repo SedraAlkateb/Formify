@@ -86,7 +86,7 @@ class ConferenceBloc extends Bloc<ConferenceEvent, ConferenceState> {
   Future<void> _onCreateConference(CreateConferenceEvent event, Emitter<ConferenceState> emit) async {
     emit(CreateConferenceLoadingState());
     // استخراج الـ IDs من القائمة المحلية وتمريرها للـ Payload
-    event.payload.specification_ids = _localSelectedSpecs.map((spec) => spec.id).toList();
+    event.payload.specification_ids = _localSelectedSpecs.map((spec) => spec.id??0).toList();
 
     final result = await createConferenceUsecase.execute(event.payload);
     result.fold(
