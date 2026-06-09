@@ -135,7 +135,7 @@ class HomeMobilePage extends StatelessWidget {
                     "المؤتمرات قيد المعالجة",
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
-                      fontSize: 22.sp, // حجم خط متناسق ومعتمد على الـ sp
+                      fontSize: 15.sp, // حجم خط متناسق ومعتمد على الـ sp
                     ),
                   ),
                   SizedBox(height: 10.h),
@@ -181,7 +181,7 @@ class HomeTabletPage extends StatelessWidget {
                   style: TextStyle(
                     color: ColorManager.secondary,
                     fontWeight: FontWeight.w600,
-                    fontSize: 24.sp,
+                    fontSize: 20.sp,
                   ),
                 ),
               ],

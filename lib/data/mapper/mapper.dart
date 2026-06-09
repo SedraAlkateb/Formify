@@ -707,3 +707,26 @@ extension AllSaveDataBaseResponseMapper on AllSaveDataBaseResponse? {
     );
   }
 }
+extension DoctorMockItemMapper on DoctorMockItem {
+  /// تحويل كائن واحد من النوع الوهمي إلى موديل المستخدم الأساسي
+  UserModel toDomain() {
+    return UserModel(
+      this.name,                     // fullName: يأخذ الاسم تلقائياً من العنصر الوهمي
+      null,                          // email: null
+      "",                            // phone: حقل إجباري في Constructor الخاص بك، نمرر نص فارغ بدلاً من null
+      null,                          // address: null
+      UserType.importantDoctor,      // userType: القيمة الثابتة المطلوبة
+      null,                          // notes: null
+      isUpload: 0,                   // القيمة الثابتة المطلوبة
+      is_local_new: 1,               // القيمة الثابتة المطلوبة
+      is_modified: 0,                // القيمة الثابتة المطلوبة
+      spec: SpecModel(3, "نفسية"),   // الاختصاص الثابت المطلوبة
+    );
+  }
+}
+
+extension DoctorMockListMapper on List<DoctorMockItem> {
+  List<UserModel> toDomainList() {
+    return map((item) => item.toDomain()).toList();
+  }
+}

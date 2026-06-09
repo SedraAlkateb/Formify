@@ -4,8 +4,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:formify/data/network/failure.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/models/request.dart';
+import 'package:formify/domain/usecase/get_all_spec_usecase.dart';
 import 'package:formify/domain/usecase/get_all_user_for_app_usecase.dart';
 import 'package:formify/domain/usecase/insert_all_user_app_usecase.dart';
+import 'package:formify/domain/usecase/insert_sps_sql_usecase.dart';
 import 'package:formify/domain/usecase/login_usecase.dart';
 import 'package:meta/meta.dart';
 
@@ -18,15 +20,15 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
   LoginUsecase loginUsecase;
   GetAllUserForAppUsecase getAllUserForAppUsecase;
   InsertAllUserAppUsecase insertAllUserAppUsecase;
-
-//  GetAllSpecUsecase getAllSpecUsecase;
-
+  GetAllSpecUsecase getAllSpecUsecase;
+  InsertSpsSqlUsecase insertSpsSqlUsecase;
   bool isLastPageFun(int index) => isLastPage = index == 2;
   OnboardingBloc(
     this.loginUsecase,
     this.getAllUserForAppUsecase,
     this.insertAllUserAppUsecase,
-    //  this.getAllSpecUsecase
+     this.getAllSpecUsecase,
+      this.insertSpsSqlUsecase
   ) : super(OnboardingInitial()) {
     on<OnboardingEvent>((event, emit) async {
       if (event is LoginRequestEvent) {
@@ -62,7 +64,32 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
             emit(InsertUserSuccessState());
           },
         );
-      } else if (event is GoToHomeEvent) {
+      }
+
+
+      if (event is GetSpecEvent) {
+        (await getAllSpecUsecase.execute()).fold(
+              (failure) {
+            emit(GetAllUserErrorState(failure: failure));
+          },
+              (data) async {
+            emit(GetAllSpecSuccessState(data));
+          },
+        );
+      }
+      if (event is InsertSpecEvent) {
+        (await insertSpsSqlUsecase.execute(event.spec)).fold(
+              (failure) {
+            emit(InsertUserErrorState(failure: failure));
+          },
+              (data) async {
+            emit(InsertSpecSuccessState());
+          },
+        );
+      }
+
+
+      else if (event is GoToHomeEvent) {
         emit(GoToHomeState());
       }
     });

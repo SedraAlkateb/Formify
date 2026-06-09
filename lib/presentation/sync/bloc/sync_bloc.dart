@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,6 +19,7 @@ import 'package:formify/domain/usecase/get_surveys_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_users_by_specId_name_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_users_conference_usecase.dart';
 import 'package:formify/domain/usecase/insert_doctor_sql_usecase.dart';
+import 'package:formify/domain/usecase/insert_imp_doctor_for_new_con_usecase.dart';
 import 'package:formify/domain/usecase/insert_user_and_answer_usecase.dart';
 import 'package:formify/domain/usecase/updateIs_done_usecase.dart';
 import 'package:formify/domain/usecase/update_user_sql_usecase.dart';
@@ -24,7 +28,7 @@ part 'sync_event.dart';
 part 'sync_state.dart';
 
 class SyncBloc extends Bloc<SyncEvent, SyncState> {
-//  final SynchronizeUsersAnswersUsecase synchronizeUsersAnswersUsecase;
+  //  final SynchronizeUsersAnswersUsecase synchronizeUsersAnswersUsecase;
   final GetDoctorsSqlUsecase getDoctorsSqlUsecase;
   final InsertDoctorSqlUsecase insertDoctorSqlUsecase;
   final GetConferenceSqlUsecase getConferenceSqlUsecase;
@@ -33,17 +37,18 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   final InsertUserAndAnswerUsecase insertUserAndAnswerUsecase;
   final GetConferenceInfoSqlUsecase getConferenceInfoSqlUsecase;
   final GetUsersConferenceUsecase getUsersConferenceUsecase;
-  final  UpdateUserSqlUsecase updateUserSqlUsecase;
+  final UpdateUserSqlUsecase updateUserSqlUsecase;
   final DoctorsAttendanceSqlUsecase doctorsAttendanceSqlUsecase;
   final UpdateDoneUsecase updateDoneUsecase;
   final GetSpecSqlUsecase getSpecSqlUsecase;
   final AllImportantDoctorNotComeSqlUsecase allImportantDoctorNotComeSqlUsecase;
-
+  final InsertImpDoctorForNewConUsecase insertImpDoctorForNewConUsecase;
   // القوائم المخزنة في الذاكرة
   GetUsersBySpecIdNameSqlUsecase getUsersBySpecIdNameSqlUsecase;
   List<IsActiveMainSurveyModel> surveys = [];
   List<IsActiveMainSurveyModel> surveysBase = [];
   List<UserModel> doctor = [];
+
   ///
   List<SpecModel> spec = [];
 
@@ -54,8 +59,8 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   int finished = 0;
 
   SyncBloc(
-      this.getSpecSqlUsecase,
-  this.getUsersBySpecIdNameSqlUsecase,
+    this.getSpecSqlUsecase,
+    this.getUsersBySpecIdNameSqlUsecase,
     this.getConferenceSqlUsecase,
     this.getSurveysSqlUsecase,
     this.getQuestionAnswersUsecase,
@@ -66,56 +71,52 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     this.insertDoctorSqlUsecase,
 
     this.getUsersConferenceUsecase,
-      this.updateUserSqlUsecase,
-      this.doctorsAttendanceSqlUsecase,
-      this.updateDoneUsecase,
-      this.allImportantDoctorNotComeSqlUsecase
+    this.updateUserSqlUsecase,
+    this.doctorsAttendanceSqlUsecase,
+    this.updateDoneUsecase,
+    this.allImportantDoctorNotComeSqlUsecase,
+      this.insertImpDoctorForNewConUsecase
   ) : super(const SyncInitial()) {
     // الأحداث الأساسية
 
-
-
     on<GetInfoConferenceEvent>(_infoConference);
-  //  on<UploadDataEvent>(_onUpload);
+    //  on<UploadDataEvent>(_onUpload);
     on<GetConferenceAsyncEvent>(_onGetConference);
     on<GetSurveyAsyncEvent>(_onGetSurveys);
     on<EditUserEvent>(_onEditUser);
     on<UpdateDoneDoctorEvent>(_onIsDone);
-
-    // أحداث إدخال المستخدم
     on<InputUserSqlEvent>((e, emit) async {
       userSqlModel = e.userSqlModel;
       if (selectedDoctor != null) {
-       if(selectedDoctor?.server_user_id==null){
-         /// حالة وجود جديد لكن مع تعديل
-         userSqlModel?.user.server_user_id=null;
-         userSqlModel?.user.id = selectedDoctor?.id;
-         userSqlModel?.user.is_modified=0;
-         userSqlModel?.user.is_local_new=1;
-         userSqlModel?.user.isUpload=0;
-       }else{
-         /// حالة وجود قديم لكن مع تعديل
-         userSqlModel?.user.server_user_id=selectedDoctor?.server_user_id;
-         userSqlModel?.user.id = selectedDoctor?.id;
-         userSqlModel?.user.is_modified=1;
-         userSqlModel?.user.is_local_new=0;
-         userSqlModel?.user.isUpload=0;
-       }
-      }else{
+        if (selectedDoctor?.server_user_id == null) {
+          /// حالة وجود جديد لكن مع تعديل
+          userSqlModel?.user.server_user_id = null;
+          userSqlModel?.user.id = selectedDoctor?.id;
+          userSqlModel?.user.is_modified = 0;
+          userSqlModel?.user.is_local_new = 1;
+          userSqlModel?.user.isUpload = 0;
+        } else {
+          /// حالة وجود قديم لكن مع تعديل
+          userSqlModel?.user.server_user_id = selectedDoctor?.server_user_id;
+          userSqlModel?.user.id = selectedDoctor?.id;
+          userSqlModel?.user.is_modified = 1;
+          userSqlModel?.user.is_local_new = 0;
+          userSqlModel?.user.isUpload = 0;
+        }
+      } else {
         /// حالة وجود جديد
-        userSqlModel?.user.is_modified=0;
-        userSqlModel?.user.is_local_new=1;
-        userSqlModel?.user.isUpload=0;
+        userSqlModel?.user.is_modified = 0;
+        userSqlModel?.user.is_local_new = 1;
+        userSqlModel?.user.isUpload = 0;
       }
 
       finished = 0;
-      if(surveys.isEmpty){
+      if (surveys.isEmpty) {
         emit(NavigateToConferenceState());
-      }else{
+      } else {
         emit(NavigateToSurveyState());
       }
     });
-    // أحداث الأطباء والبحث (المعدلة)
     on<DoctorEvent>(_onGetDoctors);
     on<SpecEvent>(_onGetSpec);
     on<FilterDoctorBySpecAndNameEvent>(_onFilterUser);
@@ -123,8 +124,6 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     on<SearchDoctorEvent>(_onSearchDoctor);
     on<SelectDoctorEvent>(_onSelectDoctor);
     on<ClearDoctorSelectionEvent>(_onClearDoctorSelection);
-
-    // أحداث الاستبيان
     on<GetQuestionAnswersEvent>(_onGetQuestionAnswers);
     on<SurveyPageChangedEvent>(_onSurveyPageChanged);
     on<SurveySaveAnswerEvent>(_onSurveySaveAnswer);
@@ -133,6 +132,8 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     on<SearchInUsersEvent>(_searchInUsersEvent);
     on<InsertUserSqlEvent>(_onInsertUserSql);
     on<DoctorsAttendanceEvent>(_onDoctorsAttendance);
+    on<InsertImportantDoctors>(_onInsertImportantDoctor);
+
     on<FilterUserEvent>((event, emit) async {
       final allUsers = event.users;
       List<UserModel> filteredList = [];
@@ -146,17 +147,17 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
           break;
         case 1:
           filteredList = allUsers.where((user) {
-            return user.userType==UserType.importantDoctor;
+            return user.userType == UserType.importantDoctor;
           }).toList();
           newTitle = "المهمين - حضروا";
           break;
         case 2:
           (await allImportantDoctorNotComeSqlUsecase.execute(event.users)).fold(
-                (failure) {
+            (failure) {
               emit(GetUserConferenceErrorState(failure: failure));
             },
-                (data) async {
-              filteredList=data;
+            (data) async {
+              filteredList = data;
             },
           );
           newTitle = "المهمين - غائبين";
@@ -192,25 +193,28 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
       },
     );
   }
-  Future<void> _onGetSpec(SpecEvent event, Emitter<SyncState> emit) async {
 
+  Future<void> _onGetSpec(SpecEvent event, Emitter<SyncState> emit) async {
     (await getSpecSqlUsecase.execute()).fold(
-          (failure) => emit(DataErrorState(failure: failure)),
-          (data) {
+      (failure) => emit(DataErrorState(failure: failure)),
+      (data) {
         spec = data;
         emit(SpecState(data));
       },
     );
   }
-  Future<void> _onFilterUser(FilterDoctorBySpecAndNameEvent event, Emitter<SyncState> emit) async {
 
-    (await getUsersBySpecIdNameSqlUsecase.execute(event.spId,event.doctorName)).fold(
-          (failure) => emit(DataErrorState(failure: failure)),
-          (data) {
-            printFinalUsersOutput(data);
-        emit(UserFilterState(data));
-      },
-    );
+  Future<void> _onFilterUser(
+    FilterDoctorBySpecAndNameEvent event,
+    Emitter<SyncState> emit,
+  ) async {
+    (await getUsersBySpecIdNameSqlUsecase.execute(
+      event.spId,
+      event.doctorName,
+    )).fold((failure) => emit(DataErrorState(failure: failure)), (data) {
+      printFinalUsersOutput(data);
+      emit(UserFilterState(data));
+    });
   }
 
   Future<void> _onInsertDoctors(
@@ -371,17 +375,15 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     return [];
   }
 
-
   Future<void> _onEditUser(EditUserEvent event, Emitter<SyncState> emit) async {
     final checkResult = await updateUserSqlUsecase.execute(event.user);
     await checkResult.fold(
-          (failure) async => emit(EditUserErrorState(failure: failure)),
-          (data) async {
+      (failure) async => emit(EditUserErrorState(failure: failure)),
+      (data) async {
         emit(EditUserState());
       },
     );
   }
-
 
   Future<void> _onSurveySubmit(
     SurveySubmitEvent event,
@@ -417,54 +419,77 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     } catch (e) {
       emit(SurveySubmitErrorState(failure: Failure(0, e.toString())));
     }
-  } Future<void> _onDoctorsAttendance(
-      DoctorsAttendanceEvent event,
-      Emitter<SyncState> emit,
-      ) async {
+  }
+
+  Future<void> _onDoctorsAttendance(
+    DoctorsAttendanceEvent event,
+    Emitter<SyncState> emit,
+  ) async {
     emit(const DoctorsAttendanceLoadingState());
     (await doctorsAttendanceSqlUsecase.execute()).fold(
-          (failure) => emit(DoctorsAttendanceErrorState(failure: failure)),
-          (data) {
+      (failure) => emit(DoctorsAttendanceErrorState(failure: failure)),
+      (data) {
         //   emit(DoctorsAttendanceSuccessState());
         emit(DoctorsAttendanceState(data));
       },
     );
   }
-  Future<void> _onIsDone(UpdateDoneDoctorEvent event, Emitter<SyncState> emit) async {
-    emit(const DoctorsAttendanceLoadingState());
-    final checkResult = await updateDoneUsecase.execute(event.doctorMockItem.isDone,event.doctorMockItem.id);
-    await checkResult.fold(
-          (failure) async => emit(DoctorsAttendanceErrorState(failure: failure)),
-          (data) async {
 
-     emit(DoctorsAttendanceState(event.doctors));
+
+
+  Future<void> _onInsertImportantDoctor(
+      InsertImportantDoctors event,
+      Emitter<SyncState> emit,
+      ) async {
+    emit(const DoctorsAttendanceLoadingState());
+    (await insertImpDoctorForNewConUsecase.execute()).fold(
+          (failure) => emit(DoctorsAttendanceErrorState(failure: failure)),
+          (data) {
       },
     );
   }
+  Future<void> _onIsDone(
+    UpdateDoneDoctorEvent event,
+    Emitter<SyncState> emit,
+  ) async {
+    emit(const DoctorsAttendanceLoadingState());
+    final checkResult = await updateDoneUsecase.execute(
+      event.doctorMockItem.isDone,
+      event.doctorMockItem.id,
+    );
+    await checkResult.fold(
+      (failure) async => emit(DoctorsAttendanceErrorState(failure: failure)),
+      (data) async {
+        emit(DoctorsAttendanceState(event.doctors));
+      },
+    );
+  }
+
   Future<void> _onInsertUserSql(
-      InsertUserSqlEvent event,
-      Emitter<SyncState> emit,
-      ) async {
+    InsertUserSqlEvent event,
+    Emitter<SyncState> emit,
+  ) async {
     emit(const InsertUserLoadingState());
     (await insertUserAndAnswerUsecase.execute(userSqlModel!)).fold(
-          (failure) => emit(InsertUserErrorState(failure: failure)),
-          (_) {
+      (failure) => emit(InsertUserErrorState(failure: failure)),
+      (_) {
         //   emit(InsertUserSuccessState());
         emit(FinishedSurveyState());
       },
     );
   }
+
   Future<void> _onGetAllUserEvent(
     GetAllUserEvent event,
     Emitter<SyncState> emit,
   ) async {
-    (await getUsersConferenceUsecase.execute(conferenceId??0)).fold(
+    (await getUsersConferenceUsecase.execute(conferenceId ?? 0)).fold(
       (failure) => emit(GetUserConferenceErrorState(failure: failure)),
       (data) {
         if (data.isEmpty) {
           emit(GetUserConferenceEmptyState());
         } else {
-          emit(GetUserConferenceState(data, data,"الكل"));
+          emit(GetUserConferenceState(data, data, "الكل"));
         }
       },
     );
@@ -488,10 +513,10 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
       return false;
     }).toList();
 
-    emit(GetUserConferenceState(allUsers, filteredList,event.nameFilter));
+    emit(GetUserConferenceState(allUsers, filteredList, event.nameFilter));
   }
-
 }
+
 void printFinalUsersOutput(List<UserModel> usersList) {
   // 1️⃣ التحقق مما إذا كانت المصفوفة فارغة تماماً
   if (usersList.isEmpty) {
@@ -499,7 +524,9 @@ void printFinalUsersOutput(List<UserModel> usersList) {
     return;
   }
 
-  print("================ 📥 الخرج النهائي لمصفوفة المستخدمين (${usersList.length}) ================");
+  print(
+    "================ 📥 الخرج النهائي لمصفوفة المستخدمين (${usersList.length}) ================",
+  );
 
   // 2️⃣ الدوران حول كل كائن مستخدم داخل المصفوفة لطباعة تفاصيله
   for (int i = 0; i < usersList.length; i++) {
@@ -520,11 +547,15 @@ void printFinalUsersOutput(List<UserModel> usersList) {
       print("      🔸 معرف الاختصاص: ${user.spec!.id}");
       print("      🔸 اسم الاختصاص: ${user.spec!.title}");
     } else {
-      print("   🔬 الاختصاص الطبي المدمج: ❌ لا يوجد اختصاص مرتبط بهذا المستخدم");
+      print(
+        "   🔬 الاختصاص الطبي المدمج: ❌ لا يوجد اختصاص مرتبط بهذا المستخدم",
+      );
     }
 
     print("------------------------------------------------------------------");
   }
 
-  print("========================================================================");
+  print(
+    "========================================================================",
+  );
 }

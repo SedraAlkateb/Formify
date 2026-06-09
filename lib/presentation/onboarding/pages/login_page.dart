@@ -143,6 +143,13 @@ class LoginPage extends StatelessWidget {
                               } else if (state is LoginLoadingState) {
                                 loading(context);
                               } else if (state is LoginSuccessState) {
+                                BlocProvider.of<OnboardingBloc>(context).add(GetSpecEvent());
+
+                              }
+                              else if (state is GetAllSpecSuccessState) {
+                                BlocProvider.of<OnboardingBloc>(context).add(InsertSpecEvent(state.users));
+                              }
+                              else if (state is InsertSpecSuccessState) {
                                 BlocProvider.of<OnboardingBloc>(context).add(GetUserEvent());
                               }
                               else if (state is GetAllUserSuccessState) {

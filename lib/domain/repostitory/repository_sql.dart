@@ -18,6 +18,8 @@ abstract class RepositorySql {
   Future<Either<Failure,List<UserModel>>> getUserConference(int conferenceId);
   Future<Either<Failure,void>> updateUser(UserModel user);
   Future<Either<Failure,void>> insertAllUsers(List<UserModel> users);
+  Future<Either<Failure,void>> insertAllUsersForNewConf();
+
   Future<Either<Failure,List<UserModel>>> getAllImportantDoctorNotCome(List<UserModel> users);
   Future<Either<Failure,List<DoctorMockItem>>> refreshAndSyncUsers();
   Future<Either<Failure,void>> updateIsDone(int isDone,int doctorId);
@@ -28,5 +30,6 @@ abstract class RepositorySql {
   Future<Either<Failure,void>>addSyncData(SaveDataBaseModel baseData);
   Future<Either<Failure,List<SpecModel>>>getSpec();
   Future<Either<Failure,List<UserModel>>>getUsersBySpecIdAndName(int specId, String name);
+  Future<Either<Failure,void>>insertSpecs(List<SpecModel> specs);
 
 }

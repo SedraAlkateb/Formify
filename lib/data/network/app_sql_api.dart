@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:flutter/services.dart';
 import 'package:formify/data/network/sqlite_factory.dart';
 import 'package:formify/domain/models/mock_users.dart';
 import 'package:formify/domain/models/model_q.dart';
@@ -33,6 +36,8 @@ abstract class AppSqlApiAbs {
   Future<SyncUsersRequest> getConferenceAndAnswers(int conferenceId);
   Future<void> deleteSyncData();
   Future<void> addSyncData(SaveDataBaseModel baseData);
+  Future<void> insertAllUsersForNewConf();
+  Future<void> insertSpecs(List<SpecModel> specs);
 }
 
 class AppSqlApi extends AppSqlApiAbs {
@@ -45,7 +50,26 @@ class AppSqlApi extends AppSqlApiAbs {
   Future<void> initializeDatabase() async {
     await databaseFactory.debugSetLogLevel(sqfliteLogLevelVerbose);
   }
+  Future<void> insertSpecs(List<SpecModel> specs) async {
+    final db = await databaseHelper.database;
 
+    final batch = db.batch();
+
+    for (final sp in specs) {
+      batch.insert(
+        'spec',
+        sp.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
+
+    await batch.commit(
+      noResult: true,
+      continueOnError: false,
+    );
+
+    print('✅ Specs inserted successfully (${specs.length})');
+  }
   @override
   Future<InfoConference> getConferenceInfo() async {
     final db = await databaseHelper.database;
@@ -702,6 +726,61 @@ class AppSqlApi extends AppSqlApiAbs {
     });
     // عند انتهاء الحلقة، يتم اعتماد (Commit) جميع الإدخالات مرة واحدة
   }
+  @override
+  Future<void> insertAllUsersForNewConf()
+  async{
+    final db = await databaseHelper.database;
+
+    final jsonString = await rootBundle.loadString(
+      'assets/json/important_doctors_with_address.json',
+    );
+
+    final List<dynamic> jsonList = jsonDecode(jsonString);
+
+    await db.transaction((txn) async {
+      for (final item in jsonList) {
+        final doctor = Map<String, dynamic>.from(item);
+
+        // حذف id إذا كان null حتى SQLite يولد id تلقائياً
+        if (doctor['id'] == null) {
+          doctor.remove('id');
+        }
+
+        await txn.insert(
+          'all_users',
+          doctor,
+          conflictAlgorithm: ConflictAlgorithm.ignore,
+        );
+      }
+    });
+
+    print('✅ Important doctors inserted: ${jsonList.length}');
+  }
+  //
+  // async {
+  //
+  //
+  //
+  //
+  //   // 1. الحصول على نسخة من قاعدة البيانات
+  //   final db = await databaseHelper.database;
+  //
+  //   // 2. بدء عملية "Transaction" لضمان السرعة والأمان
+  //   await db.transaction((txn) async {
+  //     // 3. التكرار على كل مستخدم (User) موجود في القائمة الممررة
+  //     for (var user in users) {
+  //       // 4. إدخال بيانات المستخدم الحالي في جدول 'all_users'
+  //       // يتم تحويل الـ Model إلى Map باستخدام toJson()
+  //       await txn.insert(
+  //         'all_users',
+  //         user.toJsonSql(),
+  //         // استخدام conflictAlgorithm يمنع توقف التطبيق في حال تكرار نفس المستخدم
+  //         conflictAlgorithm: ConflictAlgorithm.replace,
+  //       );
+  //     }
+  //   });
+  //   // عند انتهاء الحلقة، يتم اعتماد (Commit) جميع الإدخالات مرة واحدة
+  // }
 
   //////////////////// لجلب الاطباء المهمين
   @override

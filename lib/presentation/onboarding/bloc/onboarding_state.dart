@@ -38,6 +38,11 @@ class InsertUserSuccessState extends OnboardingState {
   @override
   List<Object?> get props => [];
 }
+class InsertSpecSuccessState extends OnboardingState {
+  InsertSpecSuccessState() ;
+  @override
+  List<Object?> get props => [];
+}
 
 final class GetAllUserErrorState extends OnboardingState {
   final Failure failure;
@@ -55,7 +60,12 @@ class GetAllUserSuccessState extends OnboardingState {
   @override
   List<Object?> get props => [users];
 }
-
+class GetAllSpecSuccessState extends OnboardingState {
+  final List<SpecModel>users;
+  GetAllSpecSuccessState(this.users) ;
+  @override
+  List<Object?> get props => [users];
+}
 final class GoToHomeState extends OnboardingState {
   @override
   List<Object?> get props => [];

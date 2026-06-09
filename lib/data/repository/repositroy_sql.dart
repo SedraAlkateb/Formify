@@ -166,6 +166,18 @@ Future<Either<Failure, List<UserModel>>> getUserConference(int conferenceId)asyn
       return Left(failure);
     }
   }
+  @override
+  Future<Either<Failure, void>> insertAllUsersForNewConf() async {
+    try {
+      final response = await _databaseHelper.insertAllUsersForNewConf();
+      return Right(response);
+    } catch (e) {
+      Failure failure = ErrorHandler
+          .handle(e)
+          .failure;
+      return Left(failure);
+    }
+  }
 
 @override
 Future<Either<Failure, List<UserModel>>> getAllImportantDoctorNotCome(List<UserModel> users) async {
@@ -293,5 +305,17 @@ Future<Either<Failure, List<UserModel>>> getAllImportantDoctorNotCome(List<UserM
       return Left(failure);
     }
   }
+  @override
+  Future<Either<Failure,void>>insertSpecs(List<SpecModel> specs) async {
+    try {
+      final response = await _databaseHelper.insertSpecs(specs);
 
+      return Right(response);
+    } catch (e) {
+      Failure failure = ErrorHandler
+          .handle(e)
+          .failure;
+      return Left(failure);
+    }
+  }
 }

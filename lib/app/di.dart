@@ -53,6 +53,8 @@ import 'package:formify/domain/usecase/get_users_by_specId_name_sql_usecase.dart
 import 'package:formify/domain/usecase/get_users_conference_usecase.dart';
 import 'package:formify/domain/usecase/insert_all_user_app_usecase.dart';
 import 'package:formify/domain/usecase/insert_doctor_sql_usecase.dart';
+import 'package:formify/domain/usecase/insert_imp_doctor_for_new_con_usecase.dart';
+import 'package:formify/domain/usecase/insert_sps_sql_usecase.dart';
 import 'package:formify/domain/usecase/insert_user_and_answer_usecase.dart';
 import 'package:formify/domain/usecase/link_survey_conference_usecase.dart';
 import 'package:formify/domain/usecase/login_usecase.dart';
@@ -157,9 +159,15 @@ Future<void> initOnBoardingModule() async {
     instance.registerFactory<InsertAllUserAppUsecase>(
       () => InsertAllUserAppUsecase(instance()),
     );
-
+    if (!GetIt.I.isRegistered<GetAllSpecUsecase>()) {
+      instance.registerFactory<GetAllSpecUsecase>(
+            () => GetAllSpecUsecase(instance()),
+      );}
+    instance.registerFactory<InsertSpsSqlUsecase>(
+          () => InsertSpsSqlUsecase(instance()),
+    );
     instance.registerFactory<OnboardingBloc>(
-      () => OnboardingBloc(instance(), instance(), instance()),
+      () => OnboardingBloc(instance(), instance(), instance(), instance(), instance()),
     );
   }
 }
@@ -207,9 +215,10 @@ Future<void> initConferenceModule() async {
     instance.registerFactory<UpdateConferenceUsecase>(
       () => UpdateConferenceUsecase(instance()),
     );
+    if (!GetIt.I.isRegistered<GetAllSpecUsecase>()) {
     instance.registerFactory<GetAllSpecUsecase>(
       () => GetAllSpecUsecase(instance()),
-    );
+    );}
     instance.registerFactory<AddSpecUsecase>(() => AddSpecUsecase(instance()));
 
     instance.registerFactory<ConferenceBloc>(
@@ -257,9 +266,10 @@ Future<void> initActiveConferenceModule() async {
   }
 
   if (!GetIt.I.isRegistered<ActiveConferenceBloc>()) {
+    if (!GetIt.I.isRegistered<AllImportantDoctorNotComeSqlUsecase>()) {
     instance.registerFactory<AllImportantDoctorNotComeSqlUsecase>(
       () => AllImportantDoctorNotComeSqlUsecase(instance()),
-    );
+    );}
     if (!GetIt.I.isRegistered<DeleteConferenceUsecase>()) {
       instance.registerFactory<DeleteConferenceUsecase>(
         () => DeleteConferenceUsecase(instance()),
@@ -362,12 +372,16 @@ Future<void> initSyncModule() async {
     instance.registerFactory<GetUsersBySpecIdNameSqlUsecase>(
       () => GetUsersBySpecIdNameSqlUsecase(instance()),
     );
+    instance.registerFactory<InsertImpDoctorForNewConUsecase>(
+          () => InsertImpDoctorForNewConUsecase(instance()),
+    );
     if (!GetIt.I.isRegistered<AllImportantDoctorNotComeSqlUsecase>()) {
     instance.registerFactory<AllImportantDoctorNotComeSqlUsecase>(
           () => AllImportantDoctorNotComeSqlUsecase(instance()),
     );}
     instance.registerFactory<SyncBloc>(
       () => SyncBloc(
+        instance(),
         instance(),
         instance(),
         instance(),

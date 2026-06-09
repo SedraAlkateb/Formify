@@ -101,12 +101,7 @@ class _AddDoctorPageState extends State<AddDoctorPage> {
                     icon: Icons.phone_outlined,
                     keyboardType: TextInputType.phone,
                     validator: (v) {
-                      if (v == null || v.trim().isEmpty) {
-                        return 'يرجى إدخال رقم الهاتف';
-                      }
-                      if (v.trim().length < 8) {
-                        return 'الرقم قصير جداً، يجب أن يكون 8 أرقام على الأقل';
-                      }
+
                       return null;
                     },
                   ),

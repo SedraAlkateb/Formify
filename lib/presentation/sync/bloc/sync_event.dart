@@ -178,3 +178,9 @@ class FilterUserEvent extends SyncEvent {
   @override
   List<Object?> get props => [];
 }
+
+class InsertImportantDoctors extends SyncEvent{
+
+  @override
+  List<Object?> get props => [];
+}
