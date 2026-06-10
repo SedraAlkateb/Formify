@@ -153,7 +153,7 @@ class RouteGenerator {
         return _animatedRoute(FinishedInputSurveysPage());
       case Routes.doctorsAttendance:
         initSyncModule();
-        return _animatedRoute(DoctorsAttendancePage());
+        return _animatedRoute(DoctorsBySpsPage());
       case Routes.updateSurvey:
         final id = settings.arguments as int;
         return _animatedRoute(UpdateSurveyPage(id: id));

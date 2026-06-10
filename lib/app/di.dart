@@ -50,6 +50,7 @@ import 'package:formify/domain/usecase/get_surveys_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_user_add_modify_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_user_answers_survey_usecase.dart';
 import 'package:formify/domain/usecase/get_users_by_specId_name_sql_usecase.dart';
+import 'package:formify/domain/usecase/get_users_by_specIds_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_users_conference_usecase.dart';
 import 'package:formify/domain/usecase/insert_all_user_app_usecase.dart';
 import 'package:formify/domain/usecase/insert_doctor_sql_usecase.dart';
@@ -375,12 +376,16 @@ Future<void> initSyncModule() async {
     instance.registerFactory<InsertImpDoctorForNewConUsecase>(
           () => InsertImpDoctorForNewConUsecase(instance()),
     );
+    instance.registerFactory<GetUsersBySpecIdsSqlUsecase>(
+          () => GetUsersBySpecIdsSqlUsecase(instance()),
+    );
     if (!GetIt.I.isRegistered<AllImportantDoctorNotComeSqlUsecase>()) {
     instance.registerFactory<AllImportantDoctorNotComeSqlUsecase>(
           () => AllImportantDoctorNotComeSqlUsecase(instance()),
     );}
     instance.registerFactory<SyncBloc>(
       () => SyncBloc(
+        instance(),
         instance(),
         instance(),
         instance(),

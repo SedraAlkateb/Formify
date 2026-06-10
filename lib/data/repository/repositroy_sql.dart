@@ -318,4 +318,17 @@ Future<Either<Failure, List<UserModel>>> getAllImportantDoctorNotCome(List<UserM
       return Left(failure);
     }
   }
+  @override
+  Future<Either<Failure,List<UserModel>>>getUsersBySpecIds() async {
+    try {
+      final response = await _databaseHelper.getUsersBySpecIds();
+
+      return Right(response);
+    } catch (e) {
+      Failure failure = ErrorHandler
+          .handle(e)
+          .failure;
+      return Left(failure);
+    }
+  }
 }

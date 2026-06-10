@@ -311,15 +311,12 @@ final class DoctorsAttendanceState extends SyncState {
   @override
   List<Object?> get props => [users];
 }
-
 final class DoctorsAttendanceLoadingState extends SyncState {
   const DoctorsAttendanceLoadingState();
 }
-
 final class DoctorsAttendanceEmptyState extends SyncState {
   const DoctorsAttendanceEmptyState();
 }
-
 final class DoctorsAttendanceErrorState extends SyncState {
   final Failure failure;
   const DoctorsAttendanceErrorState({required this.failure});
@@ -349,4 +346,24 @@ final class GetUserConferenceState extends SyncState {
   const GetUserConferenceState(this.users, this.filterUsers,this.newTitle);
   @override
   List<Object?> get props => [filterUsers];
+}
+final class DoctorsBySpsState extends SyncState {
+  final List<UserModel> users;
+  const DoctorsBySpsState(this.users);
+
+  @override
+  List<Object?> get props => [users];
+}
+final class DoctorsBySpsLoadingState extends SyncState {
+  const DoctorsBySpsLoadingState();
+}
+final class DoctorsBySpsEmptyState extends SyncState {
+  const DoctorsBySpsEmptyState();
+}
+final class DoctorsBySpsErrorState extends SyncState {
+  final Failure failure;
+  const DoctorsBySpsErrorState({required this.failure});
+
+  @override
+  List<Object?> get props => [failure];
 }

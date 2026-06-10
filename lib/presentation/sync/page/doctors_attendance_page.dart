@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/app/app_preferences.dart';
 import 'package:formify/app/di.dart';
+import 'package:formify/data/mapper/mapper.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/responsive/font_responseve.dart';
@@ -11,24 +12,23 @@ import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
 enum DoctorFilterStatus { all, notAttended, attended }
 
-class DoctorsAttendancePage extends StatefulWidget {
-  const DoctorsAttendancePage({super.key});
+class DoctorsBySpsPage extends StatefulWidget {
 
+  const DoctorsBySpsPage({super.key});
   @override
-  State<DoctorsAttendancePage> createState() => _DoctorsAttendancePageState();
+  State<DoctorsBySpsPage> createState() => _DoctorsBySpsPageState();
 }
 
-class _DoctorsAttendancePageState extends State<DoctorsAttendancePage> {
-  List<DoctorMockItem> _allDoctors = [];
-  List<DoctorMockItem> _filteredDoctors = [];
+class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
+  List<UserDoneModel> _allDoctors = [];
+  List<UserDoneModel> _filteredDoctors = [];
   final TextEditingController _searchController = TextEditingController();
   DoctorFilterStatus _selectedFilter = DoctorFilterStatus.all;
 
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<SyncBloc>(context).add(GetConferenceAsyncEvent());
-    context.read<SyncBloc>().add(DoctorsAttendanceEvent());
+    BlocProvider.of<SyncBloc>(context).add(GetDoctorBySpsEvent());
     instance<AppPreferences>().setLoggedIn(4);
   }
 
@@ -42,7 +42,7 @@ class _DoctorsAttendancePageState extends State<DoctorsAttendancePage> {
     final String query = _searchController.text.toLowerCase();
     setState(() {
       _filteredDoctors = _allDoctors.where((doc) {
-        final bool matchesSearch = doc.name.toLowerCase().contains(query);
+        final bool matchesSearch = doc.userModel.fullName.toLowerCase().contains(query);
         bool matchesStatus = true;
         if (_selectedFilter == DoctorFilterStatus.notAttended) {
           matchesStatus = (doc.isDone == 0);
@@ -101,19 +101,19 @@ class _DoctorsAttendancePageState extends State<DoctorsAttendancePage> {
         body: SafeArea(
           child: BlocConsumer<SyncBloc, SyncState>(
             listenWhen: (previous, current) =>
-            current is DoctorsAttendanceState ||
-                current is DoctorsAttendanceErrorState,
+            current is DoctorsBySpsState ||
+                current is DoctorsBySpsErrorState,
             buildWhen: (previous, current) =>
-            current is DoctorsAttendanceState ||
-                current is DoctorsAttendanceLoadingState ||
-                current is DoctorsAttendanceErrorState,
+            current is DoctorsBySpsState ||
+                current is DoctorsBySpsLoadingState ||
+                current is DoctorsBySpsErrorState,
             listener: (context, state) {
-              if (state is DoctorsAttendanceState) {
+              if (state is DoctorsBySpsState) {
                 setState(() {
-                  _allDoctors = state.users;
+                  _allDoctors = state.users.toDomainList();
                   _applyFilter();
                 });
-              } else if (state is DoctorsAttendanceErrorState) {
+              } else if (state is DoctorsBySpsErrorState) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
@@ -130,7 +130,7 @@ class _DoctorsAttendancePageState extends State<DoctorsAttendancePage> {
               return RefreshIndicator(
                 color: ColorManager.primary,
                 onRefresh: () async {
-                  context.read<SyncBloc>().add(DoctorsAttendanceEvent());
+                  context.read<SyncBloc>().add(GetDoctorBySpsEvent());
                 },
                 child: NestedScrollView(
                   headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
@@ -200,7 +200,7 @@ class _DoctorsAttendancePageState extends State<DoctorsAttendancePage> {
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
                     child: Stack(
                       children: [
-                        _filteredDoctors.isEmpty && state is! DoctorsAttendanceLoadingState
+                        _filteredDoctors.isEmpty && state is! DoctorsBySpsLoadingState
                             ? Center(
                           child: ListView(
                             shrinkWrap: true,
@@ -226,7 +226,7 @@ class _DoctorsAttendancePageState extends State<DoctorsAttendancePage> {
                             return _buildDoctorCard(_filteredDoctors[index]);
                           },
                         ),
-                        if (state is DoctorsAttendanceLoadingState && _allDoctors.isEmpty)
+                        if (state is DoctorsBySpsLoadingState && _allDoctors.isEmpty)
                           const Center(
                             child: CircularProgressIndicator(color: ColorManager.primary),
                           ),
@@ -577,7 +577,7 @@ class _DoctorsAttendancePageState extends State<DoctorsAttendancePage> {
     );
   }
 
-  Widget _buildDoctorCard(DoctorMockItem doctor) {
+  Widget _buildDoctorCard(UserDoneModel doctor) {
     final bool isChecked = doctor.isDone == 1;
 
     return Container(
@@ -602,7 +602,7 @@ class _DoctorsAttendancePageState extends State<DoctorsAttendancePage> {
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         controlAffinity: ListTileControlAffinity.trailing,
         title: Text(
-          doctor.name,
+          doctor.userModel.fullName,
           textAlign: TextAlign.right,
           style: TextStyle(
             fontWeight: FontWeight.bold,
@@ -617,13 +617,12 @@ class _DoctorsAttendancePageState extends State<DoctorsAttendancePage> {
               doctor.isDone = value ? 1 : 0;
               _applyFilter();
             });
-
-            context.read<SyncBloc>().add(
-              UpdateDoneDoctorEvent(
-                doctorMockItem: doctor,
-                doctors: _allDoctors,
-              ),
-            );
+            // context.read<SyncBloc>().add(
+            //   UpdateDoneDoctorEvent(
+            //     UserModel: doctor.userModel,
+            //     doctors: _allDoctors,
+            //   ),
+            // );
           }
         },
         secondary: CircleAvatar(

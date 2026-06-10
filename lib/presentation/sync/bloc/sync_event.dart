@@ -147,6 +147,10 @@ final class SearchInUsersEvent extends SyncEvent {
 final class DoctorsAttendanceEvent extends SyncEvent {
 
 }
+final class GetDoctorBySpsEvent extends SyncEvent {
+  const GetDoctorBySpsEvent();
+}
+
 // حدث تحديث حالة طبيب واحد في قاعدة البيانات
 class UpdateDoneDoctorEvent extends SyncEvent {
   final DoctorMockItem doctorMockItem;

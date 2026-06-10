@@ -730,3 +730,16 @@ extension DoctorMockListMapper on List<DoctorMockItem> {
     return map((item) => item.toDomain()).toList();
   }
 }
+extension UserDoneModelMapper on UserModel {
+  UserDoneModel toDomain() {
+    return UserDoneModel(
+        this,
+        0
+    );
+  }
+}
+extension UsersDoneModelMapper on List<UserModel> {
+  List<UserDoneModel> toDomainList() {
+    return map((item) => item.toDomain()).toList();
+  }
+}

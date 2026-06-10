@@ -6,7 +6,6 @@ import 'package:formify/data/network/app_api.dart';
 import 'package:formify/data/responses/responses.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/models/request.dart';
-import 'package:formify/domain/models/user_type.dart';
 
 abstract class RemoteDataSource {
   Future<CreateSurveyBaseResponse> createSurvey(SurveyRequest survey);

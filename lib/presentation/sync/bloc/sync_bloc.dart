@@ -17,6 +17,7 @@ import 'package:formify/domain/usecase/get_question_answers_usecase.dart';
 import 'package:formify/domain/usecase/get_spec_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_surveys_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_users_by_specId_name_sql_usecase.dart';
+import 'package:formify/domain/usecase/get_users_by_specIds_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_users_conference_usecase.dart';
 import 'package:formify/domain/usecase/insert_doctor_sql_usecase.dart';
 import 'package:formify/domain/usecase/insert_imp_doctor_for_new_con_usecase.dart';
@@ -43,6 +44,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   final GetSpecSqlUsecase getSpecSqlUsecase;
   final AllImportantDoctorNotComeSqlUsecase allImportantDoctorNotComeSqlUsecase;
   final InsertImpDoctorForNewConUsecase insertImpDoctorForNewConUsecase;
+  final  GetUsersBySpecIdsSqlUsecase  getUsersBySpecIdsSqlUsecase;
   // القوائم المخزنة في الذاكرة
   GetUsersBySpecIdNameSqlUsecase getUsersBySpecIdNameSqlUsecase;
   List<IsActiveMainSurveyModel> surveys = [];
@@ -75,7 +77,8 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     this.doctorsAttendanceSqlUsecase,
     this.updateDoneUsecase,
     this.allImportantDoctorNotComeSqlUsecase,
-      this.insertImpDoctorForNewConUsecase
+      this.insertImpDoctorForNewConUsecase,
+      this.getUsersBySpecIdsSqlUsecase
   ) : super(const SyncInitial()) {
     // الأحداث الأساسية
 
@@ -133,6 +136,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     on<InsertUserSqlEvent>(_onInsertUserSql);
     on<DoctorsAttendanceEvent>(_onDoctorsAttendance);
     on<InsertImportantDoctors>(_onInsertImportantDoctor);
+    on<GetDoctorBySpsEvent>(_onDoctorsBySps);
 
     on<FilterUserEvent>((event, emit) async {
       final allUsers = event.users;
@@ -434,6 +438,19 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
       },
     );
   }
+  Future<void> _onDoctorsBySps(
+      GetDoctorBySpsEvent event,
+      Emitter<SyncState> emit,
+      ) async {
+    emit(const DoctorsBySpsLoadingState());
+    (await getUsersBySpecIdsSqlUsecase.execute()).fold(
+          (failure) => emit(DoctorsBySpsErrorState(failure: failure)),
+          (data) {
+        //   emit(DoctorsBySpsSuccessState());
+        emit(DoctorsBySpsState(data));
+      },
+    );
+  }
 
 
 
@@ -448,6 +465,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
       },
     );
   }
+
   Future<void> _onIsDone(
     UpdateDoneDoctorEvent event,
     Emitter<SyncState> emit,

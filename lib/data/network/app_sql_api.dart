@@ -38,6 +38,7 @@ abstract class AppSqlApiAbs {
   Future<void> addSyncData(SaveDataBaseModel baseData);
   Future<void> insertAllUsersForNewConf();
   Future<void> insertSpecs(List<SpecModel> specs);
+  Future<List<UserModel>> getUsersBySpecIds();
 }
 
 class AppSqlApi extends AppSqlApiAbs {
@@ -205,17 +206,15 @@ class AppSqlApi extends AppSqlApiAbs {
         );
 
         // 3. إدخال جدول الربط (sp_conference)
-        if (asyncData.conferenceModel.spec != null) {
-          for (final sp in asyncData.conferenceModel.spec!) {
-            batch.insert(
-              'sp_conference',
-              {
-                'specId': sp.id,
-                'conferenceId': asyncData.conferenceModel.id
-              },
-              conflictAlgorithm: ConflictAlgorithm.replace,
-            );
-          }
+        for (final sp in asyncData.conferenceModel.spec) {
+          batch.insert(
+            'sp_conference',
+            {
+              'specId': sp.id,
+              'conferenceId': asyncData.conferenceModel.id
+            },
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
         }
 
         // 4. إدخال بقية الجداول المرتبطة بالترتيب الصحيح
@@ -620,25 +619,15 @@ class AppSqlApi extends AppSqlApiAbs {
 
   @override
   Future<void> insertUserWithAnswer(UserSqlModel user) async {
-    // 📥 [المدخلات - INPUT]: طباعة البيانات القادمة إلى التابع قبل المعالجة
-    print("================ 📥 بداية عملية الحفظ (المفصولة والمحسنة) 📥 ================");
-    print("ID المحلي الحالي: ${user.user.id}");
-    print("اسم المستخدم/الطبيب: ${user.user.fullName}");
-    print("-------------------------------------------------------");
 
-    // 1️⃣ الحصول على نسخة من قاعدة البيانات المحلية
     final db = await databaseHelper.database;
 
-    // 2️⃣ بدء معاملة موحدة (Transaction) لضمان أمان وحفظ البيانات بالكامل معاً
     await db.transaction((txn) async {
       int userId;
 
-      // ================= الجزء الأول: معالجة بيانات المستخدم والإجابات القديمة =================
       if (user.user.id != null) {
-        // 📑 حالة تعديل مستخدم موجود مسبقاً
         userId = user.user.id!;
 
-        // أ) تحديث بيانات المستخدم في جدول 'all_users'
         int updatedRowsCount = await txn.update(
           'all_users',
           user.toJsonSql(),
@@ -1186,7 +1175,6 @@ class AppSqlApi extends AppSqlApiAbs {
   }
 
   @override
-  @override
   Future<List<UserModel>> getUsersBySpecIdAndName(int specId, String name) async {
     try {
       // 1️⃣ الحصول على نسخة نشطة من قاعدة البيانات المحلية
@@ -1234,6 +1222,63 @@ class AppSqlApi extends AppSqlApiAbs {
       print("❌ خطأ أثناء جلب المستخدمين مع الاختصاص: $e");
       return [];
     }
-  }  /// تابع مخصص لطباعة مصفوفة المستخدمين وتنسيق الخرج النهائي بشكل مقروء
+  }
+  /// تابع مخصص لطباعة مصفوفة المستخدمين وتنسيق الخرج النهائي بشكل مقروء
+
+  @override
+  Future<List<UserModel>> getUsersBySpecIds() async {
+    try {
+      // 1️⃣ الحصول على نسخة نشطة من قاعدة البيانات
+      final db = await DatabaseHelper().database;
+
+      // الخطوة الأولى: جلب المؤتمر الأول في الجدول (LIMIT 1)
+      final List<Map<String, dynamic>> firstConference = await db.query(
+        'conference',
+        limit: 1,
+        orderBy: 'id ASC', // جلب أول مؤتمر حسب الترتيب التصاعدي للمعرف
+      );
+
+      // إذا كان جدول المؤتمرات فارغاً، نتوقف فوراً
+      if (firstConference.isEmpty) {
+        print("⚠️ لا توجد أي مؤتمرات مسجلة في قاعدة البيانات حالياً.");
+        return [];
+      }
+
+      final int firstConferenceId = firstConference.first['id'] as int;
+      print("🎯 تم العثور على المؤتمر الأول بنجاح، رقم المعرف: $firstConferenceId");
+
+      // الخطوة الثانية والثالثة (دمج برمجى ذكي باستخدام Subquery لمنع التكرار تماماً):
+      // نقوم بجلب المستخدمين الذين يملكون specId موجود ضمن تخصصات هذا المؤتمر الأول
+      String query = '''
+      SELECT DISTINCT
+        u.*, 
+        s.id AS spec_id_joined, 
+        s.title AS spec_title_joined
+      FROM all_users u
+      INNER JOIN spec s ON u.specId = s.id
+      WHERE u.specId IN (
+        SELECT specId 
+        FROM sp_conference 
+        WHERE conferenceId = ?
+      )
+    ''';
+
+      // تنفيذ الاستعلام وحقن معرف المؤتمر الأول بأمان
+      final List<Map<String, dynamic>> maps = await db.rawQuery(query, [firstConferenceId]);
+
+      // التحقق من النتيجة
+      if (maps.isEmpty) {
+        print("⚠️ لا يوجد مستخدمين مسجلين ينتمون لاختصاصات المؤتمر رقم: $firstConferenceId");
+        return [];
+      }
+
+      // تحويل البيانات المستخرجة الصافية إلى قائمة UserModel باستخدام الـ Factory الخاص بك
+      return maps.map((userMap) => UserModel.fromMap(userMap)).toList();
+
+    } catch (e) {
+      print("❌ خطأ أثناء جلب مستخدمي اختصاصات المؤتمر الأول: $e");
+      return [];
+    }
+  }
 
 }

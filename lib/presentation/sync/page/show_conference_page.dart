@@ -391,6 +391,10 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                       // أزرار التحكم
                                       Column(
                                         children: [
+                                          // buttonAnimationWithText(context, () {
+                                          //   BlocProvider.of<SyncBloc>(context).add(InsertImportantDoctors());
+                                          // }, "ابدأ الاستبيانيييييييييييات"),
+                                          SizedBox(height: 8.h),
                                           buttonAnimationWithText(context, () {
                                             Navigator.pushNamed(
                                               context,

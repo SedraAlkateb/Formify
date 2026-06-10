@@ -224,6 +224,10 @@ class ConferenceEndedWidget extends StatelessWidget {
                                     AsyncDataEvent(conference.id),
                                   );
                                 },
+                                // onConfirm2: () {
+                                //   BlocProvider.of<OfflineSyncBloc>(context).add(
+                                //       AsyncDataEvent(conference.id),
+                                // },
                               );
                             },
                           ),

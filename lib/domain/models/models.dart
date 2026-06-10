@@ -516,7 +516,11 @@ class UserModel {
   }
 
 }
-
+class UserDoneModel{
+  UserModel userModel;
+  int isDone;
+  UserDoneModel(this.userModel,this.isDone);
+}
 class GetAllConferenceModel {
   int id;
   String name;
