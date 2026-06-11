@@ -516,10 +516,58 @@ class UserModel {
   }
 
 }
-class UserDoneModel{
+class UserDoneModel {
   UserModel userModel;
-  int isDone;
-  UserDoneModel(this.userModel,this.isDone);
+  int isDone; // 0 = لم يحضر, 1 = حاضر
+
+  UserDoneModel({
+    required this.userModel,
+    this.isDone = 0,
+  });
+
+  // تحويل من JSON
+  factory UserDoneModel.fromJson(Map<String, dynamic> json) {
+    return UserDoneModel(
+      userModel: UserModel.fromMap(json['userModel']),
+      isDone: json['isDone'] ?? 0,
+    );
+  }
+
+  // تحويل إلى JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'userModel': userModel.toJson(),
+      'isDone': isDone,
+    };
+  }
+}
+class ConferenceUserAtt {
+  List<UserDoneModel> users;
+  GetAllConferenceModel conferenceModel;
+
+  ConferenceUserAtt({
+    required this.users,
+    required this.conferenceModel,
+  });
+
+  // تحويل من JSON
+  factory ConferenceUserAtt.fromJson(Map<String, dynamic> json) {
+    return ConferenceUserAtt(
+      users: (json['users'] as List<dynamic>)
+          .map((e) => UserDoneModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      conferenceModel:
+      GetAllConferenceModel.fromMap(json['conferenceModel'] as Map<String, dynamic>),
+    );
+  }
+
+  // تحويل إلى JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'users': users.map((e) => e.toJson()).toList(),
+      'conferenceModel': conferenceModel.toMap(),
+    };
+  }
 }
 class GetAllConferenceModel {
   int id;
@@ -579,7 +627,7 @@ class GetAllConferenceModel {
   }
 
   // دالة لإنشاء كائن فارغ افتراضي (تُستخدم غالباً في التهيئة بالـ Bloc)
-  static GetAllConferenceModel create() {
+  static  GetAllConferenceModel create() {
     return GetAllConferenceModel(0, "", "", "", "", "", false, []);
   }
 }

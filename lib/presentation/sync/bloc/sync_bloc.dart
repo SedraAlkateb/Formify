@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:formify/data/mapper/mapper.dart';
 import 'package:formify/data/network/failure.dart';
 import 'package:formify/domain/models/models.dart';
@@ -134,7 +136,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     on<GetAllUserEvent>(_onGetAllUserEvent);
     on<SearchInUsersEvent>(_searchInUsersEvent);
     on<InsertUserSqlEvent>(_onInsertUserSql);
-    on<DoctorsAttendanceEvent>(_onDoctorsAttendance);
+    //on<DoctorsAttendanceEvent>(_onDoctorsAttendance);
     on<InsertImportantDoctors>(_onInsertImportantDoctor);
     on<GetDoctorBySpsEvent>(_onDoctorsBySps);
 
@@ -425,19 +427,19 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     }
   }
 
-  Future<void> _onDoctorsAttendance(
-    DoctorsAttendanceEvent event,
-    Emitter<SyncState> emit,
-  ) async {
-    emit(const DoctorsAttendanceLoadingState());
-    (await doctorsAttendanceSqlUsecase.execute()).fold(
-      (failure) => emit(DoctorsAttendanceErrorState(failure: failure)),
-      (data) {
-        //   emit(DoctorsAttendanceSuccessState());
-        emit(DoctorsAttendanceState(data));
-      },
-    );
-  }
+  // Future<void> _onDoctorsAttendance(
+  //   DoctorsAttendanceEvent event,
+  //   Emitter<SyncState> emit,
+  // ) async {
+  //   emit(const DoctorsAttendanceLoadingState());
+  //   (await doctorsAttendanceSqlUsecase.execute()).fold(
+  //     (failure) => emit(DoctorsAttendanceErrorState(failure: failure)),
+  //     (data) {
+  //       //   emit(DoctorsAttendanceSuccessState());
+  //       emit(DoctorsAttendanceState(data));
+  //     },
+  //   );
+  // }
   Future<void> _onDoctorsBySps(
       GetDoctorBySpsEvent event,
       Emitter<SyncState> emit,
@@ -447,7 +449,7 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
           (failure) => emit(DoctorsBySpsErrorState(failure: failure)),
           (data) {
         //   emit(DoctorsBySpsSuccessState());
-        emit(DoctorsBySpsState(data));
+        emit(DoctorsBySpsState(data.users,data.conferenceModel));
       },
     );
   }
@@ -472,13 +474,13 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
   ) async {
     emit(const DoctorsAttendanceLoadingState());
     final checkResult = await updateDoneUsecase.execute(
-      event.doctorMockItem.isDone,
-      event.doctorMockItem.id,
+      event.isDone,
+      event.doctor.userModel.id??0,
     );
     await checkResult.fold(
       (failure) async => emit(DoctorsAttendanceErrorState(failure: failure)),
       (data) async {
-        emit(DoctorsAttendanceState(event.doctors));
+        emit(DoctorsAttendanceState(event.doctor,event.isDone==0?false:true));
       },
     );
   }

@@ -22,6 +22,7 @@ import 'package:formify/presentation/resources/them_manager.dart';
 import 'package:formify/presentation/resources/theme_bloc/theme_bloc.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
+import 'package:formify/presentation/sync/cubit/cubit_attendance.dart';
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -58,6 +59,8 @@ class _MyAppState extends State<MyApp> {
         BlocProvider(create: (_) => instance<SurveyBloc>()),
         BlocProvider(create: (_) => instance<ThemeBloc>()),
         BlocProvider(create: (_) => instance<ExcelStBloc>()),
+        BlocProvider(create: (_) => DoctorFilterCubit()),
+
       ],
       // 2. الاستماع لتغييرات الـ ThemeBloc لتحديث ألوان الـ SeedColor حياً
       child: BlocBuilder<ThemeBloc, ThemeState>(

@@ -8,9 +8,11 @@ import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/responsive/font_responseve.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
+import 'package:formify/presentation/sync/cubit/cubit_attendance.dart';
+import 'package:formify/presentation/sync/cubit/cubit_attendance_state.dart';
+import 'package:formify/presentation/sync/widget/gialog_add_password.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
-enum DoctorFilterStatus { all, notAttended, attended }
 
 class DoctorsBySpsPage extends StatefulWidget {
 
@@ -20,10 +22,8 @@ class DoctorsBySpsPage extends StatefulWidget {
 }
 
 class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
-  List<UserDoneModel> _allDoctors = [];
-  List<UserDoneModel> _filteredDoctors = [];
+
   final TextEditingController _searchController = TextEditingController();
-  DoctorFilterStatus _selectedFilter = DoctorFilterStatus.all;
 
   @override
   void initState() {
@@ -37,23 +37,7 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
     _searchController.dispose();
     super.dispose();
   }
-
-  void _applyFilter() {
-    final String query = _searchController.text.toLowerCase();
-    setState(() {
-      _filteredDoctors = _allDoctors.where((doc) {
-        final bool matchesSearch = doc.userModel.fullName.toLowerCase().contains(query);
-        bool matchesStatus = true;
-        if (_selectedFilter == DoctorFilterStatus.notAttended) {
-          matchesStatus = (doc.isDone == 0);
-        } else if (_selectedFilter == DoctorFilterStatus.attended) {
-          matchesStatus = (doc.isDone == 1);
-        }
-        return matchesSearch && matchesStatus;
-      }).toList();
-    });
-  }
-
+  
   void _logoutFromConference() {
     showDialog(
       context: context,
@@ -97,23 +81,31 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
-        backgroundColor: const Color(0xFFF8FAFC), // خلفية ناعمة ومريحة جداً للعين
+        backgroundColor: const Color(0xFFF8FAFC),
         body: SafeArea(
           child: BlocConsumer<SyncBloc, SyncState>(
             listenWhen: (previous, current) =>
             current is DoctorsBySpsState ||
-                current is DoctorsBySpsErrorState,
+                current is DoctorsBySpsErrorState
+                || current is DoctorsAttendanceState,
             buildWhen: (previous, current) =>
             current is DoctorsBySpsState ||
                 current is DoctorsBySpsLoadingState ||
                 current is DoctorsBySpsErrorState,
             listener: (context, state) {
+              if(state is DoctorsAttendanceState){
+                context.read<DoctorFilterCubit>().toggleDoctor(state.users, state.value);
+              }
               if (state is DoctorsBySpsState) {
-                setState(() {
-                  _allDoctors = state.users.toDomainList();
-                  _applyFilter();
-                });
-              } else if (state is DoctorsBySpsErrorState) {
+                final cubit = context.read<DoctorFilterCubit>();
+
+                cubit.setDoctors(
+                  state.users,
+                );
+                  cubit.setConferenceSpecs(state.conferenceModel);
+
+              }
+              else if (state is DoctorsBySpsErrorState) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
@@ -127,17 +119,20 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
               }
             },
             builder: (context, state) {
+              if(state is DoctorsBySpsLoadingState){
+                return loadingFullScreen(context);
+              }
               return RefreshIndicator(
                 color: ColorManager.primary,
                 onRefresh: () async {
                   context.read<SyncBloc>().add(GetDoctorBySpsEvent());
                 },
                 child: NestedScrollView(
-                  headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-                    return <Widget>[
+                  headerSliverBuilder: (context, innerBoxIsScrolled) {
+                    return [
                       SliverToBoxAdapter(
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(20.0, 12.0, 20.0, 0),
+                          padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
                           child: Column(
                             children: [
                               _buildCustomHeader(),
@@ -151,11 +146,22 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
                       SliverPersistentHeader(
                         pinned: true,
                         delegate: _StickySearchAndFilterDelegate(
-                          minExtentHeight: FontResponsive.font(context, mobile: 118, tablet: 138),
-                          maxExtentHeight: FontResponsive.font(context, mobile: 118, tablet: 138),
+                          minExtentHeight: FontResponsive.font(
+                            context,
+                            mobile: 118,
+                            tablet: 138,
+                          ),
+                          maxExtentHeight: FontResponsive.font(
+                            context,
+                            mobile: 118,
+                            tablet: 138,
+                          ),
                           child: Container(
                             color: const Color(0xFFF8FAFC),
-                            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 4.0),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 4,
+                            ),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -197,40 +203,58 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
                     ];
                   },
                   body: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Stack(
-                      children: [
-                        _filteredDoctors.isEmpty && state is! DoctorsBySpsLoadingState
-                            ? Center(
-                          child: ListView(
-                            shrinkWrap: true,
-                            children: [
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: BlocBuilder<DoctorFilterCubit, DoctorFilterState>(
+                      builder: (context, filterState) {
+                        final doctors = filterState.filteredDoctors;
+
+                        return Stack(
+                          children: [
+                            if (doctors.isEmpty &&
+                                state is! DoctorsBySpsLoadingState)
                               Center(
-                                child: Text(
-                                  "لا يوجد أطباء مسجلين يطابقون الفرز",
-                                  style: TextStyle(
-                                    color: Colors.grey[500],
-                                    fontSize: FontResponsive.font(context, mobile: 15, tablet: 20),
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                child: ListView(
+                                  shrinkWrap: true,
+                                  children: [
+                                    Center(
+                                      child: Text(
+                                        "لا يوجد أطباء مسجلين يطابقون الفرز",
+                                        style: TextStyle(
+                                          color: Colors.grey[500],
+                                          fontSize: FontResponsive.font(
+                                            context,
+                                            mobile: 15,
+                                            tablet: 20,
+                                          ),
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            else
+                              ListView.builder(
+                                physics: const ClampingScrollPhysics(),
+                                padding: const EdgeInsets.only(
+                                  top: 10,
+                                  bottom: 20,
+                                ),
+                                itemCount: doctors.length,
+                                itemBuilder: (context, index) {
+                                  return _buildDoctorCard(doctors[index]);
+                                },
+                              ),
+                            if (state is DoctorsBySpsLoadingState &&
+                                filterState.allDoctors.isEmpty)
+                              const Center(
+                                child: CircularProgressIndicator(
+                                  color: ColorManager.primary,
                                 ),
                               ),
-                            ],
-                          ),
-                        )
-                            : ListView.builder(
-                          physics: const ClampingScrollPhysics(),
-                          padding: const EdgeInsets.only(top: 10, bottom: 20),
-                          itemCount: _filteredDoctors.length,
-                          itemBuilder: (context, index) {
-                            return _buildDoctorCard(_filteredDoctors[index]);
-                          },
-                        ),
-                        if (state is DoctorsBySpsLoadingState && _allDoctors.isEmpty)
-                          const Center(
-                            child: CircularProgressIndicator(color: ColorManager.primary),
-                          ),
-                      ],
+                          ],
+                        );
+                      },
                     ),
                   ),
                 ),
@@ -256,7 +280,11 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
               child: Text(
                 "الخروج من المؤتمر",
                 style: TextStyle(
-                  fontSize: FontResponsive.font(context, mobile: 16, tablet: 22),
+                  fontSize: FontResponsive.font(
+                    context,
+                    mobile: 16,
+                    tablet: 22,
+                  ),
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -266,7 +294,6 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
       ),
     );
   }
-
   // ✨ تعديل الـ App Bar ليكون بتصميم طافٍ (Floating UI) يجمع بين الرقي والوضوح العالي
   Widget _buildCustomHeader() {
     return Directionality(
@@ -314,6 +341,23 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
                 ),
               ],
             ),
+            IconButton(
+              icon: Icon(Icons.settings_outlined),
+                onPressed:  () {
+              showPasswordDialog(
+                context: context,
+                onSuccess: () {
+                  BlocProvider.of<SyncBloc>(context).add(GetInfoConferenceEvent());
+                  BlocProvider.of<SyncBloc>(context).add(GetAllUserEvent());
+                  Navigator.pushNamed(
+                    context,
+                    Routes.settingPage,
+                    arguments: context.read<DoctorFilterCubit>().state.conference.id,
+                  );
+                },
+                correctPassword: instance<AppPreferences>().getPassword() ?? "لا يوجد كلمة سر",
+              );
+            }, ),
           ],
         ),
       ),
@@ -322,6 +366,9 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
 
   // ✨ إعادة تصميم كرت المؤتمر تماً ليصبح بطاقة معلومات غنية ومنظمة هندسياً (Modern Dashboard Card)
   Widget _buildConferenceCard() {
+    instance<AppPreferences>().setLoggedIn(4);
+    final filterState = context.watch<DoctorFilterCubit>().state;
+    final conferenceModel = filterState.conference;
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -336,211 +383,232 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
           ),
         ],
       ),
-      child: BlocBuilder<SyncBloc, SyncState>(
-        buildWhen: (previous, current) =>
-        current is GetConferenceAsyncLoadingState ||
-            current is AsyncConferenceErrorState ||
-            current is GetConferenceAsyncState ||
-            current is GetConferenceAsyncEmptyState,
-        builder: (context, state) {
-          if (state is GetConferenceAsyncLoadingState) {
-            return Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: loadingFullScreen(context),
-            );
-          } else if (state is AsyncConferenceErrorState) {
-            return Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: errorFullScreen(context),
-            );
-          } else if (state is GetConferenceAsyncState) {
-            instance<AppPreferences>().setLoggedIn(4);
-            GetAllConferenceModel conferenceModel = state.conferenceModel;
-
-            return Directionality(
-              textDirection: TextDirection.rtl,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // الجزء العلوي: الأيقونة والاسم والوصف
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFEFF6FF),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: const Icon(Icons.gavel_rounded, color: Color(0xFF2563EB), size: 26),
+      child:
+       Directionality(
+      textDirection: TextDirection.rtl,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // الجزء العلوي: الأيقونة والاسم والوصف
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEFF6FF),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Icon(Icons.gavel_rounded, color: Color(0xFF2563EB), size: 26),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        conferenceModel?.name??"",
+                        style: TextStyle(
+                          fontSize: FontResponsive.font(context, mobile: 16, tablet: 22),
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xFF1E293B),
+                          height: 1.3,
                         ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                conferenceModel.name,
+                      ),
+                      if (conferenceModel.description.isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          conferenceModel.description,
+                          style: TextStyle(
+                            fontSize: FontResponsive.font(context, mobile: 12, tablet: 16),
+                            color: const Color(0xFF64748B),
+                            height: 1.4,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // خط فاصل داخلي أنيق
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Divider(color: Colors.grey.shade100, height: 1),
+          ),
+
+          // الجزء السفلي: تفاصيل المكان والتوقيت والاختصاصات
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+            child: Column(
+              children: [
+                // الموقع الجغرافي
+                Row(
+                  children: [
+                    const Icon(Icons.map_outlined, size: 16, color: Color(0xFF94A3B8)),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        conferenceModel.address,
+                        style: TextStyle(
+                          fontSize: FontResponsive.font(context, mobile: 12, tablet: 16),
+                          color: const Color(0xFF475569),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+
+                // التوقيت الزمني
+                Row(
+                  children: [
+                    const Icon(Icons.date_range_outlined, size: 16, color: Color(0xFF94A3B8)),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        "الفترة المحددة: ${conferenceModel.startDate}  إلى  ${conferenceModel.endDate}",
+                        style: TextStyle(
+                          fontSize: FontResponsive.font(context, mobile: 12, tablet: 16),
+                          color: const Color(0xFF475569),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                // الأوسمة الطبية للاختصاصات
+                if (conferenceModel.spec.isNotEmpty) ...[
+                  const SizedBox(height: 14),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(top: 4),
+                        child: Icon(Icons.local_activity_outlined, size: 16, color: Color(0xFF94A3B8)),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Wrap(
+                          spacing: 6,
+                          runSpacing: 6,
+                          children: conferenceModel.spec.map((specialization) {
+                            return Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                              decoration: BoxDecoration(
+                                color: ColorManager.primary.withOpacity(0.06),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: ColorManager.primary.withOpacity(0.12)),
+                              ),
+                              child: Text(
+                                specialization.title??"",
                                 style: TextStyle(
-                                  fontSize: FontResponsive.font(context, mobile: 16, tablet: 22),
+                                  fontSize: FontResponsive.font(context, mobile: 11, tablet: 14),
+                                  color: ColorManager.primary,
                                   fontWeight: FontWeight.bold,
-                                  color: const Color(0xFF1E293B),
-                                  height: 1.3,
                                 ),
                               ),
-                              if (conferenceModel.description.isNotEmpty) ...[
-                                const SizedBox(height: 4),
-                                Text(
-                                  conferenceModel.description,
-                                  style: TextStyle(
-                                    fontSize: FontResponsive.font(context, mobile: 12, tablet: 16),
-                                    color: const Color(0xFF64748B),
-                                    height: 1.4,
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
+                            );
+                          }).toList(),
                         ),
-                      ],
-                    ),
-                  ),
-
-                  // خط فاصل داخلي أنيق
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Divider(color: Colors.grey.shade100, height: 1),
-                  ),
-
-                  // الجزء السفلي: تفاصيل المكان والتوقيت والاختصاصات
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
-                    child: Column(
-                      children: [
-                        // الموقع الجغرافي
-                        Row(
-                          children: [
-                            const Icon(Icons.map_outlined, size: 16, color: Color(0xFF94A3B8)),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                conferenceModel.address,
-                                style: TextStyle(
-                                  fontSize: FontResponsive.font(context, mobile: 12, tablet: 16),
-                                  color: const Color(0xFF475569),
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-
-                        // التوقيت الزمني
-                        Row(
-                          children: [
-                            const Icon(Icons.date_range_outlined, size: 16, color: Color(0xFF94A3B8)),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                "الفترة المحددة: ${conferenceModel.startDate}  إلى  ${conferenceModel.endDate}",
-                                style: TextStyle(
-                                  fontSize: FontResponsive.font(context, mobile: 12, tablet: 16),
-                                  color: const Color(0xFF475569),
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        // الأوسمة الطبية للاختصاصات
-                        if (conferenceModel.spec.isNotEmpty) ...[
-                          const SizedBox(height: 14),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Padding(
-                                padding: EdgeInsets.only(top: 4),
-                                child: Icon(Icons.local_activity_outlined, size: 16, color: Color(0xFF94A3B8)),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Wrap(
-                                  spacing: 6,
-                                  runSpacing: 6,
-                                  children: conferenceModel.spec.map((specialization) {
-                                    return Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                      decoration: BoxDecoration(
-                                        color: ColorManager.primary.withOpacity(0.06),
-                                        borderRadius: BorderRadius.circular(8),
-                                        border: Border.all(color: ColorManager.primary.withOpacity(0.12)),
-                                      ),
-                                      child: Text(
-                                        specialization.title??"",
-                                        style: TextStyle(
-                                          fontSize: FontResponsive.font(context, mobile: 11, tablet: 14),
-                                          color: ColorManager.primary,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    );
-                                  }).toList(),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
-              ),
-            );
-          }
-          return const SizedBox();
-        },
+              ],
+            ),
+          ),
+        ],
       ),
+    )
     );
   }
 
   Widget _buildSearchField() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+    final filterState = context.watch<DoctorFilterCubit>().state;
+    final specList = filterState.conference.spec;
+    print("object ${specList.length}");
+    return Row(
+      children: [
+        Expanded(
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.02),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: TextField(
+              controller: _searchController,
+              onChanged: (value) =>
+                  context.read<DoctorFilterCubit>().search(value),
+              textAlign: TextAlign.right,
+              decoration: InputDecoration(
+                hintText: "ابحث بالاسم أو الرقم...",
+                hintStyle: TextStyle(
+                  color: Colors.grey[400],
+                  fontSize: FontResponsive.font(context, mobile: 14, tablet: 19),
+                ),
+                prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                border: InputBorder.none,
+                contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              ),
+            ),
           ),
-        ],
-      ),
-      child: TextField(
-        controller: _searchController,
-        onChanged: (_) => _applyFilter(),
-        textAlign: TextAlign.right,
-        decoration: InputDecoration(
-          hintText: "ابحث بالاسم أو الرقم...",
-          hintStyle: TextStyle(color: Colors.grey[400], fontSize: FontResponsive.font(context, mobile: 14, tablet: 19)),
-          prefixIcon: const Icon(Icons.search, color: Colors.grey),
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         ),
-      ),
+        const SizedBox(width: 10),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.02),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: DropdownButton<int?>(
+            value: filterState.selectedSpecId,
+            underline: const SizedBox(),
+            items: [
+              DropdownMenuItem(value: -1, child: Text("الكل")),
+              ...specList.map(
+                    (spec) => DropdownMenuItem(
+                  value: spec.id,
+                  child: Text(spec.title ?? ""),
+                ),
+              ),
+            ],
+            onChanged: (value) {
+              context.read<DoctorFilterCubit>().changeSpecFilter(value);
+            },
+          ),
+        ),
+      ],
     );
   }
-
   Widget _buildFilterChip({
     required String label,
     required DoctorFilterStatus status,
     required IconData icon,
   }) {
-    final bool isSelected = _selectedFilter == status;
+    final filterState = context.watch<DoctorFilterCubit>().state;
+    final bool isSelected = filterState.selectedFilter == status;
 
     return ChoiceChip(
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -554,10 +622,7 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
       selected: isSelected,
       onSelected: (bool selected) {
         if (selected) {
-          setState(() {
-            _selectedFilter = status;
-            _applyFilter();
-          });
+          context.read<DoctorFilterCubit>().changeFilter(status);
         }
       },
       selectedColor: ColorManager.primary,
@@ -586,7 +651,9 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isChecked ? ColorManager.primary.withOpacity(0.3) : Colors.transparent,
+          color: isChecked
+              ? ColorManager.primary.withOpacity(0.3)
+              : Colors.transparent,
           width: 1.5,
         ),
         boxShadow: [
@@ -599,7 +666,8 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
       ),
       child: CheckboxListTile(
         activeColor: ColorManager.primary,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        contentPadding:
+        const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         controlAffinity: ListTileControlAffinity.trailing,
         title: Text(
           doctor.userModel.fullName,
@@ -613,16 +681,10 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
         value: isChecked,
         onChanged: (bool? value) {
           if (value != null) {
-            setState(() {
-              doctor.isDone = value ? 1 : 0;
-              _applyFilter();
-            });
-            // context.read<SyncBloc>().add(
-            //   UpdateDoneDoctorEvent(
-            //     UserModel: doctor.userModel,
-            //     doctors: _allDoctors,
-            //   ),
-            // );
+            context.read<SyncBloc>().add(
+              UpdateDoneDoctorEvent(
+                  doctor: doctor,isDone: value?1:0),
+            );
           }
         },
         secondary: CircleAvatar(

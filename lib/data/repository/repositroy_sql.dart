@@ -319,7 +319,7 @@ Future<Either<Failure, List<UserModel>>> getAllImportantDoctorNotCome(List<UserM
     }
   }
   @override
-  Future<Either<Failure,List<UserModel>>>getUsersBySpecIds() async {
+  Future<Either<Failure,ConferenceUserAtt>>getUsersBySpecIds() async {
     try {
       final response = await _databaseHelper.getUsersBySpecIds();
 

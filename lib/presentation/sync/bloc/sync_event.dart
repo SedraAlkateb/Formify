@@ -153,10 +153,10 @@ final class GetDoctorBySpsEvent extends SyncEvent {
 
 // حدث تحديث حالة طبيب واحد في قاعدة البيانات
 class UpdateDoneDoctorEvent extends SyncEvent {
-  final DoctorMockItem doctorMockItem;
-  final List<DoctorMockItem> doctors;
+  final UserDoneModel doctor;
+  final int isDone;
  // List<DoctorMockItem> doctors;
-  const UpdateDoneDoctorEvent({required this.doctorMockItem, required this.doctors
+  const UpdateDoneDoctorEvent({required this.doctor, required this.isDone
     //,required this.doctors
   });
 }

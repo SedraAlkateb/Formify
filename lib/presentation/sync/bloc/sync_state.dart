@@ -305,8 +305,9 @@ final class EditUserErrorState extends SyncState {
 }
 
 final class DoctorsAttendanceState extends SyncState {
-  final List<DoctorMockItem> users;
-  const DoctorsAttendanceState(this.users);
+  final UserDoneModel users;
+  final bool value;
+  const DoctorsAttendanceState(this.users,this.value);
 
   @override
   List<Object?> get props => [users];
@@ -348,8 +349,9 @@ final class GetUserConferenceState extends SyncState {
   List<Object?> get props => [filterUsers];
 }
 final class DoctorsBySpsState extends SyncState {
-  final List<UserModel> users;
-  const DoctorsBySpsState(this.users);
+  final List<UserDoneModel> users;
+  final GetAllConferenceModel conferenceModel;
+  const DoctorsBySpsState(this.users,this.conferenceModel);
 
   @override
   List<Object?> get props => [users];
