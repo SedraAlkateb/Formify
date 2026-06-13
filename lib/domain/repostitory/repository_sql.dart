@@ -32,5 +32,6 @@ abstract class RepositorySql {
   Future<Either<Failure,List<UserModel>>>getUsersBySpecIdAndName(int specId, String name);
   Future<Either<Failure,void>>insertSpecs(List<SpecModel> specs);
   Future<Either<Failure,ConferenceUserAtt>>getUsersBySpecIds();
+  Future<Either<Failure,List<UserModel>>>getAllUsersWithSpecsForAllConferences();
 
 }

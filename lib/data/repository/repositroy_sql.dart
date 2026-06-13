@@ -331,4 +331,19 @@ Future<Either<Failure, List<UserModel>>> getAllImportantDoctorNotCome(List<UserM
       return Left(failure);
     }
   }
+
+  @override
+  Future<Either<Failure, List<UserModel>>> getAllUsersWithSpecsForAllConferences() async {
+    try {
+      final response = await _databaseHelper.getAllUsersWithSpecsForAllConferences();
+
+      return Right(response);
+    } catch (e) {
+      Failure failure = ErrorHandler
+          .handle(e)
+          .failure;
+      return Left(failure);
+    }
+  }
+
 }

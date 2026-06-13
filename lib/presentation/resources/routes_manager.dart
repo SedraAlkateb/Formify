@@ -13,6 +13,7 @@ import 'package:formify/presentation/active_conference/page/view_user_survey.dar
 import 'package:formify/presentation/excel/page/exel_page.dart';
 import 'package:formify/presentation/excel/page/survey_dashboard.dart';
 import 'package:formify/presentation/home/pages/home_page.dart';
+import 'package:formify/presentation/manager_user/pages/manager_user_page.dart';
 import 'package:formify/presentation/onboarding/pages/login_page.dart';
 import 'package:formify/presentation/onboarding/pages/onboarding_page.dart';
 import 'package:formify/presentation/question/page/multi_answer.dart';
@@ -69,6 +70,7 @@ class Routes {
   static const String exelBaseConference = "/exelBaseConference";
   static const String editUser= "/editUser";
   static const String doctorsAttendance= "/doctorsAttendancePage";
+  static const String manageUser= "/manageUser";
 
 }
 
@@ -154,6 +156,9 @@ class RouteGenerator {
       case Routes.doctorsAttendance:
         initSyncModule();
         return _animatedRoute(DoctorsBySpsPage());
+      case Routes.manageUser:
+       // initSyncModule();
+        return _animatedRoute(ManagerUserPage());
       case Routes.updateSurvey:
         final id = settings.arguments as int;
         return _animatedRoute(UpdateSurveyPage(id: id));

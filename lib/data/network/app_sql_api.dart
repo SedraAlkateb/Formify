@@ -39,6 +39,7 @@ abstract class AppSqlApiAbs {
   Future<void> insertAllUsersForNewConf();
   Future<void> insertSpecs(List<SpecModel> specs);
   Future<ConferenceUserAtt > getUsersBySpecIds();
+  Future<List<UserModel>> getAllUsersWithSpecsForAllConferences();
 }
 
 class AppSqlApi extends AppSqlApiAbs {
@@ -1242,7 +1243,6 @@ class AppSqlApi extends AppSqlApiAbs {
   }
 
   @override
-  @override
   Future<ConferenceUserAtt> getUsersBySpecIds() async {
     try {
       final db = await DatabaseHelper().database;
@@ -1300,6 +1300,32 @@ class AppSqlApi extends AppSqlApiAbs {
     } catch (e) {
       print("❌ خطأ أثناء جلب مستخدمي المؤتمر والاختصاصات: $e");
       rethrow;
+    }
+  }
+
+  @override
+  Future<List<UserModel>> getAllUsersWithSpecsForAllConferences() async {
+    try {
+      final db = await DatabaseHelper().database;
+
+      // إجراء استعلام تجميعي بربط الجدولين بناءً على معرف الاختصاص
+      final List<Map<String, dynamic>> maps = await db.rawQuery('''
+      SELECT 
+        u.*, 
+        s.id AS spec_id_joined, 
+        s.title AS spec_title_joined
+      FROM all_users u
+      LEFT JOIN spec s ON u.specId = s.id
+    ''');
+
+      // تحويل الأسطر الناتجة من قاعدة البيانات إلى قائمة من كائنات UserModel
+      return List.generate(maps.length, (index) {
+        return UserModel.fromMap(maps[index]);
+      });
+    } catch (e) {
+      // معالجة الأخطاء في حال حدوثها أثناء الاستعلام
+      print("Error fetching users with specifications: $e");
+      return [];
     }
   }
 }

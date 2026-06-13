@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:formify/app/di.dart';
 import 'package:formify/presentation/active_conference/bloc/active_conference_bloc.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
+import 'package:formify/presentation/home/widget/user_management_card.dart';
 import 'package:formify/presentation/resources/assets_manager.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/responsive/breakpoints.dart';
@@ -20,66 +22,74 @@ class CustomGridPage extends StatelessWidget {
     final isTabletPortrait = Breakpoints.isTabletPortrait(context);
 
     final isMobileLandscape = Breakpoints.isMobileLandscape(context);
-    return StaggeredGrid.count(
-      crossAxisCount: 2,
-      crossAxisSpacing: Breakpoints.isTabletPortrait(context)?50:15,
-      mainAxisSpacing: 15,
+    return Column(
       children: [
-        StaggeredGridTile.count(
-          crossAxisCellCount: 1,
-          mainAxisCellCount:
-          (isTabletLandscape||isMobileLandscape||isTabletPortrait)?0.6: 1,
-          child: AnimatedGridItem(
-            text: "عرض المؤتمرات",
-            onTap: () {
-              initActiveConferenceModule();
-              BlocProvider.of<ActiveConferenceBloc>(context).add(GetAllActiveConferenceEvent());
+        StaggeredGrid.count(
+          crossAxisCount: 2,
+          crossAxisSpacing: Breakpoints.isTabletPortrait(context)?50:15,
+          mainAxisSpacing: 15,
+          children: [
+            StaggeredGridTile.count(
+              crossAxisCellCount: 1,
+              mainAxisCellCount:
+              (isTabletLandscape||isMobileLandscape||isTabletPortrait)?0.6: 1,
+              child: AnimatedGridItem(
+                text: "عرض المؤتمرات",
+                onTap: () {
+                  initActiveConferenceModule();
+                  BlocProvider.of<ActiveConferenceBloc>(context).add(GetAllActiveConferenceEvent());
 
-              Navigator.pushNamed(context, Routes.getAllActiveConference);
-            },
-          ),
+                  Navigator.pushNamed(context, Routes.getAllActiveConference);
+                },
+              ),
+            ),
+
+            StaggeredGridTile.count(
+              crossAxisCellCount: 1,
+              mainAxisCellCount:(isTabletLandscape||isMobileLandscape||isTabletPortrait)?1.2:1.7, // أكبر من الباقي
+              child: AnimatedGridItem(
+                text: "انشاء استبيان ديناميكي",
+                onTap: () {
+                 Navigator.pushNamed(context, Routes.createSurvey);
+                },
+                type: "Survey",
+                image: HomeImageAssets.survey,
+              ),
+            ),
+
+            StaggeredGridTile.count(
+              crossAxisCellCount: 1,
+              mainAxisCellCount:(isTabletLandscape||isMobileLandscape||isTabletPortrait)?1.2:1.7,
+              child: AnimatedGridItem(
+
+                text: "انشاء مؤتمر ديناميكي",
+                onTap: () {
+                  BlocProvider.of<ConferenceBloc>(context).add(GetAllSpecEvent());
+                  Navigator.pushNamed(context, Routes.createConference);
+                },
+                image: HomeImageAssets.conference,
+                type: "conference",
+              ),
+            ),
+            StaggeredGridTile.count(
+              crossAxisCellCount: 1,
+              mainAxisCellCount:(isTabletLandscape||isMobileLandscape||isTabletPortrait)?0.6: 1,
+              child: AnimatedGridItem(
+                text: "عرض الاستبيانات",
+                onTap: () {
+                  Navigator.pushNamed(context, Routes.getAllSurvey);
+
+                },
+              ),
+            ),
+
+            // مربع كبير للجهة المقابلة
+          ],
         ),
 
-        StaggeredGridTile.count(
-          crossAxisCellCount: 1,
-          mainAxisCellCount:(isTabletLandscape||isMobileLandscape||isTabletPortrait)?1.2:1.7, // أكبر من الباقي
-          child: AnimatedGridItem(
-            text: "انشاء استبيان ديناميكي",
-            onTap: () {
-             Navigator.pushNamed(context, Routes.createSurvey);
-            },
-            type: "Survey",
-            image: HomeImageAssets.survey,
-          ),
-        ),
-
-        StaggeredGridTile.count(
-          crossAxisCellCount: 1,
-          mainAxisCellCount:(isTabletLandscape||isMobileLandscape||isTabletPortrait)?1.2:1.7,
-          child: AnimatedGridItem(
-
-            text: "انشاء مؤتمر ديناميكي",
-            onTap: () {
-              BlocProvider.of<ConferenceBloc>(context).add(GetAllSpecEvent());
-              Navigator.pushNamed(context, Routes.createConference);
-            },
-            image: HomeImageAssets.conference,
-            type: "conference",
-          ),
-        ),
-        StaggeredGridTile.count(
-          crossAxisCellCount: 1,
-          mainAxisCellCount:(isTabletLandscape||isMobileLandscape||isTabletPortrait)?0.6: 1,
-          child: AnimatedGridItem(
-            text: "عرض الاستبيانات",
-            onTap: () {
-              Navigator.pushNamed(context, Routes.getAllSurvey);
-
-            },
-          ),
-        ),
-
-        // مربع كبير للجهة المقابلة
+        UserManagementCard(
+          onTap: () => Navigator.pushNamed(context,Routes.manageUser),
+        )
       ],
     );
   }
@@ -128,7 +138,7 @@ class _AnimatedGridItemState extends State<AnimatedGridItem> {
           decoration: BoxDecoration(
             color: widget.image != null
                 ? ColorManager.primary.withOpacity(0.4)
-                : ColorManager.white.withOpacity(0.5),
+                : ColorManager.white,
             borderRadius: BorderRadius.circular(18),
             boxShadow: [
               BoxShadow(

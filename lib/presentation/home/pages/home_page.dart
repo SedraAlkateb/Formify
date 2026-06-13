@@ -125,6 +125,7 @@ class HomeMobilePage extends StatelessWidget {
           ),
           Column(
             children: [
+              SizedBox(height: 10.h),
               const CustomGridPage(),
               SizedBox(height: 20.h),
               Column(

@@ -75,7 +75,7 @@ class DoctorFilterCubit extends Cubit<DoctorFilterState> {
       DoctorFilterStatus filter,
       int? specId,
       ) {
-    print(specId);
+
     final query = searchText.trim().toLowerCase();
 
     return doctors.where((doctor) {

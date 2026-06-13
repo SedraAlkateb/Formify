@@ -83,14 +83,6 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
         backgroundColor: const Color(0xFFF8FAFC),
         body: SafeArea(
           child: BlocConsumer<SyncBloc, SyncState>(
-            listenWhen: (previous, current) =>
-            current is DoctorsBySpsState ||
-                current is DoctorsBySpsErrorState
-                || current is DoctorsAttendanceState,
-            buildWhen: (previous, current) =>
-            current is DoctorsBySpsState ||
-                current is DoctorsBySpsLoadingState ||
-                current is DoctorsBySpsErrorState,
             listener: (context, state) {
               if(state is DoctorsAttendanceState){
                 context.read<DoctorFilterCubit>().toggleDoctor(state.users, state.value);
@@ -101,6 +93,7 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
                 cubit.setDoctors(
                   state.users,
                 );
+
                   cubit.setConferenceSpecs(state.conferenceModel);
 
               }
@@ -206,7 +199,6 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
                     child: BlocBuilder<DoctorFilterCubit, DoctorFilterState>(
                       builder: (context, filterState) {
                         final doctors = filterState.filteredDoctors;
-
                         return Stack(
                           children: [
                             if (doctors.isEmpty &&
@@ -532,7 +524,6 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
   Widget _buildSearchField() {
     final filterState = context.watch<DoctorFilterCubit>().state;
     final specList = filterState.conference.spec;
-    print("object ${specList.length}");
     return Row(
       children: [
         Expanded(

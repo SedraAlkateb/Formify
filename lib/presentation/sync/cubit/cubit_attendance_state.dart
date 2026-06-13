@@ -1,8 +1,9 @@
+import 'package:equatable/equatable.dart';
 import 'package:formify/domain/models/models.dart';
 
 enum DoctorFilterStatus { all, notAttended, attended }
 
-class DoctorFilterState {
+class DoctorFilterState extends Equatable{
   final List<UserDoneModel> allDoctors;
   final List<UserDoneModel> filteredDoctors;
   final String searchText;
@@ -10,12 +11,12 @@ class DoctorFilterState {
   final int? selectedSpecId;
   final GetAllConferenceModel conference; // لن يكون nullable
 
-  DoctorFilterState({
+  const DoctorFilterState({
     this.allDoctors = const [],
     this.filteredDoctors = const [],
     this.searchText = '',
     this.selectedFilter = DoctorFilterStatus.all,
-    this.selectedSpecId,
+    this.selectedSpecId=-1,
     required this.conference, // نجبر على تمرير قيمة عند الإنشاء
   });
 
@@ -36,4 +37,14 @@ class DoctorFilterState {
       conference: conference ?? this.conference,
     );
   }
+
+  @override
+  List<Object?> get props => [
+    allDoctors,
+    filteredDoctors,
+    searchText,
+    selectedFilter,
+    selectedSpecId,
+    conference, // بمجرد تغير المؤتمر سيحدث التحديث فوراً
+  ];
 }
