@@ -99,7 +99,7 @@ class _DoctorExcelPageState extends State<DoctorExcelPage> {
   }
 
   List<DataColumn> _buildColumns(double fontSize) {
-    const labels = ['#', 'اسم المستخدم', 'العنوان', 'الرقم', 'النوع'];
+    const labels = ['#', 'اسم المستخدم', 'العنوان', 'الرقم', 'النوع','الملاحظة'];
     return labels.map((label) => DataColumn(
         label: Text(label, style: TextStyle(color: Colors.white, fontSize: fontSize, fontWeight: FontWeight.bold))
     )).toList();
@@ -115,6 +115,7 @@ class _DoctorExcelPageState extends State<DoctorExcelPage> {
         DataCell(SizedBox(width: normalWidth, child: Text(doc.address??"", style: style))),
         DataCell(SizedBox(width: normalWidth, child: Text(doc.phone, style: style))),
         DataCell(SizedBox(width: normalWidth, child: Text(doc.userType.name, style: style))),
+        DataCell(SizedBox(width: normalWidth, child: Text(doc.notes??"", style: style))),
       ],
     );
   }

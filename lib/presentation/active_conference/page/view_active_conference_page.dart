@@ -28,13 +28,16 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
 
   @override
   void initState() {
-    BlocProvider.of<ActiveConferenceBloc>(
-      context,
-    ).add(GetActiveConferenceByIdEvent(widget.conferenceId));
-    BlocProvider.of<ActiveConferenceBloc>(
-      context,
-    ).add(GetAllUserByActiveConferenceEvent(widget.conferenceId));
+    final bloc = BlocProvider.of<ActiveConferenceBloc>(context);
+    bloc.add(GetActiveConferenceByIdEvent(widget.conferenceId));
+    bloc.add(GetAllUserByActiveConferenceEvent(widget.conferenceId));
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -54,552 +57,420 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
           ),
         ),
         backgroundColor: ColorManager.white,
+        elevation: 0,
       ),
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            // ==================== القسم الأول: تفاصيل المؤتمر والاستبيانات ====================
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+                child: BlocBuilder<ActiveConferenceBloc, ActiveConferenceState>(
+                  buildWhen: (previous, current) =>
+                  current is GetActiveConferenceByIdState ||
+                      current is GetActiveConferenceByIdLoadingState ||
+                      current is GetActiveConferenceByIdErrorState,
+                  builder: (context, state) {
+                    if (state is GetActiveConferenceByIdErrorState) {
+                      return errorFullScreen(context);
+                    } else if (state is GetActiveConferenceByIdLoadingState) {
+                      return loadingFullScreen(context);
+                    } else if (state is GetActiveConferenceByIdState) {
+                      return _buildConferenceHeader(context, state);
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
+              ),
+            ),
 
-      body: SingleChildScrollView(
-        child: Padding(
-          padding:  EdgeInsets.all(8.h),
+            // ==================== القسم الثاني: فلاتر وبحث المستخدمين ====================
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.w),
+                child: BlocBuilder<ActiveConferenceBloc, ActiveConferenceState>(
+                  buildWhen: (previous, current) =>
+                  current is GetAllUserActiveConferenceState ||
+                      current is GetAllUserActiveConferenceLoadingState ||
+                      current is GetAllUserActiveConferenceErrorState,
+                  builder: (context, state) {
+                    if (state is GetAllUserActiveConferenceState) {
+                      return _buildUserFiltersAndSearch(context, state);
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
+              ),
+            ),
+
+            // ==================== القسم الثالث: قائمة المستخدمين (Lazy Loading) ====================
+            BlocBuilder<ActiveConferenceBloc, ActiveConferenceState>(
+              buildWhen: (previous, current) =>
+              current is GetAllUserActiveConferenceState ||
+                  current is GetAllUserActiveConferenceLoadingState ||
+                  current is GetAllUserActiveConferenceErrorState,
+              builder: (context, state) {
+                if (state is GetAllUserActiveConferenceLoadingState) {
+                  return SliverToBoxAdapter(child: loadingFullScreen(context));
+                } else if (state is GetAllUserActiveConferenceErrorState) {
+                  return SliverToBoxAdapter(child: errorFullScreen(context));
+                } else if (state is GetAllUserActiveConferenceState) {
+                  if (state.userFilter.isEmpty) {
+                    return SliverToBoxAdapter(
+                      child: buildEmptySurveysWidget(
+                        context,
+                        "لا يوجد مشاركين",
+                        "يبدو أن هذا المؤتمر لا يحتوي على مشاركين بهذا الاسم",
+                      ),
+                    );
+                  }
+
+                  // هنا السرعة! يتم بناء العناصر الظاهرة على الشاشة فقط مهما كان العدد
+                  return SliverPadding(
+                    padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                    sliver: SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                          final user = state.userFilter[index];
+                          return InkWell(
+                            onTap: state.newTitle == "المهمين - غائبين"
+                                ? null
+                                : () {
+                              BlocProvider.of<ActiveConferenceBloc>(context)
+                                  .add(GetUserSurveyEvent(user));
+                              Navigator.pushNamed(context, Routes.viewUserSurvey);
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 4.h),
+                              child: userListItem(user, context),
+                            ),
+                          );
+                        },
+                        childCount: state.userFilter.length,
+                      ),
+                    ),
+                  );
+                }
+                return const SliverToBoxAdapter(child: SizedBox.shrink());
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ميثود فرعية لبناء هيدر المؤتمر لتنظيف كود الـ build الرئيسي
+  Widget _buildConferenceHeader(BuildContext context, GetActiveConferenceByIdState state) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: EdgeInsets.symmetric(vertical: AppPadding.p16, horizontal: AppPadding.p18),
+          width: MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [ColorManager.splash1, ColorManager.splash2],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Padding(
+            padding: EdgeInsets.all(AppPadding.p16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  state.conferenceModel.name,
+                  style: TextStyle(
+                    fontSize: FontResponsive.font(context, mobile: 20, tablet: 24),
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  state.conferenceModel.description,
+                  style: TextStyle(
+                    fontSize: FontResponsive.font(context, mobile: 16, tablet: 20),
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 20),
+        Card(
+          shadowColor: ColorManager.white,
+          color: ColorManager.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ActiveConference header section (Card with ActiveConference Info)
-              BlocBuilder<ActiveConferenceBloc, ActiveConferenceState>(
-                buildWhen: (previous, current) =>
-                    current is GetActiveConferenceByIdState ||
-                    current is GetActiveConferenceByIdLoadingState ||
-                    current is GetActiveConferenceByIdErrorState,
-                builder: (context, state) {
-                  if (state is GetActiveConferenceByIdErrorState) {
-                    return errorFullScreen(context);
-                  } else if (state is GetActiveConferenceByIdLoadingState) {
-                    return loadingFullScreen(context);
-                  } else if (state is GetActiveConferenceByIdState) {
-                    return Column(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            vertical: AppPadding.p16,
-                            horizontal: AppPadding.p18,
-                          ),
-                          width: MediaQuery.of(context).size.width,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                ColorManager.splash1,
-                                ColorManager.splash2,
-                                //  ColorManager.splash3,
-                              ],
-                              begin: Alignment
-                                  .topLeft, // البداية من الزاوية العليا اليسرى
-                              end: Alignment
-                                  .bottomRight, // النهاية عند الزاوية السفلى اليمنى
-                            ),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Padding(
-                            padding: EdgeInsets.all(AppPadding.p16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  state.conferenceModel.name,
-                                  style: TextStyle(
-                                    fontSize: FontResponsive.font(
-                                      context,
-                                      mobile: 20,
-                                      tablet: 24,
-                                    ),
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                // ActiveConference Description
-                                Text(
-                                  state.conferenceModel.description,
-                                  style: TextStyle(
-                                    fontSize: FontResponsive.font(
-                                      context,
-                                      mobile: 16,
-                                      tablet: 20,
-                                    ),
-                                    color: Colors.white,
-                                  ),
-                                ),
-
-                                // Date and location section
-                              ],
-                            ),
-                          ),
+              Padding(
+                padding: EdgeInsets.all(AppPadding.p12),
+                child: Row(
+                  children: [
+                    Card(
+                      margin: EdgeInsets.all(AppMargin.m4),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      elevation: 4,
+                      color: const Color(0xEDF4FDFF),
+                      child: Padding(
+                        padding: EdgeInsets.all(AppPadding.p8),
+                        child: Icon(
+                          Icons.calendar_today,
+                          color: Colors.blue,
+                          size: Constants.isTablet ? 34 : 30,
                         ),
-
-                        const SizedBox(height: 20),
-                        Card(
-                          shadowColor: ColorManager.white,
-                          color: ColorManager.white,
-                          shape: RoundedRectangleBorder(
-                            // side: BorderSide(color: ColorManager.fieldBackground, width: 2),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                      ),
+                    ),
+                    SizedBox(width: AppSize.s8),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        RichText(
+                          text: TextSpan(
                             children: [
-                              // Date Section
-                              Padding(
-                                padding: EdgeInsets.all(AppPadding.p12),
-                                child: Row(
-                                  children: [
-                                    Card(
-                                      margin: EdgeInsets.all(AppMargin.m4),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      elevation: 4,
-                                      color: Color(0xEDF4FDFF),
-                                      child: Padding(
-                                        padding: EdgeInsets.all(AppPadding.p8),
-                                        child: Icon(
-                                          Icons.calendar_today,
-                                          color: Colors.blue,
-                                          size: Constants.isTablet ? 34 : 30,
-                                        ),
-                                      ),
-                                    ),
-
-                                    SizedBox(width: AppSize.s8),
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        RichText(
-                                          text: TextSpan(
-                                            children: [
-                                              TextSpan(
-                                                text:
-                                                    "تاريخ البدء: ", // النص الثابت "From:"
-                                                style: TextStyle(
-                                                  fontSize: FontResponsive.font(
-                                                    context,
-                                                    mobile: 18,
-                                                    tablet: 22,
-                                                  ),
-                                                  fontWeight:
-                                                      FontWeight.bold, // خط عريض
-                                                  color: Colors.black, // اللون
-                                                ),
-                                              ),
-                                              TextSpan(
-                                                text: state
-                                                    .conferenceModel
-                                                    .startDate, // التاريخ أو النص الذي ترغب في عرضه
-                                                style: TextStyle(
-                                                  fontSize: FontResponsive.font(
-                                                    context,
-                                                    mobile: 18,
-                                                    tablet: 22,
-                                                  ),
-                                                  fontWeight: FontWeight
-                                                      .normal, // خط عادي
-                                                  color: Colors
-                                                      .black, // اللون المخصص
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-
-                                        RichText(
-                                          text: TextSpan(
-                                            children: [
-                                              TextSpan(
-                                                text:
-                                                    "تاريخ الانتهاء: ", // النص الثابت "To:"
-                                                style: TextStyle(
-                                                  fontSize: FontResponsive.font(
-                                                    context,
-                                                    mobile: 18,
-                                                    tablet: 22,
-                                                  ),
-                                                  fontWeight:
-                                                      FontWeight.bold, // خط عريض
-                                                  color: Colors.black, // اللون
-                                                ),
-                                              ),
-                                              TextSpan(
-                                                text: state
-                                                    .conferenceModel
-                                                    .endDate, // التاريخ أو النص الذي ترغب في عرضه
-                                                style: TextStyle(
-                                                  fontSize: FontResponsive.font(
-                                                    context,
-                                                    mobile: 18,
-                                                    tablet: 22,
-                                                  ),
-                                                  fontWeight: FontWeight
-                                                      .normal, // خط عادي
-                                                  color: Colors
-                                                      .black, // اللون المخصص
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                              TextSpan(
+                                text: "تاريخ البدء: ",
+                                style: TextStyle(
+                                  fontSize: FontResponsive.font(context, mobile: 18, tablet: 22),
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
                                 ),
                               ),
-                              Container(
-                                color: ColorManager.fieldBackground,
-                                height: 5,
-                              ),
-                              // Location Section
-                              Padding(
-                                padding: EdgeInsets.all(AppPadding.p12),
-                                child: Row(
-                                  children: [
-                                    Card(
-                                      margin: EdgeInsets.all(AppMargin.m4),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      elevation: 4,
-
-                                      color: Color(0xFFFDF5EB),
-                                      child: Padding(
-                                        padding: EdgeInsets.all(AppPadding.p8),
-                                        child: Icon(
-                                          Icons.location_on_outlined,
-                                          color: Colors.orange,
-                                          size: Constants.isTablet ? 35 : 30,
-                                        ),
-                                      ),
-                                    ),
-
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: Text(
-                                        state.conferenceModel.address,
-                                        style: TextStyle(
-                                          fontSize: FontResponsive.font(
-                                            context,
-                                            mobile: 16,
-                                            tablet: 20,
-                                          ),
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                              TextSpan(
+                                text: state.conferenceModel.startDate,
+                                style: TextStyle(
+                                  fontSize: FontResponsive.font(context, mobile: 18, tablet: 22),
+                                  color: Colors.black,
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        SizedBox(height: 4),
-                        state.conferenceModel.surveys.isNotEmpty
-                            ? Padding(
-                                padding: EdgeInsets.all(AppPadding.p8),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.sticky_note_2_outlined,
-                                          size: 30,
-                                        ),
-                                        SizedBox(width: AppSize.s8),
-                                        Text(
-                                          "الاستبيانات",
-                                          style: TextStyle(
-                                            fontSize: FontResponsive.font(
-                                              context,
-                                              mobile: 18,
-                                              tablet: 22,
-                                            ),
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black87,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    // Row(
-                                    //   children: [
-                                    //     Icon(Icons.description_outlined),
-                                    //     SizedBox(width: 8),
-                                    //     Text(
-                                    //       "Surveys",
-                                    //       style: TextStyle(
-                                    //         fontSize: 18,
-                                    //         fontWeight: FontWeight.bold,
-                                    //         color: Colors.black87,
-                                    //       ),
-                                    //     ),
-                                    //   ],
-                                    // ),
-                                    Row(
-                                      children: [
-                                        Text(
-                                          state.conferenceModel.surveys.length
-                                              .toString(),
-                                        ),
-                                        Text(" استبيان "),
-                                      ],
-                                    ),
-                                  ],
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: "تاريخ الانتهاء: ",
+                                style: TextStyle(
+                                  fontSize: FontResponsive.font(context, mobile: 18, tablet: 22),
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
                                 ),
-                              )
-                            : SizedBox(),
-                        SizedBox(height: AppSize.s4),
-                        state.conferenceModel.surveys.isNotEmpty
-                            ? ListView.builder(
-                                physics: NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                itemCount: state
-                                    .conferenceModel
-                                    .surveys
-                                    .length, // Number of surveys
-                                itemBuilder: (context, index) {
-                                  return surveyCardActiveConference(
-                                    state.conferenceModel.surveys[index]
-                                        .toDomain(),
-                                    state.conferenceModel.id,
-                                  );
-                                },
-                              )
-                            : buildEmptySurveysWidget(
-                                context,
-                                "لا توجد استبيانات",
-                                "يبدو أن هذا المؤتمر لا يحتوي على استبيانات فهو مؤتمر لعرض معلومات المشاركين في المؤتمر , كما في الاسفل",
                               ),
-                        SizedBox(height: AppSize.s4),
+                              TextSpan(
+                                text: state.conferenceModel.endDate,
+                                style: TextStyle(
+                                  fontSize: FontResponsive.font(context, mobile: 18, tablet: 22),
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
-                    );
-                  } else {
-                    return SizedBox();
-                  }
-                },
+                    ),
+                  ],
+                ),
               ),
-              BlocBuilder<ActiveConferenceBloc, ActiveConferenceState>(
-                buildWhen: (previous, current) =>
-                    current is GetAllUserActiveConferenceState ||
-                    current is GetAllUserActiveConferenceLoadingState ||
-                    current is GetAllUserActiveConferenceErrorState,
-                builder: (context, state) {
-                  if (state is GetAllUserActiveConferenceErrorState) {
-                    return errorFullScreen(context);
-                  } else if (state is GetAllUserActiveConferenceLoadingState) {
-                    return loadingFullScreen(context);
-                  } else if (state is GetAllUserActiveConferenceState) {
-                    return Column(
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.all(AppPadding.p8),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(Icons.group_outlined, size: 30),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    state.newTitle,
-                                    style: TextStyle(
-                                      fontSize: FontResponsive.font(
-                                        context,
-                                        mobile: 18,
-                                        tablet: 22,
-                                      ),
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 4),
-                                  // زر الفلتر
-                                  PopupMenuButton<int>(
-                                    icon: const Icon(
-                                      Icons.filter_list,
-                                      color: Colors.blueGrey,
-                                    ),
-                                    onSelected: (int value) {
-                                      BlocProvider.of<ActiveConferenceBloc>(
-                                        context,
-                                      ).add(
-                                        FilterDoctorEvent(value, state.users),
-                                      );
-                                      print("Selected Filter: $value");
-                                    },
-                                    itemBuilder: (BuildContext context) => [
-                                      const PopupMenuItem(
-                                        value: 0,
-                                        child: Text("الكل"),
-                                      ),
-                                      const PopupMenuItem(
-                                        value: 1,
-                                        child: Text("المهمين - حضروا"),
-                                      ),
-                                      const PopupMenuItem(
-                                        value: 2,
-                                        child: Text("المهمين - لم يحضروا"),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              // القسم الأيسر (العدد)
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.blue.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      state.userFilter.length.toString(),
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.blue,
-                                      ),
-                                    ),
-                                    const Text(
-                                      " مشارك ",
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.blueGrey,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
+              Container(color: ColorManager.fieldBackground, height: 5),
+              Padding(
+                padding: EdgeInsets.all(AppPadding.p12),
+                child: Row(
+                  children: [
+                    Card(
+                      margin: EdgeInsets.all(AppMargin.m4),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      elevation: 4,
+                      color: const Color(0xFFFDF5EB),
+                      child: Padding(
+                        padding: EdgeInsets.all(AppPadding.p8),
+                        child: Icon(
+                          Icons.location_on_outlined,
+                          color: Colors.orange,
+                          size: Constants.isTablet ? 35 : 30,
                         ),
-                        SizedBox(height: AppSize.s4),
-                        Padding(
-                          padding: EdgeInsets.all(AppPadding.p8),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: SearchField(
-                                  searchController: searchController,
-                                  onPressed: (value) {
-                                    BlocProvider.of<ActiveConferenceBloc>(
-                                      context,
-                                    ).add(
-                                      SearchDoctorEvent(
-                                        search: value,
-                                        users: state.users,
-                                        filterType: state.newTitle,
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                              InkWell(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.table_chart_outlined,
-                                      color: const Color(0xFF16A34A),
-                                      size: 24,
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      'تصدير Excel',
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w700,
-                                        color: const Color(0xFF16A34A),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                onTap: () {
-                                  Navigator.pushNamed(
-                                    context,
-                                    Routes.exelConference,
-                                    arguments: state.newTitle,
-                                  );
-                                  BlocProvider.of<ExcelStBloc>(context).add(ExcelForConferenceEvent(state.userFilter));
-
-                                },
-                                ///////////////////////
-                              ),
-                              // القسم الأيسر (العدد)
-                            ],
-                          ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        state.conferenceModel.address,
+                        style: TextStyle(
+                          fontSize: FontResponsive.font(context, mobile: 16, tablet: 20),
+                          fontWeight: FontWeight.w500,
                         ),
-                        SizedBox(height: AppSize.s4),
-                        state.userFilter.isNotEmpty
-                            ? ListView.builder(
-                                physics: NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                itemCount:
-                                    state.userFilter.length, // Number of surveys
-                                itemBuilder: (context, index) {
-                                  return InkWell(
-                                    onTap: state.newTitle == "المهمين - غائبين"
-                                        ? null
-                                        : () {
-                                            BlocProvider.of<ActiveConferenceBloc>(
-                                              context,
-                                            ).add(
-                                              GetUserSurveyEvent(
-                                                state.userFilter[index],
-                                              ),
-                                            );
-                                            Navigator.pushNamed(
-                                              context,
-                                              Routes.viewUserSurvey,
-                                            );
-                                          },
-
-                                    child: userListItem(
-                                      state.userFilter[index],
-                                      context,
-                                    ),
-                                  );
-                                },
-                              )
-                            : buildEmptySurveysWidget(
-                                context,
-                                "لا يوجد مشاركين",
-                                "يبدو أن هذا المؤتمر لا يحتوي على مشاركين بهذا الاسم",
-                              ),
-                      ],
-                    );
-                  } else {
-                    return SizedBox();
-                  }
-                },
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
         ),
-      ),
+        const SizedBox(height: 12),
+        if (state.conferenceModel.surveys.isNotEmpty) ...[
+          Padding(
+            padding: EdgeInsets.all(AppPadding.p8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.sticky_note_2_outlined, size: 30),
+                    SizedBox(width: AppSize.s8),
+                    Text(
+                      "الاستبيانات",
+                      style: TextStyle(
+                        fontSize: FontResponsive.font(context, mobile: 18, tablet: 22),
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
+                Text("${state.conferenceModel.surveys.length} استبيان"),
+              ],
+            ),
+          ),
+          ListView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: state.conferenceModel.surveys.length,
+            itemBuilder: (context, index) {
+              return surveyCardActiveConference(
+                state.conferenceModel.surveys[index].toDomain(),
+                state.conferenceModel.id,
+              );
+            },
+          ),
+        ] else
+          buildEmptySurveysWidget(
+            context,
+            "لا توجد استبيانات",
+            "يبدو أن هذا المؤتمر لا يحتوي على استبيانات فهو مؤتمر لعرض معلومات المشاركين في المؤتمر , كما في الاسفل",
+          ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  // ميثود فرعية لبناء الفلاتر والبحث لتسهيل القراءة وتجنب الـ Rebuild الكلي
+  Widget _buildUserFiltersAndSearch(BuildContext context, GetAllUserActiveConferenceState state) {
+    return Column(
+      children: [
+        Padding(
+          padding: EdgeInsets.all(AppPadding.p8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.group_outlined, size: 30),
+                  const SizedBox(width: 8),
+                  Text(
+                    state.newTitle,
+                    style: TextStyle(
+                      fontSize: FontResponsive.font(context, mobile: 18, tablet: 22),
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  PopupMenuButton<int>(
+                    icon: const Icon(Icons.filter_list, color: Colors.blueGrey),
+                    onSelected: (int value) {
+                      BlocProvider.of<ActiveConferenceBloc>(context).add(
+                        FilterDoctorEvent(value, state.users),
+                      );
+                    },
+                    itemBuilder: (BuildContext context) => [
+                      const PopupMenuItem(value: 0, child: Text("الكل")),
+                      const PopupMenuItem(value: 1, child: Text("المهمين - حضروا")),
+                      const PopupMenuItem(value: 2, child: Text("المهمين - لم يحضروا")),
+                    ],
+                  ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  children: [
+                    Text(
+                      state.userFilter.length.toString(),
+                      style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+                    ),
+                    const Text(" مشارك ", style: TextStyle(fontSize: 12, color: Colors.blueGrey)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.all(AppPadding.p8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: SearchField(
+                  searchController: searchController,
+                  onPressed: (value) {
+                    BlocProvider.of<ActiveConferenceBloc>(context).add(
+                      SearchDoctorEvent(
+                        search: value,
+                        users: state.users,
+                        filterType: state.newTitle,
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(width: 12),
+              InkWell(
+                onTap: () {
+                  Navigator.pushNamed(context, Routes.exelConference, arguments: state.newTitle);
+                  BlocProvider.of<ExcelStBloc>(context).add(ExcelForConferenceEvent(state.userFilter));
+                },
+                child: const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.table_chart_outlined, color: Color(0xFF16A34A), size: 24),
+                    SizedBox(height: 4),
+                    Text(
+                      'تصدير Excel',
+                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF16A34A)),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
 
 Widget buildEmptySurveysWidget(
-  BuildContext context,
-  String title,
-  String supTitle,
-) {
+    BuildContext context,
+    String title,
+    String supTitle,
+    ) {
   return Center(
     child: Container(
-      padding: EdgeInsets.all(25),
-      margin: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(25),
+      margin: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: ColorManager.white,
         borderRadius: BorderRadius.circular(30),
@@ -612,23 +483,21 @@ Widget buildEmptySurveysWidget(
         ],
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min, // ليأخذ الحاوية حجم المحتوى فقط
+        mainAxisSize: MainAxisSize.min,
         children: [
-          // أيقونة جذابة مع خلفية دائرية خفيفة
           Container(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: ColorManager.primaryShadow.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
-              Icons.assignment_late_outlined, // أيقونة استبيان مفقود
+              Icons.assignment_late_outlined,
               size: 60,
               color: ColorManager.primary,
             ),
           ),
-          SizedBox(height: 20),
-          // العنوان الرئيسي
+          const SizedBox(height: 20),
           Text(
             title,
             textAlign: TextAlign.center,
@@ -638,18 +507,15 @@ Widget buildEmptySurveysWidget(
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: 10),
-          // نص توضيحي
+          const SizedBox(height: 10),
           Text(
             supTitle,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: ColorManager.textSecondary,
+              color: Colors.grey,
               fontSize: FontResponsive.font(context, mobile: 14, tablet: 18),
-              fontWeight: FontWeight.w400,
             ),
           ),
-          SizedBox(height: 30),
         ],
       ),
     ),

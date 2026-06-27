@@ -13,12 +13,14 @@ import 'package:formify/presentation/active_conference/page/view_user_survey.dar
 import 'package:formify/presentation/excel/page/exel_page.dart';
 import 'package:formify/presentation/excel/page/survey_dashboard.dart';
 import 'package:formify/presentation/home/pages/home_page.dart';
+import 'package:formify/presentation/manager_user/pages/add_doctor_m_page.dart';
 import 'package:formify/presentation/manager_user/pages/manager_user_page.dart';
 import 'package:formify/presentation/onboarding/pages/login_page.dart';
 import 'package:formify/presentation/onboarding/pages/onboarding_page.dart';
 import 'package:formify/presentation/question/page/multi_answer.dart';
 import 'package:formify/presentation/question/page/text.dart';
 import 'package:formify/presentation/resources/strings_manager.dart';
+import 'package:formify/presentation/spec_manager/page/spec_managere_page.dart';
 import 'package:formify/presentation/survey/pages/create_ques_survey_page.dart';
 import 'package:formify/presentation/survey/pages/create_survey_page.dart';
 import 'package:formify/presentation/survey/pages/update_survey_page.dart';
@@ -71,6 +73,8 @@ class Routes {
   static const String editUser= "/editUser";
   static const String doctorsAttendance= "/doctorsAttendancePage";
   static const String manageUser= "/manageUser";
+  static const String insertMDoctor = "/insertMDoctor";
+  static const String specManagement = "/specManagement";
 
 }
 
@@ -157,7 +161,7 @@ class RouteGenerator {
         initSyncModule();
         return _animatedRoute(DoctorsBySpsPage());
       case Routes.manageUser:
-       // initSyncModule();
+        initManageUserModule();
         return _animatedRoute(ManagerUserPage());
       case Routes.updateSurvey:
         final id = settings.arguments as int;
@@ -180,8 +184,18 @@ class RouteGenerator {
         initAiModule();
         return _animatedRoute(SurveyDashboardPage());
       case Routes.insertDoctor:
-
+        initSyncModule();
         return _animatedRoute(AddDoctorPage());
+      case Routes.insertMDoctor:
+        final specs = settings.arguments as List<SpecModel>;
+
+        return _animatedRoute(AddDoctorMPage(
+          specs:specs,
+        ));
+      case Routes.specManagement:
+        initSpecModule();
+        return _animatedRoute(SpecManagementPage(
+        ));
       default:
         return unDefinedRoute();
     }

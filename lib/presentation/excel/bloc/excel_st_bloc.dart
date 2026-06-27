@@ -47,6 +47,7 @@ class ExcelStBloc extends Bloc<ExcelStEvent, ExcelStState> {
           'address': 'العنوان',
           'phone':'رقم الموبايل',
           'type':'النوع',
+          'note':'الملاحظة',
           ...{
             for (final entry in questionsMap.entries) entry.value: entry.value,
           },
@@ -68,6 +69,7 @@ class ExcelStBloc extends Bloc<ExcelStEvent, ExcelStState> {
       'address': 'العنوان',
       'phone':'رقم الموبايل',
       'type':'النوع',
+      'note':'الملاحظة',
     };
 
     emit(ExelSuccess(userAnswersList,questionsMap,searchFields));
@@ -103,6 +105,7 @@ class ExcelStBloc extends Bloc<ExcelStEvent, ExcelStState> {
       userAnswerMap["address"]=user.userModel.address??"";
       userAnswerMap["phone"]=user.userModel.phone;
       userAnswerMap["type"]=user.userModel.userType.nameAr;
+      userAnswerMap["note"]=user.userModel.notes??"";
       for (var answer in user.userAnswerForStatModel) {
         String question = questionsMap[answer.questionId] ?? "سؤال غير موجود";
         userAnswerMap[question] = answer.content;
@@ -128,6 +131,8 @@ class ExcelStBloc extends Bloc<ExcelStEvent, ExcelStState> {
       userAnswerMap["address"]=user.address??"";
       userAnswerMap["phone"]=user.phone;
       userAnswerMap["type"]=user.userType.nameAr;
+      userAnswerMap["note"]=user.notes??"";
+
       userAnswersList.add(userAnswerMap);
     }
   }

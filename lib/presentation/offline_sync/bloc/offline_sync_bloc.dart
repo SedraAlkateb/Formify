@@ -89,7 +89,7 @@ class OfflineSyncBloc extends Bloc<OfflineSyncEvent, OfflineSyncState> {
       (_) => emit(InsertSucState(event.asyncModel.conferenceModel.id)),
     );
   }
-
+///////////1
   Future<void> _onAddAndModifyUser(
     AddAndModifyUserEvent event,
     Emitter<OfflineSyncState> emit,

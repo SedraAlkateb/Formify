@@ -2,25 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/models/user_type.dart';
+import 'package:formify/presentation/manager_user/bloc/manager_user_bloc.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
-import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
-import 'package:formify/presentation/sync/widget/autocomplete.dart';
 import 'package:formify/presentation/unit/animation/animation-in_list.dart';
 import 'package:formify/presentation/unit/animation/buttom_animation.dart';
 import 'package:formify/presentation/unit/drop_down_field.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 import 'package:formify/presentation/unit/text_field.dart';
 
-class EditUserPage extends StatefulWidget {
+class EditUserMPage extends StatefulWidget {
   final UserModel userModel;
+  final List<SpecModel> specs;
 
-  const EditUserPage({super.key, required this.userModel});
+  const EditUserMPage({super.key, required this.userModel,required this.specs});
 
   @override
-  State<EditUserPage> createState() => _EditUserPageState();
+  State<EditUserMPage> createState() => _EditUserPageState();
 }
 
-class _EditUserPageState extends State<EditUserPage>
+class _EditUserPageState extends State<EditUserMPage>
     with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final FocusNode _doctorFocusNode = FocusNode();
@@ -37,7 +37,7 @@ class _EditUserPageState extends State<EditUserPage>
   SpecModel? _currentSpecialty;
 
   // جلب القائمة من الـ Bloc مباشرة
-  List<SpecModel> get specialties => context.read<SyncBloc>().spec;
+  List<SpecModel> get specialties => widget.specs;
 
   @override
   void initState() {
@@ -90,7 +90,7 @@ class _EditUserPageState extends State<EditUserPage>
         is_local_new: 0,
         server_user_id: widget.userModel.id,
       );
-      BlocProvider.of<SyncBloc>(context).add(EditUserEvent(user));
+      BlocProvider.of<ManagerUserBloc>(context).add(EditUserMEvent(user));
     }
   }
 
@@ -111,7 +111,7 @@ class _EditUserPageState extends State<EditUserPage>
     // ✨ حماية احترازية إضافية:
     // نتأكد أن الكائن المختار موجود بالفعل داخل القائمة البرمجية لمنع الكراش نهائياً
     final bool isCurrentSpecInList = specialties.any(
-      (element) => element.id == _currentSpecialty?.id,
+          (element) => element.id == _currentSpecialty?.id,
     );
     final SpecModel? safeValue = isCurrentSpecInList ? _currentSpecialty : null;
 
@@ -171,25 +171,24 @@ class _EditUserPageState extends State<EditUserPage>
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
                               children: [
-                                DoctorAutocompleteField(
-                                  allDoctors: context.read<SyncBloc>().doctor,
-                                  lable: "الاسم الكامل",
-                                  controller: fullNameController,
-                                  focusNode: _doctorFocusNode,
-                                  index: 4,
-                                  animationController: _controller,
-                                  buildAnimatedField: buildAnimatedField,
-                                  onSelected: (doctor) {
-                                    context.read<SyncBloc>().add(
-                                      SelectDoctorEvent(doctor),
-                                    );
-                                    fullNameController.text = doctor.fullName;
-                                    addressController.text =
-                                        doctor.address ?? "";
-                                    noteController.text = doctor.notes ?? "";
-                                    _doctorFocusNode.unfocus();
-                                  },
+                                buildAnimatedField(
+                                  controller: _controller,
+                                  index: 5,
+                                  child: GlowTextField(
+                                    controller: fullNameController,
+                                    label: 'الاسم الكامل *',
+                                    hint: "مثلا : محمد",
+                                    icon: Icons.person_outline,
+                                    keyboardType: TextInputType.phone,
+                                    validator: (v) {
+                                      if (v == null || v.trim().isEmpty) {
+                                        return null;
+                                      }
+                                      return null;
+                                    },
+                                  ),
                                 ),
+
 
                                 buildAnimatedField(
                                   controller: _controller,
@@ -270,7 +269,6 @@ class _EditUserPageState extends State<EditUserPage>
                                 ),
                                 const SizedBox(height: 20),
 
-                                // ✨ حقل الاختصاص الطبي بعد الإصلاح الكامل والحماية
                                 DropdownButtonFormField<SpecModel>(
                                   decoration: InputDecoration(
                                     labelText: "اختر الاختصاص الطبي",
@@ -306,14 +304,11 @@ class _EditUserPageState extends State<EditUserPage>
                                   },
                                 ),
                                 const SizedBox(height: 20),
-                                BlocConsumer<SyncBloc, SyncState>(
+                                BlocConsumer<ManagerUserBloc, ManagerUserState>(
                                   listener: (context, state) {
-                                    if (state is EditUserState) {
+                                    if (state is GetAllUsersState) {
                                       Navigator.pop(context);
-                                      BlocProvider.of<SyncBloc>(
-                                        context,
-                                      ).add(GetAllUserEvent());
-                                    } else if (state is EditUserErrorState) {
+                                    } else if (state is EditUserMErrorState) {
                                       error(
                                         context,
                                         state.failure.massage,
@@ -327,12 +322,10 @@ class _EditUserPageState extends State<EditUserPage>
                                       index: 7,
                                       child: bottomAnimation(
                                         context,
-                                        widget.userModel.isUpload == 1
-                                            ? null
-                                            : _submit,
+                                       _submit,
                                         const Row(
                                           mainAxisAlignment:
-                                              MainAxisAlignment.center,
+                                          MainAxisAlignment.center,
                                           children: [
                                             Text('حفظ التعديلات'),
                                             SizedBox(width: 10),

@@ -333,6 +333,23 @@ class _SurveyExcelPageState extends State<SurveyExcelPage> {
                                   ),
                                 ),
                               ),
+                              DataColumn(
+                                label: SizedBox(
+                                  width: normalCellWidth,
+                                  child: Text(
+                                    'الملاحظة',
+                                    maxLines: 3,
+                                    softWrap: true,
+                                    overflow: TextOverflow.visible,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: headerFontSize,
+                                      fontWeight: FontWeight.w600,
+                                      height: 1.3,
+                                    ),
+                                  ),
+                                ),
+                              ),
                               ...rowExcel.entries.map((entry) {
                                 return DataColumn(
                                   label: SizedBox(
@@ -421,6 +438,17 @@ class _SurveyExcelPageState extends State<SurveyExcelPage> {
                                         width: normalCellWidth,
                                         child: Text(
                                           filteredUsers[i]['type'] ?? '',
+                                          maxLines: 3,
+                                          softWrap: true,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ),
+                                    DataCell(
+                                      SizedBox(
+                                        width: normalCellWidth,
+                                        child: Text(
+                                          filteredUsers[i]['note'] ?? '',
                                           maxLines: 3,
                                           softWrap: true,
                                           overflow: TextOverflow.ellipsis,

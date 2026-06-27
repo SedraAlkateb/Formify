@@ -400,7 +400,7 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        conferenceModel?.name??"",
+                        conferenceModel.name,
                         style: TextStyle(
                           fontSize: FontResponsive.font(context, mobile: 16, tablet: 22),
                           fontWeight: FontWeight.bold,

@@ -477,16 +477,29 @@ class UserModel {
     };
   }
   factory UserModel.fromMapSql(Map<String, dynamic> map) {
+    SpecModel? spec;
+
+    if (map['spec_id_joined'] != null &&
+        map['spec_title_joined'] != null) {
+      spec = SpecModel(
+        map['spec_id_joined'],
+        map['spec_title_joined'],
+      );
+    }
+
     return UserModel(
-      id: map['id'],
-      server_user_id:map['server_user_id'],
       map['fullname'],
       map['email'],
       map['phone'],
       map['address'],
       userTypeFromId(map['type_id']),
       map['notes'],
-      spec: map['spec'],
+      id: map['id'],
+      server_user_id: map['server_user_id'],
+      isUpload: map['isUpload'] ?? 0,
+      is_local_new: map['is_local_new'],
+      is_modified: map['is_modified'],
+      spec: spec, // ✔ هنا الصحيح
     );
   }
   factory UserModel.fromMap(Map<String, dynamic> map) {
@@ -1191,4 +1204,15 @@ class UserSaveDataModel {
       'specification_id': specId,
     };
   }
+}
+class ManagerUsersPageDataModel {
+  final List<UserModel> users;
+  final List<SpecModel> specialities;
+  final List<String> areas;
+
+  ManagerUsersPageDataModel({
+    required this.users,
+    required this.specialities,
+    required this.areas,
+  });
 }

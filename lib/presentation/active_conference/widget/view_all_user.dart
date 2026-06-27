@@ -88,7 +88,7 @@ Widget userListItem(UserModel user, BuildContext context) {
                       )
                     ],
                   ):SizedBox(),
-                  user.email!=""?
+                  (user.email!=""&&  user.email!=null)?
                   Row(
                     children: [
                       Icon(
@@ -146,7 +146,48 @@ Widget userListItem(UserModel user, BuildContext context) {
                       ),
                     ],
                   ),
+               //   user.spec!=null?
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.folder_special,
+                        size: Constants.isTablet ? 18 : 14,
+                        color: Colors.grey.shade600,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        user.spec?.title??"",
+                        style: TextStyle(
+                          fontSize: Constants.isTablet ? 17 : 13,
+                          color: Colors.grey.shade700,
+                        ),
+                      ),
+                    ],
+                  ),
+                      //:SizedBox(),
+                  (user.notes!=""&&  user.notes!=null)?
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.notes,
+                        size: Constants.isTablet ? 18 : 14,
+                        color: Colors.grey.shade600,
+                      ),
+                      const SizedBox(width: 6),
 
+                      Expanded(
+                        child: Text(
+                          user.notes??"",
+                        //  overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: Constants.isTablet ? 17 : 13,
+                            color: Colors.grey.shade700,
+                          ),
+                        ),
+                      )
+                    ],
+                  ):SizedBox(),
+                  const SizedBox(height: 2),
                 ],
               ),
             ),
@@ -220,93 +261,109 @@ Widget userWidget(UserModel user, BuildContext context) {
               ),
             ],
           ),
-          const SizedBox(width: 8),
-          Row(
+          const SizedBox(height: 8),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              SizedBox(width: 50),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              // User's name
+              const SizedBox(height: 8),
+              user.email!=null&&user.email!=""?
+              Row(
                 children: [
-                  // User's name
-                  const SizedBox(height: 4),
-                  // User's email
-                  Row(
-                    children: [
-                      Icon(Icons.email_outlined, color: Colors.grey),
-                      SizedBox(width: 8),
-                      user.email!=null?
-                      Text(
-                        user.email??"", // Display user's email
-                        style: TextStyle(
-                          fontSize: FontResponsive.font(
-                            context,
-                            mobile: 14,
-                            tablet: 18,
-                          ),
-
-                          color: Colors.black,
-                        ),
-                      ):SizedBox(),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(Icons.phone_outlined, color: Colors.grey),
-                      SizedBox(width: 8),
-                      Text(
-                        user.phone, // Display user's email
-                        style: TextStyle(
-                          fontSize: FontResponsive.font(
-                            context,
-                            mobile: 14,
-                            tablet: 18,
-                          ),
-                          color: Colors.black,
-                        ),
+                  Icon(Icons.email_outlined, color: Colors.grey),
+                  SizedBox(width: 8),
+                  user.email!=null?
+                  Text(
+                    user.email??"", // Display user's email
+                    style: TextStyle(
+                      fontSize: FontResponsive.font(
+                        context,
+                        mobile: 14,
+                        tablet: 18,
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  user.address!=null?
-                  Row(
-                    children: [
-                      Icon(Icons.location_on_outlined, color: Colors.grey),
-                      SizedBox(width: 8),
-                      Text(
-                        user.address??"", // Display user's email
-                        style: TextStyle(
-                          fontSize: FontResponsive.font(
-                            context,
-                            mobile: 15,
-                            tablet: 18,
-                          ),
 
-                          color: Colors.black,
-                        ),
-                      ),
-                    ],
+                      color: Colors.black,
+                    ),
                   ):SizedBox(),
-                  const SizedBox(height: 4),
-                  // User's email
-                  Row(
-                    children: [
-                      Icon(Icons.push_pin_outlined, color: Colors.grey),
-                      SizedBox(width: 8),
-                      Text(
-                        user.userType.nameAr, // Display user's email
-                        style: TextStyle(
-                          fontSize: FontResponsive.font(
-                            context,
-                            mobile: 14,
-                            tablet: 18,
-                          ),
-
-                          color: Colors.black,
-                        ),
-                      )
-                    ],
+                ],
+              ):SizedBox(),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Icon(Icons.phone_outlined, color: Colors.grey),
+                  SizedBox(width: 8),
+                  Text(
+                    user.phone, // Display user's email
+                    style: TextStyle(
+                      fontSize: FontResponsive.font(
+                        context,
+                        mobile: 14,
+                        tablet: 18,
+                      ),
+                      color: Colors.black,
+                    ),
                   ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              user.address!=null?
+              Row(
+                children: [
+                  Icon(Icons.location_on_outlined, color: Colors.grey),
+                  SizedBox(width: 8),
+                  Text(
+                    user.address??"", // Display user's email
+                    style: TextStyle(
+                      fontSize: FontResponsive.font(
+                        context,
+                        mobile: 15,
+                        tablet: 18,
+                      ),
+
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ):SizedBox(),
+
+              const SizedBox(height: 8),
+              user.notes!=null&& user.notes!=""?
+              Row(
+                children: [
+                  Icon(Icons.notes, color: Colors.grey),
+                  SizedBox(width: 8),
+                  Text(
+                    user.notes??"", // Display user's email
+                    style: TextStyle(
+                      fontSize: FontResponsive.font(
+                        context,
+                        mobile: 15,
+                        tablet: 18,
+                      ),
+
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ):SizedBox(),
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  Icon(Icons.push_pin_outlined, color: Colors.grey),
+                  SizedBox(width: 8),
+                  Text(
+                    user.userType.nameAr, // Display user's email
+                    style: TextStyle(
+                      fontSize: FontResponsive.font(
+                        context,
+                        mobile: 14,
+                        tablet: 18,
+                      ),
+
+                      color: Colors.black,
+                    ),
+                  )
                 ],
               ),
             ],

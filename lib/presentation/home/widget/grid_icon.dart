@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:formify/app/di.dart';
 import 'package:formify/presentation/active_conference/bloc/active_conference_bloc.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
+import 'package:formify/presentation/home/widget/spec_management_card.dart';
 import 'package:formify/presentation/home/widget/user_management_card.dart';
 import 'package:formify/presentation/resources/assets_manager.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
@@ -89,8 +89,10 @@ class CustomGridPage extends StatelessWidget {
 
         UserManagementCard(
           onTap: () => Navigator.pushNamed(context,Routes.manageUser),
-        )
-      ],
+        ),
+        SpecManagementCard(
+          onTap: () => Navigator.pushNamed(context,Routes.specManagement),
+        )      ],
     );
   }
 }

@@ -3,10 +3,10 @@ import 'package:formify/presentation/resources/color_manager.dart';
 
 /// [UserManagementCard] هو كارد تفاعلي يُستخدم في لوحة التحكم الرئيسية لإدارة الأطباء والمستخدمين.
 /// تم تحديث الألوان بالكامل بناءً على درجات الأزرق البترولي والدنيم الفاخرة المعتمدة لديك.
-class UserManagementCard extends StatelessWidget {
+class SpecManagementCard extends StatelessWidget {
   final VoidCallback? onTap;
 
-  const UserManagementCard({Key? key, this.onTap}) : super(key: key);
+  const SpecManagementCard({super.key, this.onTap});
 
 
   @override
@@ -50,7 +50,7 @@ class UserManagementCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20.0),
                   ),
                   child: const Icon(
-                    Icons.people_alt_outlined,
+                    Icons.folder_special_outlined,
                     color: ColorManager.primary, // اللون الأساسي الداكن للأيقونة لتعزيز البصمة اللمسية
                     size: 32,
                   ),
@@ -69,7 +69,7 @@ class UserManagementCard extends StatelessWidget {
                         children: [
                           const Expanded(
                             child: Text(
-                              'إدارة مستخدمي\nالنظام',
+                              'إدارة اختصاصات\nالنظام',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -79,24 +79,6 @@ class UserManagementCard extends StatelessWidget {
                             ),
                           ),
 
-                          // 🔵 الـ Badge الأزرق المخصص لعرض إجمالي المستخدمين (770 مستخدم) باستخدام درجة splash2 الجذابة
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: ColorManager.splash2.withOpacity(0.1), // خلفية زرقاء مريحة للعين
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Text(
-                              '770\nمستخدم',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                                color: ColorManager.splash2, // اللون الأزرق المشرق للخط الرقمي
-                                height: 1.2,
-                              ),
-                            ),
-                          ),
                         ],
                       ),
                       const SizedBox(height: 12),
@@ -107,7 +89,7 @@ class UserManagementCard extends StatelessWidget {
                         children: [
                           const Expanded(
                             child: Text(
-                              'فلترة وتعديل بيانات كافة الأطباء والمشاركين المسجلين في النظام، مع معاينة الاستبيانات.',
+                              'اضافة وتعديل وحذف وفلترة بيانات كافة الاختصاصات',
                               style: TextStyle(
                                 fontSize: 13,
                                 color: Color(0xFF94A3B8), // رمادي ناعم وخفيف للسطور التوضيحية المساعدة

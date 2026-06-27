@@ -333,7 +333,7 @@ Future<Either<Failure, List<UserModel>>> getAllImportantDoctorNotCome(List<UserM
   }
 
   @override
-  Future<Either<Failure, List<UserModel>>> getAllUsersWithSpecsForAllConferences() async {
+  Future<Either<Failure, ManagerUsersPageDataModel>> getAllUsersWithSpecsForAllConferences() async {
     try {
       final response = await _databaseHelper.getAllUsersWithSpecsForAllConferences();
 

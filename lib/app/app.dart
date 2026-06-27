@@ -12,6 +12,7 @@ import 'package:formify/presentation/active_conference/bloc/active_conference_bl
 import 'package:formify/presentation/ai_desc/bloc/ai_bloc.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 import 'package:formify/presentation/excel/bloc/excel_st_bloc.dart';
+import 'package:formify/presentation/manager_user/bloc/manager_user_bloc.dart';
 import 'package:formify/presentation/offline_sync/bloc/offline_sync_bloc.dart';
 import 'package:formify/presentation/onboarding/bloc/onboarding_bloc.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
@@ -20,6 +21,7 @@ import 'package:formify/presentation/resources/responsive/sizer_responseve.dart'
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/resources/them_manager.dart';
 import 'package:formify/presentation/resources/theme_bloc/theme_bloc.dart';
+import 'package:formify/presentation/spec_manager/bloc/spec_manager_bloc.dart';
 import 'package:formify/presentation/survey/bloc/survey_bloc.dart';
 import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
 import 'package:formify/presentation/sync/cubit/cubit_attendance.dart';
@@ -47,6 +49,8 @@ class _MyAppState extends State<MyApp> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => instance<OnboardingBloc>()),
+        BlocProvider(create: (_) => instance<SpecManagerBloc>()),
+
         BlocProvider(
           create: (_) => instance<OfflineSyncBloc>()..add(CheckEvent(Constants.password)),
         ),
@@ -60,6 +64,7 @@ class _MyAppState extends State<MyApp> {
         BlocProvider(create: (_) => instance<ThemeBloc>()),
         BlocProvider(create: (_) => instance<ExcelStBloc>()),
         BlocProvider(create: (_) => DoctorFilterCubit()),
+        BlocProvider(create: (_) => instance<ManagerUserBloc>()),
 
       ],
       // 2. الاستماع لتغييرات الـ ThemeBloc لتحديث ألوان الـ SeedColor حياً

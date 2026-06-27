@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/models/user_type.dart';
-import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
-import 'package:formify/presentation/unit/text_field.dart'; // تأكد من صحة مسار GlowTextField
+import 'package:formify/presentation/manager_user/bloc/manager_user_bloc.dart';
+import 'package:formify/presentation/unit/text_field.dart';
 
-class AddDoctorPage extends StatefulWidget {
-  const AddDoctorPage({super.key});
-
+class AddDoctorMPage extends StatefulWidget {
+  const AddDoctorMPage({super.key,required this.specs});
+ final List<SpecModel> specs;
   @override
-  State<AddDoctorPage> createState() => _AddDoctorPageState();
+  State<AddDoctorMPage> createState() => _AddDoctorMPageState();
 }
 
-class _AddDoctorPageState extends State<AddDoctorPage> {
+class _AddDoctorMPageState extends State<AddDoctorMPage> {
   final _formKey = GlobalKey<FormState>();
 
   // تعريف المتحكمات الكاملة للحقول
@@ -22,14 +22,8 @@ class _AddDoctorPageState extends State<AddDoctorPage> {
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   SpecModel? _selectedSpecialty;
-  List<SpecModel> _specialties = [];
 
-  @override
-  void initState() {
-    super.initState();
-    // جلب قائمة الاختصاصات الطبية المتاحة من البلوك عند تهيئة الصفحة
-    _specialties = BlocProvider.of<SyncBloc>(context).spec;
-  }
+
 
   @override
   void dispose() {
@@ -43,14 +37,15 @@ class _AddDoctorPageState extends State<AddDoctorPage> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("إضافة طبيب جديد"),
         centerTitle: true,
       ),
-      body: BlocConsumer<SyncBloc, SyncState>(
+      body: BlocConsumer<ManagerUserBloc, ManagerUserState>(
         listener: (context, state) {
-          if (state is InsertDoctorSucState) {
+          if (state is GetAllUsersState) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text("تمت إضافة الطبيب بنجاح"),
@@ -58,7 +53,7 @@ class _AddDoctorPageState extends State<AddDoctorPage> {
               ),
             );
             Navigator.pop(context);
-          } else if (state is InsertDoctorErrorState) {
+          } else if (state is InsertDoctorMErrorState) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text("خطأ: ${state.failure.massage}"),
@@ -68,6 +63,7 @@ class _AddDoctorPageState extends State<AddDoctorPage> {
           }
         },
         builder: (context, state) {
+
           return Padding(
             padding: const EdgeInsets.all(16.0),
             child: Form(
@@ -142,7 +138,7 @@ class _AddDoctorPageState extends State<AddDoctorPage> {
                     ),
                     value: _selectedSpecialty,
                     hint: const Text("كل الاختصاصات"),
-                    items: _specialties.map((specialty) {
+                    items: widget.specs.map((specialty) {
                       return DropdownMenuItem<SpecModel>(
                         value: specialty,
                         child: Text(
@@ -173,7 +169,7 @@ class _AddDoctorPageState extends State<AddDoctorPage> {
                   SizedBox(
                     height: 50,
                     child: ElevatedButton(
-                      onPressed: state is InsertDoctorLoadingState
+                      onPressed: state is InsertDoctorMLoadingState
                           ? null
                           : _submitData,
                       style: ElevatedButton.styleFrom(
@@ -181,7 +177,7 @@ class _AddDoctorPageState extends State<AddDoctorPage> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: state is InsertDoctorLoadingState
+                      child: state is InsertDoctorMLoadingState
                           ? const CircularProgressIndicator(color: Colors.white)
                           : const Text(
                         "حفظ الطبيب",
@@ -240,7 +236,7 @@ class _AddDoctorPageState extends State<AddDoctorPage> {
       );
 
       // إرسال الإيفينت للبلوك الخاص بـ SyncBloc
-      context.read<SyncBloc>().add(InsertEvent(doctor));
+      context.read<ManagerUserBloc>().add(InsertMEvent(doctor));
     }
   }
 }

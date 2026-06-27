@@ -97,7 +97,7 @@ class _ViewConferencePageState extends State<ViewConferencePage> {
                         const SizedBox(height: 12),
 
                         // 🔥 قسم عرض الاختصاصات المتعددة (المضاف والمعدل حديثاً بشكل جميل)
-                        if (conference.spec != null && conference.spec!.isNotEmpty) ...[
+                        if ( conference.spec.isNotEmpty) ...[
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -121,7 +121,7 @@ class _ViewConferencePageState extends State<ViewConferencePage> {
                           Wrap(
                             spacing: 6.0, // المسافة الأفقية بين البطاقات
                             runSpacing: 6.0, // المسافة الرأسية عند النزول لسطر جديد
-                            children: conference.spec!.map((specItem) {
+                            children: conference.spec.map((specItem) {
                               return Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                                 decoration: BoxDecoration(

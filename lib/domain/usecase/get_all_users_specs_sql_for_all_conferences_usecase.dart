@@ -7,7 +7,7 @@ import 'package:formify/domain/repostitory/repository_sql.dart';
 class GetAllUsersSpecsSqlForAllConferencesUsecase extends Equatable {
   final RepositorySql _repository;
   const GetAllUsersSpecsSqlForAllConferencesUsecase(this._repository);
-  Future<Either<Failure, List<UserModel>>> execute() async {
+  Future<Either<Failure, ManagerUsersPageDataModel>> execute() async {
     return await _repository.getAllUsersWithSpecsForAllConferences();
   }
 

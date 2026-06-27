@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:formify/app/constants.dart';
 import 'package:dio/dio.dart';
 import 'package:formify/data/responses/responses.dart';
@@ -22,9 +20,9 @@ abstract class AppServiceClient {
   @MultiPart()
   @POST("survey-crud/create_survey_questionsAndAnswers.php")
   Future<CreateSurveyQuestionsBaseResponse> createSurveyQuestionsAndAnswers(
-      @Part(name: "data") String surveyQ,
-      @Part(name: "files[]") List<MultipartFile> images, // 🌟 التعديل هنا
-      );
+    @Part(name: "data") String surveyQ,
+    @Part(name: "files[]") List<MultipartFile> images, // 🌟 التعديل هنا
+  );
   @GET("survey-crud/get_all_survey.php")
   Future<GetAllSurveyBaseResponse> getAllSurvey();
   @POST("survey-crud/get_surveyWithQuestion_by_id.php")
@@ -65,7 +63,7 @@ abstract class AppServiceClient {
   //
   //   @Part(name: "conference_id") int conference_id,
   // );
-//////////////TODO
+  //////////////TODO
   @POST("synchronize/get_allInformation_confernce.php")
   Future<GetAllAsyncByConferenceIdBaseResponse> getAllInformationConference(
     @Part(name: "conference_id") int conference_id,
@@ -102,7 +100,6 @@ abstract class AppServiceClient {
   @POST("conference-crud/update_conference.php")
   Future<Message1Response> updateConference(
     @Part(name: "id") int id,
-
     @Part(name: "name") String name,
     @Part(name: "description") String description,
     @Part(name: "address") String address,
@@ -113,8 +110,8 @@ abstract class AppServiceClient {
   @POST("Statistics/statistics_for_usersAnswers.php")
   Future<StatisticsForUsersAnswersBaseResponse> statisticsForUsersAnswers(
     @Part(name: "survey_id") int survey_id,
-  @Part(name: "conference_id") int conference_id,
-  );///////////////////////////////////////
+    @Part(name: "conference_id") int conference_id,
+  ); ///////////////////////////////////////
   @POST("Statistics/get_statistics_for_questionTypes.php")
   Future<QuestionsStatisticsBaseResponse> getStatisticsForQuestionTypes(
     @Part(name: "survey_id") int survey_id,
@@ -126,26 +123,23 @@ abstract class AppServiceClient {
     @Part(name: "password") String password,
   );
   @GET("users-crud/get_all_users.php")
-  Future<GetAllUserForAppBaseResponse> getAllUsers(
-      );
+  Future<GetAllUserForAppBaseResponse> getAllUsers();
   @GET("specification-crud/get_all_specification.php")
-  Future<AllSpecificationBaseResponse> getAllSpecification(
-      );
+  Future<AllSpecificationBaseResponse> getAllSpecification();
   @POST("specification-crud/add_specification.php")
   Future<SpecificationBaseResponse> addSpecification(
-      @Part(name: "title") String title,
-      );
+    @Part(name: "title") String title,
+  );
   @POST("synchronize/get_all_usersForSync.php")
   Future<AllSaveDataBaseResponse> getAllUsersForSync(
-      @Part(name: "conference_id") int conferenceId,
-      );
+    @Part(name: "conference_id") int conferenceId,
+  );
   @POST("synchronize/Updated_SyncUsersAnswers.php")
   Future<Message1Response> updatedSyncUsersAnswers(
-      @Body() SyncUsersRequest conference,
-      );
+    @Body() SyncUsersRequest conference,
+  );
   @POST("synchronize/addOrModify_users.php")
   Future<AddAndModifyBaseResponse> addOrModifyUsers(
-      @Body() AddAndModifyUsersRequest users,
-      );
-
+    @Body() AddAndModifyUsersRequest users,
+  );
 }
