@@ -29,7 +29,7 @@ class ActiveConferenceWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(20), // حواف أنعم وأحدث
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04), // ظل خفيف جداً وراقي
+            color: Colors.black.withValues(alpha: 0.04), // ظل خفيف جداً وراقي
             blurRadius: 14,
             offset: const Offset(0, 6),
           ),
@@ -48,7 +48,7 @@ class ActiveConferenceWidget extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 6.h),
             margin: EdgeInsets.only(top: 2.h), // وزنية بسيطة ليتناسق مع ارتفاع نص الاسم
             decoration: BoxDecoration(
-              color: ColorManager.primary.withOpacity(0.08), // خلفية ناعمة بلون البريمري
+              color: ColorManager.primary.withValues(alpha: 0.08), // خلفية ناعمة بلون البريمري
               borderRadius: BorderRadius.circular(8), // حواف ناعمة حديثة بدلاً من الدائرة التقليدية
             ),
             child: Text(
@@ -131,7 +131,7 @@ class ActiveConferenceWidget extends StatelessWidget {
                 child: Container(
                   padding: EdgeInsets.all(8.r),
                   decoration: BoxDecoration(
-                    color: ColorManager.error.withOpacity(0.08), // خلفية خفيفة وراقية جداً
+                    color: ColorManager.error.withValues(alpha: 0.08), // خلفية خفيفة وراقية جداً
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(

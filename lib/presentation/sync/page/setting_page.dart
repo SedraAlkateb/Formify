@@ -187,7 +187,7 @@ class SettingPage extends StatelessWidget {
             color: Colors.white,
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
-              BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10),
+              BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10),
             ],
           ),
           child: Row(
@@ -195,7 +195,7 @@ class SettingPage extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
+                  color: color.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(icon, color: color),
@@ -345,7 +345,7 @@ class SettingPage extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.blue.withOpacity(0.1),
+                        color: Colors.blue.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Row(
@@ -419,7 +419,7 @@ class SettingPage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(25),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.04),
+                              color: Colors.black.withValues(alpha: 0.04),
                               blurRadius: 15,
                               offset: const Offset(0, 8),
                             ),
@@ -467,9 +467,9 @@ class SettingPage extends StatelessWidget {
                                           Container(
                                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                                             decoration: BoxDecoration(
-                                              color: typeColor.withOpacity(0.1),
+                                              color: typeColor.withValues(alpha: 0.1),
                                               borderRadius: BorderRadius.circular(10),
-                                              border: Border.all(color: typeColor.withOpacity(0.2)),
+                                              border: Border.all(color: typeColor.withValues(alpha: 0.2)),
                                             ),
                                             child: Text(
                                               u.userType.name.toUpperCase(),
@@ -558,7 +558,7 @@ class SettingPage extends StatelessWidget {
   //                         borderRadius: BorderRadius.circular(25),
   //                         boxShadow: [
   //                           BoxShadow(
-  //                             color: Colors.black.withOpacity(0.04),
+  //                             color: Colors.black.withValues(alpha: 0.04),
   //                             blurRadius: 15,
   //                             offset: const Offset(0, 8),
   //                           ),
@@ -615,9 +615,9 @@ class SettingPage extends StatelessWidget {
   //                                         Container(
   //                                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
   //                                           decoration: BoxDecoration(
-  //                                             color: typeColor.withOpacity(0.1),
+  //                                             color: typeColor.withValues(alpha: 0.1),
   //                                             borderRadius: BorderRadius.circular(10),
-  //                                             border: Border.all(color: typeColor.withOpacity(0.2)),
+  //                                             border: Border.all(color: typeColor.withValues(alpha: 0.2)),
   //                                           ),
   //                                           child: Text(
   //                                             u.userType.name.toUpperCase(),
@@ -709,7 +709,7 @@ class SettingPage extends StatelessWidget {
         width: 80,
         height: 80,
         decoration: BoxDecoration(
-          color: color.withOpacity(0.05),
+          color: color.withValues(alpha: 0.05),
           shape: BoxShape.circle,
         ),
       ),

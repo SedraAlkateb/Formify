@@ -108,7 +108,7 @@ class _DoctorExcelPageState extends State<DoctorExcelPage> {
   DataRow _buildDataRow(int index, UserModel doc, double fontSize, double smallWidth, double normalWidth, ColorScheme colors) {
     final style = TextStyle(fontSize: fontSize);
     return DataRow(
-      color: WidgetStateProperty.all(index.isOdd ? colors.surfaceVariant.withOpacity(0.3) : Colors.white),
+      color: WidgetStateProperty.all(index.isOdd ? colors.surfaceVariant.withValues(alpha: 0.3) : Colors.white),
       cells: [
         DataCell(SizedBox(width: smallWidth, child: Text('${index + 1}', style: style))),
         DataCell(SizedBox(width: normalWidth, child: Text(doc.fullName, style: style))),

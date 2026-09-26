@@ -88,7 +88,7 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                   color: ColorManager.white,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: ColorManager.black.withOpacity(0.12),
+                                      color: ColorManager.black.withValues(alpha: 0.12),
                                       blurRadius: 4.r,
                                       offset: Offset(0, 2.h),
                                     ),
@@ -150,7 +150,7 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                                 border: Border.all(
                                                   color: ColorManager.border,
                                                 ),
-                                                color: ColorManager.primaryShadow.withOpacity(0.12),
+                                                color: ColorManager.primaryShadow.withValues(alpha: 0.12),
                                                 borderRadius: BorderRadius.circular(12),
                                               ),
                                               child: Row(
@@ -221,7 +221,7 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                                 border: Border.all(
                                                   color: ColorManager.border,
                                                 ),
-                                                color: ColorManager.primaryShadow.withOpacity(0.12),
+                                                color: ColorManager.primaryShadow.withValues(alpha: 0.12),
                                                 borderRadius: BorderRadius.circular(12),
                                               ),
                                               child: Row(
@@ -305,7 +305,7 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                                 border: Border.all(
                                                   color: ColorManager.border,
                                                 ),
-                                                color: ColorManager.primaryShadow.withOpacity(0.12),
+                                                color: ColorManager.primaryShadow.withValues(alpha: 0.12),
                                                 borderRadius: BorderRadius.circular(12),
                                               ),
                                               child: Row(

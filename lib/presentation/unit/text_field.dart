@@ -55,7 +55,7 @@ class GlowTextField extends StatelessWidget {
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(
-                    color: ColorManager.primary.withOpacity(0.35),
+                    color: ColorManager.primary.withValues(alpha: 0.35),
                     width: 1.5,
                   ),
                 ),
@@ -140,7 +140,7 @@ class LoginTextField extends StatelessWidget {
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide(
-                    color: ColorManager.primary.withOpacity(0.35),
+                    color: ColorManager.primary.withValues(alpha: 0.35),
                     width: 1.5,
                   ),
                 ),

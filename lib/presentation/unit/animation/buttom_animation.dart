@@ -58,7 +58,7 @@ class _BottomAnimationState extends State<_BottomAnimation> {
                 ),
                 elevation: 4,
                 minimumSize: const Size(double.infinity, 48),
-                shadowColor: ColorManager.primary.withOpacity(glowOpacity),
+                shadowColor: ColorManager.primary.withValues(alpha: glowOpacity),
 
               ),
               child: child!,

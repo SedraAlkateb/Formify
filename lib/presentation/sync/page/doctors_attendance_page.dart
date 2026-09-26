@@ -302,7 +302,7 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: ColorManager.primary.withOpacity(0.1),
+                    color: ColorManager.primary.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(Icons.assignment_ind_outlined, color: ColorManager.primary, size: 24),
@@ -370,7 +370,7 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
         border: Border.all(color: const Color(0xFFE2E8F0)),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0F172A).withOpacity(0.03),
+            color: const Color(0xFF0F172A).withValues(alpha: 0.03),
             blurRadius: 16,
             offset: const Offset(0, 8),
           ),
@@ -495,9 +495,9 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
                             return Container(
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                               decoration: BoxDecoration(
-                                color: ColorManager.primary.withOpacity(0.06),
+                                color: ColorManager.primary.withValues(alpha: 0.06),
                                 borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: ColorManager.primary.withOpacity(0.12)),
+                                border: Border.all(color: ColorManager.primary.withValues(alpha: 0.12)),
                               ),
                               child: Text(
                                 specialization.title??"",
@@ -535,7 +535,7 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.02),
+                  color: Colors.black.withValues(alpha: 0.02),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -568,7 +568,7 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.02),
+                color: Colors.black.withValues(alpha: 0.02),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -644,13 +644,13 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isChecked
-              ? ColorManager.primary.withOpacity(0.3)
+              ? ColorManager.primary.withValues(alpha: 0.3)
               : Colors.transparent,
           width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.01),
+            color: Colors.black.withValues(alpha: 0.01),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),

@@ -216,7 +216,7 @@ class CreateConferencePage extends StatelessWidget {
                                     color: ColorManager.primary,
                                   ),
                                   hintStyle: TextStyle(
-                                    color: ColorManager.primary.withOpacity(
+                                    color: ColorManager.primary.withValues(alpha: 
                                       0.6,
                                     ),
                                   ),
@@ -358,10 +358,10 @@ class CreateConferencePage extends StatelessWidget {
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(15),
-                                  border: Border.all(color: const Color(0xFF3A5A75).withOpacity(0.2)),
+                                  border: Border.all(color: const Color(0xFF3A5A75).withValues(alpha: 0.2)),
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.05),
+                                      color: Colors.black.withValues(alpha: 0.05),
                                       blurRadius: 10,
                                       offset: const Offset(0, 4),
                                     ),
@@ -371,7 +371,7 @@ class CreateConferencePage extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(15),
                                   child: DataTable(
                                     headingRowColor: MaterialStateProperty.all(
-                                      const Color(0xFF3A5A75).withOpacity(0.1), // لون خفيف للترويسة
+                                      const Color(0xFF3A5A75).withValues(alpha: 0.1), // لون خفيف للترويسة
                                     ),
                                     columnSpacing: 24,
                                     horizontalMargin: 16,

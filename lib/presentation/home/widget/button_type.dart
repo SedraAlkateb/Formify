@@ -49,7 +49,7 @@ class ButtonType extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: primary.withOpacity(0.3),
+              color: primary.withValues(alpha: 0.3),
               blurRadius: 8,
               offset: Offset(0, 4),
             ),
@@ -79,7 +79,7 @@ class ButtonType extends StatelessWidget {
               Text(
                 subtitle!,
                 style: TextStyle(
-                  color: Colors.white.withOpacity(.9),
+                  color: Colors.white.withValues(alpha: .9),
                   fontSize: FontResponsive.font(
                     context,
                     mobile: 14,

@@ -13,7 +13,7 @@ Widget viewAnswerWidget(BuildContext context) {
     decoration: BoxDecoration(
       color: colorScheme.surface,
       borderRadius: BorderRadius.circular(20),
-      border: Border.all(color: colorScheme.outline.withOpacity(0.25)),
+      border: Border.all(color: colorScheme.outline.withValues(alpha: 0.25)),
     ),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,

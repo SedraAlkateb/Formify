@@ -60,7 +60,7 @@ class _ButtonAnimationWithTextState extends State<_ButtonAnimationWithText> {
                 ),
                 elevation: 4,
                 minimumSize:  Size(double.infinity, 48.sp),
-                shadowColor: ColorManager.primary.withOpacity(glowOpacity),
+                shadowColor: ColorManager.primary.withValues(alpha: glowOpacity),
 
               ),
               child: child!,

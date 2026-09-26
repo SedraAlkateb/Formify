@@ -214,7 +214,7 @@ class ListOfSurveysPage extends StatelessWidget {
                                 decoration: BoxDecoration(
                                   border: Border.all(color: ColorManager.primary),
                                   color: ColorManager.white,
-                                  //.withOpacity(0.1),
+                                  //.withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 padding: EdgeInsets.all(20),

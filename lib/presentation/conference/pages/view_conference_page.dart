@@ -125,10 +125,10 @@ class _ViewConferencePageState extends State<ViewConferencePage> {
                               return Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.2), // خلفية بيضاء شفافة لتناسب التدرج
+                                  color: Colors.white.withValues(alpha: 0.2), // خلفية بيضاء شفافة لتناسب التدرج
                                   borderRadius: BorderRadius.circular(20),
                                   border: Border.all(
-                                    color: Colors.white.withOpacity(0.3),
+                                    color: Colors.white.withValues(alpha: 0.3),
                                     width: 1,
                                   ),
                                 ),

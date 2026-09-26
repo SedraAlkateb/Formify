@@ -62,10 +62,10 @@ class _SurveyListPressCardState extends State<_SurveyListPressCard> {
         child: Card(
           color: ColorManager.white,
           elevation: _pressed ? 12 : 5,
-          shadowColor: c.withOpacity(0.05),
+          shadowColor: c.withValues(alpha: 0.05),
           shape: RoundedRectangleBorder(
             side: BorderSide(
-              color: ColorManager.black.withOpacity(0.08),
+              color: ColorManager.black.withValues(alpha: 0.08),
               width: 1,
             ),
             borderRadius: BorderRadius.circular(12),
@@ -103,7 +103,7 @@ class _SurveyListPressCardState extends State<_SurveyListPressCard> {
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,
-                                color: ColorManager.black.withOpacity(0.60),
+                                color: ColorManager.black.withValues(alpha: 0.60),
                                 height: 1.15,
                               ),
                             ),
@@ -115,7 +115,7 @@ class _SurveyListPressCardState extends State<_SurveyListPressCard> {
                         padding:  EdgeInsets.all(AppPadding.p8),
                         child: Icon(
                           Icons.arrow_forward_ios,
-                          color: ColorManager.black.withOpacity(0.5),
+                          color: ColorManager.black.withValues(alpha: 0.5),
                           size: 20,
                         ),
                       ),
@@ -158,13 +158,13 @@ class _PressIconBox extends StatelessWidget {
           begin: Alignment.topRight,
           end: Alignment.bottomLeft,
           colors: [
-            color.withOpacity(0.95),
-            color.withOpacity(0.70),
+            color.withValues(alpha: 0.95),
+            color.withValues(alpha: 0.70),
           ],
         ),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(pressed ? 0.15 : 0.2),
+            color: color.withValues(alpha: pressed ? 0.15 : 0.2),
             blurRadius: pressed ? 15 : 11,
             offset: const Offset(0, 10),
           ),

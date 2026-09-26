@@ -139,12 +139,12 @@ class _AnimatedGridItemState extends State<AnimatedGridItem> {
           alignment: Alignment.bottomCenter,
           decoration: BoxDecoration(
             color: widget.image != null
-                ? ColorManager.primary.withOpacity(0.4)
+                ? ColorManager.primary.withValues(alpha: 0.4)
                 : ColorManager.white,
             borderRadius: BorderRadius.circular(18),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
+                color: Colors.black.withValues(alpha: 0.08),
                 blurRadius: 5,
                 offset: const Offset(0, 3),
               ),

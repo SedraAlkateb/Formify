@@ -257,7 +257,7 @@ class QuestionPreviewBuilder extends StatelessWidget {
               color: const Color(0xFFFFC107),
               shadows: [
                 Shadow(
-                  color: const Color(0xFFFFC107).withOpacity(0.6),
+                  color: const Color(0xFFFFC107).withValues(alpha: 0.6),
                   blurRadius: 6,
                   offset: const Offset(0, 1),
                 ),
@@ -269,7 +269,7 @@ class QuestionPreviewBuilder extends StatelessWidget {
               color: const Color(0xFFFFC107),
               shadows: [
                 Shadow(
-                  color: const Color(0xFFFFC107).withOpacity(0.5),
+                  color: const Color(0xFFFFC107).withValues(alpha: 0.5),
                   blurRadius: 5,
                   offset: const Offset(0, 1),
                 ),

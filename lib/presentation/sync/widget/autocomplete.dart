@@ -99,7 +99,7 @@ class DoctorAutocompleteField extends StatelessWidget {
                   fillColor: ColorManager.white,
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: ColorManager.primary.withOpacity(0.35), width: 1.5),
+                    borderSide: BorderSide(color: ColorManager.primary.withValues(alpha: 0.35), width: 1.5),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),

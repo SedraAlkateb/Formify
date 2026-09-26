@@ -14,7 +14,7 @@ class HeaderCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 18,
             offset: const Offset(0, 8),
           ),
@@ -26,7 +26,7 @@ class HeaderCard extends StatelessWidget {
             width: AppSize.s45,
             height:  AppSize.s45,
             decoration: BoxDecoration(
-              color: ColorManager.primary.withOpacity(0.12),
+              color: ColorManager.primary.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(14),
             ),
             child: const Icon(Icons.link_rounded, color: ColorManager.primary),
@@ -62,7 +62,7 @@ class HeaderCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             decoration: BoxDecoration(
 
-              color: ColorManager.primary.withOpacity(0.10),
+              color: ColorManager.primary.withValues(alpha: 0.10),
               borderRadius: BorderRadius.circular(14),
             ),
             child: const Icon(Icons.add_rounded, color: ColorManager.primary),

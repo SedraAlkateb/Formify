@@ -111,7 +111,7 @@ class _InsertUserPageState extends State<InsertUserPage>
                       color: ColorManager.white,
                       boxShadow: [
                         BoxShadow(
-                          color: ColorManager.black.withOpacity(0.2),
+                          color: ColorManager.black.withValues(alpha: 0.2),
                           blurRadius: 3,
                           offset: const Offset(0, 1),
                         ),

@@ -24,7 +24,7 @@ class ButtonAnimationWithText extends StatelessWidget {
           borderRadius: BorderRadius.circular(15.r), // حواف دائرية متجاوبة
           boxShadow: [
             BoxShadow(
-              color: ColorManager.primary.withOpacity(0.3),
+              color: ColorManager.primary.withValues(alpha: 0.3),
               blurRadius: 8.r,
               offset: Offset(0, 4.h),
             ),

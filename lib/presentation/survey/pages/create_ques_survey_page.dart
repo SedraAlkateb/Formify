@@ -35,7 +35,7 @@ class CreateQuesSurveyPage extends StatelessWidget {
                   Text(
                     "منشئ الاستبيانات الذكي",
                     style: textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onPrimary.withOpacity(0.9),
+                      color: colorScheme.onPrimary.withValues(alpha: 0.9),
                     ),
                   ),
                 ],
@@ -97,13 +97,13 @@ class CreateQuesSurveyPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(14),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black12.withOpacity(0.06),
+                            color: Colors.black12.withValues(alpha: 0.06),
                             blurRadius: 5,
                             offset: const Offset(0, 2),
                           ),
                         ],
                         border: Border.all(
-                          color: colorScheme.outline.withOpacity(0.2),
+                          color: colorScheme.outline.withValues(alpha: 0.2),
                         ),
                       ),
                       child: Row(

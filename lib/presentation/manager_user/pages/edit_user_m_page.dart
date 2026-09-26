@@ -137,7 +137,7 @@ class _EditUserPageState extends State<EditUserMPage>
                       borderRadius: BorderRadius.circular(25),
                       boxShadow: [
                         BoxShadow(
-                          color: ColorManager.black.withOpacity(0.1),
+                          color: ColorManager.black.withValues(alpha: 0.1),
                           blurRadius: 10,
                           offset: const Offset(0, 5),
                         ),
@@ -158,7 +158,7 @@ class _EditUserPageState extends State<EditUserMPage>
                               child: CircleAvatar(
                                 radius: 40,
                                 backgroundColor: ColorManager.primary
-                                    .withOpacity(0.1),
+                                    .withValues(alpha: 0.1),
                                 child: Icon(
                                   Icons.edit_note_rounded,
                                   size: 40,

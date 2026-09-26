@@ -680,7 +680,7 @@ class StatisticsCountBoxes extends StatelessWidget {
             margin: EdgeInsets.only(right: 8, left: 8, bottom: 8),
             padding: const EdgeInsets.symmetric(vertical: 22),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.08),
+              color: color.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(18),
               border: Border.all(color: color, width: 1.5),
             ),

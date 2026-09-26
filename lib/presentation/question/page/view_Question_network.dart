@@ -129,10 +129,10 @@ class QuestionPreviewNetworkBuilder extends StatelessWidget {
 
                 if (selected != null) {
                   if (isCorrect) {
-                    bgColor = Colors.green.withOpacity(0.15);
+                    bgColor = Colors.green.withValues(alpha: 0.15);
                     borderColor = Colors.green;
                   } else if (isSelected && !isCorrect) {
-                    bgColor = Colors.red.withOpacity(0.15);
+                    bgColor = Colors.red.withValues(alpha: 0.15);
                     borderColor = Colors.red;
                   }
                 }
@@ -294,7 +294,7 @@ class QuestionPreviewNetworkBuilder extends StatelessWidget {
               color: const Color(0xFFFFC107),
               shadows: [
                 Shadow(
-                  color: const Color(0xFFFFC107).withOpacity(0.6),
+                  color: const Color(0xFFFFC107).withValues(alpha: 0.6),
                   blurRadius: 6,
                   offset: const Offset(0, 1),
                 ),
@@ -306,7 +306,7 @@ class QuestionPreviewNetworkBuilder extends StatelessWidget {
               color: const Color(0xFFFFC107),
               shadows: [
                 Shadow(
-                  color: const Color(0xFFFFC107).withOpacity(0.5),
+                  color: const Color(0xFFFFC107).withValues(alpha: 0.5),
                   blurRadius: 5,
                   offset: const Offset(0, 1),
                 ),

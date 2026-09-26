@@ -200,7 +200,7 @@ class UpdateConferencePage extends StatelessWidget {
                                     color: ColorManager.primary,
                                   ),
                                   hintStyle: TextStyle(
-                                    color: ColorManager.primary.withOpacity(
+                                    color: ColorManager.primary.withValues(alpha: 
                                       0.6,
                                     ),
                                   ),

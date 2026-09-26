@@ -39,7 +39,7 @@ class ConferenceEndedWidget extends StatelessWidget {
           border: Border.all(color: const Color(0xFFE2E8F0)),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF0F172A).withOpacity(0.03),
+              color: const Color(0xFF0F172A).withValues(alpha: 0.03),
               blurRadius: 14,
               offset: const Offset(0, 6),
             ),
@@ -55,7 +55,7 @@ class ConferenceEndedWidget extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: ColorManager.primary.withOpacity(0.08),
+                    color: ColorManager.primary.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(Icons.event_available_rounded, color: ColorManager.primary, size: 24),
@@ -105,10 +105,10 @@ class ConferenceEndedWidget extends StatelessWidget {
                   return Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
-                      color: ColorManager.primary.withOpacity(0.05),
+                      color: ColorManager.primary.withValues(alpha: 0.05),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: ColorManager.primary.withOpacity(0.12),
+                        color: ColorManager.primary.withValues(alpha: 0.12),
                         width: 1,
                       ),
                     ),
@@ -182,7 +182,7 @@ class ConferenceEndedWidget extends StatelessWidget {
                   Row(
                     children: [
                       Material(
-                        color: ColorManager.error.withOpacity(0.08),
+                        color: ColorManager.error.withValues(alpha: 0.08),
                         shape: const CircleBorder(),
                         child: IconButton(
                           constraints: const BoxConstraints(),
@@ -206,7 +206,7 @@ class ConferenceEndedWidget extends StatelessWidget {
                       ),
                       const SizedBox(width: 10),
                       Material(
-                        color: ColorManager.success.withOpacity(0.08),
+                        color: ColorManager.success.withValues(alpha: 0.08),
                         shape: const CircleBorder(),
                         child: Padding(
                           padding: const EdgeInsets.all(2.0),

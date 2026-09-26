@@ -51,7 +51,7 @@ ThemeData getApplicationTheme({
 
     tabBarTheme: TabBarThemeData(
       labelColor: colorScheme.onPrimary,
-      unselectedLabelColor: colorScheme.primary.withOpacity(0.6),
+      unselectedLabelColor: colorScheme.primary.withValues(alpha: 0.6),
       indicatorColor: colorScheme.secondary,
     ),
 
@@ -74,7 +74,7 @@ ThemeData getApplicationTheme({
 
       elevation: 4,
 
-      shadowColor: Colors.grey.withOpacity(0.04),
+      shadowColor: Colors.grey.withValues(alpha: 0.04),
 
       surfaceTintColor: Colors.transparent, // مهم لمنع dark overlay
 

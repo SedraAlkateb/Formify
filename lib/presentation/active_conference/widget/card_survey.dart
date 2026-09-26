@@ -69,10 +69,10 @@ class _SurveyCardPressCardState extends State<_SurveyCardPressCard> {
         child: Card(
           color: ColorManager.white,
           elevation: _pressed ? 12 : 5,
-          shadowColor: c.withOpacity(0.05),
+          shadowColor: c.withValues(alpha: 0.05),
           shape: RoundedRectangleBorder(
             side: BorderSide(
-              color: ColorManager.black.withOpacity(0.08),
+              color: ColorManager.black.withValues(alpha: 0.08),
               width: 1,
             ),
             borderRadius: BorderRadius.circular(12),
@@ -110,7 +110,7 @@ class _SurveyCardPressCardState extends State<_SurveyCardPressCard> {
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
-                              color: ColorManager.black.withOpacity(0.60),
+                              color: ColorManager.black.withValues(alpha: 0.60),
                               height: 1.15,
                             ),
                           ),
@@ -156,11 +156,11 @@ class _PressIconBox extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topRight,
           end: Alignment.bottomLeft,
-          colors: [color.withOpacity(0.95), color.withOpacity(0.70)],
+          colors: [color.withValues(alpha: 0.95), color.withValues(alpha: 0.70)],
         ),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(pressed ? 0.15 : 0.2),
+            color: color.withValues(alpha: pressed ? 0.15 : 0.2),
             blurRadius: pressed ? 15 : 11,
             offset: const Offset(0, 10),
           ),
@@ -314,7 +314,7 @@ class _AnimatedActionButtonState extends State<_AnimatedActionButton> {
     final bool hovered = widget.isHovered;
 
     final backgroundColor = isPressed
-        ? widget.baseColor.withOpacity(0.15) // 👈 لون عند الضغط
+        ? widget.baseColor.withValues(alpha: 0.15) // 👈 لون عند الضغط
         : hovered
         ? Color.lerp(Colors.white, widget.baseColor, 0.08)!
         : Colors.white;

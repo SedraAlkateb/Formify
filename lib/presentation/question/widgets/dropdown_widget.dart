@@ -76,8 +76,8 @@ class _DropdownQuestionWidgetState extends State<DropdownQuestionWidget> {
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: selectedAnswer!.isCorrect == 1
-                  ? Colors.green.withOpacity(0.1)
-                  : Colors.red.withOpacity(0.1),
+                  ? Colors.green.withValues(alpha: 0.1)
+                  : Colors.red.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
                 color: selectedAnswer!.isCorrect == 1

@@ -495,7 +495,7 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
               color: const Color(0xFFFAC115), // أصفر ذهبي
               shadows: [
                 Shadow(
-                  color: Color(0xFFFFC107).withOpacity(0.6),
+                  color: Color(0xFFFFC107).withValues(alpha: 0.6),
                   blurRadius: 6,
                   offset: Offset(0, 1),
                 ),
@@ -508,7 +508,7 @@ class QuestionAnswerPreviewBuilder extends StatelessWidget {
               color: const Color(0xFFFFC107),
               shadows: [
                 Shadow(
-                  color: Color(0xFFFFC107).withOpacity(0.5),
+                  color: Color(0xFFFFC107).withValues(alpha: 0.5),
                   blurRadius: 5,
                   offset: Offset(0, 1),
                 ),

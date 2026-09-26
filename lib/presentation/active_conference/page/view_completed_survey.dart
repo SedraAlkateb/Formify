@@ -153,7 +153,7 @@ class ViewCompletedSurvey extends StatelessWidget {
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: colors.outline.withOpacity(0.1),
+                              color: colors.outline.withValues(alpha: 0.1),
                             ),
                           ),
                           child: Column(

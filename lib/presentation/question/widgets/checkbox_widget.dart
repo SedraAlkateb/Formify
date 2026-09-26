@@ -39,10 +39,10 @@ class _CheckboxQuestionWidgetState extends State<CheckboxQuestionWidget> {
               Color borderColor = Colors.grey.shade300;
               if (isSubmitted) {
                 if (isCorrect) {
-                  bgColor = Colors.green.withOpacity(0.15);
+                  bgColor = Colors.green.withValues(alpha: 0.15);
                   borderColor = Colors.green;
                 } else if (isSelected && !isCorrect) {
-                  bgColor = Colors.red.withOpacity(0.15);
+                  bgColor = Colors.red.withValues(alpha: 0.15);
                   borderColor = Colors.red;
                 }
               }

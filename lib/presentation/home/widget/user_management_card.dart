@@ -22,12 +22,12 @@ class UserManagementCard extends StatelessWidget {
           boxShadow: [
             // ظلال ناعمة جداً مائلة للون الهوية الهادئ لمنع حدة اللون الأسود
             BoxShadow(
-              color: ColorManager.splash3.withOpacity(0.06),
+              color: ColorManager.splash3.withValues(alpha: 0.06),
               blurRadius: 20,
               offset: const Offset(0, 10),
             ),
             BoxShadow(
-              color: Colors.black.withOpacity(0.01),
+              color: Colors.black.withValues(alpha: 0.01),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -46,7 +46,7 @@ class UserManagementCard extends StatelessWidget {
                   width: 64,
                   height: 64,
                   decoration: BoxDecoration(
-                    color: ColorManager.splash1.withOpacity(0.12), // درجة باهتة وراقية جداً من اللون
+                    color: ColorManager.splash1.withValues(alpha: 0.12), // درجة باهتة وراقية جداً من اللون
                     borderRadius: BorderRadius.circular(20.0),
                   ),
                   child: const Icon(
@@ -83,7 +83,7 @@ class UserManagementCard extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                             decoration: BoxDecoration(
-                              color: ColorManager.splash2.withOpacity(0.1), // خلفية زرقاء مريحة للعين
+                              color: ColorManager.splash2.withValues(alpha: 0.1), // خلفية زرقاء مريحة للعين
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: const Text(
@@ -120,7 +120,7 @@ class UserManagementCard extends StatelessWidget {
                           Icon(
                             Icons.arrow_forward_ios,
                             size: 14,
-                            color: ColorManager.splash3.withOpacity(0.5),
+                            color: ColorManager.splash3.withValues(alpha: 0.5),
                           ),
                         ],
                       ),

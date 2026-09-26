@@ -41,7 +41,7 @@ class MultiAnswerPage extends StatelessWidget {
                     color: colorScheme.surface,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: colorScheme.outline.withOpacity(0.25),
+                      color: colorScheme.outline.withValues(alpha: 0.25),
                     ),
                     boxShadow: const [
                       BoxShadow(
@@ -89,7 +89,7 @@ class MultiAnswerPage extends StatelessWidget {
                                 color: colorScheme.surface,
                                 borderRadius: BorderRadius.circular(20),
                                 border: Border.all(
-                                  color: colorScheme.outline.withOpacity(0.25),
+                                  color: colorScheme.outline.withValues(alpha: 0.25),
                                 ),
                               ),
                               child: Column(

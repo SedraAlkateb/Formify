@@ -16,10 +16,10 @@ Widget userListItem(UserModel user, BuildContext context) {
     decoration: BoxDecoration(
       color: Colors.white,
       borderRadius: BorderRadius.circular(14),
-      border: Border.all(color: ColorManager.black.withOpacity(0.08)),
+      border: Border.all(color: ColorManager.black.withValues(alpha: 0.08)),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(0.04),
+          color: Colors.black.withValues(alpha: 0.04),
           blurRadius: 6,
           offset: const Offset(0, 2),
         ),
@@ -213,7 +213,7 @@ Widget userWidget(UserModel user, BuildContext context) {
   return Card(
     color: ColorManager.white,
     shape: RoundedRectangleBorder(
-      side: BorderSide(color: ColorManager.black.withOpacity(0.1), width: 1),
+      side: BorderSide(color: ColorManager.black.withValues(alpha: 0.1), width: 1),
 
       borderRadius: BorderRadius.circular(12),
     ),

@@ -49,11 +49,11 @@ class TextQuestionPage extends StatelessWidget {
                               color: colorScheme.surface,
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                color: colorScheme.outline.withOpacity(0.3),
+                                color: colorScheme.outline.withValues(alpha: 0.3),
                               ),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black12.withOpacity(0.06),
+                                  color: Colors.black12.withValues(alpha: 0.06),
                                   blurRadius: 6,
                                   offset: const Offset(0, 3),
                                 ),
@@ -108,7 +108,7 @@ class TextQuestionPage extends StatelessWidget {
                               color: colorScheme.surface,
                               borderRadius: BorderRadius.circular(16),
                               border: Border.all(
-                                color: colorScheme.outline.withOpacity(0.4),
+                                color: colorScheme.outline.withValues(alpha: 0.4),
                               ),
                             ),
                             child: Column(

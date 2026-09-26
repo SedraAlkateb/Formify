@@ -235,13 +235,13 @@ class _SurveyExcelPageState extends State<SurveyExcelPage> {
                             ),
                             border: TableBorder(
                               horizontalInside: BorderSide(
-                                color: colors.outlineVariant.withOpacity(0.25),
+                                color: colors.outlineVariant.withValues(alpha: 0.25),
                               ),
                               verticalInside: BorderSide(
-                                color: colors.outlineVariant.withOpacity(0.15),
+                                color: colors.outlineVariant.withValues(alpha: 0.15),
                               ),
                               bottom: BorderSide(
-                                color: Colors.black.withOpacity(0.25),
+                                color: Colors.black.withValues(alpha: 0.25),
                                 width: 1,
                               ),
                             ),
@@ -381,7 +381,7 @@ class _SurveyExcelPageState extends State<SurveyExcelPage> {
                                   color: WidgetStateProperty.resolveWith<Color?>(
                                         (states) {
                                       if (_hoveredRowIndex == i) {
-                                        return Colors.blue.withOpacity(0.12);
+                                        return Colors.blue.withValues(alpha: 0.12);
                                       }
                                       return i.isOdd
                                           ? colors.surfaceContainerLow

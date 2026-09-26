@@ -49,12 +49,12 @@ class FinishedInputSurveysPage extends StatelessWidget {
                       color: ColorManager.white,
                       boxShadow: [
                         BoxShadow(
-                          color: ColorManager.black.withOpacity(0.2),
+                          color: ColorManager.black.withValues(alpha: 0.2),
                           blurRadius: 3,
                           offset: Offset(0, 1),
                         ),
                       ],
-                      //.withOpacity(0.1),
+                      //.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(25),
                     ),
                     child: Padding(
@@ -96,8 +96,8 @@ class FinishedInputSurveysPage extends StatelessWidget {
                                   color: ColorManager.border,
                                 ),
                                 color: ColorManager.primaryShadow
-                                    .withOpacity(0.2),
-                                //.withOpacity(0.1),
+                                    .withValues(alpha: 0.2),
+                                //.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(25),
                               ),
                               child:   Column(

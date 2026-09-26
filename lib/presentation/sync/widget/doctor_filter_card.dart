@@ -53,9 +53,9 @@ class _DoctorFilterCardState extends State<DoctorFilterCard> {
         curve: Curves.easeInOut,
         padding: EdgeInsets.all(4),
         decoration: BoxDecoration(
-          color: Colors.grey.withOpacity(0.05),
+          color: Colors.grey.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey.withOpacity(0.2)),
+          border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
         ),
         child: Column(
           children: [

@@ -190,14 +190,14 @@ class _GameInputPageState extends State<GameInputPage> {
                             child: LinearProgressIndicator(
                               value: progress,
                               minHeight: 8,
-                              backgroundColor: Colors.black.withOpacity(0.06),
+                              backgroundColor: Colors.black.withValues(alpha: 0.06),
                             ),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             "السؤال ${idx + 1} من $total",
                             style: TextStyle(
-                              color: Colors.black.withOpacity(0.6),
+                              color: Colors.black.withValues(alpha: 0.6),
                             ),
                           ),
                         ],

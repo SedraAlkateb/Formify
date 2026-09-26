@@ -156,7 +156,7 @@ class SurveyInputPage extends StatelessWidget {
                                     color: colors.surface,
                                     borderRadius: BorderRadius.circular(16),
                                     border: Border.all(
-                                      color: colors.outline.withOpacity(0.2),
+                                      color: colors.outline.withValues(alpha: 0.2),
                                     ),
                                   ),
                                   child: Column(
@@ -167,7 +167,7 @@ class SurveyInputPage extends StatelessWidget {
                                         children: [
                                           CircleAvatar(
                                             radius: 16,
-                                            backgroundColor: colors.primary.withOpacity(0.1),
+                                            backgroundColor: colors.primary.withValues(alpha: 0.1),
                                             child: Text(
                                               "${q.order}",
                                               style: TextStyle(
