@@ -810,41 +810,6 @@ class _ManagerUserPageState extends State<ManagerUserPage> {
       ),
     );
   }
-  void _showSettingsBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24.r))),
-      builder: (context) {
-        return Directionality(
-          textDirection: TextDirection.rtl,
-          child: Padding(
-            padding: EdgeInsets.all(20.r),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "إعدادات لوحة المستخدمين",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
-                ),
-                SizedBox(height: 16.h),
-                ListTile(
-                  leading: const Icon(Icons.file_download_outlined, color: Color(0xFF7C3AED)),
-                  title: const Text("تصدير قائمة الحضور لملف Excel"),
-                  onTap: () => Navigator.pop(context),
-                ),
-                ListTile(
-                  leading: const Icon(Icons.sort_by_alpha_rounded, color: Color(0xFF7C3AED)),
-                  title: const Text("ترتيب أبجدي حسب أسماء الأطباء"),
-                  onTap: () => Navigator.pop(context),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
   Widget _buildActionButton(IconData icon, Color color,void Function()? onTap) {
     return InkWell(
       onTap: onTap,

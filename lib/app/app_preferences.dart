@@ -1,3 +1,4 @@
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -8,6 +9,9 @@ const String PREFS_KEY_IS_CONFERENCE = "PREFS_KEY_IS_CONFERENCE";
 
 class AppPreferences {
   final SharedPreferences _sharedPreferences;
+  // كلمة المرور حسّاسة، لذا تُخزَّن في التخزين الآمن (Keystore/Secure Enclave)
+  // بدل SharedPreferences التي تُحفظ كنص صريح غير مشفّر على القرص.
+  final _secureStorage = const FlutterSecureStorage();
   AppPreferences(this._sharedPreferences);
 
 
@@ -36,13 +40,12 @@ class AppPreferences {
   }
 
   Future<bool> setPassword(String password) async {
-    await _sharedPreferences.setString(PREFS_KEY_PASSWORD, password);
-    // reload();
+    await _secureStorage.write(key: PREFS_KEY_PASSWORD, value: password);
     return true;
   }
 
-  String? getPassword() {
-    return _sharedPreferences.getString(PREFS_KEY_PASSWORD);
+  Future<String?> getPassword() async {
+    return _secureStorage.read(key: PREFS_KEY_PASSWORD);
   }
 
   Future<bool> setIConference(bool isConference) async {
@@ -64,7 +67,7 @@ class AppPreferences {
   }
 
   Future<void> signOut() async {
-    await _sharedPreferences.remove(PREFS_KEY_PASSWORD);
+    await _secureStorage.delete(key: PREFS_KEY_PASSWORD);
     await _sharedPreferences.remove(PREFS_KEY_IS_CONFERENCE);
     await _sharedPreferences.remove(PREFS_KEY_GAME_OR_SURVEY);
     await _sharedPreferences.remove(PREFS_KEY_LS_USER_LOGGED_IN);

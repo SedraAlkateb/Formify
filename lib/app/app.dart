@@ -34,26 +34,44 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  // نبني الـ Bloc مرة واحدة هنا لأن قراءة كلمة المرور من التخزين الآمن
+  // أصبحت غير متزامنة (async)، ولا يمكن إرسال CheckEvent إلا بعد اكتمالها.
+  late final OfflineSyncBloc _offlineSyncBloc;
+  bool _isReady = false;
+
   @override
   void initState() {
     super.initState();
+    _offlineSyncBloc = instance<OfflineSyncBloc>();
+    _bootstrap();
+  }
+
+  Future<void> _bootstrap() async {
     // 💡 الحفاظ الكامل على منطق الـ Logic والـ Preferences لفحص تسجيل الدخول وكلمة المرور
     final appPreferences = instance<AppPreferences>();
     Constants.isLogin = appPreferences.routLogin();
-    Constants.password = appPreferences.getPassword() ?? "";
+    Constants.password = await appPreferences.getPassword() ?? "";
+    _offlineSyncBloc.add(CheckEvent(Constants.password));
+    if (mounted) {
+      setState(() => _isReady = true);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (!_isReady) {
+      return const MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(body: Center(child: CircularProgressIndicator())),
+      );
+    }
     // 1. حقن وتجهيز قائمة الـ MultiBlocProvider بكافة الـ Blocs الخاصة بـ DoForm
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => instance<OnboardingBloc>()),
         BlocProvider(create: (_) => instance<SpecManagerBloc>()),
 
-        BlocProvider(
-          create: (_) => instance<OfflineSyncBloc>()..add(CheckEvent(Constants.password)),
-        ),
+        BlocProvider.value(value: _offlineSyncBloc),
         BlocProvider(create: (_) => instance<AiBloc>()),
         BlocProvider(create: (_) => instance<ActiveConferenceBloc>()),
         BlocProvider(

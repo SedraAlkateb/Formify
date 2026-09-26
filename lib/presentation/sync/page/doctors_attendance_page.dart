@@ -334,7 +334,9 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
             ),
             IconButton(
               icon: Icon(Icons.settings_outlined),
-                onPressed:  () {
+                onPressed: () async {
+              final correctPassword = await instance<AppPreferences>().getPassword() ?? "لا يوجد كلمة سر";
+              if (!context.mounted) return;
               showPasswordDialog(
                 context: context,
                 onSuccess: () {
@@ -346,7 +348,7 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
                     arguments: context.read<DoctorFilterCubit>().state.conference.id,
                   );
                 },
-                correctPassword: instance<AppPreferences>().getPassword() ?? "لا يوجد كلمة سر",
+                correctPassword: correctPassword,
               );
             }, ),
           ],

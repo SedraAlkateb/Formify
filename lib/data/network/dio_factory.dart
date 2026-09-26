@@ -1,8 +1,5 @@
 
-import 'dart:io';
-
 import 'package:dio/dio.dart';
-import 'package:dio/io.dart';
 import 'package:formify/app/constants.dart';
 import 'package:formify/data/network/error_handler.dart';
 import 'package:flutter/foundation.dart';
@@ -20,12 +17,6 @@ class DioFactory{
 
   Future<Dio> getDio() async {
     Dio dio= Dio();
-    (dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
-        (HttpClient client) {
-      client.badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
-      return client;
-    };
     String  to=
     //    UserInfo.token??
         "";

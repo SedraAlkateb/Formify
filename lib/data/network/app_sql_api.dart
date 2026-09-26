@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
+import 'package:formify/app/constants.dart';
 import 'package:formify/data/network/sqlite_factory.dart';
 import 'package:formify/domain/models/mock_users.dart';
 import 'package:formify/domain/models/model_q.dart';
@@ -746,7 +747,7 @@ class AppSqlApi extends AppSqlApiAbs {
     final db = await databaseHelper.database;
 
     final jsonString = await rootBundle.loadString(
-      'assets/json/important_doctors_with_address.json',
+      'assets/json/important_doctors.json',
     );
 
     final List<dynamic> jsonList = jsonDecode(jsonString);
@@ -1000,8 +1001,9 @@ class AppSqlApi extends AppSqlApiAbs {
     int addedToBatchCount = 0; // عداد لحساب العمليات الصالحة فعلياً
 
     for (final user in syncedUsers) {
-      // ✨ [التحقق من البيانات الفارغة]: نتأكد أن معرّف السيرفر ليس null وليس فارغاً
-      if (user.userId != null) {
+      // ✨ [التحقق من البيانات الفارغة]: userId غير nullable، والـ mapper يضع Constants.zero
+      // كقيمة افتراضية عند غياب معرّف السيرفر، لذا نتحقق من ذلك بدل مقارنته بـ null.
+      if (user.userId != Constants.zero) {
         batch.update(
           'all_users',
           {

@@ -402,7 +402,9 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                             );
                                           }, "ابدأ الاستبيانات"),
                                           SizedBox(height: 8.h),
-                                          buttonAnimationWithText(context, () {
+                                          buttonAnimationWithText(context, () async {
+                                            final correctPassword = await instance<AppPreferences>().getPassword() ?? "لا يوجد كلمة سر";
+                                            if (!context.mounted) return;
                                             showPasswordDialog(
                                               context: context,
                                               onSuccess: () {
@@ -415,7 +417,7 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                                   arguments: conferenceModel.id,
                                                 );
                                               },
-                                              correctPassword: instance<AppPreferences>().getPassword() ?? "لا يوجد كلمة سر",
+                                              correctPassword: correctPassword,
                                             );
                                           }, "إعدادات المؤتمر"),
                                         ],
