@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 import 'package:formify/domain/models/mock_users.dart';
 import 'package:path/path.dart';
@@ -46,15 +47,75 @@ class DatabaseHelper {
     // 4. جلب المفتاح السري الآمن
     final encryptionKey = await _getOrCreateEncryptionKey();
 
-    return openDatabase(
-      path,
-      version: 1,
-      password: encryptionKey, // 👈 تفعيل التشفير الشامل هنا
-      onCreate: _onCreate,
-      onOpen: (db) async {
-        await db.execute('PRAGMA foreign_keys = ON');
-      },
-    );
+    // 5. ترحيل قاعدة البيانات القديمة غير المشفّرة (إن وجدت) قبل إنشاء/فتح الجديدة
+    await _migrateLegacyDatabaseIfNeeded(path, encryptionKey);
+
+    try {
+      return await openDatabase(
+        path,
+        version: 1,
+        password: encryptionKey, // 👈 تفعيل التشفير الشامل هنا
+        onCreate: _onCreate,
+        onOpen: (db) async {
+          await db.execute('PRAGMA foreign_keys = ON');
+        },
+      );
+    } catch (e) {
+      // فشل فتح القاعدة المشفّرة غالبًا لأن المفتاح المحفوظ لم يعد يطابق الملف
+      // (مثلاً بعد إعادة تثبيت التطبيق مع بقاء بيانات التطبيق على الجهاز).
+      // بدلاً من تعطّل التطبيق بالكامل، نحذف الملف التالف ونبدأ بقاعدة جديدة نظيفة.
+      print(
+        "❌ فشل فتح قاعدة البيانات المشفّرة، سيتم إعادة إنشائها من الصفر: $e",
+      );
+      final corruptFile = File(path);
+      if (await corruptFile.exists()) {
+        await corruptFile.delete();
+      }
+      return openDatabase(
+        path,
+        version: 1,
+        password: encryptionKey,
+        onCreate: _onCreate,
+        onOpen: (db) async {
+          await db.execute('PRAGMA foreign_keys = ON');
+        },
+      );
+    }
+  }
+
+  // 6. نقل بيانات القاعدة القديمة غير المشفّرة (task_database1.db) إلى القاعدة
+  // الجديدة المشفّرة باستخدام sqlcipher_export، حفاظاً على بيانات المستخدمين الحاليين.
+  Future<void> _migrateLegacyDatabaseIfNeeded(
+    String newDbPath,
+    String encryptionKey,
+  ) async {
+    final oldPath = join(dirname(newDbPath), 'task_database1.db');
+    final oldFile = File(oldPath);
+    final newFile = File(newDbPath);
+
+    if (!await oldFile.exists() || await newFile.exists()) {
+      return; // لا توجد قاعدة قديمة، أو أن الترحيل تم مسبقاً
+    }
+
+    Database? legacyDb;
+    try {
+      legacyDb = await openDatabase(oldPath, password: '');
+      await legacyDb.execute(
+        "ATTACH DATABASE '$newDbPath' AS encrypted KEY '$encryptionKey'",
+      );
+      await legacyDb.execute("SELECT sqlcipher_export('encrypted')");
+      await legacyDb.execute("DETACH DATABASE encrypted");
+      print("✅ تم ترحيل قاعدة البيانات القديمة إلى النسخة المشفّرة بنجاح.");
+    } catch (e) {
+      print(
+        "❌ فشل ترحيل قاعدة البيانات القديمة، سيتم إنشاء قاعدة جديدة فارغة: $e",
+      );
+      if (await newFile.exists()) {
+        await newFile.delete();
+      }
+    } finally {
+      await legacyDb?.close();
+    }
   }
 
   Future<void> _onCreate(Database db, int version) async {
