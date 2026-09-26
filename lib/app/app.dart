@@ -42,6 +42,8 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    // الـ Bloc لا يُسجَّل في GetIt إلا عبر هذا الموديول، لذا نضمن تسجيله قبل الطلب
+    initSyncOfflineModule();
     _offlineSyncBloc = instance<OfflineSyncBloc>();
     _bootstrap();
   }
