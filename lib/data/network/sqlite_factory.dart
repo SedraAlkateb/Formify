@@ -1,10 +1,17 @@
+import 'dart:convert';
+import 'dart:math';
 import 'package:formify/domain/models/mock_users.dart';
 import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
+// 1. تغيير الاستيراد ليدعم التشفير
+import 'package:sqflite_sqlcipher/sqflite.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
   static Database? _database;
+
+  // 2. تعريف التخزين الآمن التابع للنظام
+  final _secureStorage = const FlutterSecureStorage();
 
   factory DatabaseHelper() => _instance;
 
@@ -16,12 +23,33 @@ class DatabaseHelper {
     return _database!;
   }
 
+  // 3. دالة جلب أو إنشاء مفتاح التشفير السري بـ AES-256
+  Future<String> _getOrCreateEncryptionKey() async {
+    const keyName = 'formify_db_encryption_key';
+    String? storedKey = await _secureStorage.read(key: keyName);
+
+    if (storedKey == null) {
+      var random = Random.secure();
+      var values = List<int>.generate(32, (i) => random.nextInt(256));
+      String newKey = base64Url.encode(values);
+      await _secureStorage.write(key: keyName, value: newKey);
+      return newKey;
+    }
+    return storedKey;
+  }
+
   Future<Database> _initDatabase() async {
     final dbPath = await getDatabasesPath();
-    final path = join(dbPath, 'task_database1.db');
+    // نصيحة: يفضل تغيير اسم الملف إذا كان التطبيقان ينزلان على نفس الجهاز منعا للتداخل
+    final path = join(dbPath, 'formify_secure_database.db');
+
+    // 4. جلب المفتاح السري الآمن
+    final encryptionKey = await _getOrCreateEncryptionKey();
+
     return openDatabase(
       path,
       version: 1,
+      password: encryptionKey, // 👈 تفعيل التشفير الشامل هنا
       onCreate: _onCreate,
       onOpen: (db) async {
         await db.execute('PRAGMA foreign_keys = ON');

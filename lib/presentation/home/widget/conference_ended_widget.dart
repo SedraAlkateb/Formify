@@ -76,7 +76,7 @@ class ConferenceEndedWidget extends StatelessWidget {
                           height: 1.3,
                         ),
                       ),
-                      if (conference.description != null && conference.description.isNotEmpty) ...[
+                      if (conference.description.isNotEmpty) ...[
                         const SizedBox(height: 4),
                         Text(
                           conference.description,

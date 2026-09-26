@@ -6,7 +6,7 @@ import 'package:formify/domain/models/mock_users.dart';
 import 'package:formify/domain/models/model_q.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/models/user_type.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_sqlcipher/sqflite.dart';
 
 abstract class AppSqlApiAbs {
   Future<String> asyncData(GetAsyncModel asyncData);
@@ -1001,25 +1001,23 @@ class AppSqlApi extends AppSqlApiAbs {
 
     for (final user in syncedUsers) {
       // ✨ [التحقق من البيانات الفارغة]: نتأكد أن معرّف السيرفر ليس null وليس فارغاً
-      if (user.userId != null) {
-        batch.update(
-          'all_users',
-          {
-            'server_user_id':
-                user.userId, // حفظ المعرف الحقيقي القادم من السيرفر
-            // 2️⃣ نُعيد تصفير العدادات (Flags) لأن المستخدم أصبح مطابقاً تماماً للسيرفر الآن
-            'is_local_new': 0,
-            'is_modified': 0,
-            'isUpload': 1, // تم الرفع بنجاح
-          },
-          // الشرط: نقوم بالتحديث بناءً على الـ Local ID الفريد للموبايل
-          where: 'id = ?',
-          whereArgs: [user.localId],
-        );
+      batch.update(
+        'all_users',
+        {
+          'server_user_id':
+              user.userId, // حفظ المعرف الحقيقي القادم من السيرفر
+          // 2️⃣ نُعيد تصفير العدادات (Flags) لأن المستخدم أصبح مطابقاً تماماً للسيرفر الآن
+          'is_local_new': 0,
+          'is_modified': 0,
+          'isUpload': 1, // تم الرفع بنجاح
+        },
+        // الشرط: نقوم بالتحديث بناءً على الـ Local ID الفريد للموبايل
+        where: 'id = ?',
+        whereArgs: [user.localId],
+      );
 
-        addedToBatchCount++; // زيادة عدد العمليات الجاهزة للتنفيذ
-      }
-    }
+      addedToBatchCount++; // زيادة عدد العمليات الجاهزة للتنفيذ
+        }
 
     // 3️⃣ تنفيذ العمليات إذا كان هناك سجلات صالحة فقط داخل الـ Batch
     if (addedToBatchCount > 0) {

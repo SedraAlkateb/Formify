@@ -123,8 +123,7 @@ class _SpecManagementPageState extends State<SpecManagementPage> {
                               ),
                               SizedBox(height: 8.h),
                               Text(
-                                state.failure.massage ??
-                                    "حدث خطأ غير متوقع أثناء تحميل البيانات",
+                                state.failure.massage,
                                 style: const TextStyle(
                                   color: Color(0xFF475569),
                                   fontSize: 14,
@@ -595,15 +594,6 @@ class _SpecManagementPageState extends State<SpecManagementPage> {
             ),
             ElevatedButton(
               onPressed: () {
-                final bloc = context.read<SpecManagerBloc>();
-                final currentState = bloc.state;
-
-                // if (currentState is GetAllSpecState && spec.id != null) {
-                //   bloc.add(DeleteSpecEvent(
-                //     id: spec.id!,
-                //     currentSpecs: currentState.allSpec,
-                //   ));
-                // }
                 Navigator.pop(dialogContext);
               },
               style: ElevatedButton.styleFrom(

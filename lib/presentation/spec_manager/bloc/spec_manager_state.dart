@@ -1,9 +1,12 @@
 part of 'spec_manager_bloc.dart';
 
 @immutable
-sealed class SpecManagerState {}
+sealed class SpecManagerState extends Equatable{}
 
-final class SpecManagerInitial extends SpecManagerState {}
+final class SpecManagerInitial extends SpecManagerState {
+  @override
+  List<Object?> get props => [];
+}
 
 final class GetAllSpecLoadingState extends SpecManagerState {
   @override

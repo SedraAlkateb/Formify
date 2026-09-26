@@ -347,7 +347,7 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                                                           ),
                                                           SizedBox(height: 6.h),
                                                           // عرض الاختصاصات كـ نص منسق داخل الحاوية السابقة
-                                                          conferenceModel.spec != null && conferenceModel.spec.isNotEmpty
+                                                          conferenceModel.spec.isNotEmpty
                                                               ? Text(
                                                             conferenceModel.spec.map((e) => e.title).join(' ، '),
                                                             textAlign: TextAlign.right,
