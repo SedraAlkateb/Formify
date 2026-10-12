@@ -748,27 +748,119 @@ class AppSqlApi extends AppSqlApiAbs {
     final jsonString = await rootBundle.loadString(
       'assets/json/important_doctors.json',
     );
+    final doctors = (jsonDecode(jsonString) as List)
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
 
-    final List<dynamic> jsonList = jsonDecode(jsonString);
+    String norm(dynamic v) => (v ?? '').toString().trim();
+
+    // رقم "غير مفيد": فارغ أو أصفار أو الرقم الافتراضي 0900000000
+    bool isPlaceholderPhone(dynamic p) {
+      final s = norm(p);
+      return s.isEmpty || RegExp(r'^0+$').hasMatch(s) || s == '0900000000';
+    }
+
+    // حقل نصي متوافق: متطابق أو أحدهما فارغ
+    bool compatible(dynamic a, dynamic b) =>
+        norm(a) == norm(b) || norm(a).isEmpty || norm(b).isEmpty;
+
+    // الهاتفان متوافقان إذا تطابقا أو كان أحدهما غير مفيد
+    bool samePhone(dynamic a, dynamic b) =>
+        norm(a) == norm(b) || isPlaceholderPhone(a) || isPlaceholderPhone(b);
+
+    // نفس الطبيب: الاسم والاختصاص متطابقان، والعنوان والبريد والهاتف متوافقة.
+    // الملاحظات لا تدخل في التعريف، بل تُدمج.
+    bool sameDoctor(Map<String, dynamic> a, Map<String, dynamic> b) =>
+        norm(a['fullname']) == norm(b['fullname']) &&
+        norm(a['specId']) == norm(b['specId']) &&
+        compatible(a['address'], b['address']) &&
+        compatible(a['email'], b['email']) &&
+        samePhone(a['phone'], b['phone']);
+
+    // دمج الملاحظات: الفارغ يأخذ الآخر، والمتشابه يبقى الأطول، غير ذلك يُجمع
+    String mergeNotes(dynamic oldN, dynamic newN) {
+      final o = norm(oldN), n = norm(newN);
+      if (n.isEmpty || o == n) return o;
+      if (o.isEmpty) return n;
+      if (o.contains(n)) return o;
+      if (n.contains(o)) return n;
+      return '$o - $n';
+    }
+
+    int added = 0;
+    int unchanged = 0;
+    int updated = 0;
 
     await db.transaction((txn) async {
-      for (final item in jsonList) {
-        final doctor = Map<String, dynamic>.from(item);
+      final existing = (await txn.query(
+        'all_users',
+        columns: [
+          'id', 'server_user_id', 'fullname', 'email', 'phone',
+          'address', 'notes', 'specId', 'type_id',
+        ],
+      )).map((r) => Map<String, dynamic>.from(r)).toList();
 
-        // حذف id إذا كان null حتى SQLite يولد id تلقائياً
-        if (doctor['id'] == null) {
-          doctor.remove('id');
+      for (final doctor in doctors) {
+        final matchIndex = existing.indexWhere((r) => sameDoctor(r, doctor));
+
+        if (matchIndex != -1) {
+          final match = existing[matchIndex];
+          // نأخذ المعلومة الأفيد لكل حقل ونعدّل السجل القديم إن تغيّر شيء
+          final values = <String, Object?>{};
+
+          if (isPlaceholderPhone(match['phone']) &&
+              !isPlaceholderPhone(doctor['phone'])) {
+            values['phone'] = doctor['phone'];
+          }
+          if (norm(match['email']).isEmpty && norm(doctor['email']).isNotEmpty) {
+            values['email'] = doctor['email'];
+          }
+          if (norm(match['address']).isEmpty &&
+              norm(doctor['address']).isNotEmpty) {
+            values['address'] = doctor['address'];
+          }
+          final notes = mergeNotes(match['notes'], doctor['notes']);
+          if (notes != norm(match['notes'])) {
+            values['notes'] = notes;
+          }
+
+          if (values.isEmpty) {
+            unchanged++;
+            continue;
+          }
+          // سجل موجود على السيرفر: نعلّمه معدّلاً ليُرفع في المزامنة
+          if (match['server_user_id'] != null) {
+            values['is_modified'] = 1;
+            values['isUpload'] = 0;
+          }
+          await txn.update(
+            'all_users',
+            values,
+            where: 'id = ?',
+            whereArgs: [match['id']],
+          );
+          match.addAll(values);
+          updated++;
+          continue;
         }
 
-        await txn.insert(
+        final row = Map<String, dynamic>.from(doctor);
+        // حذف id إذا كان null حتى SQLite يولد id تلقائياً
+        if (row['id'] == null) row.remove('id');
+        final newId = await txn.insert(
           'all_users',
-          doctor,
+          row,
           conflictAlgorithm: ConflictAlgorithm.ignore,
         );
+        existing.add({...row, 'id': newId});
+        added++;
       }
     });
 
-    print('✅ Important doctors inserted: ${jsonList.length}');
+    print(
+      '✅ Important doctors added: $added, updated: $updated, '
+      'unchanged: $unchanged',
+    );
   }
   //
   // async {

@@ -457,11 +457,10 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
       InsertImportantDoctors event,
       Emitter<SyncState> emit,
       ) async {
-    emit(const DoctorsAttendanceLoadingState());
     (await insertImpDoctorForNewConUsecase.execute()).fold(
           (failure) => emit(DoctorsAttendanceErrorState(failure: failure)),
-          (data) {
-      },
+          // بعد الإدخال نحدّث قائمة الأطباء المعروضة
+          (data) => add(DoctorEvent()),
     );
   }
 

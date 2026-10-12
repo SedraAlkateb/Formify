@@ -7,6 +7,7 @@ import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 import 'package:formify/presentation/home/widget/conference_ended_widget.dart';
 import 'package:formify/presentation/offline_sync/bloc/offline_sync_bloc.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
+import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
 Widget multiBlocConferenceWidget(){
@@ -34,6 +35,8 @@ Widget multiBlocConferenceWidget(){
             BlocProvider.of<ConferenceBloc>(
               context,
             ).add(UpdateConferenceEvent(1));
+            // إدخال الأطباء المهمين (يتخطى المكرر ويفضّل الرقم الواضح)
+            BlocProvider.of<SyncBloc>(context).add(InsertImportantDoctors());
             success(context);
             instance<AppPreferences>().setIConference(true);
           }
