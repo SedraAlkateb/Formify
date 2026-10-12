@@ -53,7 +53,8 @@ class AppSqlApi extends AppSqlApiAbs {
   List<DoctorMockItem> usersList = MockModel.usersList;
 
   Future<void> initializeDatabase() async {
-    await databaseFactory.debugSetLogLevel(sqfliteLogLevelVerbose);
+    // تسجيل كل استعلام (verbose) يبطئ الإدخالات الكبيرة جداً، لذلك نعطله
+    await databaseFactory.debugSetLogLevel(sqfliteLogLevelNone);
   }
 
   Future<void> insertSpecs(List<SpecModel> specs) async {
@@ -726,19 +727,17 @@ class AppSqlApi extends AppSqlApiAbs {
     final db = await databaseHelper.database;
 
     // 2. بدء عملية "Transaction" لضمان السرعة والأمان
-    await db.transaction((txn) async {
-      // 3. التكرار على كل مستخدم (User) موجود في القائمة الممررة
-      for (var user in users) {
-        // 4. إدخال بيانات المستخدم الحالي في جدول 'all_users'
-        // يتم تحويل الـ Model إلى Map باستخدام toJson()
-        await txn.insert(
-          'all_users',
-          user.toJsonSqlForFirst(),
-          // استخدام conflictAlgorithm يمنع توقف التطبيق في حال تكرار نفس المستخدم
-          conflictAlgorithm: ConflictAlgorithm.replace,
-        );
-      }
-    });
+    // batch: رحلة واحدة للمنصة بدل رحلة لكل مستخدم
+    final batch = db.batch();
+    for (var user in users) {
+      batch.insert(
+        'all_users',
+        user.toJsonSqlForFirst(),
+        // استخدام conflictAlgorithm يمنع توقف التطبيق في حال تكرار نفس المستخدم
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
+    await batch.commit(noResult: true, continueOnError: false);
     // عند انتهاء الحلقة، يتم اعتماد (Commit) جميع الإدخالات مرة واحدة
   }
 
