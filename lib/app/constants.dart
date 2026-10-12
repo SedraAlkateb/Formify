@@ -1,4 +1,4 @@
-import 'package:formify/presentation/resources/routes_manager.dart';
+import 'package:formify/presentation/resources/routes.dart';
 
 class Constants {
   static const baseUrl = "https://dominapharm.com/domina-survey/";

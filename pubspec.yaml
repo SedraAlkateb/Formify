@@ -10,6 +10,8 @@ dependencies:
   google_generative_ai: ^0.4.3
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
 
   cupertino_icons: ^1.0.2
 
