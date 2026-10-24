@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:json_annotation/json_annotation.dart';
 part 'responses.g.dart';
 
@@ -420,8 +421,29 @@ class GetAllConferenceResponse {
     this.is_active,
       this.spec
   ); // from json
-  factory GetAllConferenceResponse.fromJson(Map<String, dynamic> json) =>
-      _$GetAllConferenceResponseFromJson(json);
+  factory GetAllConferenceResponse.fromJson(Map<String, dynamic> json) {
+    final response = _$GetAllConferenceResponseFromJson(json);
+    // رد المزامنة قد يسمّي التاريخين بشكل مختلف عن قائمة المؤتمرات؛ نجرّب
+    // الأسماء البديلة ولا نغيّر شيئاً إن وُجد start_date / end_date
+    response.start_date ??= _firstDate(json, const [
+      'startDate', 'start', 'start_at', 'from_date', 'date_from', 'begin_date',
+    ]);
+    response.end_date ??= _firstDate(json, const [
+      'endDate', 'end', 'end_at', 'to_date', 'date_to', 'finish_date',
+    ]);
+    if (response.start_date == null || response.end_date == null) {
+      debugPrint('⚠️ conference dates missing in response keys: ${json.keys.toList()}');
+    }
+    return response;
+  }
+
+  static String? _firstDate(Map<String, dynamic> json, List<String> keys) {
+    for (final k in keys) {
+      final v = json[k];
+      if (v != null && v.toString().trim().isNotEmpty) return v.toString();
+    }
+    return null;
+  }
   // to json
   Map<String, dynamic> toJson() => _$GetAllConferenceResponseToJson(this);
 }

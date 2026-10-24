@@ -28,6 +28,8 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
   void initState() {
     super.initState();
     BlocProvider.of<SyncBloc>(context).add(GetDoctorBySpsEvent());
+    // قائمة الاختصاصات تلزم لصفحة إضافة طبيب جديد
+    BlocProvider.of<SyncBloc>(context).add(SpecEvent());
     instance<AppPreferences>().setLoggedIn(4);
   }
 
@@ -81,6 +83,26 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
       onWillPop: () async => false,
       child: Scaffold(
         backgroundColor: const Color(0xFFF8FAFC),
+        floatingActionButton: FloatingActionButton.extended(
+          backgroundColor: ColorManager.primary,
+          foregroundColor: Colors.white,
+          icon: const Icon(Icons.person_add_alt_1),
+          label: const Text("إضافة مستخدم"),
+          onPressed: () async {
+            final bloc = context.read<SyncBloc>();
+            await Navigator.pushNamed(
+              context,
+              Routes.insertAttendee,
+              arguments: context
+                  .read<DoctorFilterCubit>()
+                  .state
+                  .conference
+                  .spec,
+            );
+            // تحديث القائمة ليظهر الطبيب الجديد
+            bloc.add(GetDoctorBySpsEvent());
+          },
+        ),
         body: SafeArea(
           child: BlocConsumer<SyncBloc, SyncState>(
             listener: (context, state) {
@@ -97,6 +119,9 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
                   cubit.setConferenceSpecs(state.conferenceModel);
 
               }
+              else if (state is DoctorsBySpsEmptyState) {
+                context.read<DoctorFilterCubit>().clear();
+              }
               else if (state is DoctorsBySpsErrorState) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -111,8 +136,24 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
               }
             },
             builder: (context, state) {
-              if(state is DoctorsBySpsLoadingState){
+              if (state is DoctorsBySpsLoadingState) {
                 return loadingFullScreen(context);
+              }
+              if (state is DoctorsBySpsEmptyState) {
+                return emptyFullScreen(
+                  context,
+                  message: "لا يوجد مؤتمر",
+                  onRefresh: () =>
+                      context.read<SyncBloc>().add(GetDoctorBySpsEvent()),
+                );
+              }
+              if (state is DoctorsBySpsErrorState) {
+                return errorFullScreen(
+                  context,
+                  mes: state.failure.massage,
+                  func: () =>
+                      context.read<SyncBloc>().add(GetDoctorBySpsEvent()),
+                );
               }
               return RefreshIndicator(
                 color: ColorManager.primary,
@@ -203,26 +244,9 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
                           children: [
                             if (doctors.isEmpty &&
                                 state is! DoctorsBySpsLoadingState)
-                              Center(
-                                child: ListView(
-                                  shrinkWrap: true,
-                                  children: [
-                                    Center(
-                                      child: Text(
-                                        "لا يوجد أطباء مسجلين يطابقون الفرز",
-                                        style: TextStyle(
-                                          color: Colors.grey[500],
-                                          fontSize: FontResponsive.font(
-                                            context,
-                                            mobile: 15,
-                                            tablet: 20,
-                                          ),
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                              emptyFullScreen(
+                                context,
+                                message: "لا يوجد أطباء مسجلين يطابقون الفرز",
                               )
                             else
                               ListView.builder(
@@ -238,11 +262,7 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
                               ),
                             if (state is DoctorsBySpsLoadingState &&
                                 filterState.allDoctors.isEmpty)
-                              const Center(
-                                child: CircularProgressIndicator(
-                                  color: ColorManager.primary,
-                                ),
-                              ),
+                              loadingFullScreen(context),
                           ],
                         );
                       },
@@ -575,7 +595,11 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
             ],
           ),
           child: DropdownButton<int?>(
-            value: filterState.selectedSpecId,
+            // القيمة المختارة قد تكون من مؤتمر سابق وغير موجودة بالقائمة الحالية
+            value: (filterState.selectedSpecId == -1 ||
+                    specList.any((e) => e.id == filterState.selectedSpecId))
+                ? filterState.selectedSpecId
+                : -1,
             underline: const SizedBox(),
             items: [
               DropdownMenuItem(value: -1, child: Text("الكل")),
@@ -656,11 +680,10 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
           ),
         ],
       ),
-      child: CheckboxListTile(
-        activeColor: ColorManager.primary,
+      child: ListTile(
         contentPadding:
         const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        controlAffinity: ListTileControlAffinity.trailing,
+        onTap: () => _showNoteDialog(doctor),
         title: Text(
           doctor.userModel.fullName,
           textAlign: TextAlign.right,
@@ -670,16 +693,20 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
             color: isChecked ? ColorManager.primary : Colors.black87,
           ),
         ),
-        value: isChecked,
-        onChanged: (bool? value) {
-          if (value != null) {
-            context.read<SyncBloc>().add(
-              UpdateDoneDoctorEvent(
-                  doctor: doctor,isDone: value?1:0),
-            );
-          }
-        },
-        secondary: CircleAvatar(
+        subtitle: _buildDoctorDetails(doctor.userModel),
+        trailing: Checkbox(
+          activeColor: ColorManager.primary,
+          value: isChecked,
+          onChanged: (bool? value) {
+            if (value != null) {
+              context.read<SyncBloc>().add(
+                UpdateDoneDoctorEvent(
+                    doctor: doctor,isDone: value?1:0),
+              );
+            }
+          },
+        ),
+        leading: CircleAvatar(
           backgroundColor: const Color(0xFFF1F5F9),
           child: Icon(
             Icons.person_outline_rounded,
@@ -688,6 +715,76 @@ class _DoctorsBySpsPageState extends State<DoctorsBySpsPage> {
         ),
       ),
     );
+  }
+
+  /// الهاتف والعنوان والملاحظة تحت اسم الطبيب (يُتخطى الفارغ)
+  Widget? _buildDoctorDetails(UserModel user) {
+    Widget line(IconData icon, String text) => Padding(
+      padding: const EdgeInsets.only(top: 2),
+      child: Row(
+        children: [
+          Icon(icon, size: 14, color: Colors.grey.shade600),
+          const SizedBox(width: 4),
+          Expanded(
+            child: Text(
+              text,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 12),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    final phone = user.phone.trim();
+    final address = (user.address ?? '').trim();
+    final notes = (user.notes ?? '').trim();
+    if (phone.isEmpty && address.isEmpty && notes.isEmpty) return null;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (phone.isNotEmpty) line(Icons.phone_outlined, phone),
+        if (address.isNotEmpty) line(Icons.location_on_outlined, address),
+        if (notes.isNotEmpty) line(Icons.note_alt_outlined, notes),
+      ],
+    );
+  }
+
+  /// نافذة ملاحظة على الطبيب: تعدّل الملاحظة فقط وتعلّم السجل للرفع
+  /// دون المساس ببقية بياناته (يبقى server_user_id كما هو).
+  Future<void> _showNoteDialog(UserDoneModel doctor) async {
+    final user = doctor.userModel;
+    final bloc = context.read<SyncBloc>();
+
+    final result = await showDialog<({String phone, String note})>(
+      context: context,
+      builder: (_) => _DoctorNoteDialog(
+        name: user.fullName,
+        initialPhone: user.phone,
+        initialNote: user.notes ?? '',
+      ),
+    );
+
+    if (result == null) return;
+    final text = result.note.trim();
+    final phone = result.phone.trim();
+    if (text == (user.notes ?? '').trim() && phone == user.phone.trim()) return;
+
+    user.phone = phone;
+    user.notes = text.isEmpty ? null : text;
+    user.isUpload = 0;
+    if (user.server_user_id != null) {
+      // طبيب موجود على السيرفر: يُرفع كتعديل
+      user.is_modified = 1;
+      user.is_local_new = 0;
+    } else {
+      // طبيب جديد لم يُرفع بعد: يبقى جديداً وتذهب ملاحظته معه
+      user.is_modified = 0;
+      user.is_local_new = 1;
+    }
+    bloc.add(EditUserEvent(user));
+    if (mounted) setState(() {});
   }
 }
 
@@ -718,5 +815,92 @@ class _StickySearchAndFilterDelegate extends SliverPersistentHeaderDelegate {
     return oldDelegate.child != child ||
         oldDelegate.minExtentHeight != minExtentHeight ||
         oldDelegate.maxExtentHeight != maxExtentHeight;
+  }
+}
+
+/// نافذة الملاحظة: تملك الـ controller وتتخلص منه مع دورة حياة النافذة
+class _DoctorNoteDialog extends StatefulWidget {
+  final String name;
+  final String initialPhone;
+  final String initialNote;
+
+  const _DoctorNoteDialog({
+    required this.name,
+    required this.initialPhone,
+    required this.initialNote,
+  });
+
+  @override
+  State<_DoctorNoteDialog> createState() => _DoctorNoteDialogState();
+}
+
+class _DoctorNoteDialogState extends State<_DoctorNoteDialog> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _phone =
+      TextEditingController(text: widget.initialPhone);
+  late final TextEditingController _note =
+      TextEditingController(text: widget.initialNote);
+
+  @override
+  void dispose() {
+    _phone.dispose();
+    _note.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(widget.name, textAlign: TextAlign.right),
+      content: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: _phone,
+                keyboardType: TextInputType.phone,
+                textAlign: TextAlign.right,
+                decoration: const InputDecoration(
+                  labelText: "رقم الهاتف",
+                  prefixIcon: Icon(Icons.phone_outlined),
+                  border: OutlineInputBorder(),
+                ),
+                validator: (v) {
+                  final t = (v ?? '').trim();
+                  if (t.isEmpty) return 'رقم الهاتف مطلوب';
+                  if (t.length >= 8) return null;
+                  return 'الرقم قصير جداً، 8 أرقام على الأقل';
+                },
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: _note,
+                maxLines: 4,
+                textAlign: TextAlign.right,
+                decoration: const InputDecoration(
+                  hintText: "اكتب ملاحظتك عن هذا الطبيب",
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text("إلغاء"),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            if (!_formKey.currentState!.validate()) return;
+            Navigator.pop(context, (phone: _phone.text, note: _note.text));
+          },
+          child: const Text("حفظ"),
+        ),
+      ],
+    );
   }
 }

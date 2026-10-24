@@ -394,14 +394,23 @@ class _ViewConferencePageState extends State<ViewConferencePage> {
                     );
                   },
                 )
-                    : emptyFullScreen(context),
+                    : emptyFullScreen(
+                        context,
+                        message: 'لا توجد استبيانات مرتبطة بهذا المؤتمر',
+                      ),
               ],
             ),
           )
               : state is GetConferenceByIdErrorState
-              ? errorFullScreen(context)
+              ? errorFullScreen(
+                  context,
+                  mes: state.failure.massage,
+                  func: () => context.read<ConferenceBloc>().add(
+                    GetConferenceByIdEvent(widget.conferenceId),
+                  ),
+                )
               : state is GetConferenceByIdLoadingState
-              ? const Center(child: CircularProgressIndicator())
+              ? loadingFullScreen(context)
               : const SizedBox(),
         );
       },

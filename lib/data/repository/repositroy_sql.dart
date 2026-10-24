@@ -123,9 +123,9 @@ class RepositroySqlImp extends RepositorySql {
 
 
   @override
-  Future<Either<Failure, void>> insertDoctor( UserModel doctor)async {
+  Future<Either<Failure, void>> insertDoctor( UserModel doctor, {bool markAttended = false})async {
     try {
-      final response =await _databaseHelper.insertDoctor(doctor);
+      final response =await _databaseHelper.insertDoctor(doctor, markAttended: markAttended);
       return Right(response);
     } catch (e) {
       Failure failure = ErrorHandler.handle(e).failure;

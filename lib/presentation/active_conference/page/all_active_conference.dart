@@ -52,11 +52,17 @@ class AllActiveConferencePage extends StatelessWidget {
           if (state is GetAllActiveConferenceLoadingState) {
             return loadingFullScreen(context);
           } else if (state is GetAllActiveConferenceErrorState) {
-            return errorFullScreen(context);
+            return errorFullScreen(
+              context,
+              mes: state.failure.massage,
+              func: () => context.read<ActiveConferenceBloc>().add(
+                GetAllActiveConferenceEvent(),
+              ),
+            );
           } else if (state is GetAllActiveConferenceState) {
             allConferences = state.allActiveConference;
           } else if (state is GetAllActiveEmptyConferenceState) {
-            return emptyFullScreen(context);
+            return emptyFullScreen(context, message: 'لا توجد مؤتمرات نشطة');
           }
           return Padding(
             padding: EdgeInsets.all(AppPadding.p16),

@@ -6,6 +6,8 @@ const String PREFS_KEY_LS_USER_LOGGED_IN = "PREFS_KEY_LS_USER_LOGGED_IN";
 const String PREFS_KEY_GAME_OR_SURVEY = "PREFS_KEY_GAME_OR_SURVEY";
 const String PREFS_KEY_PASSWORD = "PREFS_KEY_PASSWORD";
 const String PREFS_KEY_IS_CONFERENCE = "PREFS_KEY_IS_CONFERENCE";
+const String PREFS_KEY_IMPORTANT_DOCTORS_IMPORTED =
+    "PREFS_KEY_IMPORTANT_DOCTORS_IMPORTED_V2";
 
 class AppPreferences {
   final SharedPreferences _sharedPreferences;
@@ -46,6 +48,19 @@ class AppPreferences {
 
   Future<String?> getPassword() async {
     return _secureStorage.read(key: PREFS_KEY_PASSWORD);
+  }
+
+  /// هل أُدخلت قائمة الأطباء المهمين (important_doctors.json) من قبل؟
+  bool isImportantDoctorsImported() {
+    return _sharedPreferences.getBool(PREFS_KEY_IMPORTANT_DOCTORS_IMPORTED) ??
+        false;
+  }
+
+  Future<bool> setImportantDoctorsImported(bool value) {
+    return _sharedPreferences.setBool(
+      PREFS_KEY_IMPORTANT_DOCTORS_IMPORTED,
+      value,
+    );
   }
 
   Future<bool> setIConference(bool isConference) async {

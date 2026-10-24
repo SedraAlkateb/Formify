@@ -63,7 +63,13 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                 if (state is GetConferenceAsyncLoadingState) {
                   return loadingFullScreen(context);
                 } else if (state is AsyncConferenceErrorState) {
-                  return errorFullScreen(context);
+                  return errorFullScreen(
+                    context,
+                    mes: state.failure.massage,
+                    func: () => context
+                        .read<SyncBloc>()
+                        .add(GetConferenceAsyncEvent()),
+                  );
                 } else if (state is GetConferenceAsyncState) {
                   instance<AppPreferences>().setLoggedIn(2);
                   GetAllConferenceModel conferenceModel = state.conferenceModel;
@@ -437,7 +443,7 @@ class _ShowConferencePageState extends State<ShowConferencePage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      emptyFullScreen(context),
+                      emptyFullScreen(context, message: 'لا يوجد مؤتمر متاح حالياً'),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: ColorManager.primary,

@@ -270,7 +270,7 @@ class ViewSurvey extends StatelessWidget {
                   ],
                 );
               } else if (state is ViewSurveyErrorState) {
-                return errorFullScreen(context);
+                return errorFullScreen(context, mes: state.failure.massage);
               } else if (state is ViewSurveyLoadingState) {
                 return loadingFullScreen(context);
               }

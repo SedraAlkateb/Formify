@@ -22,8 +22,15 @@ Future<void> _setupAppRequirements() async {
 
   await initAppModule();
 
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
+  // عمودي فقط على التابلت (أقصر ضلع >= 600dp)، والموبايل يدور بحرية.
+  final view = WidgetsBinding.instance.platformDispatcher.views.first;
+  final shortestSide =
+      view.physicalSize.shortestSide / view.devicePixelRatio;
+  final isTablet = shortestSide >= 600;
+
+  await SystemChrome.setPreferredOrientations(
+    isTablet
+        ? [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]
+        : DeviceOrientation.values,
+  );
 }

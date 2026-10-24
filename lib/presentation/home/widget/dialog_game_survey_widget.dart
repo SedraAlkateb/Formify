@@ -15,7 +15,11 @@ Future<void> showDialogGameSurveyWidget({
     context: context,
     barrierDismissible: false,
     builder: (dialogContext) {
+      // على التابلت نحدّ عرض النافذة بدل أن تمتد على كامل الشاشة
+      final screenWidth = MediaQuery.of(dialogContext).size.width;
+      final sideInset = screenWidth > 480 ? (screenWidth - 420) / 2 : 40.0;
       return AlertDialog(
+        insetPadding: EdgeInsets.symmetric(horizontal: sideInset, vertical: 24),
         backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(

@@ -8,6 +8,7 @@ import 'package:formify/domain/usecase/delete_conference_usecase.dart';
 import 'package:formify/domain/usecase/get_all_conference_usecase.dart';
 import 'package:formify/domain/usecase/get_all_user_usecase.dart';
 import 'package:formify/domain/usecase/get_conference_by_id_usecase.dart';
+import 'package:formify/domain/usecase/get_spec_sql_usecase.dart';
 import 'package:formify/domain/usecase/get_user_answers_survey_usecase.dart';
 import 'package:meta/meta.dart';
 
@@ -25,14 +26,21 @@ class ActiveConferenceBloc
   List<GetAllConferenceModel> allActiveConference = [];
   final GetUserAnswersSurveyUsecase getUserAnswersSurveyUsecase;
   final AllImportantDoctorNotComeSqlUsecase allImportantDoctorNotComeSqlUsecase;
+  final GetSpecSqlUsecase getSpecSqlUsecase;
   Map<String, UserModel> doctors = {};
+  List<SpecModel> conferenceSpecs = [];
+  List<SpecModel> allSpecs = [];
+  int? selectedSpecId;
+  // نتيجة آخر فلتر (نوع + اختصاص)؛ البحث يعمل داخلها وليس على كل المشاركين
+  List<UserModel> filteredBase = [];
   ActiveConferenceBloc(
     this.getAllConferenceUsecase,
     this.getConferenceByIdUsecase,
     this.getAllUserUsecase,
     this.getUserAnswersSurveyUsecase,
     this.deleteConferenceUsecase,
-      this.allImportantDoctorNotComeSqlUsecase
+      this.allImportantDoctorNotComeSqlUsecase,
+      this.getSpecSqlUsecase,
   ) : super(ActiveConferenceInitial()) {
     on<GetAllActiveConferenceEvent>((event, emit) async {
       emit(GetAllActiveConferenceLoadingState());
@@ -69,14 +77,22 @@ class ActiveConferenceBloc
     on<GetAllUserByActiveConferenceEvent>((event, emit) async {
       emit(GetAllUserActiveConferenceLoadingState());
       final result = await getAllUserUsecase.execute(event.conferenceId);
-      result.fold(
-        (failure) {
-          emit(GetAllUserActiveConferenceErrorState(failure: failure));
-        },
-        (data) async {
-          emit(GetAllUserActiveConferenceState(data, "المشاركون", data));
-        },
-      );
+      final users = result.fold((_) => null, (data) => data);
+      if (users == null) {
+        result.fold(
+          (failure) =>
+              emit(GetAllUserActiveConferenceErrorState(failure: failure)),
+          (_) {},
+        );
+        return;
+      }
+      selectedSpecId = null;
+      filteredBase = users;
+      (await getSpecSqlUsecase.execute()).fold((_) {}, (specs) {
+        allSpecs = specs;
+      });
+      emit(GetAllUserActiveConferenceState(users, "الكل", users,
+          specs: allSpecs));
     });
     on<FilterDoctorEvent>((event, emit) async {
       final allUsers = event.users;
@@ -107,6 +123,18 @@ class ActiveConferenceBloc
           newTitle = "المهمين - غائبين";
           break;
       }
+      // الاختصاص: الافتراضي "الكل" (0 = كل الاختصاصات)
+      if (event.filterType == 0) {
+        selectedSpecId = null;
+      } else {
+        selectedSpecId = event.specId ?? selectedSpecId ?? 0;
+        if (selectedSpecId != 0) {
+          filteredList = filteredList
+              .where((user) => user.spec?.id == selectedSpecId)
+              .toList();
+        }
+      }
+      filteredBase = filteredList;
       for (var user in filteredList) {
         print(
           " | اسم المستخدم: ${user.fullName} | العنوان: ${user.address}  | الرقم: ${user.phone}  | النوع: ${user.userType.name}",
@@ -117,8 +145,8 @@ class ActiveConferenceBloc
           allUsers,
           newTitle,
           filteredList,
-
-          // أضف هذا الحقل للـ State لكي تستخدمه في الـ UI
+          specs: allSpecs,
+          selectedSpecId: selectedSpecId,
         ),
       );
     });
@@ -126,7 +154,7 @@ class ActiveConferenceBloc
       final allUsers = event.users;
       List<UserModel> filteredList = [];
 
-      filteredList = allUsers.where((value) {
+      filteredList = filteredBase.where((value) {
         if (value.fullName.contains(event.search)) {
           return true;
         }
@@ -141,6 +169,8 @@ class ActiveConferenceBloc
           allUsers,
           event.filterType,
           filteredList,
+          specs: allSpecs,
+          selectedSpecId: selectedSpecId,
         ),
       );
     });
@@ -157,6 +187,8 @@ class ActiveConferenceBloc
         (data) async {
           data.surveys.sort((a, b) => a.survey_order.compareTo(b.survey_order));
           surveyModel = data.surveys;
+          conferenceSpecs = data.spec;
+          selectedSpecId = null;
           emit(GetActiveConferenceByIdState(data));
         },
       );

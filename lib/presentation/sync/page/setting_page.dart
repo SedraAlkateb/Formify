@@ -278,7 +278,7 @@ class SettingPage extends StatelessWidget {
           current is GetUserConferenceErrorState, // حافظنا على شروط البناء الخاصة بك
       builder: (context, state) {
         if (state is GetUserConferenceErrorState) {
-          return errorFullScreen(context);
+          return errorFullScreen(context, mes: state.failure.massage);
         } else if (state is GetUserConferenceState) {
           // قائمة المستخدمين المفلترة الحالية بناءً على تصميم البلوك الخاص بك
           List<UserModel> users = state.filterUsers;

@@ -31,6 +31,7 @@ import 'package:formify/presentation/sync/page/edite_user_page.dart';
 import 'package:formify/presentation/sync/page/finished_input_surveys.dart';
 import 'package:formify/presentation/sync/page/game_input_page.dart';
 import 'package:formify/presentation/sync/page/insert_doctor_page.dart';
+import 'package:formify/presentation/sync/page/insert_attendee_page.dart';
 import 'package:formify/presentation/sync/page/insert_user_page.dart';
 import 'package:formify/presentation/sync/page/list_of_surveys_page.dart';
 import 'package:formify/presentation/sync/page/setting_page.dart';
@@ -149,6 +150,12 @@ class RouteGenerator {
       case Routes.insertDoctor:
         initSyncModule();
         return _animatedRoute(AddDoctorPage());
+      case Routes.insertAttendee:
+        initSyncModule();
+        final conferenceSpecs = settings.arguments is List<SpecModel>
+            ? settings.arguments as List<SpecModel>
+            : <SpecModel>[];
+        return _animatedRoute(AddAttendeePage(conferenceSpecs: conferenceSpecs));
       case Routes.insertMDoctor:
         final specs = settings.arguments as List<SpecModel>;
 

@@ -59,7 +59,7 @@ class SurveyInputPage extends StatelessWidget {
             }
             if (state is SurveySubmitErrorState) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("فشل الإرسال: ${state.failure}")),
+                SnackBar(content: Text("فشل الإرسال: ${state.failure.massage}")),
               );
             }
           },
@@ -68,7 +68,7 @@ class SurveyInputPage extends StatelessWidget {
               return loadingFullScreen(context);
             }
             if (state is SurveyErrorState) {
-              return errorFullScreen(context);
+              return errorFullScreen(context, mes: state.failure.massage);
             }
 
             if (state is SurveyReadyState) {

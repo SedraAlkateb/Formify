@@ -48,10 +48,11 @@ class _ViewAllSurveyPageState extends State<ViewAllSurveyPage> {
           if (state is GetAllSurveyLoadingState) {
             return loadingFullScreen(context);
           } else if (state is GetAllEmptySurveyState) {
-            return emptyFullScreen(context);
+            return emptyFullScreen(context, message: 'لا توجد استبيانات');
           } else if (state is GetAllSurveyErrorState) {
             return errorFullScreen(
               context,
+              mes: state.failure.massage,
               func: () =>
                   BlocProvider.of<SurveyBloc>(context).add(GetAllSurveyEvent()),
             );

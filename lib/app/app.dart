@@ -1,3 +1,4 @@
+import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -62,9 +63,9 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     if (!_isReady) {
-      return const MaterialApp(
+      return MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: Scaffold(body: Center(child: CircularProgressIndicator())),
+        home: Scaffold(body: loadingFullScreen(context)),
       );
     }
     // 1. حقن وتجهيز قائمة الـ MultiBlocProvider بكافة الـ Blocs الخاصة بـ DoForm

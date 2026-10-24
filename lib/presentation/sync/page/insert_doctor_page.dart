@@ -1,4 +1,6 @@
+import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 import 'package:flutter/material.dart';
+import 'package:formify/presentation/resources/font_manager.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/models/user_type.dart';
@@ -127,7 +129,12 @@ class _AddDoctorPageState extends State<AddDoctorPage> {
 
                   // 5️⃣ منسدلة الاختصاصات الطبية
                   DropdownButtonFormField<SpecModel>(
+ isExpanded: true,
+ style: TextStyle(fontFamily: FontConstants.fontFamily1, fontSize: 14, color: Colors.black87),
+
                     decoration: InputDecoration(
+ labelStyle: TextStyle(fontFamily: FontConstants.fontFamily1, fontSize: 14),
+ hintStyle: TextStyle(fontFamily: FontConstants.fontFamily1, fontSize: 14),
                       labelText: "اختر الاختصاص الطبي",
                       prefixIcon: const Icon(Icons.biotech_outlined),
                       contentPadding: const EdgeInsets.symmetric(
@@ -182,7 +189,7 @@ class _AddDoctorPageState extends State<AddDoctorPage> {
                         ),
                       ),
                       child: state is InsertDoctorLoadingState
-                          ? const CircularProgressIndicator(color: Colors.white)
+                          ? loadingInline(color: Colors.white)
                           : const Text(
                         "حفظ الطبيب",
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),

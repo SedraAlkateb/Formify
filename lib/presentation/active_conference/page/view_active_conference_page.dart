@@ -73,7 +73,13 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                       current is GetActiveConferenceByIdErrorState,
                   builder: (context, state) {
                     if (state is GetActiveConferenceByIdErrorState) {
-                      return errorFullScreen(context);
+                      return errorFullScreen(
+                        context,
+                        mes: state.failure.massage,
+                        func: () => context.read<ActiveConferenceBloc>().add(
+                          GetActiveConferenceByIdEvent(widget.conferenceId),
+                        ),
+                      );
                     } else if (state is GetActiveConferenceByIdLoadingState) {
                       return loadingFullScreen(context);
                     } else if (state is GetActiveConferenceByIdState) {
@@ -114,7 +120,15 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
                 if (state is GetAllUserActiveConferenceLoadingState) {
                   return SliverToBoxAdapter(child: loadingFullScreen(context));
                 } else if (state is GetAllUserActiveConferenceErrorState) {
-                  return SliverToBoxAdapter(child: errorFullScreen(context));
+                  return SliverToBoxAdapter(
+                    child: errorFullScreen(
+                      context,
+                      mes: state.failure.massage,
+                      func: () => context.read<ActiveConferenceBloc>().add(
+                        GetAllUserByActiveConferenceEvent(widget.conferenceId),
+                      ),
+                    ),
+                  );
                 } else if (state is GetAllUserActiveConferenceState) {
                   if (state.userFilter.isEmpty) {
                     return SliverToBoxAdapter(
@@ -417,6 +431,48 @@ class _ViewActiveConferencePageState extends State<ViewActiveConferencePage> {
             ],
           ),
         ),
+        if (state.selectedSpecId != null)
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: AppPadding.p8),
+            child: Row(
+              children: [
+                const Icon(Icons.medical_services_outlined, size: 22, color: Colors.blueGrey),
+                const SizedBox(width: 8),
+                const Text("الاختصاص: "),
+                Expanded(
+                  child: DropdownButton<int>(
+                    isExpanded: true,
+                    value: state.selectedSpecId == 0 ||
+                            state.specs.any((s) => s.id == state.selectedSpecId)
+                        ? state.selectedSpecId
+                        : 0,
+                    items: [
+                      const DropdownMenuItem<int>(value: 0, child: Text("الكل")),
+                      ...state.specs
+                          .where((s) =>
+                              s.id != null &&
+                              s.id != 0 &&
+                              s.title?.trim() != "الكل")
+                          .map((s) => DropdownMenuItem<int>(
+                                value: s.id,
+                                child: Text(s.title ?? ""),
+                              )),
+                    ],
+                    onChanged: (int? value) {
+                      if (value == null) return;
+                      BlocProvider.of<ActiveConferenceBloc>(context).add(
+                        FilterDoctorEvent(
+                          state.newTitle == "المهمين - غائبين" ? 2 : 1,
+                          state.users,
+                          specId: value,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
         Padding(
           padding: EdgeInsets.all(AppPadding.p8),
           child: Row(

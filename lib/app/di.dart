@@ -282,8 +282,14 @@ Future<void> initActiveConferenceModule() async {
         () => DeleteConferenceUsecase(instance()),
       );
     }
+    if (!GetIt.I.isRegistered<GetSpecSqlUsecase>()) {
+      instance.registerFactory<GetSpecSqlUsecase>(
+        () => GetSpecSqlUsecase(instance()),
+      );
+    }
     instance.registerFactory<ActiveConferenceBloc>(
       () => ActiveConferenceBloc(
+        instance(),
         instance(),
         instance(),
         instance(),

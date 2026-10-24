@@ -51,7 +51,8 @@ class GetCompletedSurveyEvent extends ActiveConferenceEvent {
 class FilterDoctorEvent extends ActiveConferenceEvent {
   final int filterType;
   final List<UserModel> users;
-  FilterDoctorEvent(this.filterType,this.users);
+  final int? specId;
+  FilterDoctorEvent(this.filterType,this.users,{this.specId});
   @override
   List<Object?> get props => [];
 }

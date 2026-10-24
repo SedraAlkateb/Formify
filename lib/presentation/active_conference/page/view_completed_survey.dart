@@ -250,7 +250,7 @@ class ViewCompletedSurvey extends StatelessWidget {
                   ],
                 );
               } else if (state is GetCompletedSurveyErrorState) {
-                return errorFullScreen(context);
+                return errorFullScreen(context, mes: state.failure.massage);
               } else if (state is GetCompletedSurveyLoadingState) {
                 return loadingFullScreen(context);
               }

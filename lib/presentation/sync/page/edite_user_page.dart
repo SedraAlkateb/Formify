@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:formify/presentation/resources/font_manager.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/models/user_type.dart';
@@ -272,7 +273,12 @@ class _EditUserPageState extends State<EditUserPage>
 
                                 // ✨ حقل الاختصاص الطبي بعد الإصلاح الكامل والحماية
                                 DropdownButtonFormField<SpecModel>(
+ isExpanded: true,
+ style: TextStyle(fontFamily: FontConstants.fontFamily1, fontSize: 14, color: Colors.black87),
+
                                   decoration: InputDecoration(
+ labelStyle: TextStyle(fontFamily: FontConstants.fontFamily1, fontSize: 14),
+ hintStyle: TextStyle(fontFamily: FontConstants.fontFamily1, fontSize: 14),
                                     labelText: "اختر الاختصاص الطبي",
                                     prefixIcon: const Icon(
                                       Icons.biotech_outlined,

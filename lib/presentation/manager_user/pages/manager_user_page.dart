@@ -2,7 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart' hide SizeExtension;
+import 'package:formify/presentation/resources/responsive/tablet_safe_size.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/domain/models/user_type.dart';
 import 'package:formify/presentation/manager_user/bloc/manager_user_bloc.dart';
@@ -11,6 +12,7 @@ import 'package:formify/presentation/offline_sync/bloc/offline_sync_bloc.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
 import 'package:formify/presentation/unit/drop_down_new.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
+
 
 class ManagerUserPage extends StatefulWidget {
   const ManagerUserPage({super.key});
@@ -131,7 +133,11 @@ class _ManagerUserPageState extends State<ManagerUserPage> {
           ],
         ),
         body: SafeArea(
-          child: Padding(
+          // على التابلت نحدّ عرض المحتوى ونوسّطه بدل تمديده على كامل الشاشة
+          child: Center(
+            child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 720),
+            child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
             child: CustomScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
@@ -157,7 +163,10 @@ class _ManagerUserPageState extends State<ManagerUserPage> {
                     if (state is GetAllUsersState) {
                       if (state.filteredUsers.isEmpty) {
                         return SliverToBoxAdapter(
-                          child: emptyFullScreen(context),
+                          child: emptyFullScreen(
+                            context,
+                            message: 'لا يوجد مستخدمون يطابقون البحث',
+                          ),
                         );
                       }
 
@@ -191,7 +200,10 @@ class _ManagerUserPageState extends State<ManagerUserPage> {
 
                     if (state is GetAllUsersEmptyState) {
                       return SliverToBoxAdapter(
-                        child: emptyFullScreen(context),
+                        child: emptyFullScreen(
+                          context,
+                          message: 'لا يوجد مستخدمون',
+                        ),
                       );
                     }
 
@@ -203,7 +215,13 @@ class _ManagerUserPageState extends State<ManagerUserPage> {
 
                     if (state is GetAllUsersErrorState) {
                       return SliverToBoxAdapter(
-                        child: errorFullScreen(context),
+                        child: errorFullScreen(
+                          context,
+                          mes: state.failure.massage,
+                          func: () => context.read<ManagerUserBloc>().add(
+                            GetAllUsersEvent(),
+                          ),
+                        ),
                       );
                     }
 
@@ -216,6 +234,8 @@ class _ManagerUserPageState extends State<ManagerUserPage> {
                 SliverToBoxAdapter(child: SizedBox(height: 24.h)),
               ],
             ),
+          ),
+          ),
           ),
         ),
       ),

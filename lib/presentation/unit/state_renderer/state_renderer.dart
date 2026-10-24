@@ -1,278 +1,298 @@
-
-// ignore_for_file: deprecated_member_use
-
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:formify/presentation/resources/assets_manager.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
 import 'package:formify/presentation/resources/font_manager.dart';
 import 'package:formify/presentation/resources/style_manage.dart';
 import 'package:formify/presentation/resources/values_manager.dart';
-import 'package:lottie/lottie.dart';
-import 'package:shimmer/shimmer.dart';
 
-enum StateRendererType{
-///popup states (dialog)
-
+enum StateRendererType {
+  /// popup states (dialog)
   popupLoadingState,
   popupErrorState,
- popupSuccess,
-  /// full screen stated (full screen)
+  popupSuccess,
+
+  /// full screen states
   fullScreenLoadingState,
   fullScreenErrorState,
   fullScreenEmptyState,
-/// general
-  contentState
+
+  /// general
+  contentState,
 }
+
+/// النصوص الافتراضية الموحدة لكل الحالات.
+class StateTexts {
+  static const String loading = 'جاري التحميل...';
+  static const String errorTitle = 'حدث خطأ';
+  static const String errorFallback =
+      'تعذر إكمال العملية، يرجى المحاولة مرة أخرى';
+  static const String empty = 'لا توجد بيانات';
+  static const String retry = 'إعادة المحاولة';
+  static const String ok = 'موافق';
+  static const String success = 'تمت العملية بنجاح';
+}
+
+/// يرسم كل حالات (loading / error / empty / success) بشكل موحد في كل التطبيق.
 class StateRenderer extends StatelessWidget {
- final StateRendererType stateRendererType;
+  final StateRendererType stateRendererType;
   final String message;
   final String title;
- final  Function retryActionFunction;
+  final VoidCallback? retryActionFunction;
 
-  StateRenderer(
-      {
-        required  this.stateRendererType,
-        required this.message,
-        this.title="",
-        required this.retryActionFunction});
+  const StateRenderer({
+    super.key,
+    required this.stateRendererType,
+    this.message = '',
+    this.title = '',
+    this.retryActionFunction,
+  });
+
   @override
   Widget build(BuildContext context) {
-    return _getStateWidget(context);
-  }
-  Widget _getStateWidget(BuildContext context){
-    switch(stateRendererType){
+    switch (stateRendererType) {
       case StateRendererType.popupLoadingState:
-        return _getPopupDialog(context,[_getAnimatedImage(JsonAssets.loading1)]);
+        return _PopupCard(
+          children: [
+            _StateAnimation(JsonAssets.loading1, size: AppSize.s100),
+            _StateMessage(message.isEmpty ? StateTexts.loading : message),
+          ],
+        );
       case StateRendererType.popupSuccess:
-        return _getPopupDialog(context,[
-          _getAnimatedImage(JsonAssets.suc),
-          _getMessage(message),
-          _getRetryButton("موافق",context)
-        ]);
+        return _PopupCard(
+          children: [
+            _StateAnimation(JsonAssets.suc),
+            _StateMessage(message.isEmpty ? StateTexts.success : message),
+            _StateButton(
+              label: StateTexts.ok,
+              onPressed: () =>
+                  Navigator.of(context, rootNavigator: true).pop(),
+            ),
+          ],
+        );
       case StateRendererType.popupErrorState:
-        return _getPopupDialog(context,[
-            _getAnimatedImage(JsonAssets.error),
-            _getMessage(message),
-            _getRetryButton("موافق",context)
-        ]);
+        return _PopupCard(
+          children: [
+            _StateAnimation(JsonAssets.error),
+            _StateTitle(title.isEmpty ? StateTexts.errorTitle : title),
+            _StateMessage(message.isEmpty ? StateTexts.errorFallback : message),
+            _StateButton(
+              label: StateTexts.ok,
+              onPressed: () =>
+                  Navigator.of(context, rootNavigator: true).pop(),
+            ),
+          ],
+        );
       case StateRendererType.fullScreenLoadingState:
-      return buildShimmerListLoading(context);///////////////
+        return const _ShimmerList();
       case StateRendererType.fullScreenErrorState:
-        return _getItemsColumn(
-            [
-              _getAnimatedImage(JsonAssets.error),
-              _getMessage(message),
-              _getRetryButton("retry again",context)
-            ]
+        return _FullScreenBody(
+          children: [
+            _StateAnimation(JsonAssets.error),
+            _StateTitle(title.isEmpty ? StateTexts.errorTitle : title),
+            _StateMessage(message.isEmpty ? StateTexts.errorFallback : message),
+            if (retryActionFunction != null)
+              _StateButton(
+                label: StateTexts.retry,
+                icon: Icons.refresh_rounded,
+                onPressed: retryActionFunction!,
+              ),
+          ],
         );
       case StateRendererType.fullScreenEmptyState:
-        return _getItemsColumn([
-          _getAnimatedImage(JsonAssets.empty1),
-          _getMessage(message)
-        ]);
+        return _FullScreenBody(
+          children: [
+            _StateAnimation(JsonAssets.empty1),
+            _StateMessage(message.isEmpty ? StateTexts.empty : message),
+            if (retryActionFunction != null)
+              _StateButton(
+                label: StateTexts.retry,
+                icon: Icons.refresh_rounded,
+                onPressed: retryActionFunction!,
+              ),
+          ],
+        );
       case StateRendererType.contentState:
-      return Container();
+        return const SizedBox.shrink();
     }
   }
-
-// هذا الـ Widget يبني هيكل تحميل يشبه واجهة المؤتمر الخاصة بك
-  Widget buildShimmerListLoading(BuildContext context) {
-    return Shimmer.fromColors(
-      // اللون الأساسي للعناصر
-      baseColor: Colors.grey[300]!,
-      // لون اللمعة التي تتحرك
-      highlightColor: Colors.grey[100]!,
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 30),
-              _buildShimmerBox(),
-              const SizedBox(height: 15),
-              _buildShimmerBox(),
-              const SizedBox(height: 15),
-              _buildShimmerBox(),
-              const SizedBox(height: 15),
-              _buildShimmerBox(),
-              const SizedBox(height: 15),
-              _buildShimmerBox(),
-              const SizedBox(height: 15),
-              _buildShimmerBox(),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-  Widget buildShimmerContainerLoading(BuildContext context) {
-    return Shimmer.fromColors(
-      // اللون الأساسي للعناصر
-      baseColor: Colors.grey[300]!,
-      // لون اللمعة التي تتحرك
-      highlightColor: Colors.grey[100]!,
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 30),
-              // محاكاة للصورة أو الحاوية العلوية FloatingContainer
-              Container(
-                width: double.infinity,
-                height: 200,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(25),
-                ),
-              ),
-              const SizedBox(height: 30),
-              // محاكاة لعنوان المؤتمر
-              Container(
-                width: 200,
-                height: 30,
-                color: Colors.white,
-              ),
-              const SizedBox(height: 15),
-              // محاكاة لوصف المؤتمر
-              Container(
-                width: double.infinity,
-                height: 15,
-                color: Colors.white,
-              ),
-              const SizedBox(height: 10),
-              Container(
-                width: double.infinity,
-                height: 15,
-                color: Colors.white,
-              ),
-              const SizedBox(height: 30),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildShimmerBox() {
-    return Container(
-      width: double.infinity,
-      height: 80,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-      ),
-    );
-  }
-Widget _getItemsColumn(List<Widget>children){
- return Center(
-   child: Column(
-     mainAxisAlignment: MainAxisAlignment.center,
-     crossAxisAlignment: CrossAxisAlignment.center,
-     children: children,
-   ),
- );
 }
-Widget _getAnimatedImage(String animationName){
-    return SizedBox(
-      height: AppSize.s200,
-      width: AppSize.s200,
-      child:Lottie.asset(animationName )
-    );
-}
-Widget _getMessage(String? message){
-    return Center(
-      child: Padding(
-        padding:  EdgeInsets.all(AppPadding.p8),
-        child: Text(
-          message??"",
-          style: getRegularStyle(
-              color: ColorManager.black,
-            fontSize: FontSize.s18
-          )
-          ,
-        ),
+
+/// جسم الحالة بملء الشاشة: يتوسط عند وجود ارتفاع محدد ويتصرف بأمان
+/// عند وضعه داخل Column أو SliverToBoxAdapter (ارتفاع غير محدد).
+class _FullScreenBody extends StatelessWidget {
+  final List<Widget> children;
+  const _FullScreenBody({required this.children});
+
+  @override
+  Widget build(BuildContext context) {
+    final content = Padding(
+      padding: EdgeInsets.all(AppPadding.p16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: children,
       ),
     );
-}
-Widget _getRetryButton(String buttonTitle,BuildContext context){
-
-  return Padding(
-    padding:  EdgeInsets.all(AppPadding.p18),
-    child: SizedBox(
-      width: double.infinity,
-
-    child:  ElevatedButton(
-        // style: ButtonStyle(
-        //   //
-        //   // backgroundColor:
-        //   // MaterialStateProperty.all(ColorManager.primary),
-        // ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: ColorManager.primary, // لون الخلفية
-          foregroundColor: Colors.white,          // لون النص
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          elevation: 4,
-        ),
-        onPressed: (){
-      if(stateRendererType==StateRendererType.fullScreenErrorState){
-        retryActionFunction.call();
-      }else{
-        //popup error state
-        Navigator.of(context).pop();
-      }
-    },
-        child: Text(buttonTitle)),
-
-    ),
-  );
-  }
-Widget _getPopupDialog(BuildContext context,List<Widget> children){
-    return  WillPopScope(
-      onWillPop: () async {
-        return false;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.hasBoundedHeight) {
+          return Center(child: SingleChildScrollView(child: content));
+        }
+        return Center(child: content);
       },
+    );
+  }
+}
+
+class _PopupCard extends StatelessWidget {
+  final List<Widget> children;
+  const _PopupCard({required this.children});
+
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: false,
       child: Dialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppSize.s14),
-
         ),
         elevation: AppSize.s1_5,
-        backgroundColor: Colors.transparent,
-        child: Container(
-          decoration: BoxDecoration(
-            color: ColorManager.white,
-            shape: BoxShape.rectangle,
-            borderRadius: BorderRadius.circular(AppSize.s14),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black26
-              )
-            ]
+        backgroundColor: ColorManager.white,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.all(AppPadding.p8),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: children,
+            ),
           ),
-          child: _getDialogContent(context,children) ,
         ),
       ),
     );
-}
-Widget  _getDialogContent (BuildContext context,List<Widget>children){
-  return SingleChildScrollView(
-
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-    mainAxisAlignment: MainAxisAlignment.center,
-    crossAxisAlignment: CrossAxisAlignment.center,
-    children: children,
-    ),
-  );
-}
-getMessage(String ){
-
-}
+  }
 }
 
+class _StateAnimation extends StatelessWidget {
+  final String asset;
+  final double? size;
+  const _StateAnimation(this.asset, {this.size});
+
+  @override
+  Widget build(BuildContext context) {
+    final s = size ?? AppSize.s200;
+    return SizedBox(
+      height: s,
+      width: s,
+      child: Lottie.asset(
+        asset,
+        // لا نترك الشاشة فارغة إذا فشل تحميل ملف الأنيميشن
+        errorBuilder: (_, __, ___) => Icon(
+          Icons.info_outline_rounded,
+          size: s / 2,
+          color: ColorManager.darkTextSecondary,
+        ),
+      ),
+    );
+  }
+}
+
+class _StateTitle extends StatelessWidget {
+  final String text;
+  const _StateTitle(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: AppPadding.p8),
+      child: Text(
+        text,
+        textAlign: TextAlign.center,
+        style: getBoldStyle(color: ColorManager.black, fontSize: FontSize.s18),
+      ),
+    );
+  }
+}
+
+class _StateMessage extends StatelessWidget {
+  final String text;
+  const _StateMessage(this.text);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.all(AppPadding.p8),
+      child: Text(
+        text,
+        textAlign: TextAlign.center,
+        style: getRegularStyle(color: Colors.black87, fontSize: FontSize.s16),
+      ),
+    );
+  }
+}
+
+class _StateButton extends StatelessWidget {
+  final String label;
+  final IconData? icon;
+  final VoidCallback onPressed;
+  const _StateButton({required this.label, required this.onPressed, this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    final style = ElevatedButton.styleFrom(
+      backgroundColor: ColorManager.primary,
+      foregroundColor: Colors.white,
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 2,
+    );
+    return Padding(
+      padding: EdgeInsets.all(AppPadding.p12),
+      child: icon == null
+          ? ElevatedButton(
+              style: style,
+              onPressed: onPressed,
+              child: Text(label),
+            )
+          : ElevatedButton.icon(
+              style: style,
+              onPressed: onPressed,
+              icon: Icon(icon, size: 20),
+              label: Text(label),
+            ),
+    );
+  }
+}
+
+/// هيكل تحميل (Skeleton) موحد للقوائم.
+class _ShimmerList extends StatelessWidget {
+  const _ShimmerList();
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey.shade300,
+      highlightColor: Colors.grey.shade100,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: List.generate(
+            6,
+            (_) => Container(
+              width: double.infinity,
+              height: 80,
+              margin: const EdgeInsets.only(bottom: 15),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

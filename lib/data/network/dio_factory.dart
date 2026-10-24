@@ -28,8 +28,6 @@ class DioFactory{
       "X-Requested-With":"XMLHttpRequest",
       AUTHORIZATION:token,
       DEFAULT_LANGUAGE:language,
-      "Access-Control-Allow-Headers": "*",
-      "Access-Control-Allow-Methods": "POST, GET, OPTIONS, PUT, DELETE, HEAD",
     };
     dio.options=BaseOptions(
       baseUrl: Constants.baseUrl,
@@ -65,11 +63,10 @@ class MyApiInterceptor extends Interceptor {
     options.headers['Authorization'] ="Bearer ${authToken}" ;
     options.headers['lang'] =lang;
 
-    print(authToken);
     return handler.next(options);
   }
   @override
-  void onError(DioError err, ErrorInterceptorHandler handler) async {
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
     debugPrint(
         'ERROR[${err.response?.statusCode}] => PATH: ${err.requestOptions.path}');
     if (err.response?.statusCode ==ResponseCode.UNAUTORISED ) {

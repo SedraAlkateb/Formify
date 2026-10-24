@@ -1,3 +1,4 @@
+import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -99,38 +100,20 @@ class _SpecManagementPageState extends State<SpecManagementPage> {
                   builder: (context, state) {
                     if (state is GetAllSpecLoadingState ||
                         state is SpecManagerInitial) {
-                      return const SliverFillRemaining(
-                        hasScrollBody: false,
-                        child: Center(
-                          child: CircularProgressIndicator(
-                            color: Color(0xFF8B5CF6),
-                          ),
-                        ),
+                      return SliverFillRemaining(
+                        hasScrollBody: true,
+                        child: loadingFullScreen(context),
                       );
                     }
 
                     if (state is GetAllSpecErrorState) {
                       return SliverFillRemaining(
-                        hasScrollBody: false,
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                Icons.error_outline_rounded,
-                                color: Color(0xFFEF4444),
-                                size: 48,
-                              ),
-                              SizedBox(height: 8.h),
-                              Text(
-                                state.failure.massage,
-                                style: const TextStyle(
-                                  color: Color(0xFF475569),
-                                  fontSize: 14,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
+                        hasScrollBody: true,
+                        child: errorFullScreen(
+                          context,
+                          mes: state.failure.massage,
+                          func: () => context.read<SpecManagerBloc>().add(
+                            GetAllSpecsEvent(),
                           ),
                         ),
                       );
@@ -138,26 +121,10 @@ class _SpecManagementPageState extends State<SpecManagementPage> {
 
                     if (state is GetAllSpecEmptyState) {
                       return SliverFillRemaining(
-                        hasScrollBody: false,
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                Icons.folder_open_rounded,
-                                color: Color(0xFF94A3B8),
-                                size: 48,
-                              ),
-                              SizedBox(height: 8.h),
-                              const Text(
-                                "لا توجد اختصاصات طبية مسجلة حالياً",
-                                style: TextStyle(
-                                  color: Color(0xFF64748B),
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
+                        hasScrollBody: true,
+                        child: emptyFullScreen(
+                          context,
+                          message: "لا توجد اختصاصات طبية مسجلة حالياً",
                         ),
                       );
                     }
@@ -170,16 +137,11 @@ class _SpecManagementPageState extends State<SpecManagementPage> {
                       }).toList();
 
                       if (filteredSpecs.isEmpty) {
-                        return const SliverFillRemaining(
-                          hasScrollBody: false,
-                          child: Center(
-                            child: Text(
-                              "لم نجد أي اختصاص يطابق بحثك",
-                              style: TextStyle(
-                                color: Color(0xFF64748B),
-                                fontSize: 14,
-                              ),
-                            ),
+                        return SliverFillRemaining(
+                          hasScrollBody: true,
+                          child: emptyFullScreen(
+                            context,
+                            message: "لم نجد أي اختصاص يطابق بحثك",
                           ),
                         );
                       }

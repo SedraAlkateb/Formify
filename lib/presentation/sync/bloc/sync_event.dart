@@ -107,7 +107,8 @@ class DoctorEvent extends SyncEvent {
 }
 class InsertEvent extends SyncEvent {
  final UserModel doctorsModel;
-  const InsertEvent(this.doctorsModel);
+  final bool markAttended;
+  const InsertEvent(this.doctorsModel, {this.markAttended = false});
 
   @override
   List<Object?> get props => [doctorsModel];

@@ -30,6 +30,7 @@ class Routes {
   static const String exelConference = "/exelConference";
   static const String dashboardSurvey = "/dashboardSurvey";
   static const String insertDoctor = "/insertDoctor";
+  static const String insertAttendee = "/insertAttendee";
   static const String exelBaseConference = "/exelBaseConference";
   static const String editUser= "/editUser";
   static const String doctorsAttendance= "/doctorsAttendancePage";
