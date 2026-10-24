@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 640" width="760" height="640" font-family="Tahoma, Arial, sans-serif">
+  <defs>
+    <marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#37474F"/></marker>
+  </defs>
+  <rect width="760" height="640" fill="#FFFFFF"/>
+  <text x="380" y="34" font-size="20" font-weight="bold" text-anchor="middle" fill="#263238">معمارية Formify</text>
+
+  <rect x="80" y="60" width="600" height="110" rx="12" fill="#E3F2FD" stroke="#1E88E5" stroke-width="2"/>
+  <text x="380" y="88" font-size="16" font-weight="bold" text-anchor="middle" fill="#0D47A1">طبقة العرض (Presentation)</text>
+  <text x="380" y="118" font-size="13" text-anchor="middle" fill="#37474F">الصفحات والعناصر المشتركة</text>
+  <text x="380" y="144" font-size="13" text-anchor="middle" fill="#37474F">إدارة الحالة (BLoC)</text>
+
+  <line x1="380" y1="170" x2="380" y2="210" stroke="#37474F" stroke-width="2" marker-end="url(#a)"/>
+
+  <rect x="80" y="212" width="600" height="110" rx="12" fill="#E8F5E9" stroke="#43A047" stroke-width="2"/>
+  <text x="380" y="240" font-size="16" font-weight="bold" text-anchor="middle" fill="#1B5E20">طبقة المجال (Domain)</text>
+  <text x="380" y="270" font-size="13" text-anchor="middle" fill="#37474F">حالات الاستخدام</text>
+  <text x="380" y="296" font-size="13" text-anchor="middle" fill="#37474F">النماذج وواجهات المستودعات</text>
+
+  <line x1="380" y1="322" x2="380" y2="362" stroke="#37474F" stroke-width="2" marker-end="url(#a)"/>
+
+  <rect x="80" y="364" width="600" height="110" rx="12" fill="#FFF3E0" stroke="#FB8C00" stroke-width="2"/>
+  <text x="380" y="392" font-size="16" font-weight="bold" text-anchor="middle" fill="#E65100">طبقة البيانات (Data)</text>
+  <text x="380" y="422" font-size="13" text-anchor="middle" fill="#37474F">المستودعات</text>
+  <text x="380" y="448" font-size="13" text-anchor="middle" fill="#37474F">مصادر البيانات والتحويلات والخدمات</text>
+
+  <line x1="230" y1="474" x2="150" y2="526" stroke="#37474F" stroke-width="2" marker-end="url(#a)"/>
+  <line x1="380" y1="474" x2="380" y2="526" stroke="#37474F" stroke-width="2" marker-end="url(#a)"/>
+  <line x1="530" y1="474" x2="610" y2="526" stroke="#37474F" stroke-width="2" marker-end="url(#a)"/>
+
+  <rect x="40" y="528" width="220" height="70" rx="10" fill="#F3E5F5" stroke="#8E24AA" stroke-width="2"/>
+  <text x="150" y="558" font-size="14" font-weight="bold" text-anchor="middle" fill="#4A148C">تخزين محلي</text>
+  <text x="150" y="580" font-size="12" text-anchor="middle" fill="#37474F">قاعدة بيانات مشفّرة</text>
+
+  <rect x="270" y="528" width="220" height="70" rx="10" fill="#F3E5F5" stroke="#8E24AA" stroke-width="2"/>
+  <text x="380" y="558" font-size="14" font-weight="bold" text-anchor="middle" fill="#4A148C">خدمة خارجية</text>
+  <text x="380" y="580" font-size="12" text-anchor="middle" fill="#37474F">واجهة برمجية عبر الشبكة</text>
+
+  <rect x="500" y="528" width="220" height="70" rx="10" fill="#F3E5F5" stroke="#8E24AA" stroke-width="2"/>
+  <text x="610" y="558" font-size="14" font-weight="bold" text-anchor="middle" fill="#4A148C">ذكاء اصطناعي</text>
+  <text x="610" y="580" font-size="12" text-anchor="middle" fill="#37474F">تحليل الإجابات النصية</text>
+
+  <text x="380" y="626" font-size="12" text-anchor="middle" fill="#78909C">الاعتماديات الخارجية</text>
+</svg>

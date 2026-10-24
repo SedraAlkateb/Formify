@@ -221,7 +221,11 @@ class ConferenceEndedWidget extends StatelessWidget {
                                 message: "هل أنت متأكد من تفعيل المؤتمر، وتخزينه داخلياً لبدء العمل عليه ورفع المؤتمر السابق إذا كان موجوداً؟",
                                 onConfirm1: () {
                                   BlocProvider.of<OfflineSyncBloc>(context).add(
-                                    AsyncDataEvent(conference.id),
+                                    AsyncDataEvent(
+                                      conference.id,
+                                      startDate: conference.startDate,
+                                      endDate: conference.endDate,
+                                    ),
                                   );
                                 },
                                 // onConfirm2: () {

@@ -66,6 +66,7 @@ class ConferenceSurveyById extends StatelessWidget {
               if (state is GetAllSurveyConferenceErrorState) {
                 return errorFullScreen(
                   context,
+                  mes: state.failure.massage,
                   func: () => BlocProvider.of<ConferenceBloc>(
                     context,
                   ).add(GetAllSurveyByConferenceEvent(conferenceId)),
@@ -74,8 +75,11 @@ class ConferenceSurveyById extends StatelessWidget {
               if (state is GetAllSurveyConferenceState) {
                 surveys = state.allSurvey;
               }
-              if(state is GetAllSurveyConferenceEmptyState){
-                return emptyFullScreen(context);
+              if (state is GetAllSurveyConferenceEmptyState) {
+                return emptyFullScreen(
+                  context,
+                  message: 'لا توجد استبيانات مرتبطة بهذا المؤتمر',
+                );
               }
               return CustomScrollView(
                 slivers: [
@@ -87,7 +91,13 @@ class ConferenceSurveyById extends StatelessWidget {
                   ),
 
                   if (surveys.isEmpty)
-                    emptyFullScreen(context)
+                    SliverFillRemaining(
+                      hasScrollBody: true,
+                      child: emptyFullScreen(
+                        context,
+                        message: 'لا توجد استبيانات مرتبطة بهذا المؤتمر',
+                      ),
+                    )
                   else
                     SliverPadding(
                       padding:  EdgeInsets.fromLTRB(AppPadding.p16, 0, AppPadding.p16, AppPadding.p100),

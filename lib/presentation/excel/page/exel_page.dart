@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/presentation/excel/bloc/excel_st_bloc.dart';
 import 'package:formify/presentation/excel/widget/export_exel.dart';
+import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
 class SurveyExcelPage extends StatefulWidget {
   const SurveyExcelPage({super.key,required this.filename});
@@ -62,8 +63,14 @@ class _SurveyExcelPageState extends State<SurveyExcelPage> {
         padding: const EdgeInsets.only(left: 16.0,right: 16),
         child: BlocBuilder<ExcelStBloc, ExcelStState>(
           builder: (context, state) {
+            if (state is ExelError) {
+              return errorFullScreen(context, mes: state.failure.massage);
+            }
             if (state is! ExelSuccess) {
-              return const Center(child: CircularProgressIndicator());
+              return loadingFullScreen(context);
+            }
+            if (state.exelModel.isEmpty) {
+              return emptyFullScreen(context, message: 'لا توجد إجابات لعرضها');
             }
 
             final List<Map<String, String>> exelModel = state.exelModel;

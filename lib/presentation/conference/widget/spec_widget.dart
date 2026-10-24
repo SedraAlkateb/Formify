@@ -1,3 +1,4 @@
+import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -48,9 +49,9 @@ class SpecialtyDropdownField extends StatelessWidget {
               borderRadius: BorderRadius.circular(15),
             ),
             suffixIcon: isLoading
-                ? const Padding(
-              padding: EdgeInsets.all(12.0),
-              child: CircularProgressIndicator(strokeWidth: 2), // مؤشر تحميل صغير
+                ? Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: loadingInline(size: 18),
             )
                 : null,
             contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 15),

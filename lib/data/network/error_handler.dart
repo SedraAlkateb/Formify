@@ -1,54 +1,49 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:dio/dio.dart';
 import 'package:formify/data/network/failure.dart';
 
 class ErrorHandler implements Exception {
   late Failure failure;
   ErrorHandler.handle(dynamic error) {
-    print(error);
-    if (error is DioError) {
-      print("error.message??" "");
+    if (error is DioException) {
       failure = _handleError(error);
     } else if (error is FormatException) {
-      failure = Failure(0, "${error.message} ${error.source.toString()}");
+      failure = DataSource.DEFAULT.getFailure();
     } else {
-      failure = Failure(200, "massage${error}");
+      failure = DataSource.DEFAULT.getFailure();
     }
   }
 }
-Failure _handleError(DioError error) {
+
+/// يستخرج رسالة مقروءة من جسم الاستجابة مهما كان نوعه (Map / String / غيره).
+String _extractMessage(dynamic body) {
+  if (body is Map) {
+    final m = body['message'] ?? body['error'];
+    if (m is String && m.trim().isNotEmpty) return m;
+  } else if (body is String && body.trim().isNotEmpty && body.length < 200) {
+    return body;
+  }
+  return ResponseMassage.DEFAULT;
+}
+
+Failure _handleError(DioException error) {
   switch (error.type) {
-    case DioErrorType.connectionTimeout:
+    case DioExceptionType.connectionTimeout:
       return DataSource.CONNECT_TIOMOUT.getFailure();
-    case DioErrorType.sendTimeout:
+    case DioExceptionType.sendTimeout:
       return DataSource.SEND_TIMOUT.getFailure();
-    case DioErrorType.connectionError:
+    case DioExceptionType.connectionError:
       return DataSource.NO_INTERNET_CONNECTION.getFailure();
-    case DioErrorType.receiveTimeout:
+    case DioExceptionType.receiveTimeout:
       return DataSource.RECIEVE_TIMEOUT.getFailure();
     case DioExceptionType.badCertificate:
-      return Failure(200, error.message ?? "badCertificate${error.error}");
-    case DioErrorType.badResponse:
-      final responseBody = error.response?.data;
-      if (responseBody != null) {
-        String message;
-        if (responseBody is Map) {
-          message = (responseBody['message'] ?? responseBody['error'] ??
-                  responseBody)
-              .toString();
-        } else {
-          message = responseBody.toString();
-        }
-        print('Error Message: $message');
-        return Failure(error.response?.statusCode ?? 404, message);
-      } else {
-        return Failure(200, error.message ?? "badResponse${error.error}");
-      }
-    case DioErrorType.cancel:
+      return DataSource.DEFAULT.getFailure();
+    case DioExceptionType.badResponse:
+      final code = error.response?.statusCode ?? ResponseCode.DEFAULT;
+      return Failure(code, _extractMessage(error.response?.data));
+    case DioExceptionType.cancel:
       return DataSource.CANCEL.getFailure();
-    case DioErrorType.unknown:
-      return Failure(200, error.message ?? "unknown ${error.error}");
+    case DioExceptionType.unknown:
+      return DataSource.DEFAULT.getFailure();
   }
 }
 
@@ -140,7 +135,7 @@ class ResponseCode {
   static const int TABLE_NOT_FOUND = -10; //
   static const int CONSTRAINT_VIOLATION = -11; //
 
-  static const int DEFAULT = -12;
+  static const int DEFAULT = -7;
 }
 
 class ResponseMassage {
@@ -148,23 +143,23 @@ class ResponseMassage {
   static const String NO_CONTENT =
       "success"; //success with no data (no content)
   static const String BAD_REQUEST =
-      "Bad request ,Try again later"; //failure ,Api rejected request
+      "طلب غير صالح، يرجى المحاولة لاحقاً"; //failure ,Api rejected request
   static const String UNAUTORISED =
-      "User is unauthorised,Try again later"; //failure,user is not authorised
+      "غير مصرح لك بتنفيذ هذه العملية"; //failure,user is not authorised
   static const String FORBIDDEN =
-      "Forbidden request ,Try again later"; //failure ,Api rejected request
+      "ليس لديك صلاحية لتنفيذ هذا الطلب"; //failure ,Api rejected request
   static const String INTERNAL_SERVER_ERROR =
       "حدث خطأ, يرجى إعادة المحاولة"; //failure,crash in server side
-  static const String NOT_FOUND = "Not found ,Try again later";
+  static const String NOT_FOUND = "المورد المطلوب غير موجود";
   // static const String Unprocessable_Content ="Unprocessable Content";//success with no data (no content)
 
 //local status code
 
-  static const String CONNECT_TIOMOUT = "Time out error,Try again later";
-  static const String CANCEL = "Request was cancelled ,Try again later";
-  static const String RECIEVE_TIMEOUT = "Time out error ,Try again later";
-  static const String SEND_TIMOUT = "Time out error ,Try again later";
-  static const String CACHE_ERROR = "Cache error ,Try again later";
+  static const String CONNECT_TIOMOUT = "انتهت مهلة الاتصال، يرجى المحاولة لاحقاً";
+  static const String CANCEL = "تم إلغاء الطلب";
+  static const String RECIEVE_TIMEOUT = "انتهت مهلة الاتصال، يرجى المحاولة لاحقاً";
+  static const String SEND_TIMOUT = "انتهت مهلة الاتصال، يرجى المحاولة لاحقاً";
+  static const String CACHE_ERROR = "حدث خطأ في البيانات المحفوظة";
   static const String NO_INTERNET_CONNECTION =
       "يرجى التأكد من اتصالك بالانترنت";
   static const String DEFAULT = "حدث خطأ, يرجى إعادة المحاولة";

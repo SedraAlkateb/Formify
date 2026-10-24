@@ -416,7 +416,8 @@ class UserModel {
   }
   Map<String, dynamic> toJsonModify() {
     return {
-      'id': id,
+      // معرّف السيرفر: للأطباء المضافين محلياً ثم المرفوعين يختلف عن id المحلي
+      'id': server_user_id ?? id,
       'fullname': fullName,
       'email': email,
       'phone': phone,
@@ -556,11 +557,12 @@ class UserDoneModel {
 }
 class ConferenceUserAtt {
   List<UserDoneModel> users;
-  GetAllConferenceModel conferenceModel;
+  /// null = لا يوجد مؤتمر محلي
+  GetAllConferenceModel? conferenceModel;
 
   ConferenceUserAtt({
     required this.users,
-    required this.conferenceModel,
+    this.conferenceModel,
   });
 
   // تحويل من JSON
@@ -578,7 +580,7 @@ class ConferenceUserAtt {
   Map<String, dynamic> toJson() {
     return {
       'users': users.map((e) => e.toJson()).toList(),
-      'conferenceModel': conferenceModel.toMap(),
+      'conferenceModel': conferenceModel?.toMap(),
     };
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:formify/presentation/resources/font_manager.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/app/constants.dart';
 import 'package:formify/domain/models/models.dart';
@@ -337,7 +338,12 @@ class _InsertUserPageState extends State<InsertUserPage>
 
         // 1️⃣ منسدلة الاختصاصات
         DropdownButtonFormField<SpecModel>(
+ isExpanded: true,
+ style: TextStyle(fontFamily: FontConstants.fontFamily1, fontSize: 14, color: Colors.black87),
+
           decoration: InputDecoration(
+ labelStyle: TextStyle(fontFamily: FontConstants.fontFamily1, fontSize: 14),
+ hintStyle: TextStyle(fontFamily: FontConstants.fontFamily1, fontSize: 14),
             labelText: "اختر الاختصاص الطبي",
             prefixIcon: const Icon(Icons.biotech_outlined),
             contentPadding: const EdgeInsets.symmetric(

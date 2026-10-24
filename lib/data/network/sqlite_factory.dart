@@ -67,9 +67,11 @@ class DatabaseHelper {
       print(
         "❌ فشل فتح قاعدة البيانات المشفّرة، سيتم إعادة إنشائها من الصفر: $e",
       );
+      // نحتفظ بنسخة من الملف بدل حذفه نهائياً حتى لا تضيع بيانات غير مزامنة
       final corruptFile = File(path);
       if (await corruptFile.exists()) {
-        await corruptFile.delete();
+        final backup = '$path.corrupt_${DateTime.now().millisecondsSinceEpoch}';
+        await corruptFile.rename(backup);
       }
       return openDatabase(
         path,

@@ -372,7 +372,7 @@ class _SurveyDashboardPageState extends State<SurveyDashboardPage> {
                                                       )
                                                     : stateAi is GetAiDescLoading &&
                                                           stateAi.index == index
-                                                    ? const CircularProgressIndicator()
+                                                    ? loadingInline()
                                                     : aiAnswers.containsKey(
                                                         index,
                                                       )
@@ -418,7 +418,7 @@ class _SurveyDashboardPageState extends State<SurveyDashboardPage> {
                   ],
                 );
               } else if (state is SurveyStatisticsError) {
-                return errorFullScreen(context);
+                return errorFullScreen(context, mes: state.failure.massage);
               } else if (state is SurveyStatisticsLoading) {
                 return loadingFullScreen(context);
               }

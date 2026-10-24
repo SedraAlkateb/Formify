@@ -8,7 +8,10 @@ sealed class OfflineSyncEvent extends Equatable {
 }
 final class AsyncDataEvent extends OfflineSyncEvent {
   final int conferenceId;
-  const AsyncDataEvent(this.conferenceId);
+  /// تاريخا المؤتمر من قائمة المؤتمرات؛ احتياط إن جاء رد المزامنة بدونهما
+  final String? startDate;
+  final String? endDate;
+  const AsyncDataEvent(this.conferenceId, {this.startDate, this.endDate});
 }
 
 final class InsertDataSqlEvent extends OfflineSyncEvent {

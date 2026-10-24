@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:formify/app/app_preferences.dart';
+import 'package:formify/app/constants.dart';
 import 'package:formify/app/di.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/conference/bloc/conference_bloc.dart';
 import 'package:formify/presentation/home/widget/conference_ended_widget.dart';
 import 'package:formify/presentation/offline_sync/bloc/offline_sync_bloc.dart';
 import 'package:formify/presentation/resources/routes_manager.dart';
+import 'package:formify/presentation/sync/bloc/sync_bloc.dart';
 import 'package:formify/presentation/unit/state_renderer/stateWidget.dart';
 
 Widget multiBlocConferenceWidget(){
@@ -34,6 +36,18 @@ Widget multiBlocConferenceWidget(){
             BlocProvider.of<ConferenceBloc>(
               context,
             ).add(UpdateConferenceEvent(1));
+            // إدخال الأطباء المهمين (يتخطى المكرر ويفضّل الرقم الواضح)
+            // SyncBloc يُسجَّل في initSyncModule (آمنة للاستدعاء المتكرر)
+            // ولا يكون جاهزاً في الصفحة الرئيسية قبل ذلك
+            // يعمل عند كل تفعيل مؤتمر: حفظ البيانات يفرّغ all_users ثم يُعاد الإدخال
+            if (Constants.importImportantDoctors) {
+              initSyncModule().then((_) {
+                if (context.mounted) {
+                  BlocProvider.of<SyncBloc>(context)
+                      .add(InsertImportantDoctors());
+                }
+              });
+            }
             success(context);
             instance<AppPreferences>().setIConference(true);
           }
@@ -69,12 +83,13 @@ Widget multiBlocConferenceWidget(){
         } else if (state is GetAllConferenceErrorState) {
           return errorFullScreen(
             context,
+            mes: state.failure.massage,
             func: () => context.read<ConferenceBloc>().add(
               GetAllNotActiveConferenceEvent(),
             ),
           );
         } else if (state is GetAllEmptyConferenceState) {
-          return emptyFullScreen(context);
+          return emptyFullScreen(context, message: 'لا توجد مؤتمرات');
         }
         List<GetAllConferenceModel> items = context
             .read<ConferenceBloc>()

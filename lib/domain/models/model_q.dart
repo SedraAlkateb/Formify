@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:formify/domain/models/models.dart';
 import 'package:formify/presentation/resources/color_manager.dart';
-import 'package:formify/presentation/resources/routes_manager.dart';
+import 'package:formify/presentation/resources/routes.dart';
 
 enum QuestionType {
   text,

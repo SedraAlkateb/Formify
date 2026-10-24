@@ -1,5 +1,7 @@
 
 import 'package:bloc/bloc.dart';
+import 'package:formify/app/di.dart';
+import 'package:formify/app/app_preferences.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -228,7 +230,10 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     emit(InsertDoctorLoadingState());
 
     // 2. تنفيذ العملية
-    final result = await insertDoctorSqlUsecase.execute(event.doctorsModel);
+    final result = await insertDoctorSqlUsecase.execute(
+      event.doctorsModel,
+      markAttended: event.markAttended,
+    );
 
     // 3. معالجة النتيجة
     result.fold((failure) => emit(InsertDoctorErrorState(failure: failure)), (
@@ -445,8 +450,12 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     (await getUsersBySpecIdsSqlUsecase.execute()).fold(
           (failure) => emit(DoctorsBySpsErrorState(failure: failure)),
           (data) {
-        //   emit(DoctorsBySpsSuccessState());
-        emit(DoctorsBySpsState(data.users,data.conferenceModel));
+        final conference = data.conferenceModel;
+        if (conference == null) {
+          emit(const DoctorsBySpsEmptyState());
+        } else {
+          emit(DoctorsBySpsState(data.users, conference));
+        }
       },
     );
   }
@@ -457,11 +466,14 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
       InsertImportantDoctors event,
       Emitter<SyncState> emit,
       ) async {
-    emit(const DoctorsAttendanceLoadingState());
     (await insertImpDoctorForNewConUsecase.execute()).fold(
           (failure) => emit(DoctorsAttendanceErrorState(failure: failure)),
           (data) {
-      },
+            // نسجّل أن الإدخال تم حتى لا يتكرر مع كل تفعيل مؤتمر
+            instance<AppPreferences>().setImportantDoctorsImported(true);
+            // بعد الإدخال نحدّث قائمة الأطباء المعروضة
+            add(DoctorEvent());
+          },
     );
   }
 

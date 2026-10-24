@@ -124,17 +124,42 @@ class _DoctorFilterCardState extends State<DoctorFilterCard> {
                         setState(() {
                           _currentSpecialty = value;
                         });
+                        // جلب أطباء الاختصاص مباشرة بدون زر البحث،
+                        // والبحث بالاسم بعدها يخصّص ضمن هذا الاختصاص
+                        widget.specialtySearchController.clear();
+                        BlocProvider.of<SyncBloc>(context).add(
+                          FilterDoctorBySpecAndNameEvent(
+                            "",
+                            value == null ? -1 : value.id ?? 0,
+                          ),
+                        );
                       },
                     ),
                     const SizedBox(height: 12),
-                    BlocBuilder<SyncBloc, SyncState>(
+                    BlocConsumer<SyncBloc, SyncState>(
+                      // النتائج تصل بشكل غير متزامن بعد الضغط، فنُعيد التركيز
+                      // عند وصولها لأن الحقل يُعاد بناؤه وقد يفقد الفوكس
+                      listenWhen: (previous, current) =>
+                          current is UserFilterState,
+                      listener: (context, state) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (!mounted) return;
+                          FocusScope.of(
+                            context,
+                          ).requestFocus(widget.anyDoctorFocusNode);
+                        });
+                      },
                       buildWhen: (previous, current) =>
                           current is UserFilterState ||
                           current is DataErrorState,
                       builder: (context, state) {
                         List<UserModel> users = [];
-                        if (state is DataErrorState)
-                          return errorFullScreen(context);
+                        if (state is DataErrorState) {
+                          return errorFullScreen(
+                            context,
+                            mes: state.failure.massage,
+                          );
+                        }
                         if (state is UserFilterState) users = state.data;
 
                         return Row(
@@ -143,9 +168,11 @@ class _DoctorFilterCardState extends State<DoctorFilterCard> {
                           children: [
                             Expanded(
                               child: DoctorAutocompleteField(
-                                // ✨ هنا التعديل السحري: تمرير Key ديناميكي يعتمد على طول المصفوفة
-                                // ليجبر الحقل على التحديث الفوري وإظهار لستة الأسماء مباشرة تحت الحقل
-                                key: ValueKey("doctors_count_${users.length}"),
+                                // Key يعتمد على محتوى النتائج (وليس عددها فقط) ليتحدث الحقل
+                                // عند تغيّر القائمة حتى لو بقي العدد نفسه
+                                key: ValueKey(
+                                  Object.hashAll(users.map((u) => u.id)),
+                                ),
                                 lable: "اسم الطبيب",
                                 allDoctors: users,
                                 controller: widget.specialtySearchController,

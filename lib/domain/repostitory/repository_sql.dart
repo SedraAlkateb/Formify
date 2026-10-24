@@ -14,7 +14,7 @@ abstract class RepositorySql {
   Future<Either<Failure, InfoConference>>  getConferenceInfo();
   Future<Either<Failure, void>>  deleteUser();
   Future<Either<Failure, List<UserModel>>>  getDoctors();
-  Future<Either<Failure,void>> insertDoctor(UserModel doctor);
+  Future<Either<Failure,void>> insertDoctor(UserModel doctor, {bool markAttended = false});
   Future<Either<Failure,List<UserModel>>> getUserConference(int conferenceId);
   Future<Either<Failure,void>> updateUser(UserModel user);
   Future<Either<Failure,void>> insertAllUsers(List<UserModel> users);

@@ -18,7 +18,7 @@ abstract class AppSqlApiAbs {
   Future<void> deleteUser();
   Future<String> insertDataForSave(DataForSaveModel asyncData);
 
-  Future<void> insertDoctor(UserModel doctor);
+  Future<void> insertDoctor(UserModel doctor, {bool markAttended = false});
   //
   Future<void> insertAllUsers(List<UserModel> users);
   Future<List<UserSqlModel>> getDataSql();
@@ -53,7 +53,8 @@ class AppSqlApi extends AppSqlApiAbs {
   List<DoctorMockItem> usersList = MockModel.usersList;
 
   Future<void> initializeDatabase() async {
-    await databaseFactory.debugSetLogLevel(sqfliteLogLevelVerbose);
+    // تسجيل كل استعلام (verbose) يبطئ الإدخالات الكبيرة جداً، لذلك نعطله
+    await databaseFactory.debugSetLogLevel(sqfliteLogLevelNone);
   }
 
   Future<void> insertSpecs(List<SpecModel> specs) async {
@@ -203,6 +204,10 @@ class AppSqlApi extends AppSqlApiAbs {
         }
 
         // 2. إدخال المؤتمر
+        print(
+          '📥 [asyncData] conference to insert: ${asyncData.conferenceModel.toMap()} '
+          '| specs: ${asyncData.conferenceModel.spec.map((e) => e.toMap()).toList()}',
+        );
         batch.insert(
           'conference',
           asyncData.conferenceModel.toMap(),
@@ -263,6 +268,17 @@ class AppSqlApi extends AppSqlApiAbs {
         }
         await batch.commit(noResult: true);
       });
+
+      // إعادة إدخال الأطباء المهمين من الملف مباشرة هنا (بعد تفريغ all_users)
+      // دون الاعتماد على الواجهة؛ الدمج يمنع التكرار مع ما جاء من السيرفر.
+      // فشله لا يُفشل التفعيل.
+      if (Constants.importImportantDoctors) {
+        try {
+          await insertAllUsersForNewConf();
+        } catch (e) {
+          print("⚠️ تعذّر إدخال الأطباء المهمين من الملف: $e");
+        }
+      }
 
       return ""; // المزامنة تمت بنجاح تام
     } catch (e) {
@@ -581,6 +597,7 @@ class AppSqlApi extends AppSqlApiAbs {
 
       // تحويل السطر المرجّع إلى كائن المؤتمر الأساسي (وقائمة الاختصاصات فارغة حالياً)
       final Map<String, dynamic> firstConfRow = conferenceMaps.first;
+      print('📤 [getConference] local conference row: $firstConfRow');
       final GetAllConferenceModel conference = GetAllConferenceModel(
         firstConfRow['id'] as int,
         (firstConfRow['name'] ?? "") as String,
@@ -712,10 +729,14 @@ class AppSqlApi extends AppSqlApiAbs {
   }
 
   @override
-  Future<void> insertDoctor(UserModel doctor) async {
+  Future<void> insertDoctor(UserModel doctor, {bool markAttended = false}) async {
     final db = await databaseHelper.database;
     await db.transaction((txn) async {
-      await txn.insert('all_users', doctor.toJson());
+      final id = await txn.insert('all_users', doctor.toJson());
+      // تسجيل الحضور فوراً (نفس ما يفعله updateIsDone عند التأشير)
+      if (markAttended) {
+        await txn.insert('user_conference', {'user_id': id, 'isUpload': 0});
+      }
     });
   }
 
@@ -726,19 +747,26 @@ class AppSqlApi extends AppSqlApiAbs {
     final db = await databaseHelper.database;
 
     // 2. بدء عملية "Transaction" لضمان السرعة والأمان
-    await db.transaction((txn) async {
-      // 3. التكرار على كل مستخدم (User) موجود في القائمة الممررة
-      for (var user in users) {
-        // 4. إدخال بيانات المستخدم الحالي في جدول 'all_users'
-        // يتم تحويل الـ Model إلى Map باستخدام toJson()
-        await txn.insert(
-          'all_users',
-          user.toJsonSqlForFirst(),
-          // استخدام conflictAlgorithm يمنع توقف التطبيق في حال تكرار نفس المستخدم
-          conflictAlgorithm: ConflictAlgorithm.replace,
-        );
-      }
-    });
+    // batch: رحلة واحدة للمنصة بدل رحلة لكل مستخدم
+    // لا نستبدل سجلاً فيه تعديلات محلية لم تُرفع بعد (ملاحظات مثلاً)
+    final pending = await db.query(
+      'all_users',
+      columns: ['id'],
+      where: 'isUpload = 0 AND (is_modified = 1 OR is_local_new = 1)',
+    );
+    final pendingIds = pending.map((e) => e['id']).toSet();
+
+    final batch = db.batch();
+    for (var user in users) {
+      if (pendingIds.contains(user.id)) continue;
+      batch.insert(
+        'all_users',
+        user.toJsonSqlForFirst(),
+        // استخدام conflictAlgorithm يمنع توقف التطبيق في حال تكرار نفس المستخدم
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
+    await batch.commit(noResult: true, continueOnError: false);
     // عند انتهاء الحلقة، يتم اعتماد (Commit) جميع الإدخالات مرة واحدة
   }
 
@@ -749,27 +777,119 @@ class AppSqlApi extends AppSqlApiAbs {
     final jsonString = await rootBundle.loadString(
       'assets/json/important_doctors.json',
     );
+    final doctors = (jsonDecode(jsonString) as List)
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
 
-    final List<dynamic> jsonList = jsonDecode(jsonString);
+    String norm(dynamic v) => (v ?? '').toString().trim();
+
+    // رقم "غير مفيد": فارغ أو أصفار أو الرقم الافتراضي 0900000000
+    bool isPlaceholderPhone(dynamic p) {
+      final s = norm(p);
+      return s.isEmpty || RegExp(r'^0+$').hasMatch(s) || s == '0900000000';
+    }
+
+    // حقل نصي متوافق: متطابق أو أحدهما فارغ
+    bool compatible(dynamic a, dynamic b) =>
+        norm(a) == norm(b) || norm(a).isEmpty || norm(b).isEmpty;
+
+    // الهاتفان متوافقان إذا تطابقا أو كان أحدهما غير مفيد
+    bool samePhone(dynamic a, dynamic b) =>
+        norm(a) == norm(b) || isPlaceholderPhone(a) || isPlaceholderPhone(b);
+
+    // نفس الطبيب: الاسم والاختصاص متطابقان، والعنوان والبريد والهاتف متوافقة.
+    // الملاحظات لا تدخل في التعريف، بل تُدمج.
+    bool sameDoctor(Map<String, dynamic> a, Map<String, dynamic> b) =>
+        norm(a['fullname']) == norm(b['fullname']) &&
+        norm(a['specId']) == norm(b['specId']) &&
+        compatible(a['address'], b['address']) &&
+        compatible(a['email'], b['email']) &&
+        samePhone(a['phone'], b['phone']);
+
+    // دمج الملاحظات: الفارغ يأخذ الآخر، والمتشابه يبقى الأطول، غير ذلك يُجمع
+    String mergeNotes(dynamic oldN, dynamic newN) {
+      final o = norm(oldN), n = norm(newN);
+      if (n.isEmpty || o == n) return o;
+      if (o.isEmpty) return n;
+      if (o.contains(n)) return o;
+      if (n.contains(o)) return n;
+      return '$o - $n';
+    }
+
+    int added = 0;
+    int unchanged = 0;
+    int updated = 0;
 
     await db.transaction((txn) async {
-      for (final item in jsonList) {
-        final doctor = Map<String, dynamic>.from(item);
+      final existing = (await txn.query(
+        'all_users',
+        columns: [
+          'id', 'server_user_id', 'fullname', 'email', 'phone',
+          'address', 'notes', 'specId', 'type_id',
+        ],
+      )).map((r) => Map<String, dynamic>.from(r)).toList();
 
-        // حذف id إذا كان null حتى SQLite يولد id تلقائياً
-        if (doctor['id'] == null) {
-          doctor.remove('id');
+      for (final doctor in doctors) {
+        final matchIndex = existing.indexWhere((r) => sameDoctor(r, doctor));
+
+        if (matchIndex != -1) {
+          final match = existing[matchIndex];
+          // نأخذ المعلومة الأفيد لكل حقل ونعدّل السجل القديم إن تغيّر شيء
+          final values = <String, Object?>{};
+
+          if (isPlaceholderPhone(match['phone']) &&
+              !isPlaceholderPhone(doctor['phone'])) {
+            values['phone'] = doctor['phone'];
+          }
+          if (norm(match['email']).isEmpty && norm(doctor['email']).isNotEmpty) {
+            values['email'] = doctor['email'];
+          }
+          if (norm(match['address']).isEmpty &&
+              norm(doctor['address']).isNotEmpty) {
+            values['address'] = doctor['address'];
+          }
+          final notes = mergeNotes(match['notes'], doctor['notes']);
+          if (notes != norm(match['notes'])) {
+            values['notes'] = notes;
+          }
+
+          if (values.isEmpty) {
+            unchanged++;
+            continue;
+          }
+          // سجل موجود على السيرفر: نعلّمه معدّلاً ليُرفع في المزامنة
+          if (match['server_user_id'] != null) {
+            values['is_modified'] = 1;
+            values['isUpload'] = 0;
+          }
+          await txn.update(
+            'all_users',
+            values,
+            where: 'id = ?',
+            whereArgs: [match['id']],
+          );
+          match.addAll(values);
+          updated++;
+          continue;
         }
 
-        await txn.insert(
+        final row = Map<String, dynamic>.from(doctor);
+        // حذف id إذا كان null حتى SQLite يولد id تلقائياً
+        if (row['id'] == null) row.remove('id');
+        final newId = await txn.insert(
           'all_users',
-          doctor,
+          row,
           conflictAlgorithm: ConflictAlgorithm.ignore,
         );
+        existing.add({...row, 'id': newId});
+        added++;
       }
     });
 
-    print('✅ Important doctors inserted: ${jsonList.length}');
+    print(
+      '✅ Important doctors added: $added, updated: $updated, '
+      'unchanged: $unchanged',
+    );
   }
   //
   // async {
@@ -902,11 +1022,15 @@ class AppSqlApi extends AppSqlApiAbs {
     // 3. التحقق إذا كانت القائمة فارغة
     // إذا كانت فارغة، سنحتاج لجلب كل الأطباء من نوع 6 دون استثناء
     if (namesInParam.isEmpty) {
-      final List<Map<String, dynamic>> allImportant = await db.query(
-        'all_users',
-        where: 'type_id = ?',
-        whereArgs: [6],
-      );
+      final List<Map<String, dynamic>> allImportant = await db.rawQuery('''
+            SELECT
+              u.*,
+              s.id AS spec_id_joined,
+              s.title AS spec_title_joined
+            FROM all_users u
+            LEFT JOIN spec s ON u.specId = s.id
+            WHERE u.type_id = 6
+    ''');
       return allImportant.map((map) => UserModel.fromMapSql(map)).toList();
     }
 
@@ -1125,8 +1249,8 @@ class AppSqlApi extends AppSqlApiAbs {
       // 2️⃣ حذف كل سجلات حضور المؤتمرات
       batch.delete('user_conference');
 
-      // 3️⃣ حذف كل المستخدمين (القدامى، الجدد، والأطباء المهمين المزامنين)
-      batch.delete('all_users');
+      // المستخدمون لا يُحذفون هنا: يُدمج ما يرجع من السيرفر في addSyncData
+      // حتى لا نخسر بقية القائمة إن رجع السيرفر جزءاً منها فقط أو فشل الجلب.
 
       // 🚀 تنفيذ الحذف الجماعي فوراً
       await batch.commit(noResult: true);
@@ -1152,6 +1276,21 @@ class AppSqlApi extends AppSqlApiAbs {
       final batch = db.batch();
       final syncData = baseData.data;
       if (syncData.users.isNotEmpty) {
+        // ندمج بدل المسح: نحذف فقط النسخ المحلية المقابلة لمستخدمي السيرفر
+        // (بنفس المعرّف أو بنفس server_user_id) ثم ندرج نسخة السيرفر.
+        final serverIds = syncData.users.map((u) => u.id).toList();
+        for (var i = 0; i < serverIds.length; i += 400) {
+          final chunk = serverIds.sublist(
+            i,
+            i + 400 > serverIds.length ? serverIds.length : i + 400,
+          );
+          final m = List.filled(chunk.length, '?').join(',');
+          batch.delete(
+            'all_users',
+            where: 'id IN ($m) OR server_user_id IN ($m)',
+            whereArgs: [...chunk, ...chunk],
+          );
+        }
         for (final user in syncData.users) {
           batch.insert('all_users', {
             'id': user.id,
@@ -1294,12 +1433,12 @@ class AppSqlApi extends AppSqlApiAbs {
       );
 
       if (firstConference.isEmpty) {
-        throw Exception("لا توجد مؤتمرات مسجلة");
+        return ConferenceUserAtt(users: [], conferenceModel: null);
       }
 
       final firstConferenceId = firstConference.first['id'] as int;
 
-      // جلب المستخدمين المرتبطين بالاختصاصات في المؤتمر مع التحقق من حضورهم مسبقًا
+      // جلب كل المستخدمين (وليس اختصاصات المؤتمر فقط) مع التحقق من حضورهم مسبقًا
       final List<Map<String, dynamic>> userMaps = await db.rawQuery(
         '''
       SELECT DISTINCT
@@ -1308,16 +1447,10 @@ class AppSqlApi extends AppSqlApiAbs {
         s.title AS spec_title_joined,
         CASE WHEN uc.user_id IS NOT NULL THEN 1 ELSE 0 END AS isDone
       FROM all_users u
-      INNER JOIN spec s ON u.specId = s.id
+      LEFT JOIN spec s ON u.specId = s.id
       LEFT JOIN user_conference uc 
         ON uc.user_id = u.id 
-      WHERE u.specId IN (
-        SELECT specId 
-        FROM sp_conference 
-        WHERE conferenceId = ?
-      )
     ''',
-        [firstConferenceId],
       );
 
       final users = userMaps.map((m) {

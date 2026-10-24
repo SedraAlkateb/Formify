@@ -59,7 +59,13 @@ class _ListOfSurveysPageState extends State<ListOfSurveysPage> {
                       return loadingFullScreen(context);
                     }
                     if (state is GetSurveyAsyncErrorState) {
-                      return errorFullScreen(context);
+                      return errorFullScreen(
+                      context,
+                      mes: state.failure.massage,
+                      func: () => context.read<SyncBloc>().add(
+                        GetSurveyAsyncEvent(),
+                      ),
+                    );
                     }
                     if (state is GetSurveyAsyncState ||
                         state is SurveySubmitSuccessState) {
@@ -191,7 +197,13 @@ class ListOfSurveysPage extends StatelessWidget {
                 builder: (context, state) {
 
                   if (state is GetSurveyAsyncErrorState) {
-                    return errorFullScreen(context);
+                    return errorFullScreen(
+                      context,
+                      mes: state.failure.massage,
+                      func: () => context.read<SyncBloc>().add(
+                        GetSurveyAsyncEvent(),
+                      ),
+                    );
                   } else if (state is GetSurveyAsyncLoadingState) {
                     return loadingFullScreen(context);
                   } else if (state is GetSurveyAsyncState ||

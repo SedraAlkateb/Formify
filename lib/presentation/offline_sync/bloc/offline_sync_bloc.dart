@@ -75,6 +75,14 @@ class OfflineSyncBloc extends Bloc<OfflineSyncEvent, OfflineSyncState> {
       (failure) => emit(DataOfflineErrorState(failure: failure)),
       (data) {
         conferenceId = event.conferenceId;
+        // إن لم يحمل رد المزامنة التاريخين نأخذهما من قائمة المؤتمرات
+        final conf = data.conferenceModel;
+        if (conf.startDate.trim().isEmpty && (event.startDate ?? '').isNotEmpty) {
+          conf.startDate = event.startDate!;
+        }
+        if (conf.endDate.trim().isEmpty && (event.endDate ?? '').isNotEmpty) {
+          conf.endDate = event.endDate!;
+        }
         emit(AsyncConferenceState(data));
       },
     );

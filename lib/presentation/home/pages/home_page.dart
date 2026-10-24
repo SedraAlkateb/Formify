@@ -30,6 +30,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // ScreenUtil مصمَّم على 360dp فيتضخم على التابلت؛ نثبّت قياسات الزر هناك
+    final bool tablet = MediaQuery.of(context).size.shortestSide >= 600;
     // استخدام PopScope الحديث كبديل لـ WillPopScope المهجور لحماية الشاشة من الإغلاق العشوائي
     return PopScope(
       canPop: false, // منع الرجوع للخلف لحماية حالة المؤتمر
@@ -53,14 +55,16 @@ class _HomePageState extends State<HomePage> {
 
             // زر "ابدأ المؤتمر" العائم في أسفل اليسار بأبعاد ريسبونسف مكيّفة
             Padding(
-              padding: EdgeInsets.all(30.r), // تباعد ريسبونسف دائري متناسق للزر
+              padding: tablet ? const EdgeInsets.all(24) : EdgeInsets.all(30.r),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: ColorManager.primary, // لون الخلفية الأساسي لشركة دومِنا
                   foregroundColor: Colors.white, // لون النص
-                  padding: EdgeInsets.symmetric(vertical: 10.h), // تباعد عمودي مرن
+                  padding: tablet
+                      ? const EdgeInsets.symmetric(vertical: 14)
+                      : EdgeInsets.symmetric(vertical: 10.h),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.r), // تدوير الحواف بشكل متناسق
+                    borderRadius: BorderRadius.circular(tablet ? 12 : 12.r),
                   ),
                   elevation: 4,
                 ),
@@ -72,11 +76,13 @@ class _HomePageState extends State<HomePage> {
                   );
                 },
                 child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 15.w), // بديل للمسافات الفارغة النصية لتأمين ثبات التصميم
+                  padding: tablet
+                      ? const EdgeInsets.symmetric(horizontal: 24)
+                      : EdgeInsets.symmetric(horizontal: 15.w),
                   child: Text(
                     "ابدأ المؤتمر",
                     style: TextStyle(
-                      fontSize: 15.sp, // خط مرن يتكيف تلقائياً مع أحجام الشاشات
+                      fontSize: tablet ? 18 : 15.sp,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

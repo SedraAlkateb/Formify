@@ -105,7 +105,7 @@ class _GameInputPageState extends State<GameInputPage> {
               }
               if (state is SurveySubmitErrorState) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("فشل الإرسال: ${state.failure}")),
+                  SnackBar(content: Text("فشل الإرسال: ${state.failure.massage}")),
                 );
               }
             },
@@ -115,7 +115,7 @@ class _GameInputPageState extends State<GameInputPage> {
                 return loadingFullScreen(context);
               }
               if (state is SurveyErrorState) {
-                return errorFullScreen(context);
+                return errorFullScreen(context, mes: state.failure.massage);
               }
 
               if (state is SurveyReadyState) {

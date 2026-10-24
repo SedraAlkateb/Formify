@@ -58,8 +58,16 @@ final class GetAllUserActiveConferenceState extends ActiveConferenceState {
   final List<UserModel> users;
   final List<UserModel> userFilter;
   final String newTitle;
-  GetAllUserActiveConferenceState(this.users, this.newTitle, this.userFilter);
-  List<Object?> get props => [userFilter];
+  final List<SpecModel> specs;
+  final int? selectedSpecId;
+  GetAllUserActiveConferenceState(
+    this.users,
+    this.newTitle,
+    this.userFilter, {
+    this.specs = const [],
+    this.selectedSpecId,
+  });
+  List<Object?> get props => [userFilter, selectedSpecId];
 }
 
 final class GetAllUserActiveConferenceErrorState extends ActiveConferenceState {

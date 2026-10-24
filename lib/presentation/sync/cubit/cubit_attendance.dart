@@ -20,6 +20,11 @@ class DoctorFilterCubit extends Cubit<DoctorFilterState> {
     );
   }
 
+  /// لا يوجد مؤتمر: نمسح بقايا المؤتمر السابق (الـ cubit عام على التطبيق)
+  void clear() {
+    emit(DoctorFilterState(conference: GetAllConferenceModel.create()));
+  }
+
   void search(String value) {
     emit(
       state.copyWith(
@@ -112,8 +117,25 @@ class DoctorFilterCubit extends Cubit<DoctorFilterState> {
     );
   }
   void setConferenceSpecs(GetAllConferenceModel conference) {
+    // إن كان الاختصاص المختار من مؤتمر سابق نرجع لـ "الكل"
+    final specId = state.selectedSpecId;
+    final stale = specId != null &&
+        specId != -1 &&
+        !conference.spec.any((e) => e.id == specId);
+    final newSpecId = stale ? -1 : specId;
     emit(
-      state.copyWith(conference: conference),
+      state.copyWith(
+        conference: conference,
+        selectedSpecId: newSpecId,
+        filteredDoctors: stale
+            ? _applyFilter(
+                state.allDoctors,
+                state.searchText,
+                state.selectedFilter,
+                newSpecId,
+              )
+            : null,
+      ),
     );
   }
 }
