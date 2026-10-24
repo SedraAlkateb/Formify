@@ -31,10 +31,15 @@ Failure _handleError(DioError error) {
       return Failure(200, error.message ?? "badCertificate${error.error}");
     case DioErrorType.badResponse:
       final responseBody = error.response?.data;
-      String message = "";
       if (responseBody != null) {
-        message =
-            responseBody['message'] ?? responseBody['error'] ?? responseBody;
+        String message;
+        if (responseBody is Map) {
+          message = (responseBody['message'] ?? responseBody['error'] ??
+                  responseBody)
+              .toString();
+        } else {
+          message = responseBody.toString();
+        }
         print('Error Message: $message');
         return Failure(error.response?.statusCode ?? 404, message);
       } else {
@@ -135,7 +140,7 @@ class ResponseCode {
   static const int TABLE_NOT_FOUND = -10; //
   static const int CONSTRAINT_VIOLATION = -11; //
 
-  static const int DEFAULT = -7;
+  static const int DEFAULT = -12;
 }
 
 class ResponseMassage {
@@ -150,7 +155,7 @@ class ResponseMassage {
       "Forbidden request ,Try again later"; //failure ,Api rejected request
   static const String INTERNAL_SERVER_ERROR =
       "حدث خطأ, يرجى إعادة المحاولة"; //failure,crash in server side
-  static const String NOT_FOUND = "Forbidden request ,Try again later";
+  static const String NOT_FOUND = "Not found ,Try again later";
   // static const String Unprocessable_Content ="Unprocessable Content";//success with no data (no content)
 
 //local status code
